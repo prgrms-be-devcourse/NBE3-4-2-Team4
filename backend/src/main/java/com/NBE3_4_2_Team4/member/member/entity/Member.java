@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.member.entity;
+package com.NBE3_4_2_Team4.member.member.entity;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
