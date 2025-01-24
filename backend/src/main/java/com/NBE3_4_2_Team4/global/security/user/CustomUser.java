@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.user;
 
-import com.NBE3_4_2_Team4.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

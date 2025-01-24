@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.global.security;
 
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
-import com.NBE3_4_2_Team4.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,15 +1,14 @@
-package com.NBE3_4_2_Team4.member.member.service;
+package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.member.dto.request.LoginRequestDto;
-import com.NBE3_4_2_Team4.member.dto.request.SignUpRequestDto;
-import com.NBE3_4_2_Team4.member.member.entity.Member;
-import com.NBE3_4_2_Team4.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
+import com.NBE3_4_2_Team4.domain.member.dto.request.SignUpRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 

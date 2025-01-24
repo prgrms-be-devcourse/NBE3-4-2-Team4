@@ -1,10 +1,9 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
 import com.NBE3_4_2_Team4.global.security.AuthHandler;
-import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.member.member.entity.Member;
-import com.NBE3_4_2_Team4.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

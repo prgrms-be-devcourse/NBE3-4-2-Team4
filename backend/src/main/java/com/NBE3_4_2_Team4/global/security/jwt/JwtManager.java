@@ -1,9 +1,8 @@
 package com.NBE3_4_2_Team4.global.security.jwt;
 
-import com.NBE3_4_2_Team4.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

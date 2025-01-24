@@ -1,8 +1,8 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
-import com.NBE3_4_2_Team4.member.member.entity.Member;
-import com.NBE3_4_2_Team4.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
