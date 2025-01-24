@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.member.member.service;
 
-import com.NBE3_4_2_Team4.global.jwt.JwtProvider;
+import com.NBE3_4_2_Team4.global.jwt.JwtManager;
 import com.NBE3_4_2_Team4.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.member.member.entity.Member;
@@ -19,7 +19,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberCategoryRepository memberCategoryRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final JwtManager jwtManager;
 
     public String login(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.email();
@@ -30,7 +30,7 @@ public class MemberService {
             throw new RuntimeException();
         }
 
-        return jwtProvider.generateToken(member);
+        return jwtManager.generateToken(member);
     }
 
     public Member signUp(String username, String password, String nickname, String memberCategoryName){
