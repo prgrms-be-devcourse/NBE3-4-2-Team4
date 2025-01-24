@@ -10,22 +10,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "AnswerController", description = "지식인 - 답변 관리 API")
-@RequestMapping("/api/answers")
+@Tag(name = "AnswerController", description = "지식인 - 특정 질문글에 대한 답변 관리 API")
+@RequestMapping("/api/questions/{postId}/answers")
 public class AnswerController {
     private final AnswerService answerService;
 
-    @Operation(summary = "Write Answer", description = "새로운 답변을 등록합니다.")
+    @Operation(summary = "Write Answer", description = "질문글에 새로운 답변을 등록합니다.")
     @PostMapping
     @Transactional
-    public RsData<AnswerDto> write(@RequestBody @Valid AnswerCreateReqBody reqBody) {
+    public RsData<AnswerDto> write(
+            @PathVariable long postId,
+            @RequestBody @Valid AnswerCreateReqBody reqBody
+    ) {
         Answer answer = answerService.write(reqBody.content());
 
         return new RsData(

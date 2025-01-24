@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,13 @@ public class AnswerService {
 
     public Optional<Answer> findLatest() {
         return answerRepository.findFirstByOrderByIdDesc();
+    }
+
+    public Optional<Answer> findById(long id) {
+        return answerRepository.findById(id);
+    }
+
+    public List<Answer> findAll() {
+        return answerRepository.findAll();
     }
 }
