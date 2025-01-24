@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
-import com.NBE3_4_2_Team4.domain.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +18,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtManager jwtManager;
 
+    public long count(){
+        return memberRepository.count();
+    }
 
     public String login(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.email();
@@ -36,15 +38,15 @@ public class MemberService {
             String username,
             String password,
             String nickname,
+            Member.Role role,
             String oAuth2ProviderName){
         memberRepository
                 .findByUsername(username)
                 .ifPresent(_ ->{
                     throw new RuntimeException();
                 });
-
         return memberRepository.save(Member.builder()
-                .role(Member.Role.USER)
+                .role(role)
                 .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName))
                 .username(username)
                 .password(passwordEncoder.encode(password))
@@ -52,19 +54,20 @@ public class MemberService {
                 .build());
     }
 
-    public Member signUp(SignUpRequestDto signUpRequestDto) {
-        return signUp(
-                signUpRequestDto.username(),
-                signUpRequestDto.password(),
-                signUpRequestDto.nickname(),
-                "NONE");
+    public Member userSignUp(
+            String username,
+            String password,
+            String nickname,
+            String oAuth2ProviderName){
+        return signUp(username, password, nickname, Member.Role.USER, oAuth2ProviderName);
     }
+
 
     public void modify(Member member, String nickname){
         member.setNickname(nickname);
     }
 
-    public Member signUpOrModify(String username, String password, String nickname, String memberCategoryName) {
+    public Member signUpOrModify(String username, String password, String nickname, String oAuth2ProviderName) {
         Optional<Member> member = memberRepository.findByUsername(username);
         if (member.isPresent()) {
             Member memberToModify = member.get();
@@ -72,7 +75,7 @@ public class MemberService {
             return memberToModify;
         }
 
-        return signUp(username, password, nickname, memberCategoryName);
+        return userSignUp(username, password, nickname, oAuth2ProviderName);
     }
 
     public Member getMemberByJwtClaims(Map<String, Object> claims) {

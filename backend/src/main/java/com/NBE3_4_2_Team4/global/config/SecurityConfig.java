@@ -4,13 +4,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig {
     @Bean
@@ -22,7 +24,9 @@ public class SecurityConfig {
                         needAuthenticated(req, "/questions/**");
                         needAuthenticated(req, "/answers/**");
                         needAuthenticated(req, "/products/**");
-                        });
+                        req.anyRequest().permitAll();
+                        })
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)); //h2-console 정상 작동용
         return http.build();
     }
 
