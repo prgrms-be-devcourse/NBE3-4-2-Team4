@@ -23,8 +23,12 @@ public class JwtManager {
     private final SecretKey key;
 
     public JwtManager(){
-        byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        try {
+            byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
+            this.key = Keys.hmacShaKeyFor(keyBytes);
+        }catch (IllegalArgumentException e){
+            throw new RuntimeException("키 값은 Base64로 인코딩 된 값이어야 합니다. yml 관련 파일을 확인해보세요.");
+        }
     }
 
     public String generateToken(Member member) {
