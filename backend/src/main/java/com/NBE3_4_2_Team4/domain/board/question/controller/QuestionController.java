@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -19,13 +20,16 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public List<Question> getQuestions() {
-        return questionService.findAll();
+    public List<QuestionDto> getQuestions() {
+        return questionService.findAll()
+                .stream()
+                .map(QuestionDto::new)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Question getQuestion(@PathVariable long id) {
-        return questionService.findById(id);
+    public QuestionDto getQuestion(@PathVariable long id) {
+        return new QuestionDto(questionService.findById(id));
     }
 
     @DeleteMapping("/{id}")
