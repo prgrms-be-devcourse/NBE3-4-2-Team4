@@ -37,4 +37,10 @@ public class AnswerService {
     public List<Answer> findAll() {
         return answerRepository.findAll();
     }
+
+    public Answer modify(Answer answer, String content) {
+        answer.setContent(content);
+
+        return answer;
+    }
 }
