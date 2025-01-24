@@ -2,18 +2,14 @@ package com.NBE3_4_2_Team4.global.security.oauth2;
 
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
 import com.NBE3_4_2_Team4.member.member.entity.Member;
-import com.NBE3_4_2_Team4.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 
 @Component
@@ -37,8 +33,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
         Member member = memberService.signUpOrModify(username, "", nickname, providerTypeCode);
 
-        return new CustomUser(
-                member
-        );
+        return new CustomUser(member);
     }
 }

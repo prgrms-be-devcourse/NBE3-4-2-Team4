@@ -51,6 +51,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         if (member != null) {
             authHandler.setLogin(member);
         }
+
         filterChain.doFilter(request, response);
     }
 }

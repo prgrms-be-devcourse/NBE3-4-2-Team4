@@ -35,7 +35,8 @@ public class JwtManager {
         return Jwts.builder()
                 .claim("id", member.getId())
                 .claim("nickname", member.getNickname())
-                .claim("role", member.getMemberCategory().getName())
+                .claim("role", member.getRole().name())
+                .claim("OAuth2Provider", member.getOAuth2Provider().name())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtValidMinute * 60 * 1000))
                 .signWith(key)
@@ -60,5 +61,6 @@ public class JwtManager {
         }catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
             throw new JwtException("Token is empty2");
         }
+        // 예외 처리는 추후 수정할 예정.
     }
 }

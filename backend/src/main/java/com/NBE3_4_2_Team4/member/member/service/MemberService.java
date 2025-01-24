@@ -5,9 +5,6 @@ import com.NBE3_4_2_Team4.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.member.member.entity.Member;
 import com.NBE3_4_2_Team4.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.member.memberCategory.entity.MemberCategory;
-import com.NBE3_4_2_Team4.member.memberCategory.repository.MemberCategoryRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,25 +12,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final MemberCategoryRepository memberCategoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtManager jwtManager;
 
-    private final CopyOnWriteArrayList<String> memberCategoryNameList = new CopyOnWriteArrayList<>();
-
-    @PostConstruct
-    public void init() {
-        List<MemberCategory> memberCategories = memberCategoryRepository.findAll();
-        memberCategories.forEach(memberCategory -> {
-            memberCategoryNameList.add(memberCategory.getName());
-        });
-    }
 
     public String login(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.email();
@@ -47,21 +33,23 @@ public class MemberService {
         return jwtManager.generateToken(member);
     }
 
-    public Member signUp(String username, String password, String nickname, String memberCategoryName){
+    public Member signUp(
+            String username,
+            String password,
+            String nickname,
+            String oAuth2ProviderName){
         memberRepository
                 .findByUsername(username)
                 .ifPresent(_ ->{
                     throw new RuntimeException();
                 });
 
-        MemberCategory memberCategory = memberCategoryRepository.findByName(memberCategoryName)
-                .orElseThrow();
-
         return memberRepository.save(Member.builder()
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName))
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
-                .memberCategory(memberCategory)
                 .build());
     }
 
@@ -70,7 +58,7 @@ public class MemberService {
                 signUpRequestDto.username(),
                 signUpRequestDto.password(),
                 signUpRequestDto.nickname(),
-                "COMMON");
+                "NONE");
     }
 
     public void modify(Member member, String nickname){
@@ -91,16 +79,13 @@ public class MemberService {
     public Member getMemberByJwtClaims(Map<String, Object> claims) {
         Long id = (Long) claims.get("id");
         String nickname = (String) claims.get("nickname");
-        String role = (String) claims.get("role");
+        String roleName = (String) claims.get("role");
+        String OAuth2ProviderName = (String) claims.get("OAuth2Provider");
 
-        if (id == null || nickname == null || role == null) {
+        if (id == null || nickname == null || roleName == null || OAuth2ProviderName == null) {
             throw new RuntimeException("Invalid claims");
         }
 
-        if (!memberCategoryNameList.contains(role)) {
-            throw new RuntimeException("Invalid role");
-        }
-
-        return new Member(id, nickname, role);
+        return new Member(id, nickname, roleName, OAuth2ProviderName);
     }
 }
