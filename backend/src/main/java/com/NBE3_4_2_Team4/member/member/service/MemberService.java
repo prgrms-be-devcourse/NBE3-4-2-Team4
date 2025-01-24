@@ -7,11 +7,15 @@ import com.NBE3_4_2_Team4.member.member.entity.Member;
 import com.NBE3_4_2_Team4.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.member.memberCategory.entity.MemberCategory;
 import com.NBE3_4_2_Team4.member.memberCategory.repository.MemberCategoryRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,16 @@ public class MemberService {
     private final MemberCategoryRepository memberCategoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtManager jwtManager;
+
+    private final CopyOnWriteArrayList<String> memberCategoryNameList = new CopyOnWriteArrayList<>();
+
+    @PostConstruct
+    public void init() {
+        List<MemberCategory> memberCategories = memberCategoryRepository.findAll();
+        memberCategories.forEach(memberCategory -> {
+            memberCategoryNameList.add(memberCategory.getName());
+        });
+    }
 
     public String login(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.email();
@@ -72,5 +86,21 @@ public class MemberService {
         }
 
         return signUp(username, password, nickname, memberCategoryName);
+    }
+
+    public Member getMemberByJwtClaims(Map<String, Object> claims) {
+        Long id = (Long) claims.get("id");
+        String nickname = (String) claims.get("nickname");
+        String role = (String) claims.get("role");
+
+        if (id == null || nickname == null || role == null) {
+            throw new RuntimeException("Invalid claims");
+        }
+
+        if (!memberCategoryNameList.contains(role)) {
+            throw new RuntimeException("Invalid role");
+        }
+
+        return new Member(id, nickname, role);
     }
 }

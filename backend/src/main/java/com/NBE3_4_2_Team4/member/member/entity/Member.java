@@ -41,6 +41,12 @@ public class Member {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    public Member(Long id, String nickname, String role){
+        this.id = id;
+        this.nickname = nickname;
+        this.memberCategory = new MemberCategory(role);
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
                 new SimpleGrantedAuthority(memberCategory.getName()));
