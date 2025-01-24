@@ -30,4 +30,8 @@ public class QuestionService {
     public Question findById(long id) {
         return questionRepository.findById(id).orElseThrow();
     }
+
+    public void delete(long id) {
+        questionRepository.deleteById(id);
+    }
 }

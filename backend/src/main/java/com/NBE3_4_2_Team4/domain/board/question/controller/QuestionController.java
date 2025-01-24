@@ -2,11 +2,9 @@ package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +22,14 @@ public class QuestionController {
     @GetMapping("/{id}")
     public Question getQuestion(@PathVariable long id) {
         return questionService.findById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public RsData<Void> delete(@PathVariable long id) {
+        questionService.delete(id);
+        return new RsData<>(
+                "200-1",
+                "게시글 삭제가 완료되었습니다."
+        );
     }
 }
