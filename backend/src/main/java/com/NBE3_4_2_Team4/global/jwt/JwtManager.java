@@ -15,10 +15,10 @@ import java.util.Map;
 @Component
 public class JwtManager {
     @Value("${jwt.secret.key : key}")
-    private static String jwtSecretKey;
+    private String jwtSecretKey;
 
     @Value("${jwt.secret.valid.minute : 30}")
-    private static long jwtValidMinute;
+    private long jwtValidMinute;
 
     private final SecretKey key;
 
