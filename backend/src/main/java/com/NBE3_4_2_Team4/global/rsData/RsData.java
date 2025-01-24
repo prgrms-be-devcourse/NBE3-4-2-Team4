@@ -1,4 +1,5 @@
 package com.NBE3_4_2_Team4.global.rsData;
+
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
