@@ -20,11 +20,11 @@ public class BaseTime extends BaseEntity {
     @CreatedDate
     @Setter(AccessLevel.PRIVATE)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Setter(AccessLevel.PRIVATE)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private LocalDateTime modifyDate;
+    private LocalDateTime modifiedAt;
 
 }
