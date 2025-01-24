@@ -20,7 +20,7 @@ public class AllAnswerController {
     private final AnswerService answerService;
 
     @Operation(summary = "Get All Answers", description = "모든 답변을 가져옵니다.")
-    @PostMapping
+    @GetMapping
     @Transactional(readOnly = true)
     public List<AnswerDto> items() {
         List<Answer> answers = answerService.findAll();
