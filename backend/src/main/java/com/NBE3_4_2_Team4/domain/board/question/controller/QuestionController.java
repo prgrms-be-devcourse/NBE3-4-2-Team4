@@ -48,12 +48,21 @@ public class QuestionController {
             String content
     ) {}
 
+    record QuestionWriteResBody(
+            QuestionDto item,
+            long totalCount
+    ) {}
+
     @PostMapping
-    public RsData<Void> write(@RequestBody @Valid QuestionReqBody reqBody) {
+    public RsData<QuestionWriteResBody> write(@RequestBody @Valid QuestionReqBody reqBody) {
         Question q = questionService.write(reqBody.title, reqBody.content);
         return new RsData<>(
                 "200-1",
-                "%d번 게시글 생성이 완료되었습니다.".formatted(q.getId())
+                "%d번 게시글 생성이 완료되었습니다.".formatted(q.getId()),
+                new QuestionWriteResBody(
+                        new QuestionDto(q),
+                        questionService.count()
+                )
         );
     }
 
