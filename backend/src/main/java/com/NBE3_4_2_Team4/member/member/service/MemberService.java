@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.member.member.service;
 
-import com.NBE3_4_2_Team4.global.jwt.JwtManager;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.member.member.entity.Member;

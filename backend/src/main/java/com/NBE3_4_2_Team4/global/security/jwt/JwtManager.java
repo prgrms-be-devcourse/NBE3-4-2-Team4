@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.global.jwt;
+package com.NBE3_4_2_Team4.global.security.jwt;
 
 import com.NBE3_4_2_Team4.member.member.entity.Member;
 import io.jsonwebtoken.*;
