@@ -12,13 +12,13 @@ import java.util.Optional;
 public class HttpManager {
 
     public void setCookie(
-            HttpServletResponse resp, String name, String value) {
+            HttpServletResponse resp, String name, String value, int minute) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setDomain("localhost");
 //        cookie.setSecure(true);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(3600); // 쿠키 만료 시간 (초 단위)
+        cookie.setMaxAge(minute * 60); // 쿠키 만료 시간 (초 단위)
         resp.addCookie(cookie); // 응답에 쿠키 추가
     }
 
