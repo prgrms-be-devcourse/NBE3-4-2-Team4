@@ -4,9 +4,7 @@ import com.NBE3_4_2_Team4.global.jwt.JwtProvider;
 import com.NBE3_4_2_Team4.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.member.member.entity.Member;
 import com.NBE3_4_2_Team4.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.member.memberCategory.entity.MemberCategory;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
