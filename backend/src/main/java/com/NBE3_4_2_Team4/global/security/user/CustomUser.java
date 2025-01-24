@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.user;
 
+import com.NBE3_4_2_Team4.member.member.entity.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -23,6 +24,15 @@ public class CustomUser extends User implements OAuth2User {
         super(username, password, authorities);
         this.id = id;
         this.nickname = nickname;
+    }
+
+    public CustomUser(Member member){
+        this(
+                member.getId(),
+                member.getUsername(),
+                member.getPassword(),
+                member.getNickname(),
+                member.getAuthorities());
     }
 
     @Override

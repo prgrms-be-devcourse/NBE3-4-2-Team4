@@ -38,11 +38,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         Member member = memberService.signUpOrModify(username, "", nickname, providerTypeCode);
 
         return new CustomUser(
-            member.getId(),
-                member.getUsername(),
-                member.getPassword(),
-                member.getNickname(),
-                member.getAuthorities()
+                member
         );
     }
 }

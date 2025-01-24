@@ -19,11 +19,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
         return new CustomUser(
-                member.getId(),
-                member.getUsername(),
-                member.getPassword(),
-                member.getNickname(),
-                member.getAuthorities()
+               member
         );
     }
 }
