@@ -3,6 +3,8 @@ package com.NBE3_4_2_Team4.global.security.jwt;
 import com.NBE3_4_2_Team4.member.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,23 +13,22 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+@Slf4j
 @Component
 public class JwtManager {
-    @Value("${jwt.secret.key : key}")
-    private String jwtSecretKey;
-
-    @Value("${jwt.secret.valid.minute : 30}")
-    private long jwtValidMinute;
+    private final long jwtValidMinute;
 
     private final SecretKey key;
 
-    public JwtManager(){
+    public JwtManager(
+            @Value("${custom.jwt.secretKey:key}") String jwtSecretKey,
+            @Value("${jwt.secret.valid.minute:30}") long jwtValidMinute){
         try {
             byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
             this.key = Keys.hmacShaKeyFor(keyBytes);
+            this.jwtValidMinute = jwtValidMinute;
         }catch (IllegalArgumentException e){
-            throw new RuntimeException("키 값은 Base64로 인코딩 된 값이어야 합니다. yml 관련 파일을 확인해보세요.");
+            throw new RuntimeException("키 값은 Base64로 디코딩 가능한 값이어야 합니다. yml 관련 파일을 확인해보세요.");
         }
     }
 
