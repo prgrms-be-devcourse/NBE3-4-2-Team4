@@ -34,4 +34,9 @@ public class QuestionService {
     public void delete(long id) {
         questionRepository.deleteById(id);
     }
+
+    public void update(Question q, String title, String content) {
+        q.setTitle(title);
+        q.setContent(content);
+    }
 }
