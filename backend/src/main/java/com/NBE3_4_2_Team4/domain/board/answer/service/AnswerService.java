@@ -18,4 +18,8 @@ public class AnswerService {
 
         return answerRepository.save(answer);
     }
+
+    public long count() {
+        return answerRepository.count();
+    }
 }
