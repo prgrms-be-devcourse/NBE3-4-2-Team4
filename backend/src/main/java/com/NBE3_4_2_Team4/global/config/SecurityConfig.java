@@ -21,9 +21,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
                         req.requestMatchers("/admin/**").hasRole("ADMIN");
-                        needAuthenticated(req, "/questions/**");
-                        needAuthenticated(req, "/answers/**");
-                        needAuthenticated(req, "/products/**");
+                        needAuthenticated(req, "/api/questions/**");
+                        needAuthenticated(req, "/api/answers/**");
+                        needAuthenticated(req, "/api/products/**");
                         req.anyRequest().permitAll();
                         })
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)); //h2-console 정상 작동용
