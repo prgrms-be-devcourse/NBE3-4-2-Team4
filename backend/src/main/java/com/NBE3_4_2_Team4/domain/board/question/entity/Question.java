@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.entity;
 
+import com.NBE3_4_2_Team4.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,22 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
-public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.PRIVATE)
-    private Long id;
-
+public class Question extends BaseTime {
     @Column(length = 100)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime modifiedAt;
 }
