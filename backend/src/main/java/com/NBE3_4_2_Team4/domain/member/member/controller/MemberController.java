@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +35,16 @@ public class MemberController {
         String token = memberService.login(loginRequestDto);
         httpManager.setCookie(resp, "accessToken", token, 30);
         return new RsData<>("200-1", "OK", token);
+    }
+
+
+    @PostMapping("/api/products/test")
+    public ResponseEntity<Void> test(){
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/test")
+    public ResponseEntity<Void> test2(){
+        return ResponseEntity.ok().build();
     }
 }

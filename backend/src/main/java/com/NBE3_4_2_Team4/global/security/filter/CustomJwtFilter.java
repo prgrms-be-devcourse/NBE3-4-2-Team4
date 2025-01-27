@@ -3,7 +3,7 @@ package com.NBE3_4_2_Team4.global.security.filter;
 import com.NBE3_4_2_Team4.global.security.AuthHandler;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class CustomJwtFilter extends OncePerRequestFilter {
     private final JwtManager jwtManager;
     private final AuthHandler authHandler;
-    private final MemberService memberService;
+    private final JwtObjectMapper jwtObjectMapper;
 
     private String getJwtToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
@@ -36,7 +36,6 @@ public class CustomJwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-
         String jwtToken = getJwtToken(request);
 
         if (jwtToken == null) {
@@ -45,7 +44,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         }
 
         Map<String, Object> claims = jwtManager.getClaims(jwtToken);
-        Member member = memberService.getMemberByJwtClaims(claims);
+        Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
 
         if (member != null) {
             authHandler.setLogin(member);

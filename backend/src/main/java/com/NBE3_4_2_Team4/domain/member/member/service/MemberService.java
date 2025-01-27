@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -77,18 +76,5 @@ public class MemberService {
         }
 
         return userSignUp(username, password, nickname, oAuth2ProviderName);
-    }
-
-    public Member getMemberByJwtClaims(Map<String, Object> claims) {
-        Long id = (Long) claims.get("id");
-        String nickname = (String) claims.get("nickname");
-        String roleName = (String) claims.get("role");
-        String OAuth2ProviderName = (String) claims.get("OAuth2Provider");
-
-        if (id == null || nickname == null || roleName == null || OAuth2ProviderName == null) {
-            throw new RuntimeException("Invalid claims");
-        }
-
-        return new Member(id, nickname, roleName, OAuth2ProviderName);
     }
 }
