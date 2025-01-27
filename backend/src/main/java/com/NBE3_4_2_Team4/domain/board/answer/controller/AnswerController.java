@@ -7,6 +7,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,7 +44,7 @@ public class AnswerController {
 
         return new RsData(
                 "201-1",
-                "답변이 등록 되었습니다.",
+                "%d번 답변이 등록 되었습니다.".formatted(answer.getId()),
                 new AnswerDto(answer)
         );
     }
@@ -64,8 +65,27 @@ public class AnswerController {
 
         return new RsData<>(
                 "200-1",
-                "답변이 수정 되었습니다.",
+                "%d번 답변이 수정 되었습니다.".formatted(answer.getId()),
                 new AnswerDto(answer)
+        );
+    }
+
+    @Operation(summary = "Delete Answer", description = "답변을 삭제합니다.")
+    @DeleteMapping("/{id}")
+    @Transactional
+    public RsData<Empty> delete(
+            @ModelAttribute("question") Question question,
+            @PathVariable("id") long id
+    ) {
+        Answer answer = answerService.findById(id).orElseThrow(
+                () -> new NoSuchElementException("해당 답변은 존재하지 않습니다.")
+        );
+
+        answerService.delete(answer);
+
+        return new RsData<>(
+                "200-1",
+                "%d번 답변이 삭제 되었습니다.".formatted(answer.getId())
         );
     }
 }
