@@ -42,6 +42,22 @@ public class MemberControllerTest {
     }
 
     @Test
+    void loginFailureTest1() throws Exception {
+        LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+                .email("wrong@test.com")
+                .password("1234")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(loginRequestDto);
+
+        mockMvc.perform(post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
     void loginFailureTest2() throws Exception {
         LoginRequestDto loginRequestDto = LoginRequestDto.builder()
                 .email("admin@test.com")
