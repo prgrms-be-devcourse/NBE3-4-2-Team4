@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.global.config;
 
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
+import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomJwtFilter customJwtFilter;
-
+    private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,9 +36,9 @@ public class SecurityConfig {
                 .addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))//h2-console 정상 작동용
                 .oauth2Login(
-                        _             ->
+                        oauth2Login             ->
                         {
-
+                            oauth2Login.successHandler(oAuth2SuccessHandler);
                         }
                 )
         ;

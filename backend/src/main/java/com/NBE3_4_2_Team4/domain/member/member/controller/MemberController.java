@@ -6,7 +6,10 @@ import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,12 @@ public class MemberController {
                         "400-2",
                         e.getMessage()
                 ));
+    }
+
+    @GetMapping("/")
+    public String home(HttpServletRequest request){
+        String token = httpManager.getCookieValue(request, "accessToken");
+        return StringUtils.isBlank(token) ?  "not logged in" : token;
     }
 
     @PostMapping("/api/login")
