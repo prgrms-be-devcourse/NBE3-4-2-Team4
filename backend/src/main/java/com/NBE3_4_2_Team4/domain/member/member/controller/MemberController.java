@@ -37,14 +37,28 @@ public class MemberController {
         return new RsData<>("200-1", "OK", token);
     }
 
-
-    @PostMapping("/api/products/test")
-    public ResponseEntity<Void> test(){
+    @PostMapping("/api/test")
+    public ResponseEntity<Void> test1(){
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/test")
+    @PostMapping("/api/products/test")
     public ResponseEntity<Void> test2(){
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/questions/test")
+    public ResponseEntity<Void> test3(){
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/answers/test")
+    public ResponseEntity<Void> test4(){
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/admin/test")
+    public ResponseEntity<Void> test5(){
         return ResponseEntity.ok().build();
     }
 }

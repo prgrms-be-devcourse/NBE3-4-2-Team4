@@ -34,6 +34,7 @@ public class JwtManager {
     public String generateToken(Member member) {
         return Jwts.builder()
                 .claim("id", member.getId())
+                .claim("username", member.getUsername())
                 .claim("nickname", member.getNickname())
                 .claim("role", member.getRole().name())
                 .claim("OAuth2Provider", member.getOAuth2Provider().name())
@@ -49,7 +50,7 @@ public class JwtManager {
         }
         try {
             Claims claims = Jwts.parser()
-                    .decryptWith(key)
+                    .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

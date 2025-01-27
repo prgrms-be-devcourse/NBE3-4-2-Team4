@@ -18,7 +18,7 @@ public class AuthHandler {
                 userDetails.getPassword(),
                 userDetails.getAuthorities()
         );
-        authentication.setAuthenticated(true);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

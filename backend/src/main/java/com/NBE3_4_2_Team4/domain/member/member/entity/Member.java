@@ -43,8 +43,10 @@ public class Member {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Member(Long id, String nickname, String roleName, String oAuth2ProviderName){
+    public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;
+        this.username = username;
+        this.password = "";
         this.nickname = nickname;
         this.role = Role.getRoleByName(roleName);
         this.oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName);
