@@ -26,5 +26,6 @@ class MemberInitDataTest {
         Member admin = memberRepository.findByUsername("admin@test.com").orElseThrow();
         assertNotNull(admin);
         assertEquals("관리자", admin.getNickname());
+        assertEquals(Member.Role.ADMIN, admin.getRole());
     }
 }
