@@ -34,6 +34,12 @@ public class SecurityConfig {
                         })
                 .addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))//h2-console 정상 작동용
+                .oauth2Login(
+                        _             ->
+                        {
+
+                        }
+                )
         ;
         return http.build();
     }
