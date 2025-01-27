@@ -40,4 +40,20 @@ public class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    void loginFailureTest() throws Exception {
+        LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+                .email("admin@test.com")
+                .password("wrong password")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(loginRequestDto);
+
+        mockMvc.perform(post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
 }
