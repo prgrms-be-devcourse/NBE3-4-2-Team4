@@ -42,7 +42,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    void loginFailureTest() throws Exception {
+    void loginFailureTest2() throws Exception {
         LoginRequestDto loginRequestDto = LoginRequestDto.builder()
                 .email("admin@test.com")
                 .password("wrong password")
