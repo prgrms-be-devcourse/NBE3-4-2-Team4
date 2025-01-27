@@ -26,6 +26,8 @@ public class CustomJwtFilterTest {
 
     private Member member;
 
+    private Member admin;
+
     @BeforeEach
     void setUp() {
         member = Member.builder()
@@ -33,6 +35,14 @@ public class CustomJwtFilterTest {
                 .username("testUser")
                 .nickname("nickname")
                 .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .build();
+
+        admin = Member.builder()
+                .id(2L)
+                .username("testAdmin")
+                .nickname("nickname")
+                .role(Member.Role.ADMIN)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .build();
     }
@@ -83,5 +93,14 @@ public class CustomJwtFilterTest {
         mockMvc.perform(post("/api/admin/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testCustomJwtFilter7() throws Exception {
+        String jwtToken = jwtManager.generateToken(admin);
+
+        mockMvc.perform(post("/api/admin/test")
+                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                .andExpect(status().isOk());
     }
 }
