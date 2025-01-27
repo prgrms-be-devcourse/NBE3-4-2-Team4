@@ -21,7 +21,7 @@ public class MemberController {
             @RequestBody LoginRequestDto loginRequestDto,
             HttpServletResponse resp) {
         String token = memberService.login(loginRequestDto);
-        httpManager.setCookie(resp, "auth", token, 30);
+        httpManager.setCookie(resp, "accessToken", token, 30);
         return new RsData<>("200-1", "OK", token);
     }
 }
