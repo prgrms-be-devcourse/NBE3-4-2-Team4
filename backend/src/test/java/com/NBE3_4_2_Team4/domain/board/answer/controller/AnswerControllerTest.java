@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,8 +51,6 @@ public class AnswerControllerTest {
 
         Answer lastAnswer = answerService.findLatest().get();
 
-        System.out.println(lastAnswer);
-
         resultActions
                 .andExpect(handler().handlerType(AnswerController.class))
                 .andExpect(handler().methodName("write"))
@@ -63,6 +60,7 @@ public class AnswerControllerTest {
                 .andExpect(jsonPath("$.data.id").value(lastAnswer.getId()))
                 .andExpect(jsonPath("$.data.createdAt").exists())
                 .andExpect(jsonPath("$.data.modifiedAt").exists())
+                .andExpect(jsonPath("$.data.questionId").value(lastAnswer.getQuestion().getId()))
                 .andExpect(jsonPath("$.data.content").value(lastAnswer.getContent()));
     }
 
@@ -87,6 +85,7 @@ public class AnswerControllerTest {
                     .andExpect(jsonPath("$[%d].id".formatted(i)).value(answer.getId()))
                     .andExpect(jsonPath("$[%d].createdAt".formatted(i)).exists())
                     .andExpect(jsonPath("$[%d].modifiedAt".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].questionId".formatted(i)).value(answer.getQuestion().getId()))
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(answer.getContent()));
         }
     }
@@ -107,6 +106,40 @@ public class AnswerControllerTest {
                 .andExpect(jsonPath("$.id").value(answer.getId()))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.modifiedAt").exists())
+                .andExpect(jsonPath("$.questionId").value(answer.getQuestion().getId()))
                 .andExpect(jsonPath("$.content").value(answer.getContent()));
+    }
+
+    @Test
+    @DisplayName("답변 수정")
+    @WithUserDetails("admin@test.com")
+    void t4() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(put("/api/questions/1/answers/1")
+                        .content("""
+                                {
+                                    "content": "답변 내용 new"
+                                }
+                                """.stripIndent())
+                        .contentType(
+                                new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                        )
+                )
+                .andDo(print());
+
+
+        Answer answer = answerService.findById(1).get();
+
+        resultActions
+                .andExpect(handler().handlerType(AnswerController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("답변이 수정 되었습니다."))
+                .andExpect(jsonPath("$.data.id").value(answer.getId()))
+                .andExpect(jsonPath("$.data.createdAt").exists())
+                .andExpect(jsonPath("$.data.modifiedAt").exists())
+                .andExpect(jsonPath("$.data.questionId").value(answer.getQuestion().getId()))
+                .andExpect(jsonPath("$.data.content").value(answer.getContent()));
     }
 }

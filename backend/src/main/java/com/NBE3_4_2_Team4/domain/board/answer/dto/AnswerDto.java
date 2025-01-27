@@ -18,12 +18,16 @@ public class AnswerDto {
     private LocalDateTime modifiedAt;
 
     @NonNull
+    private final long questionId;
+
+    @NonNull
     private String content;
 
     public AnswerDto(Answer answer) {
         this.id = answer.getId();
         this.createdAt = answer.getCreatedAt();
         this.modifiedAt = answer.getModifiedAt();
+        this.questionId = answer.getQuestion().getId();
         this.content = answer.getContent();
     }
 }
