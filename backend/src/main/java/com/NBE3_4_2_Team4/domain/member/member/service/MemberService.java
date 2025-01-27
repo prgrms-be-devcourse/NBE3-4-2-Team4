@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
+import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -28,7 +29,7 @@ public class MemberService {
 
         Member member = memberRepository.findByUsername(email).orElseThrow();
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new RuntimeException();
+            throw new InValidPasswordException();
         }
 
         return jwtManager.generateToken(member);
