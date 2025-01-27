@@ -11,8 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+@Order(2)
 @Configuration
 @RequiredArgsConstructor
 @DependsOn("questionInitData")

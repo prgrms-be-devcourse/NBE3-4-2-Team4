@@ -127,7 +127,6 @@ public class AnswerControllerTest {
                 )
                 .andDo(print());
 
-
         Answer answer = answerService.findById(1).get();
 
         resultActions
@@ -141,5 +140,23 @@ public class AnswerControllerTest {
                 .andExpect(jsonPath("$.data.modifiedAt").exists())
                 .andExpect(jsonPath("$.data.questionId").value(answer.getQuestion().getId()))
                 .andExpect(jsonPath("$.data.content").value(answer.getContent()));
+    }
+
+    @Test
+    @DisplayName("답변 삭제")
+    @WithUserDetails("admin@test.com")
+    void t5() throws Exception {
+        Answer answer = answerService.findById(1).get();
+
+        ResultActions resultActions = mvc
+                .perform(delete("/api/questions/1/answers/1"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(AnswerController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 답변이 삭제 되었습니다.".formatted(answer.getId())));
     }
 }
