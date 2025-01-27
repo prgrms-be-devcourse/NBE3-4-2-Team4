@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
-import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -16,11 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
-class MemberServiceTest {
-
-    @Autowired
-    private MemberService memberService;
-
+class MemberInitDataTest {
     @Autowired
     private MemberRepository memberRepository;
 
