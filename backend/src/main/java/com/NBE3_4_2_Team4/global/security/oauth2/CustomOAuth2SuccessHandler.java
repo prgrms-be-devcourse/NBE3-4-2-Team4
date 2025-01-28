@@ -21,7 +21,6 @@ import java.security.Principal;
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-    private final MemberRepository memberRepository;
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
 
@@ -29,7 +28,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication auth) {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
-        Member member = memberRepository.findById(customUser.getId()).orElseThrow();
+        Member member = customUser.getMember();
         String token = jwtManager.generateToken(member);
         httpManager.setJwtCookie(resp, token, 30);
         String redirectUrl = "localhost:8080";
