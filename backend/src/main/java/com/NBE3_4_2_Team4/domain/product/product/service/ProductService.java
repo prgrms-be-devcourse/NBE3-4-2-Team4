@@ -4,7 +4,11 @@ import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,16 +20,32 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ProductResponseDto.GetItems> getProducts() {
 
         List<Product> products = productRepository.findAll();
 
         return products.stream()
                 .map(product -> new ProductResponseDto.GetItems(
-                        product, makeFullCategory(product), product.getSaleState().getName()))
+                        product,
+                        makeFullCategory(product),
+                        product.getSaleState().getName()))
                 .toList();
 
+    }
+
+    @Transactional(readOnly = true)
+    public PageDto<ProductResponseDto.GetItems> getProducts(int page, int pageSize) {
+
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        Page<Product> products = productRepository.findAll(pageRequest);
+
+        return new PageDto<>(products.map(product -> new ProductResponseDto.GetItems(
+                product,
+                makeFullCategory(product),
+                product.getSaleState().getName()
+        )));
     }
 
     private String makeFullCategory(Product product) {
