@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -118,5 +119,25 @@ public class CustomJwtFilterTest {
                         .with(csrf())
                 )
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testCustomJwtFilter8() throws Exception {
+        String jwtToken = jwtManager.generateToken(member);
+
+        mockMvc.perform(post("/api/logout")
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    @Test
+    public void testCustomJwtFilter9() throws Exception {
+        mockMvc.perform(post("/api/logout")
+                        .with(csrf())
+                )
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -46,6 +46,7 @@ public class MemberController {
         return new RsData<>("200-1", "OK", token);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/api/logout")
     public RsData<Empty> logout(HttpServletResponse resp) {
         httpManager.deleteCookie(resp, "accessToken");
