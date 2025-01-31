@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthHandler {
+public class AuthManager {
     public void setLogin(Member member){
         UserDetails userDetails = new CustomUser(member);
 
@@ -20,5 +20,14 @@ public class AuthHandler {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public static Member getMemberFromContext(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null){
+            return ((CustomUser) authentication.getPrincipal()).getMember();
+        }else {
+            return null;
+        }
     }
 }

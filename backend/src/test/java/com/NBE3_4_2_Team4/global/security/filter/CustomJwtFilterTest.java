@@ -1,9 +1,11 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,6 +53,7 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 안 걸려있는 url 에 대한 post 테스트")
     public void testCustomJwtFilter1() throws Exception {
         mockMvc.perform(post("/api/test")
                         .with(csrf())
@@ -59,6 +62,7 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 걸려있는 url - products/test 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter2() throws Exception {
         mockMvc.perform(post("/api/products/test")
                         .with(csrf())
@@ -67,6 +71,7 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 걸려있는 url - products/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter3() throws Exception {
         String jwtToken = jwtManager.generateToken(member);
 
@@ -78,6 +83,7 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 걸려있는 url - questions/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter4() throws Exception {
         String jwtToken = jwtManager.generateToken(member);
 
@@ -89,6 +95,7 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 걸려있는 url - answers/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter5() throws Exception {
         String jwtToken = jwtManager.generateToken(member);
 
@@ -100,7 +107,18 @@ public class CustomJwtFilterTest {
     }
 
     @Test
+    @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter6() throws Exception {
+
+        mockMvc.perform(post("/api/admin/test")
+                        .with(csrf())
+                )
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 일반 유저의 JWT 있는 경우 (인증 성공, 인가 실패)")
+    public void testCustomJwtFilter7() throws Exception {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/admin/test")
@@ -111,7 +129,8 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    public void testCustomJwtFilter7() throws Exception {
+    @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
+    public void testCustomJwtFilter8() throws Exception {
         String jwtToken = jwtManager.generateToken(admin);
 
         mockMvc.perform(post("/api/admin/test")
@@ -122,7 +141,8 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    public void testCustomJwtFilter8() throws Exception {
+    @DisplayName("로그아웃 성공 테스트 - 헤더에 사용자의 JWT 있는 경우")
+    public void testCustomJwtFilter9() throws Exception {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/logout")
@@ -134,7 +154,8 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    public void testCustomJwtFilter9() throws Exception {
+    @DisplayName("로그아웃 실패 테스트 - 헤더에 사용자의 JWT 없는 경우 (로그인 되어 있지 않은 경우)")
+    public void testCustomJwtFilter10() throws Exception {
         mockMvc.perform(post("/api/logout")
                         .with(csrf())
                 )
