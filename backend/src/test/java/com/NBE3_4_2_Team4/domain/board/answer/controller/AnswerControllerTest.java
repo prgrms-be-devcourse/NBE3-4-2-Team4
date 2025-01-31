@@ -119,7 +119,7 @@ public class AnswerControllerTest {
     @WithUserDetails("admin@test.com")
     void t4() throws Exception {
         ResultActions resultActions = mvc
-                .perform(put("/api/questions/1/answers/1")
+                .perform(patch("/api/questions/1/answers/1")
                         .content("""
                                 {
                                     "content": "답변 내용 new"

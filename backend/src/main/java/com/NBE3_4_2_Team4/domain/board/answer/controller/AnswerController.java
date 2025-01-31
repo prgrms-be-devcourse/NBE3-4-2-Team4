@@ -48,7 +48,7 @@ public class AnswerController {
     }
 
     @Operation(summary = "Update Answer", description = "답변를 수정합니다.")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Transactional
     public RsData<AnswerDto> modify(
             @PathVariable long questionId,
