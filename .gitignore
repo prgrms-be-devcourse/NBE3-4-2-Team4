@@ -41,3 +41,4 @@ db_dev.mv.db
 db_dev.trace.db
 api-docs.json
 src/main/resources/application-secret.yml
+backend/src/main/resources/application-secret.yml
