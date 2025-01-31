@@ -7,6 +7,7 @@ import {
   Copyright,
   GraduationCap,
   MessageCircleQuestion,
+  MonitorCog,
   ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,8 +44,13 @@ export function ClientLayout({
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
-      <footer className="p-2 flex justify-center items-center text-gray-400">
+      <footer className="p-2 flex justify-center items-center">
         <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
+        <Button variant="link" asChild>
+          <Link href="/adm">
+            <MonitorCog /> 관리자 홈
+          </Link>
+        </Button>
       </footer>
     </NextThemesProvider>
   );
