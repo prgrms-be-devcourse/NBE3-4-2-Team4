@@ -14,6 +14,8 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+    property-naming-strategy:   # JSON 필드 이름 네이밍 케이스 변경 (카멜 -> 스네이크)
+      SNAKE_CASE
   datasource:
     url: jdbc:h2:./db_dev;MODE=MySQL
     username: sa

@@ -22,6 +22,11 @@ public class HttpManager {
         resp.addCookie(cookie); // 응답에 쿠키 추가
     }
 
+    public void setJwtCookie(
+            HttpServletResponse resp, String jwtToken, int minute){
+        this.setCookie(resp, "accessToken", jwtToken, minute);
+    }
+
     public String getCookieValue(
             HttpServletRequest req, String name) {
         return Optional
@@ -43,5 +48,10 @@ public class HttpManager {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(0); // 쿠키 만료 시간 (초 단위)
         resp.addCookie(cookie); // 응답에 쿠키 추가
+    }
+
+    public void expireJwtCookie(
+            HttpServletResponse resp){
+        deleteCookie(resp, "accessToken");
     }
 }

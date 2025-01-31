@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +24,8 @@ public class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void loginSuccessTest() throws Exception {
@@ -35,8 +37,9 @@ public class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(loginRequestDto);
 
         mockMvc.perform(post("/api/login")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .with(csrf())
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -51,6 +54,7 @@ public class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(loginRequestDto);
 
         mockMvc.perform(post("/api/login")
+                        .with(csrf())
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -67,6 +71,7 @@ public class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(loginRequestDto);
 
         mockMvc.perform(post("/api/login")
+                        .with(csrf())
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
