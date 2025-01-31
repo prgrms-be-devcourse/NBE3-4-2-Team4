@@ -21,4 +21,6 @@ public class Question extends BaseTime {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private Long categoryId;
 }
