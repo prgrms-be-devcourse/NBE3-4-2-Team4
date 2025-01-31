@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.global.config;
 import com.NBE3_4_2_Team4.global.security.accessDeniedHandler.CustomAccessDeniedHandler;
 import com.NBE3_4_2_Team4.global.security.authenticationEntryPoint.CustomAuthenticationEntryPoint;
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
+import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2RequestResolver;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomJwtFilter customJwtFilter;
+    private final CustomOAuth2RequestResolver oAuth2RequestResolver;
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -51,6 +53,8 @@ public class SecurityConfig {
                         oauth2Login             ->
                         {
                             oauth2Login.successHandler(oAuth2SuccessHandler);
+                            oauth2Login.authorizationEndpoint(authorizationEndpointConfig ->
+                                    authorizationEndpointConfig.authorizationRequestResolver(oAuth2RequestResolver));
                         }
                 )
         ;
