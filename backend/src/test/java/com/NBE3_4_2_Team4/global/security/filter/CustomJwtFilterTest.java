@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,14 +51,18 @@ public class CustomJwtFilterTest {
 
     @Test
     public void testCustomJwtFilter1() throws Exception {
-        mockMvc.perform(post("/api/test"))
+        mockMvc.perform(post("/api/test")
+                        .with(csrf())
+                )
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testCustomJwtFilter2() throws Exception {
-        mockMvc.perform(post("/api/products/test"))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/products/test")
+                        .with(csrf())
+                )
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -64,7 +70,9 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/products/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
                 .andExpect(status().isOk());
     }
 
@@ -73,7 +81,9 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/questions/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
                 .andExpect(status().isOk());
     }
 
@@ -82,7 +92,9 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/answers/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
                 .andExpect(status().isOk());
     }
 
@@ -91,7 +103,9 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateToken(member);
 
         mockMvc.perform(post("/api/admin/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
                 .andExpect(status().isForbidden());
     }
 
@@ -100,7 +114,9 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateToken(admin);
 
         mockMvc.perform(post("/api/admin/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken)))
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .with(csrf())
+                )
                 .andExpect(status().isOk());
     }
 }
