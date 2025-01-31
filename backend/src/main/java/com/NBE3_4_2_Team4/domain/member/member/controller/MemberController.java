@@ -46,6 +46,12 @@ public class MemberController {
         return new RsData<>("200-1", "OK", token);
     }
 
+    @PostMapping("/api/logout")
+    public RsData<Empty> logout(HttpServletResponse resp) {
+        httpManager.deleteCookie(resp, "accessToken");
+        return new RsData<>("204-1", "No Content");
+    }
+
     @GetMapping("/api/test")
     public ResponseEntity<Void> test12(){
         return ResponseEntity.ok().build();

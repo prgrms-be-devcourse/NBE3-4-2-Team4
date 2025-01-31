@@ -37,6 +37,7 @@ public class SecurityConfig {
                         needAuthenticated(req, "/api/questions/**");
                         needAuthenticated(req, "/api/answers/**");
                         needAuthenticated(req, "/api/products/**");
+                        req.requestMatchers(HttpMethod.POST, "/api/logout").authenticated();
                         req.anyRequest().permitAll();
                         })
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
