@@ -62,7 +62,6 @@ public class SecurityConfig {
     }
 
     private void needAuthenticated(AuthorizeHttpRequestsConfigurer<?>.AuthorizationManagerRequestMatcherRegistry req, String pattern){
-        req.requestMatchers(HttpMethod.GET,  pattern).authenticated();
         req.requestMatchers(HttpMethod.POST,  pattern).authenticated();
         req.requestMatchers(HttpMethod.PUT,  pattern).authenticated();
         req.requestMatchers(HttpMethod.PATCH,  pattern).authenticated();
