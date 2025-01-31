@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ClientLayout from "./ClientLayout";
+import { ClientLayout } from "./ClientLayout";
 import localFont from "next/font/local";
 
 const pretendard = localFont({
@@ -31,9 +31,7 @@ export default function RootLayout({
           className="flex flex-col min-h-[100dvh] bg-background"
           vaul-drawer-wrapper="true"
         >
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <ClientLayout>{children}</ClientLayout>
         </div>
       </body>
     </html>

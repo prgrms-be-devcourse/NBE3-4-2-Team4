@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/login": {
         parameters: {
             query?: never;
@@ -132,6 +148,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 상품 조회 (페이징)
+         * @description 전체 상품을 페이징 처리하여 조회합니다.
+         */
+        get: operations["getAllProductsWithPaging"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 상품 조회
+         * @description 전체 상품을 조회합니다.
+         */
+        get: operations["getAllProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["home"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -165,6 +237,12 @@ export interface components {
             msg: string;
             data: components["schemas"]["QuestionWriteResBody"];
         };
+        Empty: Record<string, never>;
+        RsDataEmpty: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["Empty"];
+        };
         LoginRequestDto: {
             email: string;
             password: string;
@@ -173,6 +251,39 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
+        };
+        GetItems: {
+            /** Format: int64 */
+            productId?: number;
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
+        PageDtoGetItems: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["GetItems"][];
+        };
+        RsDataPageDtoGetItems: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["PageDtoGetItems"];
+        };
+        RsDataListGetItems: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetItems"][];
         };
     };
     responses: never;
@@ -351,6 +462,26 @@ export interface operations {
             };
         };
     };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -408,6 +539,69 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getAllProductsWithPaging: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItems"];
+                };
+            };
+        };
+    };
+    getAllProducts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItems"];
+                };
+            };
+        };
+    };
+    home: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": string;
+                };
             };
         };
     };
