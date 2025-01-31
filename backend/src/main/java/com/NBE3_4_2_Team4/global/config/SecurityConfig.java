@@ -1,11 +1,13 @@
 package com.NBE3_4_2_Team4.global.config;
 
+import com.NBE3_4_2_Team4.global.security.authenticationEntryPoint.CustomAuthenticationEntryPoint;
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final CustomJwtFilter customJwtFilter;
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,6 +38,9 @@ public class SecurityConfig {
                         })
                 .addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))//h2-console 정상 작동용
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(authenticationEntryPoint);
+                })
                 .oauth2Login(
                         oauth2Login             ->
                         {
@@ -46,6 +52,7 @@ public class SecurityConfig {
     }
 
     private void needAuthenticated(AuthorizeHttpRequestsConfigurer<?>.AuthorizationManagerRequestMatcherRegistry req, String pattern){
+        req.requestMatchers(HttpMethod.GET,  pattern).authenticated();
         req.requestMatchers(HttpMethod.POST,  pattern).authenticated();
         req.requestMatchers(HttpMethod.PUT,  pattern).authenticated();
         req.requestMatchers(HttpMethod.PATCH,  pattern).authenticated();
