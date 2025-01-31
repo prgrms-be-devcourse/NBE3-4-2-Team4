@@ -49,4 +49,9 @@ public class HttpManager {
         cookie.setMaxAge(0); // 쿠키 만료 시간 (초 단위)
         resp.addCookie(cookie); // 응답에 쿠키 추가
     }
+
+    public void expireJwtCookie(
+            HttpServletResponse resp){
+        deleteCookie(resp, "accessToken");
+    }
 }
