@@ -28,7 +28,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         Member member = customUser.getMember();
         String token = jwtManager.generateToken(member);
         httpManager.setJwtCookie(resp, token, 30);
-        String targetUrl = "http://localhost:8080";
+        String targetUrl = req.getParameter("state");
         setDefaultTargetUrl(targetUrl);
         super.onAuthenticationSuccess(req, resp, auth);
     }
