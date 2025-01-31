@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,8 @@ public class QuestionControllerTest {
     @Test
     @DisplayName("게시글 작성")
     void t3() {
-        Question question = questionService.write("title4", "content4");
+        QuestionCategory category = questionService.createCategory("category1");
+        Question question = questionService.write("title4", "content4", category.getId());
 
         assertThat(question.getId()).isEqualTo(4);
         assertThat(question.getTitle()).isEqualTo("title4");

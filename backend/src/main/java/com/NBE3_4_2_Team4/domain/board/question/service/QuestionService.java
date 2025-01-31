@@ -25,10 +25,11 @@ public class QuestionService {
         return questionRepository.count();
     }
 
-    public Question write(String title, String content) {
+    public Question write(String title, String content, Long categoryId) {
         return questionRepository.save(Question.builder()
                 .title(title)
                 .content(content)
+                .categoryId(categoryId)
                 .build());
     }
 

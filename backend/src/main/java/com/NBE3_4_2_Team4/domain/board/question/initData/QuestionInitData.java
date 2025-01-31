@@ -26,8 +26,11 @@ public class QuestionInitData {
     public void initData() {
         if (questionService.count() > 0) return;
 
-        questionService.write("title1", "content1");
-        questionService.write("title2", "content2");
-        questionService.write("title3", "content3");
+        questionService.createCategory("category1");
+        questionService.createCategory("category2");
+
+        questionService.write("title1", "content1", 1L);
+        questionService.write("title2", "content2", 1L);
+        questionService.write("title3", "content3", 2L);
     }
 }

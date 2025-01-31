@@ -45,7 +45,9 @@ public class QuestionController {
             @NotNull @Length(min = 2)
             String title,
             @NotNull @Length(min = 2)
-            String content
+            String content,
+            @NotNull
+            Long categoryId
     ) {}
 
     record QuestionWriteResBody(
@@ -55,7 +57,7 @@ public class QuestionController {
 
     @PostMapping
     public RsData<QuestionWriteResBody> write(@RequestBody @Valid QuestionReqBody reqBody) {
-        Question q = questionService.write(reqBody.title, reqBody.content);
+        Question q = questionService.write(reqBody.title, reqBody.content, reqBody.categoryId);
         return new RsData<>(
                 "200-1",
                 "%d번 게시글 생성이 완료되었습니다.".formatted(q.getId()),
