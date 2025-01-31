@@ -20,8 +20,9 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public List<QuestionDto> getQuestions() {
-        return questionService.findAll()
+    public List<QuestionDto> getQuestions(@RequestParam(defaultValue = "1") int page,
+                                          @RequestParam(defaultValue = "10") int pageSize) {
+        return questionService.findByListed(page, pageSize)
                 .stream()
                 .map(QuestionDto::new)
                 .toList();

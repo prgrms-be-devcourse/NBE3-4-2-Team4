@@ -29,8 +29,8 @@ public class QuestionInitData {
         questionService.createCategory("category1");
         questionService.createCategory("category2");
 
-        questionService.write("title1", "content1", 1L);
-        questionService.write("title2", "content2", 1L);
-        questionService.write("title3", "content3", 2L);
+        for (int i = 1; i <= 20; i++) {
+            questionService.write("title" + i, "content" + i, (long)i % 2 + 1);
+        }
     }
 }
