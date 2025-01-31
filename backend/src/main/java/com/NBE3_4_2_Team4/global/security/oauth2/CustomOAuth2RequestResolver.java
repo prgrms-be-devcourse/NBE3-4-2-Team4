@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 @Component
 public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestResolver {
     private final DefaultOAuth2AuthorizationRequestResolver defaultResolver;
@@ -34,10 +36,10 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
             return null;
         }
 
-        String redirectUrl = request.getParameter("redirectUrl");
+        String redirectUrl = Objects.requireNonNullElse(request.getParameter("redirectUrl"), "http://localhost:3000/");
 
         Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
-        if (redirectUrl != null && !redirectUrl.isEmpty()) {
+        if (!redirectUrl.isEmpty()) {
             additionalParameters.put("state", redirectUrl);
         }
 
