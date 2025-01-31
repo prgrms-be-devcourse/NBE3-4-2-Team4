@@ -24,7 +24,7 @@ public class AuthManager {
 
     public static Member getMemberFromContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null){
+        if(authentication != null && authentication.getPrincipal() instanceof CustomUser){
             return ((CustomUser) authentication.getPrincipal()).getMember();
         }else {
             return null;
