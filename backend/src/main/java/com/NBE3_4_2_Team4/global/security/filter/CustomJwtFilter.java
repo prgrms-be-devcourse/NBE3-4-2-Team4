@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
-import com.NBE3_4_2_Team4.global.security.AuthHandler;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtObjectMapper;
@@ -10,17 +10,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomJwtFilter extends OncePerRequestFilter {
     private final JwtManager jwtManager;
-    private final AuthHandler authHandler;
+    private final AuthManager authManager;
     private final JwtObjectMapper jwtObjectMapper;
 
     private String getJwtToken(HttpServletRequest request) {
@@ -47,7 +49,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
 
         if (member != null) {
-            authHandler.setLogin(member);
+            authManager.setLogin(member);
         }
 
         filterChain.doFilter(request, response);

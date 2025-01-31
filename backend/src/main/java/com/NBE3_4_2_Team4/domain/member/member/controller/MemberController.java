@@ -6,6 +6,8 @@ import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,13 +30,26 @@ public class MemberController {
                 ));
     }
 
+    @GetMapping("/")
+    public String home(HttpServletRequest request){
+        String token = httpManager.getCookieValue(request, "accessToken");
+        return StringUtils.isBlank(token) ?  "not logged in" : token;
+    }
+
     @PostMapping("/api/login")
     public RsData<String> login(
             @RequestBody LoginRequestDto loginRequestDto,
             HttpServletResponse resp) {
         String token = memberService.login(loginRequestDto);
-        httpManager.setCookie(resp, "accessToken", token, 30);
+        httpManager.setJwtCookie(resp, token, 30);
         return new RsData<>("200-1", "OK", token);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/api/logout")
+    public RsData<Empty> logout(HttpServletResponse resp) {
+        httpManager.expireJwtCookie(resp);
+        return new RsData<>("204-1", "No Content");
     }
 
     @PostMapping("/api/test")

@@ -11,28 +11,11 @@ import java.util.Map;
 
 @Getter
 public class CustomUser extends User implements OAuth2User {
-    private final long id;
-
-    private final String nickname;
-
-    public CustomUser(
-            long id,
-            String username,
-            String password,
-            String nickname,
-            Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
-        this.id = id;
-        this.nickname = nickname;
-    }
+    private final Member member;
 
     public CustomUser(Member member){
-        this(
-                member.getId(),
-                member.getUsername(),
-                member.getPassword(),
-                member.getNickname(),
-                member.getAuthorities());
+        super(member.getUsername(), member.getPassword(), member.getAuthorities());
+        this.member = member;
     }
 
     @Override
