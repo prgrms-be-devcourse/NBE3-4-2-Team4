@@ -51,6 +51,7 @@ public class MemberService {
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
+                .point(100L)
                 .build());
     }
 

@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.point.controller;
 import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryResponse;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +21,10 @@ public class PointController {
     private final static int POINT_HISTORY_SIZE = 10;
 
     @GetMapping
-    public RsData<Page<PointHistoryResponse>> getPointHistories(@RequestParam(defaultValue = "0") int page) {
+    public RsData<PageDto<PointHistoryResponse>> getPointHistories(@RequestParam(defaultValue = "0") int page) {
         long accountId = 1;
 
-        Page<PointHistoryResponse> points = pointService.getHistoryPage(accountId, page, POINT_HISTORY_SIZE);
+        PageDto<PointHistoryResponse> points = pointService.getHistoryPage(accountId, page, POINT_HISTORY_SIZE);
 
         return new RsData<>(
                 "200-1",

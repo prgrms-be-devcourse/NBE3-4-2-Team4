@@ -1,9 +1,9 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
 
-import com.NBE3_4_2_Team4.domain.point.entity.Account;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.repository.AccountRepository;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,32 +23,49 @@ public class PointServiceTest {
     private PointHistoryRepository pointHistoryRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private MemberRepository memberRepository;
 
-    private Account account1;
-    private Account account2;
-    private Long account1Id;
-    private Long account2Id;
+    private Member member1;
+    private Member member2;
+    private Long member1Id;
+    private Long member2Id;
 
     @BeforeEach
     void setup() {
-        account1 = Account.builder().balance(300L).build();
-        account2 = Account.builder().balance(0L).build();
+        member1 = Member.builder()
+                .point(300L)
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .username("member1")
+                .password("1234")
+                .build();
 
-        accountRepository.save(account1);
-        accountRepository.save(account2);
-        account1Id = account1.getId();
-        account2Id = account2.getId();
+        member2 = Member.builder()
+                .point(0L)
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .username("member2")
+                .password("1234")
+                .build();
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        member1Id = member1.getId();
+        member2Id = member2.getId();
     }
 
     @Test
     void createHistoryTest() {
-        pointService.transfer(account1Id, account2Id, 150L, PointCategory.TRANSFER);
+        pointService.transfer(member1.getUsername(), member2.getUsername(), 150L, PointCategory.TRANSFER);
 
-        Account updatedAccount1 = accountRepository.findById(account1Id).orElseThrow(() -> new RuntimeException("Account not found"));
-        Account updatedAccount2 = accountRepository.findById(account2Id).orElseThrow(() -> new RuntimeException("Account not found"));
+        Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
+        Member updatedMember2 = memberRepository.findById(member2Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        assertEquals(150L, updatedAccount1.getBalance(), "Account1 balance should be 150 less");
-        assertEquals(150L, updatedAccount2.getBalance(), "Account2 balance should be 150 more");
+        assertEquals(150L, updatedMember1.getPoint(), "Account1 balance should be 150 less");
+        assertEquals(150L, updatedMember2.getPoint(), "Account2 balance should be 150 more");
+
+        assertEquals(2, pointHistoryRepository.count());
+
     }
 }
