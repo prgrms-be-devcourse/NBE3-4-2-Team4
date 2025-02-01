@@ -3,20 +3,24 @@ package com.NBE3_4_2_Team4.domain.board.question.controller;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,41 +59,85 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(get("/api/questions/1"))
                 .andDo(print());
 
+        Question question = questionService.findById(1L);
+
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestion"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.modifiedAt").value(Matchers.startsWith(question.getModifiedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.title").value("title1"))
                 .andExpect(jsonPath("$.content").value("content1"));
     }
 
     @Test
     @DisplayName("게시글 작성")
-    void t4() {
-        QuestionCategory category = questionService.createCategory("category1");
-        Question question = questionService.write("title4", "content4", category.getId());
+    @WithUserDetails("admin@test.com")
+    void t4() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                post("/api/questions")
+                        .content("""
+                                {
+                                    "title": "title21",
+                                    "content": "content21",
+                                    "categoryId": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
 
-        assertThat(question.getId()).isEqualTo(4);
-        assertThat(question.getTitle()).isEqualTo("title4");
-        assertThat(question.getContent()).isEqualTo("content4");
+        Question question = questionService.findLatest().get();
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("21번 게시글 생성이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.item.id").value(21L))
+                .andExpect(jsonPath("$.data.item.title").value("title21"))
+                .andExpect(jsonPath("$.data.item.content").value("content21"))
+                .andExpect(jsonPath("$.data.item.categoryId").value(1L))
+                .andExpect(jsonPath("$.data.item.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.item.modifiedAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.totalCount").value(21L));
     }
 
     @Test
     @DisplayName("1번 게시글 삭제")
-    void t5() {
-        questionService.delete(1L);
-        List<Question> questions = questionService.findAll();
+    @WithUserDetails("admin@test.com")
+    void t5() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                delete("/api/questions/1")
+        ).andDo(print());
 
-        assertThat(questions).hasSize(2);
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("게시글 삭제가 완료되었습니다."));
     }
 
     @Test
     @DisplayName("1번 게시글 수정")
-    void t6() {
-        Question question = questionService.findById(1L);
-        questionService.update(question, "title1 수정", "content1 수정");
+    @WithUserDetails("admin@test.com")
+    void t6() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/questions/1")
+                        .content("""
+                                {
+                                    "title": "title1 수정",
+                                    "content": "content1 수정",
+                                    "categoryId": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
 
-        assertThat(question.getId()).isEqualTo(1);
-        assertThat(question.getTitle()).isEqualTo("title1 수정");
-        assertThat(question.getContent()).isEqualTo("content1 수정");
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("1번 게시글 수정이 완료되었습니다."));
     }
 }

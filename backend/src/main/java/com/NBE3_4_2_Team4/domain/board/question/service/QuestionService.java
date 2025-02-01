@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,10 @@ public class QuestionService {
 
     public List<Question> findAll() {
         return questionRepository.findAll();
+    }
+
+    public Optional<Question> findLatest() {
+        return questionRepository.findFirstByOrderByIdDesc();
     }
 
     public List<Question> findByListed(int page, int pageSize) {
