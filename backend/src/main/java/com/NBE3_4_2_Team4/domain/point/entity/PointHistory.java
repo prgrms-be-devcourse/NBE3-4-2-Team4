@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.point.entity;
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,14 +31,13 @@ public class PointHistory {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private Account account;
+    private Member member;
 
     @ManyToOne
     @JoinColumn
-    private Account counterAccount;
+    private Member counterMember;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

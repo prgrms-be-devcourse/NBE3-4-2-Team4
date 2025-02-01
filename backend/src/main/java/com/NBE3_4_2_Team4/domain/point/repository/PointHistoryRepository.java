@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PointHistoryRepository extends JpaRepository<PointHistory, Long> {
-    Page<PointHistory> findByAccountId(Long accountId, Pageable pageable);
+    Page<PointHistory> findByMemberId(Long memberId, Pageable pageable);
 }

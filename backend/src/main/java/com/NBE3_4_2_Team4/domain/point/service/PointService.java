@@ -1,12 +1,13 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryResponse;
-import com.NBE3_4_2_Team4.domain.point.entity.Account;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.AccountRepository;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,22 +24,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PointService {
     private final PointHistoryRepository pointHistoryRepository;
-    private final AccountRepository accountRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public void transfer(long from, long to, long amount, PointCategory pointCategory) {
-        Account sender = accountRepository.findById(from)
+    public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
+        Member sender = memberRepository.findByUsername(fromUsername)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
 
-        Account recipient = accountRepository.findById(to)
+        Member recipient = memberRepository.findByUsername(toUsername)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
 
-        long recipientBalance = recipient.getBalance() + amount;
-        long senderBalance = sender.getBalance() - amount;
+        long recipientBalance = recipient.getPoint() + amount;
+        long senderBalance = sender.getPoint() - amount;
         validateBalance(senderBalance);
 
-        sender.setBalance(senderBalance);
-        recipient.setBalance(recipientBalance);
+        sender.setPoint(senderBalance);
+        recipient.setPoint(recipientBalance);
 
         String correlationId = UUID.randomUUID().toString();
         createHistory(sender, recipient, amount * -1, pointCategory, correlationId);
@@ -48,49 +49,49 @@ public class PointService {
     @Transactional
     public void withdraw(long from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
-        Account account = accountRepository.findById(from)
+        Member member = memberRepository.findById(from)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
 
-        long updatedBalance = account.getBalance() - amount;
+        long updatedBalance = member.getPoint() - amount;
         validateBalance(updatedBalance);
 
-        account.setBalance(updatedBalance);
+        member.setPoint(updatedBalance);
 
         String correlationId = UUID.randomUUID().toString();
-        createHistory(account, null, amount * -1, pointCategory, correlationId);
+        createHistory(member, null, amount * -1, pointCategory, correlationId);
     }
 
     @Transactional
     public void deposit(long to, long amount, PointCategory pointCategory) {
         validateAmount(amount);
-        Account account = accountRepository.findById(to)
+        Member member = memberRepository.findById(to)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
 
-        account.setBalance(account.getBalance() + amount);
+        member.setPoint(member.getPoint() + amount);
 
         String correlationId = UUID.randomUUID().toString();
-        createHistory(account, null, amount, pointCategory, correlationId);
+        createHistory(member, null, amount, pointCategory, correlationId);
     }
 
     @Transactional
-    public void createHistory(Account account, Account counterAccount, long amount, PointCategory pointCategory, String correlationId) {
+    public void createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
         PointHistory pointHistory = PointHistory.builder()
                 .pointCategory(pointCategory)
                 .amount(amount)
                 .correlationId(correlationId)
-                .account(account)
-                .counterAccount(counterAccount)
+                .member(member)
+                .counterMember(counterMember)
                 .build();
 
         pointHistoryRepository.save(pointHistory);
     }
 
     @Transactional(readOnly = true)
-    public Page<PointHistoryResponse> getHistoryPage(long accountId, int page, int size) {
+    public PageDto<PointHistoryResponse> getHistoryPage(long memberId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return pointHistoryRepository
-                .findByAccountId(accountId, pageable)
-                .map(PointHistoryResponse::from);
+        return new PageDto<PointHistoryResponse>(pointHistoryRepository
+                .findByMemberId(memberId, pageable)
+                .map(PointHistoryResponse::from));
     }
 
     private void validateAmount(long amount) {

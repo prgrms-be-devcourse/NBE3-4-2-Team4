@@ -20,7 +20,7 @@ public class PointHistoryResponse {
         return PointHistoryResponse.builder()
                 .amount(pointHistory.getAmount())
                 .createdAt(pointHistory.getCreatedAt())
-                .counterAccountUsername(null)
+                .counterAccountUsername(pointHistory.getCounterMember().getUsername())
                 .pointCategory(pointHistory.getPointCategory())
                 .build();
     }
