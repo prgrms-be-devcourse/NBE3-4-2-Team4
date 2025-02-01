@@ -56,7 +56,7 @@ public class PointServiceTest {
     }
 
     @Test
-    void createHistoryTest() {
+    void transferTest() {
         pointService.transfer(member1.getUsername(), member2.getUsername(), 150L, PointCategory.TRANSFER);
 
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
@@ -66,6 +66,8 @@ public class PointServiceTest {
         assertEquals(150L, updatedMember2.getPoint(), "Account2 balance should be 150 more");
 
         assertEquals(2, pointHistoryRepository.count());
-
+        assertEquals(1, pointService.getHistoryPage(member1, 0, 10).getItems().size());
     }
+
+
 }
