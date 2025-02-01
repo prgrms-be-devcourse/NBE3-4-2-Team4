@@ -20,9 +20,10 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public List<QuestionDto> getQuestions(@RequestParam(defaultValue = "1") int page,
+    public List<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
+                                          @RequestParam(defaultValue = "1") int page,
                                           @RequestParam(defaultValue = "10") int pageSize) {
-        return questionService.findByListed(page, pageSize)
+        return questionService.findByListed(page, pageSize, searchKeyword)
                 .stream()
                 .map(QuestionDto::new)
                 .toList();

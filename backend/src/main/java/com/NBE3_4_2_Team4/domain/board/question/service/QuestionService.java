@@ -47,6 +47,15 @@ public class QuestionService {
         return postPage.getContent();
     }
 
+    public List<Question> findByListed(int page, int pageSize, String searchKeyword) {
+        if (searchKeyword == null) return findByListed(page, pageSize);
+
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        searchKeyword = "%" + searchKeyword + "%";
+
+        return questionRepository.findByTitleLike(searchKeyword, pageRequest).getContent();
+    }
+
     public Question findById(long id) {
         return questionRepository.findById(id).orElseThrow();
     }
