@@ -1,15 +1,22 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
 
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryResponse;
 import com.NBE3_4_2_Team4.domain.point.entity.Account;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.AccountRepository;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -76,6 +83,14 @@ public class PointService {
                 .build();
 
         pointHistoryRepository.save(pointHistory);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PointHistoryResponse> getHistoryPage(long accountId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return pointHistoryRepository
+                .findByAccountId(accountId, pageable)
+                .map(PointHistoryResponse::from);
     }
 
     private void validateAmount(long amount) {
