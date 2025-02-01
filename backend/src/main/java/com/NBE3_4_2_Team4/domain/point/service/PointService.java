@@ -87,10 +87,10 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PageDto<PointHistoryResponse> getHistoryPage(long memberId, int page, int size) {
+    public PageDto<PointHistoryResponse> getHistoryPage(Member member, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new PageDto<PointHistoryResponse>(pointHistoryRepository
-                .findByMemberId(memberId, pageable)
+                .findByMember(member, pageable)
                 .map(PointHistoryResponse::from));
     }
 
