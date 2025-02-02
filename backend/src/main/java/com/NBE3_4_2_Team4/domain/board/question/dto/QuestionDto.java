@@ -10,6 +10,7 @@ public class QuestionDto {
     private final Long id;
     private final String title;
     private final String content;
+    private final String name;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
@@ -17,6 +18,7 @@ public class QuestionDto {
         this.id = question.getId();
         this.title = question.getTitle();
         this.content = question.getContent();
+        this.name = question.getAuthor().getNickname();
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
     }
