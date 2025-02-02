@@ -1,15 +1,15 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,29 +45,15 @@ public class QuestionController {
         );
     }
 
-    record QuestionReqBody(
-            @NotNull @Length(min = 2)
-            String title,
-            @NotNull @Length(min = 2)
-            String content,
-            @NotNull
-            Long categoryId
-    ) {}
-
-    record QuestionWriteResBody(
-            QuestionDto item,
-            long totalCount
-    ) {}
-
     @PostMapping
-    public RsData<QuestionWriteResBody> write(@RequestBody @Valid QuestionReqBody reqBody) {
+    public RsData<QuestionWriteResDto> write(@RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member author = AuthManager.getMemberFromContext();
-        Question q = questionService.write(reqBody.title, reqBody.content, reqBody.categoryId, author);
+        Question q = questionService.write(reqBody.title(), reqBody.content(), reqBody.categoryId(), author);
 
         return new RsData<>(
                 "200-1",
                 "%d번 게시글 생성이 완료되었습니다.".formatted(q.getId()),
-                new QuestionWriteResBody(
+                new QuestionWriteResDto(
                         new QuestionDto(q),
                         questionService.count()
                 )
@@ -76,9 +62,9 @@ public class QuestionController {
 
     @PutMapping("/{id}")
     @Transactional
-    public RsData<Void> update(@PathVariable long id, @RequestBody @Valid QuestionReqBody reqBody) {
+    public RsData<Void> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Question question = questionService.findById(id);
-        questionService.update(question, reqBody.title, reqBody.content);
+        questionService.update(question, reqBody.title(), reqBody.content());
 
         return new RsData<>(
                 "200-1",
