@@ -3,7 +3,9 @@ package com.NBE3_4_2_Team4.domain.board.question.controller;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +61,9 @@ public class QuestionController {
 
     @PostMapping
     public RsData<QuestionWriteResBody> write(@RequestBody @Valid QuestionReqBody reqBody) {
-        Question q = questionService.write(reqBody.title, reqBody.content, reqBody.categoryId);
+        Member author = AuthManager.getMemberFromContext();
+        Question q = questionService.write(reqBody.title, reqBody.content, reqBody.categoryId, author);
+
         return new RsData<>(
                 "200-1",
                 "%d번 게시글 생성이 완료되었습니다.".formatted(q.getId()),

@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,12 +30,13 @@ public class QuestionService {
         return questionRepository.count();
     }
 
-    public Question write(String title, String content, Long categoryId) {
+    public Question write(String title, String content, Long categoryId, Member author) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
         return questionRepository.save(Question.builder()
                 .title(title)
                 .content(content)
+                .author(author)
                 .category(category)
                 .build());
     }
