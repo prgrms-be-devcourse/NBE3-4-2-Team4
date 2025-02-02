@@ -48,9 +48,8 @@ public class Member {
     @Column(nullable = false)
     private Long point;
 
-    //낙관적락 추후변경 예정
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;
