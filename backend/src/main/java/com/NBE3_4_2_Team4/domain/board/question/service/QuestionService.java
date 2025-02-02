@@ -30,10 +30,12 @@ public class QuestionService {
     }
 
     public Question write(String title, String content, Long categoryId) {
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
+
         return questionRepository.save(Question.builder()
                 .title(title)
                 .content(content)
-                .categoryId(categoryId)
+                .category(category)
                 .build());
     }
 
