@@ -8,8 +8,10 @@ import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +24,13 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public List<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
-                                          @RequestParam(defaultValue = "1") int page,
-                                          @RequestParam(defaultValue = "10") int pageSize) {
-        return questionService.findByListed(page, pageSize, searchKeyword)
-                .stream()
-                .map(QuestionDto::new)
-                .toList();
+    public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
+                                             @RequestParam(defaultValue = "1") int page,
+                                             @RequestParam(defaultValue = "10") int pageSize) {
+        return new PageDto<>(
+                questionService.findByListed(page, pageSize, searchKeyword)
+                        .map(QuestionDto::new)
+        );
     }
 
     @GetMapping("/{id}")

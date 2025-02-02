@@ -49,20 +49,18 @@ public class QuestionService {
         return questionRepository.findFirstByOrderByIdDesc();
     }
 
-    public List<Question> findByListed(int page, int pageSize) {
+    public Page<Question> findByListed(int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Question> postPage = questionRepository.findAll(pageRequest);
-
-        return postPage.getContent();
+        return questionRepository.findAll(pageRequest);
     }
 
-    public List<Question> findByListed(int page, int pageSize, String searchKeyword) {
+    public Page<Question> findByListed(int page, int pageSize, String searchKeyword) {
         if (searchKeyword == null) return findByListed(page, pageSize);
 
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
         searchKeyword = "%" + searchKeyword + "%";
 
-        return questionRepository.findByTitleLike(searchKeyword, pageRequest).getContent();
+        return questionRepository.findByTitleLike(searchKeyword, pageRequest);
     }
 
     public Question findById(long id) {
