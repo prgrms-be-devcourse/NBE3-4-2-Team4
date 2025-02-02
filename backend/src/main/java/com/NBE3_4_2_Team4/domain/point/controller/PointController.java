@@ -30,6 +30,7 @@ public class PointController {
         if (sender == null) throw new RuntimeException("로그인 후 이용해주세요");
 
         pointService.transfer(sender.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
+
         return new RsData<>(
                 "200-1",
                 "송금 성공",

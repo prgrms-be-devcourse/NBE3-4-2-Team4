@@ -9,15 +9,12 @@ import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -28,17 +25,17 @@ public class PointService {
 
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
-        Member sender = memberRepository.findByUsername(fromUsername)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
+        Member sender = memberRepository.findByUsernameWithLock(fromUsername)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
-        Member recipient = memberRepository.findByUsername(toUsername)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
+        Member recipient = memberRepository.findByUsernameWithLock(toUsername)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
         long recipientBalance = recipient.getPoint() + amount;
         long senderBalance = sender.getPoint() - amount;
         validateBalance(senderBalance);
-
         sender.setPoint(senderBalance);
+
         recipient.setPoint(recipientBalance);
 
         String correlationId = UUID.randomUUID().toString();
@@ -47,10 +44,10 @@ public class PointService {
     }
 
     @Transactional
-    public void withdraw(long from, long amount, PointCategory pointCategory) {
+    public void deductPoints(String from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
-        Member member = memberRepository.findById(from)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
+        Member member = memberRepository.findByUsernameWithLock(from)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
         long updatedBalance = member.getPoint() - amount;
         validateBalance(updatedBalance);
@@ -62,10 +59,10 @@ public class PointService {
     }
 
     @Transactional
-    public void deposit(long to, long amount, PointCategory pointCategory) {
+    public void accumulatePoints(String to, long amount, PointCategory pointCategory) {
         validateAmount(amount);
-        Member member = memberRepository.findById(to)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 계좌입니다"));
+        Member member = memberRepository.findByUsernameWithLock(to)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
         member.setPoint(member.getPoint() + amount);
 
