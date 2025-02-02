@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class ProductResponseDto {
 
     @Builder
@@ -38,5 +40,10 @@ public class ProductResponseDto {
             this.productCategory = productCategory;
             this.productSaleState = productSaleState.name();
         }
+    }
+
+    @Builder
+    public record GetItemsByKeyword(String keyword, List<GetItems> products) {
+
     }
 }

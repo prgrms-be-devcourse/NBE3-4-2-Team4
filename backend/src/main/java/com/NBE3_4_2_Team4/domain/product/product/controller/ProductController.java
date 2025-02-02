@@ -49,4 +49,18 @@ public class ProductController {
                 products
         );
     }
+
+    @GetMapping("/category/all")
+    @Operation(summary = "카테고리별 상품 조회", description = "카테고리별 상품을 조회합니다.")
+    RsData<ProductResponseDto.GetItemsByKeyword> getProductsByCategory(
+            @RequestParam String categoryKeyword) {
+
+        ProductResponseDto.GetItemsByKeyword products = productService.getProductsByCategoryKeyword(categoryKeyword);
+
+        return new RsData<>(
+                "200-1",
+                "OK",
+                products
+        );
+    }
 }
