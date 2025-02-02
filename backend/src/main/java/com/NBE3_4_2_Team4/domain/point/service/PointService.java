@@ -25,6 +25,9 @@ public class PointService {
 
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
+
+        if (fromUsername.equals(toUsername)) throw new RuntimeException("자기 자신에게 송금할 수 없습니다");
+
         Member sender = memberRepository.findByUsernameWithLock(fromUsername)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
