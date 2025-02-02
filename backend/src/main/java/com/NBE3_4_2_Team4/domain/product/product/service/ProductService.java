@@ -61,25 +61,49 @@ public class ProductService {
         }
 
         // categories 내 최하위 카테고리를 모두 찾아서 TreeMap에 저장
-        Map<Long, ProductCategory> leafCategories = new TreeMap<>();
+        Set<Long> leafCategories = new TreeSet<>();
         for (ProductCategory productCategory : categories) {
             saveChildCategories(productCategory, leafCategories);
         }
 
-        // 최하위 카테고리에 해당하는 상품 찾아서 List에 저장
-        List<GetItems> items = new ArrayList<>();
+        // 최하위 카테고리에 해당하는 상품 조회
+        List<Product> products = productRepository.findByCategoryIdIn(leafCategories);
 
-        for (ProductCategory category : leafCategories.values()) {
-            for (Product product : category.getProducts()) {
-                items.add(new GetItems(
+        return new GetItemsByKeyword(categoryKeyword,
+                products.stream()
+                        .map(product -> new GetItems(
+                                product,
+                                makeFullCategory(product),
+                                product.getSaleState().getName()
+                        ))
+                        .toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PageDtoWithKeyword<GetItems> getProductsByCategoryKeyword(String categoryKeyword, int page, int pageSize) {
+
+        // keyword 포함되는 categories 가져오기
+        List<ProductCategory> categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword);
+
+        // categories 내 최하위 카테고리를 모두 찾아서 TreeMap에 저장
+        Set<Long> leafCategories = new TreeSet<>();
+        for (ProductCategory productCategory : categories) {
+            saveChildCategories(productCategory, leafCategories);
+        }
+
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        // 최하위 카테고리에 해당하는 상품들 페이징 처리하여 조회
+        Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageRequest);
+
+        return new PageDtoWithKeyword<>(
+                products.map(product -> new GetItems(
                         product,
                         makeFullCategory(product),
                         product.getSaleState().getName()
-                ));
-            }
-        }
-
-        return new GetItemsByKeyword(categoryKeyword, items);
+                )),
+                categoryKeyword
+        );
     }
 
     private String makeFullCategory(Product product) {
@@ -102,13 +126,13 @@ public class ProductService {
         return sb.toString();
     }
 
-    private void saveChildCategories(ProductCategory productCategory, Map<Long, ProductCategory> leafCategories) {
+    private void saveChildCategories(ProductCategory productCategory, Set<Long> leafCategories) {
 
         List<ProductCategory> children = productCategory.getChildren();
 
         // 최하위 카테고리만 Map 저장
         if (children.isEmpty()) {
-            leafCategories.put(productCategory.getId(), productCategory);
+            leafCategories.add(productCategory.getId());
             return;
         }
 
