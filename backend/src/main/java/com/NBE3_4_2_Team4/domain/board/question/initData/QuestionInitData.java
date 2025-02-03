@@ -31,7 +31,7 @@ public class QuestionInitData {
     public void initData() {
         if (questionService.count() > 0) return;
 
-        Member admin = memberRepository.findByUsername("admin@test.com").get();
+        Member admin = memberRepository.findByUsername("admin@test.com").orElseThrow();
         questionService.createCategory("category1");
         questionService.createCategory("category2");
 

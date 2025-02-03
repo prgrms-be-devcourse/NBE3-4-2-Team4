@@ -3,7 +3,10 @@ package com.NBE3_4_2_Team4.domain.board.question.controller;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +50,15 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(get("/api/questions?page=3&pageSize=7"))
                 .andDo(print());
 
-        resultActions.andExpect(handler().handlerType(QuestionController.class))
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(6));
+                .andExpect(jsonPath("$.currentPageNumber").value(3))
+                .andExpect(jsonPath("$.pageSize").value(7))
+                .andExpect(jsonPath("$.totalItems").value(20))
+                .andExpect(jsonPath("$.hasMore").value(false))
+                .andExpect(jsonPath("$.items.length()").value(6));
     }
 
     @Test
@@ -68,7 +76,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.modifiedAt").value(Matchers.startsWith(question.getModifiedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.title").value("title1"))
-                .andExpect(jsonPath("$.content").value("content1"));
+                .andExpect(jsonPath("$.content").value("content1"))
+                .andExpect(jsonPath("$.name").value("관리자"));
     }
 
     @Test
@@ -97,7 +106,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
-                .andExpect(jsonPath("$.data.item.categoryId").value(1L))
+                .andExpect(jsonPath("$.data.item.categoryName").value("category1"))
                 .andExpect(jsonPath("$.data.item.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modifiedAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.totalCount").value(21L));
@@ -139,5 +148,25 @@ public class QuestionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("1번 게시글 수정이 완료되었습니다."));
+    }
+
+    @Test
+    @DisplayName("게시글 검색")
+    void t7() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                get("/api/questions?searchKeyword=0")
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.currentPageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(10))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.totalItems").value(2))
+                .andExpect(jsonPath("$.hasMore").value(false))
+                .andExpect(jsonPath("$.items.length()").value(2));
     }
 }
