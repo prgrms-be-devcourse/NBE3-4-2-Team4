@@ -33,7 +33,9 @@ public class AnswerController {
             @PathVariable long questionId,
             @RequestBody @Valid AnswerRequestDto answerRequestDto
     ) {
-        Question question = questionService.findById(questionId).get();
+        Question question = questionService.findById(questionId).orElseThrow(
+                () -> new NoSuchElementException("해당 질문글이 존재하지 않습니다.")
+        );
 
         Answer answer = answerService.write(
                 question,
@@ -93,7 +95,10 @@ public class AnswerController {
     public List<AnswerDto> items(
             @PathVariable long questionId
     ) {
-        Question question = questionService.findById(questionId).get();
+        Question question = questionService.findById(questionId).orElseThrow(
+                () -> new NoSuchElementException("해당 질문글이 존재하지 않습니다.")
+        );
+
         List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
 
         return answers.stream()
