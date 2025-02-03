@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.entity;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
+import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.jpa.entity.BaseTime;
 import jakarta.persistence.*;
@@ -29,4 +30,11 @@ public class Question extends BaseTime {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL) // 질문 삭제 시 답변 삭제
     private List<Answer> answers;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<Recommend> recommends;
+
+    public long getRecommendCount() { // 추천 수 반환
+        return recommends.size();
+    }
 }
