@@ -3,14 +3,17 @@ package com.NBE3_4_2_Team4.domain.board.answer.controller;
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class AllAnswerController {
     @Transactional(readOnly = true)
     public AnswerDto item(@PathVariable long id) {
         Answer answer = answerService.findById(id).orElseThrow(
-                () -> new NoSuchElementException("해당 답변은 존재하지 않습니다.")
+                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
         );
 
         return new AnswerDto(answer);

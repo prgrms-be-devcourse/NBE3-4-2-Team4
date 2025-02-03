@@ -21,6 +21,12 @@ public class AnswerDto {
     private final long questionId;
 
     @NonNull
+    private final long authorId;
+
+    @NonNull
+    private final String authorName;
+
+    @NonNull
     private String content;
 
     public AnswerDto(Answer answer) {
@@ -28,6 +34,8 @@ public class AnswerDto {
         this.createdAt = answer.getCreatedAt();
         this.modifiedAt = answer.getModifiedAt();
         this.questionId = answer.getQuestion().getId();
+        this.authorId = answer.getAuthor().getId();
+        this.authorName = answer.getAuthor().getNickname();
         this.content = answer.getContent();
     }
 }

@@ -6,7 +6,10 @@ import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,11 +36,14 @@ public class AnswerController {
             @RequestBody @Valid AnswerRequestDto answerRequestDto
     ) {
         Question question = questionService.findById(questionId).orElseThrow(
-                () -> new NoSuchElementException("해당 질문글이 존재하지 않습니다.")
+                () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
         );
+
+        Member actor = AuthManager.getMemberFromContext();
 
         Answer answer = answerService.write(
                 question,
+                actor,
                 answerRequestDto.content()
         );
 
@@ -58,8 +63,12 @@ public class AnswerController {
             @PathVariable("id") long id
     ) {
         Answer answer = answerService.findById(id).orElseThrow(
-                () -> new NoSuchElementException("해당 답변은 존재하지 않습니다.")
+                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
         );
+
+        Member actor = AuthManager.getMemberFromContext();
+
+        answer.checkActorCanModify(actor);
 
         answerService.modify(answer, answerRequestDto.content());
 
@@ -78,8 +87,12 @@ public class AnswerController {
             @PathVariable("id") long id
     ) {
         Answer answer = answerService.findById(id).orElseThrow(
-                () -> new NoSuchElementException("해당 답변은 존재하지 않습니다.")
+                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
         );
+
+        Member actor = AuthManager.getMemberFromContext();
+
+        answer.checkActorCanDelete(actor);
 
         answerService.delete(answer);
 
@@ -96,7 +109,7 @@ public class AnswerController {
             @PathVariable long questionId
     ) {
         Question question = questionService.findById(questionId).orElseThrow(
-                () -> new NoSuchElementException("해당 질문글이 존재하지 않습니다.")
+                () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
         );
 
         List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
