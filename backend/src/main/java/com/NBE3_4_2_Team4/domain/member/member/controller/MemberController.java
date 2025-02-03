@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +47,7 @@ public class MemberController {
         return StringUtils.isBlank(token) ?  "not logged in" : token;
     }
 
+    //OAuth2 없이 직접 로그인하는 경우. 당장의 요구 조건 하에선 호출되지 않음.
     @PostMapping("/api/login")
     public RsData<String> login(
             @RequestBody LoginRequestDto loginRequestDto,
@@ -55,18 +58,32 @@ public class MemberController {
     }
 
     @PostMapping("/api/logout")
-    public ResponseEntity<RsData<Empty>> logout(){
+    public ResponseEntity<RsData<Empty>> logout(HttpServletRequest req){
         Member member = AuthManager.getMemberFromContext();
         String redirectUrl = memberService.getLogoutUrl(member);
+
+        req.getSession().setAttribute("logoutRequested", true);
+
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", redirectUrl)
-                .body(new RsData<>("302-1",  String.format("Trying to log out for %s", member)));
+                .body(new RsData<>("302-1",
+                        String.format("Trying to log out for %s",
+                        Objects.requireNonNull(member).getOAuth2Provider().name())));
     }
 
 
     @GetMapping(OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL)
-    public ResponseEntity<RsData<Empty>> logoutComplete(HttpServletResponse resp) {
+    public ResponseEntity<RsData<Empty>> logoutComplete(HttpServletRequest req, HttpServletResponse resp) {
+        Boolean logoutRequested = (Boolean) req.getSession().getAttribute("logoutRequested");
+
+        if (logoutRequested == null || !logoutRequested) {
+            throw new RuntimeException("Invalid access to logout complete");
+        }
+
+        req.getSession().removeAttribute("logoutRequested");
+
         httpManager.expireJwtCookie(resp);
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header("Location", frontDomain)
