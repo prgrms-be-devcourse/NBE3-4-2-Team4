@@ -4,6 +4,8 @@ import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerRequestDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,18 +19,27 @@ import java.util.NoSuchElementException;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "AnswerController", description = "지식인 - 특정 질문글에 대한 답변 관리 API")
-@RequestMapping("/api/questions/{postId}/answers")
+@RequestMapping("/api/questions/{questionId}/answers")
 public class AnswerController {
     private final AnswerService answerService;
+    private final QuestionService questionService;
+
+    @ModelAttribute("question")
+    public Question getQuestion(@PathVariable long questionId) {
+        return questionService.findById(questionId).get();
+    }
 
     @Operation(summary = "Write Answer", description = "질문글에 새로운 답변을 등록합니다.")
     @PostMapping
     @Transactional
     public RsData<AnswerDto> write(
-            @PathVariable long postId,
+            @ModelAttribute("question") Question question,
             @RequestBody @Valid AnswerRequestDto answerRequestDto
     ) {
-        Answer answer = answerService.write(answerRequestDto.content());
+        Answer answer = answerService.write(
+                question,
+                answerRequestDto.content()
+        );
 
         return new RsData(
                 "201-1",
@@ -41,7 +52,7 @@ public class AnswerController {
     @PutMapping("/{id}")
     @Transactional
     public RsData<AnswerDto> modify(
-            @PathVariable long postId,
+            @ModelAttribute("question") Question question,
             @RequestBody @Valid AnswerRequestDto answerRequestDto,
             @PathVariable("id") long id
     ) {

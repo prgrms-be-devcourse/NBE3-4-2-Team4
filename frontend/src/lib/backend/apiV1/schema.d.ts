@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/questions/{questionId}/answers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Answer
+         * @description 답변를 수정합니다.
+         */
+        put: operations["modify"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{id}": {
         parameters: {
             query?: never;
@@ -15,6 +35,54 @@ export interface paths {
         put: operations["update"];
         post?: never;
         delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/points/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["transfer"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/products/deduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["deductFromMember"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/products/accumulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["accumulateForMember"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -46,6 +114,26 @@ export interface paths {
         get: operations["getQuestions"];
         put?: never;
         post: operations["write"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/questions/{questionId}/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write Answer
+         * @description 질문글에 새로운 답변을 등록합니다.
+         */
+        post: operations["write_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -188,6 +276,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/points": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPointHistories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Answers
+         * @description 모든 답변을 가져옵니다.
+         */
+        get: operations["items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/answers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Answer by Id
+         * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
+         */
+        get: operations["item"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -208,40 +352,115 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        QuestionReqBody: {
-            title: string;
+        Answer: {
+            /** Format: int64 */
+            readonly id?: number;
+            /** Format: date-time */
+            readonly createdAt?: string;
+            /** Format: date-time */
+            readonly modifiedAt?: string;
+            question?: components["schemas"]["Question"];
+            author?: components["schemas"]["Member"];
+            content?: string;
+        };
+        GrantedAuthority: {
+            authority?: string;
+        };
+        Member: {
+            /** Format: int64 */
+            id?: number;
+            /** @enum {string} */
+            role?: "ADMIN" | "USER";
+            username?: string;
+            password?: string;
+            phoneNumber?: string;
+            nickname?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            point?: number;
+            /** @enum {string} */
+            oauth2Provider?: "NONE" | "KAKAO";
+            authorities?: components["schemas"]["GrantedAuthority"][];
+        };
+        Question: {
+            /** Format: int64 */
+            readonly id?: number;
+            /** Format: date-time */
+            readonly createdAt?: string;
+            /** Format: date-time */
+            readonly modifiedAt?: string;
+            author?: components["schemas"]["Member"];
+            title?: string;
+            content?: string;
+            category?: components["schemas"]["QuestionCategory"];
+            answers?: components["schemas"]["Answer"][];
+        };
+        QuestionCategory: {
+            /** Format: int64 */
+            readonly id?: number;
+            name?: string;
+        };
+        AnswerRequestDto: {
             content: string;
         };
-        RsDataVoid: {
+        AnswerDto: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+            content: string;
+        };
+        RsDataAnswerDto: {
             resultCode: string;
             msg: string;
-            data: Record<string, never>;
+            data: components["schemas"]["AnswerDto"];
+        };
+        QuestionWriteReqDto: {
+            title: string;
+            content: string;
+            /** Format: int64 */
+            categoryId: number;
         };
         QuestionDto: {
             /** Format: int64 */
             id?: number;
             title?: string;
             content?: string;
+            name?: string;
+            categoryName?: string;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
         };
-        QuestionWriteResBody: {
-            item?: components["schemas"]["QuestionDto"];
-            /** Format: int64 */
-            totalCount?: number;
-        };
-        RsDataQuestionWriteResBody: {
+        RsDataQuestionDto: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["QuestionWriteResBody"];
+            data: components["schemas"]["QuestionDto"];
+        };
+        PointTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
         };
         Empty: Record<string, never>;
         RsDataEmpty: {
             resultCode: string;
             msg: string;
             data: components["schemas"]["Empty"];
+        };
+        QuestionWriteResDto: {
+            item?: components["schemas"]["QuestionDto"];
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        RsDataQuestionWriteResDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["QuestionWriteResDto"];
         };
         LoginRequestDto: {
             email: string;
@@ -251,6 +470,18 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
+        };
+        PageDtoQuestionDto: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["QuestionDto"][];
         };
         GetItems: {
             /** Format: int64 */
@@ -285,6 +516,37 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItems"][];
         };
+        PageDtoPointHistoryRes: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["PointHistoryRes"][];
+        };
+        PointHistoryRes: {
+            /** Format: int64 */
+            amount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            counterAccountUsername?: string;
+            /** @enum {string} */
+            pointCategory?: "TRANSFER" | "PURCHASE" | "ANSWER" | "ADMIN";
+        };
+        RsDataPageDtoPointHistoryRes: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["PageDtoPointHistoryRes"];
+        };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
+        };
     };
     responses: never;
     parameters: never;
@@ -294,6 +556,34 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    modify: {
+        parameters: {
+            query: {
+                question: components["schemas"]["Question"];
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
+                };
+            };
+        };
+    };
     getQuestion: {
         parameters: {
             query?: never;
@@ -327,7 +617,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["QuestionReqBody"];
+                "application/json": components["schemas"]["QuestionWriteReqDto"];
             };
         };
         responses: {
@@ -337,7 +627,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionDto"];
                 };
             };
         };
@@ -364,6 +654,78 @@ export interface operations {
             };
         };
     };
+    transfer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PointTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deductFromMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PointTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    accumulateForMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PointTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     test1: {
         parameters: {
             query?: never;
@@ -384,7 +746,11 @@ export interface operations {
     };
     getQuestions: {
         parameters: {
-            query?: never;
+            query?: {
+                searchKeyword?: string;
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -397,7 +763,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["QuestionDto"][];
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
                 };
             };
         };
@@ -411,7 +777,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["QuestionReqBody"];
+                "application/json": components["schemas"]["QuestionWriteReqDto"];
             };
         };
         responses: {
@@ -421,7 +787,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionWriteResBody"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionWriteResDto"];
+                };
+            };
+        };
+    };
+    write_1: {
+        parameters: {
+            query: {
+                question: components["schemas"]["Question"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
                 };
             };
         };
@@ -581,6 +973,70 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItems"];
+                };
+            };
+        };
+    };
+    getPointHistories: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoPointHistoryRes"];
+                };
+            };
+        };
+    };
+    items: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["AnswerDto"][];
+                };
+            };
+        };
+    };
+    item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["AnswerDto"];
                 };
             };
         };

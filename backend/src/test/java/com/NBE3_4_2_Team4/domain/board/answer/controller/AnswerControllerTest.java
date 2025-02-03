@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -33,6 +34,7 @@ public class AnswerControllerTest {
 
     @Test
     @DisplayName("답변 등록")
+    @WithUserDetails("admin@test.com")
     void t1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(post("/api/questions/1/answers")
@@ -47,17 +49,20 @@ public class AnswerControllerTest {
                 )
                 .andDo(print());
 
+
         Answer lastAnswer = answerService.findLatest().get();
+
+        System.out.println(lastAnswer);
 
         resultActions
                 .andExpect(handler().handlerType(AnswerController.class))
                 .andExpect(handler().methodName("write"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.rsCode").value("201-1"))
+                .andExpect(jsonPath("$.resultCode").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("답변이 등록 되었습니다."))
                 .andExpect(jsonPath("$.data.id").value(lastAnswer.getId()))
-                //.andExpect(jsonPath("$.data.createDate").exists())
-                //.andExpect(jsonPath("$.data.modifyDate").exists())
+                .andExpect(jsonPath("$.data.createdAt").exists())
+                .andExpect(jsonPath("$.data.modifiedAt").exists())
                 .andExpect(jsonPath("$.data.content").value(lastAnswer.getContent()));
     }
 
@@ -80,8 +85,8 @@ public class AnswerControllerTest {
 
             resultActions
                     .andExpect(jsonPath("$[%d].id".formatted(i)).value(answer.getId()))
-                    //.andExpect(jsonPath("$[%d].createDate".formatted(i)).exists())
-                    //.andExpect(jsonPath("$[%d].modifyDate".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].createdAt".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].modifiedAt".formatted(i)).exists())
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(answer.getContent()));
         }
     }
@@ -100,8 +105,8 @@ public class AnswerControllerTest {
                 .andExpect(handler().methodName("item"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(answer.getId()))
-                //.andExpect(jsonPath("$.createDate").exists())
-                //.andExpect(jsonPath("$.modifyDate").exists())
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$.modifiedAt").exists())
                 .andExpect(jsonPath("$.content").value(answer.getContent()));
     }
 }
