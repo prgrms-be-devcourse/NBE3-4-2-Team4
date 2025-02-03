@@ -81,4 +81,18 @@ public class ProductController {
                 products
         );
     }
+
+    @GetMapping("/state/all")
+    @Operation(summary = "판매 상태별 상품 조회", description = "판매 상품별 상품을 조회합니다.")
+    RsData<GetItemsByKeyword> getProductsBySaleState(
+            @RequestParam(name = "sale_state_keyword") String saleStateKeyword) {
+
+        GetItemsByKeyword products = productService.getProductsBySaleStateKeyword(saleStateKeyword);
+
+        return new RsData<>(
+                "200-1",
+                "OK",
+                products
+        );
+    }
 }

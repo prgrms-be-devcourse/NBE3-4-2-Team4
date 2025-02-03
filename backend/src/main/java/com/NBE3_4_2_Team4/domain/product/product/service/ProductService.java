@@ -4,6 +4,9 @@ import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
 import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
+import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductSaleStateRepository productSaleStateRepository;
 
     @Transactional(readOnly = true)
     public List<GetItems> getProducts() {
@@ -104,6 +108,25 @@ public class ProductService {
                 )),
                 categoryKeyword
         );
+    }
+
+    @Transactional(readOnly = true)
+    public GetItemsByKeyword getProductsBySaleStateKeyword(String saleStateKeyword) {
+
+        SaleState saleState = SaleState.fromString(saleStateKeyword)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid saleState keyword: " + saleStateKeyword));
+
+        ProductSaleState productSaleState = productSaleStateRepository.findByName(saleState)
+                .orElseThrow(() -> new NoSuchElementException("No ProductSaleState found for saleState: " + saleState));
+
+        return new GetItemsByKeyword(saleStateKeyword,
+                productSaleState.getProduct().stream()
+                        .map(product -> new GetItems(
+                                product,
+                                makeFullCategory(product),
+                                product.getSaleState().getName()
+                        ))
+                        .toList());
     }
 
     private String makeFullCategory(Product product) {
