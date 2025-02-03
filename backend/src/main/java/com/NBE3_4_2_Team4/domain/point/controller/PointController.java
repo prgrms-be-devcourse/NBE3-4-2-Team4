@@ -9,6 +9,7 @@ import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,8 @@ public class PointController {
     @PutMapping("/transfer")
     public RsData<Empty> transfer(@RequestBody @Validated PointTransferReq reqDto) {
         Member sender = getMemberFromContext();
-        if (sender == null) throw new RuntimeException("로그인 후 이용해주세요");
+        if (sender == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
+        ;
 
         pointService.transfer(sender.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
 
@@ -38,7 +40,8 @@ public class PointController {
     @GetMapping
     public RsData<PageDto<PointHistoryRes>> getPointHistories(@RequestParam(defaultValue = "0") int page) {
         Member member = getMemberFromContext();
-        if (member == null) throw new RuntimeException("로그인 후 이용해주세요");
+        if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
+
 
         PageDto<PointHistoryRes> points = pointService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
 
