@@ -54,7 +54,7 @@ public class ProductController {
     @GetMapping("/category/all")
     @Operation(summary = "카테고리별 상품 조회", description = "카테고리별 상품을 조회합니다.")
     RsData<GetItemsByKeyword> getProductsByCategory(
-            @RequestParam String categoryKeyword) {
+            @RequestParam(name = "category_keyword") String categoryKeyword) {
 
         GetItemsByKeyword products = productService.getProductsByCategoryKeyword(categoryKeyword);
 
@@ -67,8 +67,8 @@ public class ProductController {
 
     @GetMapping("/category")
     @Operation(summary = "카테고리별 상품 조회 (페이징)", description = "카테고리별 상품을 페이징 처리하여 조회합니다.")
-    RsData<PageDto<GetItems>> getProductsByCategory(
-            @RequestParam String categoryKeyword,
+    RsData<PageDto<GetItems>> getProductsByCategoryWithPaging(
+            @RequestParam(name = "category_keyword") String categoryKeyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "4") int pageSize
     ) {
