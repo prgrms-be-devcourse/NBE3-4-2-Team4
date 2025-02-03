@@ -39,6 +39,7 @@ public class SecurityConfig {
                         needAuthenticated(req, "/api/questions/**");
                         needAuthenticated(req, "/api/answers/**");
                         needAuthenticated(req, "/api/products/**");
+                        needAuthenticated(req, "/api/points/**");
                         req.requestMatchers(HttpMethod.POST, "/api/logout").authenticated();
                         req.anyRequest().permitAll();
                         })

@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,6 +44,12 @@ public class Member {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Long point;
+
+//    @Version
+//    private Long version;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;
