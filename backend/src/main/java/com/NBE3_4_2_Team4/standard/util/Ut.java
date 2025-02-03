@@ -111,7 +111,17 @@ public class Ut {
 
         public static void run(String cmd) {
             try {
-                ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\Git\\bin\\bash.exe", "-c", cmd);
+                String os = System.getProperty("os.name").toLowerCase();
+                ProcessBuilder processBuilder;
+
+                if (os.contains("win")) {
+                    // Windows 시스템에서는 Git Bash 경로 사용
+                    processBuilder = new ProcessBuilder("C:\\Program Files\\Git\\bin\\bash.exe", "-c", cmd);
+                } else {
+                    // macOS 또는 Linux 시스템에서는 bash 사용
+                    processBuilder = new ProcessBuilder("bash", "-c", cmd);
+                }
+
                 Process process = processBuilder.start();
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
