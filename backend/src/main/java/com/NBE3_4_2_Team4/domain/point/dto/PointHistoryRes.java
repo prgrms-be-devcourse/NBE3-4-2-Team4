@@ -4,20 +4,19 @@ import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class PointHistoryResponse {
+public class PointHistoryRes {
     private final Long amount;
     private final LocalDateTime createdAt;
     private final String counterAccountUsername;
     private final PointCategory pointCategory;
 
-    public static PointHistoryResponse from(PointHistory pointHistory) {
-        return PointHistoryResponse.builder()
+    public static PointHistoryRes from(PointHistory pointHistory) {
+        return PointHistoryRes.builder()
                 .amount(pointHistory.getAmount())
                 .createdAt(pointHistory.getCreatedAt())
                 .counterAccountUsername(pointHistory.getCounterMember().getUsername())

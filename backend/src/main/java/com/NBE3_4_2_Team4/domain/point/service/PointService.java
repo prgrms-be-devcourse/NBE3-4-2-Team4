@@ -3,7 +3,7 @@ package com.NBE3_4_2_Team4.domain.point.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryResponse;
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
@@ -25,7 +25,7 @@ public class PointService {
 
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
-
+        validateAmount(amount);
         if (fromUsername.equals(toUsername)) throw new RuntimeException("자기 자신에게 송금할 수 없습니다");
 
         Member sender = memberRepository.findByUsernameWithLock(fromUsername)
@@ -36,9 +36,9 @@ public class PointService {
 
         long recipientBalance = recipient.getPoint() + amount;
         long senderBalance = sender.getPoint() - amount;
+
         validateBalance(senderBalance);
         sender.setPoint(senderBalance);
-
         recipient.setPoint(recipientBalance);
 
         String correlationId = UUID.randomUUID().toString();
@@ -74,7 +74,7 @@ public class PointService {
     }
 
     @Transactional
-    public void createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
+    private void createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
         PointHistory pointHistory = PointHistory.builder()
                 .pointCategory(pointCategory)
                 .amount(amount)
@@ -87,11 +87,11 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PageDto<PointHistoryResponse> getHistoryPage(Member member, int page, int size) {
+    public PageDto<PointHistoryRes> getHistoryPage(Member member, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new PageDto<PointHistoryResponse>(pointHistoryRepository
+        return new PageDto<PointHistoryRes>(pointHistoryRepository
                 .findByMember(member, pageable)
-                .map(PointHistoryResponse::from));
+                .map(PointHistoryRes::from));
     }
 
     private void validateAmount(long amount) {

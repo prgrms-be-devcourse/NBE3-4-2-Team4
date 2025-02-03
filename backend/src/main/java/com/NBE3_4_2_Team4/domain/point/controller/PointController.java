@@ -1,19 +1,16 @@
 package com.NBE3_4_2_Team4.domain.point.controller;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryResponse;
-import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReqDto;
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
+import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.NBE3_4_2_Team4.global.security.AuthManager.getMemberFromContext;
 
@@ -25,7 +22,7 @@ public class PointController {
     private final static int POINT_HISTORY_SIZE = 10;
 
     @PutMapping("/transfer")
-    public RsData<Empty> transfer(@RequestBody @Validated PointTransferReqDto reqDto) {
+    public RsData<Empty> transfer(@RequestBody @Validated PointTransferReq reqDto) {
         Member sender = getMemberFromContext();
         if (sender == null) throw new RuntimeException("로그인 후 이용해주세요");
 
@@ -39,12 +36,11 @@ public class PointController {
     }
 
     @GetMapping
-    public RsData<PageDto<PointHistoryResponse>> getPointHistories(@RequestParam(defaultValue = "0") int page) {
+    public RsData<PageDto<PointHistoryRes>> getPointHistories(@RequestParam(defaultValue = "0") int page) {
         Member member = getMemberFromContext();
-
         if (member == null) throw new RuntimeException("로그인 후 이용해주세요");
 
-        PageDto<PointHistoryResponse> points = pointService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
+        PageDto<PointHistoryRes> points = pointService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
 
         return new RsData<>(
                 "200-1",
