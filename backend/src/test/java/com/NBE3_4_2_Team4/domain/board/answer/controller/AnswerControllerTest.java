@@ -59,12 +59,12 @@ public class AnswerControllerTest {
                 .andExpect(handler().handlerType(AnswerController.class))
                 .andExpect(handler().methodName("write"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.resultCode").value("201-1"))
+                .andExpect(jsonPath("$.result_code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 답변이 등록 되었습니다.".formatted(lastAnswer.getId())))
                 .andExpect(jsonPath("$.data.id").value(lastAnswer.getId()))
-                .andExpect(jsonPath("$.data.createdAt").exists())
-                .andExpect(jsonPath("$.data.modifiedAt").exists())
-                .andExpect(jsonPath("$.data.questionId").value(lastAnswer.getQuestion().getId()))
+                .andExpect(jsonPath("$.data.created_at").exists())
+                .andExpect(jsonPath("$.data.modified_at").exists())
+                .andExpect(jsonPath("$.data.question_id").value(lastAnswer.getQuestion().getId()))
                 .andExpect(jsonPath("$.data.content").value(lastAnswer.getContent()));
     }
 
@@ -87,9 +87,9 @@ public class AnswerControllerTest {
 
             resultActions
                     .andExpect(jsonPath("$[%d].id".formatted(i)).value(answer.getId()))
-                    .andExpect(jsonPath("$[%d].createdAt".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].modifiedAt".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].questionId".formatted(i)).value(answer.getQuestion().getId()))
+                    .andExpect(jsonPath("$[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].modified_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].question_id".formatted(i)).value(answer.getQuestion().getId()))
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(answer.getContent()));
         }
     }
@@ -108,9 +108,9 @@ public class AnswerControllerTest {
                 .andExpect(handler().methodName("item"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(answer.getId()))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.modifiedAt").exists())
-                .andExpect(jsonPath("$.questionId").value(answer.getQuestion().getId()))
+                .andExpect(jsonPath("$.created_at").exists())
+                .andExpect(jsonPath("$.modified_at").exists())
+                .andExpect(jsonPath("$.question_id").value(answer.getQuestion().getId()))
                 .andExpect(jsonPath("$.content").value(answer.getContent()));
     }
 
@@ -137,12 +137,12 @@ public class AnswerControllerTest {
                 .andExpect(handler().handlerType(AnswerController.class))
                 .andExpect(handler().methodName("modify"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 답변이 수정 되었습니다.".formatted(answer.getId())))
                 .andExpect(jsonPath("$.data.id").value(answer.getId()))
-                .andExpect(jsonPath("$.data.createdAt").exists())
-                .andExpect(jsonPath("$.data.modifiedAt").exists())
-                .andExpect(jsonPath("$.data.questionId").value(answer.getQuestion().getId()))
+                .andExpect(jsonPath("$.data.created_at").exists())
+                .andExpect(jsonPath("$.data.modified_at").exists())
+                .andExpect(jsonPath("$.data.question_id").value(answer.getQuestion().getId()))
                 .andExpect(jsonPath("$.data.content").value(answer.getContent()));
     }
 
@@ -160,7 +160,7 @@ public class AnswerControllerTest {
                 .andExpect(handler().handlerType(AnswerController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 답변이 삭제 되었습니다.".formatted(answer.getId())));
     }
 
@@ -176,7 +176,7 @@ public class AnswerControllerTest {
                 .andExpect(handler().methodName("items"))
                 .andExpect(status().isOk());
 
-        Question question = questionService.findById(1);
+        Question question = questionService.findById(1).get();
         List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
 
         for(int i = 0; i < answers.size(); i++) {
@@ -184,9 +184,9 @@ public class AnswerControllerTest {
 
             resultActions
                     .andExpect(jsonPath("$[%d].id".formatted(i)).value(answer.getId()))
-                    .andExpect(jsonPath("$[%d].createdAt".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].modifiedAt".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].questionId".formatted(i)).value(answer.getQuestion().getId()))
+                    .andExpect(jsonPath("$[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].modified_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].question_id".formatted(i)).value(answer.getQuestion().getId()))
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(answer.getContent()));
         }
     }
