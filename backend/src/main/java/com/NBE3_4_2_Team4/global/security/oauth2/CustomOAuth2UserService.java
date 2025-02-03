@@ -32,7 +32,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
         Member member = memberService.signUpOrModify(username, "", nickname, providerTypeCode);
-
         return new CustomUser(member);
     }
 }

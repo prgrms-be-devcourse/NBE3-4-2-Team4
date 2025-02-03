@@ -5,18 +5,24 @@ import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtManager jwtManager;
+    private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
 
     public long count(){
         return memberRepository.count();
@@ -32,6 +38,18 @@ public class MemberService {
         }
 
         return jwtManager.generateToken(member);
+    }
+
+    public String getLogoutUrl(Member member){
+        if (member != null) {
+            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+            OAuth2LogoutService oAuth2LogoutService = oAuth2LogoutServiceFactory.get(oAuthProvider);
+            if (oAuth2LogoutService != null) {
+                return oAuth2LogoutService.getLogoutUrl();
+            }
+            throw new RuntimeException("no OAuth provider found");
+        }
+        throw new RuntimeException("no member logged in");
     }
 
     public Member signUp(

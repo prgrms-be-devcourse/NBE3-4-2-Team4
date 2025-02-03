@@ -1,21 +1,24 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -32,6 +35,9 @@ public class CustomJwtFilterTest {
     private Member member;
 
     private Member admin;
+
+    @Value("${custom.domain.backend}")
+    private String backendDomain;
 
     @BeforeEach
     void setUp() {
@@ -149,7 +155,8 @@ public class CustomJwtFilterTest {
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .with(csrf())
                 )
-                .andExpect(status().isNoContent())
+                .andExpect(status().isFound())
+                .andExpect(header().string(HttpHeaders.LOCATION, backendDomain + OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL))
                 .andDo(print());
     }
 
