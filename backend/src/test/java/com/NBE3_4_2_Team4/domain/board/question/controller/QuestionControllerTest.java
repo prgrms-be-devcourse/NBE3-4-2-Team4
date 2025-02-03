@@ -67,7 +67,7 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(get("/api/questions/1"))
                 .andDo(print());
 
-        Question question = questionService.findById(1L);
+        Question question = questionService.findById(1L).orElseThrow();
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestion"))

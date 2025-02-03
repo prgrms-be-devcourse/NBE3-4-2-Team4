@@ -63,8 +63,8 @@ public class QuestionService {
         return questionRepository.findByTitleLike(searchKeyword, pageRequest);
     }
 
-    public Question findById(long id) {
-        return questionRepository.findById(id).orElseThrow();
+    public Optional<Question> findById(long id) {
+        return questionRepository.findById(id);
     }
 
     public void delete(long id) {

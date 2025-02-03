@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.question.initData;
 
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuestionInitData {
     private final QuestionService questionService;
     private final MemberRepository memberRepository;
+    private final MemberInitData memberInitData;
 
     @Autowired
     @Lazy
@@ -24,7 +26,10 @@ public class QuestionInitData {
 
     @Bean
     public ApplicationRunner questionInitDataApplicationRunner() {
-        return _ -> self.initData();
+        return _ -> {
+            memberInitData.work(); // admin이 먼저 생성되도록 하기 위해 호출
+            self.initData();
+        };
     }
 
     @Transactional
