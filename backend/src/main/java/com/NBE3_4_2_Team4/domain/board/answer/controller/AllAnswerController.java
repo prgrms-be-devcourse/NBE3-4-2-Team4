@@ -9,14 +9,13 @@ import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,12 +27,14 @@ public class AllAnswerController {
     @Operation(summary = "Get All Answers", description = "모든 답변을 가져옵니다.")
     @GetMapping
     @Transactional(readOnly = true)
-    public List<AnswerDto> items() {
-        List<Answer> answers = answerService.findAll();
-
-        return answers.stream()
+    public PageDto<AnswerDto> items(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                answerService.findAll(page, pageSize)
                 .map(AnswerDto::new)
-                .toList();
+        );
     }
 
     @Operation(summary = "Get Answer by Id", description = "답변 Id를 기준으로 특정 답변을 가져옵니다.")

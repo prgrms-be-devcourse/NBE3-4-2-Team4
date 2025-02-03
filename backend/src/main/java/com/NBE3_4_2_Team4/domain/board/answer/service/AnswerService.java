@@ -5,6 +5,10 @@ import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +46,12 @@ public class AnswerService {
         return answerRepository.findAll();
     }
 
+    public Page<Answer> findAll(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        return answerRepository.findAll(pageable);
+    }
+
     public Answer modify(Answer answer, String content) {
         answer.setContent(content);
 
@@ -54,5 +64,11 @@ public class AnswerService {
 
     public List<Answer> findByQuestionOrderByIdDesc(Question question) {
         return answerRepository.findByQuestionOrderByIdDesc(question);
+    }
+
+    public Page<Answer> findByQuestion(Question question, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        return answerRepository.findByQuestion(question, pageable);
     }
 }

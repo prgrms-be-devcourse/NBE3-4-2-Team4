@@ -10,14 +10,13 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,17 +55,18 @@ public class AnswerController {
     @Operation(summary = "Get All Answers by Question Id", description = "특정 질문글의 모든 답변을 가져옵니다.")
     @GetMapping
     @Transactional
-    public List<AnswerDto> items(
-            @PathVariable long questionId
+    public PageDto<AnswerDto> items(
+            @PathVariable long questionId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
         Question question = questionService.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
         );
 
-        List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
-
-        return answers.stream()
-                .map(AnswerDto::new)
-                .toList();
+        return new PageDto<>(
+                answerService.findByQuestion(question, page, pageSize)
+                        .map(AnswerDto::new)
+        );
     }
 }

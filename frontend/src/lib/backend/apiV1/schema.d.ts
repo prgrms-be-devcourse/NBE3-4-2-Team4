@@ -220,14 +220,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/{questionId}/answers/{id}": {
+    "/api/answers/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Answer by Id
+         * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
+         */
+        get: operations["item"];
         put?: never;
         post?: never;
         /**
@@ -312,26 +316,6 @@ export interface paths {
          * @description 모든 답변을 가져옵니다.
          */
         get: operations["items_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/answers/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Answer by Id
-         * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
-         */
-        get: operations["item"];
         put?: never;
         post?: never;
         delete?: never;
@@ -446,6 +430,18 @@ export interface components {
             totalItems?: number;
             hasMore?: boolean;
             items?: components["schemas"]["QuestionDto"][];
+        };
+        PageDtoAnswerDto: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["AnswerDto"][];
         };
         GetItems: {
             /** Format: int64 */
@@ -811,7 +807,10 @@ export interface operations {
     };
     items: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path: {
                 questionId: number;
@@ -826,7 +825,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["AnswerDto"][];
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoAnswerDto"];
                 };
             };
             /** @description Bad Request */
@@ -1045,12 +1044,42 @@ export interface operations {
             };
         };
     };
+    item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["AnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     delete_1: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                questionId: number;
                 id: number;
             };
             cookie?: never;
@@ -1082,7 +1111,6 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                questionId: number;
                 id: number;
             };
             cookie?: never;
@@ -1207,7 +1235,10 @@ export interface operations {
     };
     items_1: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1221,37 +1252,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["AnswerDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    item: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["AnswerDto"];
                 };
             };
             /** @description Bad Request */
