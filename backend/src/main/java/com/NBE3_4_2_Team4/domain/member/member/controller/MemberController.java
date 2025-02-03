@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
+import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -77,7 +78,8 @@ public class MemberController {
         Boolean logoutRequested = (Boolean) req.getSession().getAttribute("logoutRequested");
 
         if (logoutRequested == null || !logoutRequested) {
-            throw new RuntimeException("Invalid access to logout complete");
+            String remoteAddr = req.getRemoteAddr();
+            throw new InValidAccessException(remoteAddr, OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL);
         }
 
         req.getSession().removeAttribute("logoutRequested");
