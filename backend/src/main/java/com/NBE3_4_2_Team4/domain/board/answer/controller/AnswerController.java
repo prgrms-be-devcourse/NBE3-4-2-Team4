@@ -10,7 +10,6 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
-import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -51,54 +50,6 @@ public class AnswerController {
                 "201-1",
                 "%d번 답변이 등록 되었습니다.".formatted(answer.getId()),
                 new AnswerDto(answer)
-        );
-    }
-
-    @Operation(summary = "Update Answer", description = "답변를 수정합니다.")
-    @PatchMapping("/{id}")
-    @Transactional
-    public RsData<AnswerDto> modify(
-            @PathVariable long questionId,
-            @RequestBody @Valid AnswerRequestDto answerRequestDto,
-            @PathVariable("id") long id
-    ) {
-        Answer answer = answerService.findById(id).orElseThrow(
-                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
-        );
-
-        Member actor = AuthManager.getMemberFromContext();
-
-        answer.checkActorCanModify(actor);
-
-        answerService.modify(answer, answerRequestDto.content());
-
-        return new RsData<>(
-                "200-1",
-                "%d번 답변이 수정 되었습니다.".formatted(answer.getId()),
-                new AnswerDto(answer)
-        );
-    }
-
-    @Operation(summary = "Delete Answer", description = "답변을 삭제합니다.")
-    @DeleteMapping("/{id}")
-    @Transactional
-    public RsData<Empty> delete(
-            @PathVariable long questionId,
-            @PathVariable("id") long id
-    ) {
-        Answer answer = answerService.findById(id).orElseThrow(
-                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
-        );
-
-        Member actor = AuthManager.getMemberFromContext();
-
-        answer.checkActorCanDelete(actor);
-
-        answerService.delete(answer);
-
-        return new RsData<>(
-                "200-1",
-                "%d번 답변이 삭제 되었습니다.".formatted(answer.getId())
         );
     }
 
