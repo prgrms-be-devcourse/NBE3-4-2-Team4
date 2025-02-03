@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -13,6 +14,7 @@ import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
+    private final RecommendService recommendService;
 
     @GetMapping
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
@@ -80,6 +83,17 @@ public class QuestionController {
                 "200-1",
                 "%d번 게시글 수정이 완료되었습니다.".formatted(id),
                 new QuestionDto(question)
+        );
+    }
+
+    @PostMapping("/{questionId}/recommend")
+    public RsData<Void> recommend(@PathVariable long questionId) {
+        Member member = AuthManager.getMemberFromContext();
+        recommendService.recommend(questionId, member.getId());
+
+        return new RsData<>(
+                "200-1",
+                "게시글 추천이 완료되었습니다."
         );
     }
 }

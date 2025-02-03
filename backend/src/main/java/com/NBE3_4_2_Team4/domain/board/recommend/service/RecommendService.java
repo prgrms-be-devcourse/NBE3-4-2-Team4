@@ -23,7 +23,7 @@ public class RecommendService {
         Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
         Member member = memberRepository.findById(memberId).orElseThrow();
 
-        if (recommendRepository.findByQuestionAndMember(question, member)) { // 중복 추천 방지
+        if (recommendRepository.existsByQuestionAndMember(question, member)) { // 중복 추천 방지
             throw new IllegalStateException("이미 추천한 게시글입니다.");
         }
         Recommend recommend = Recommend.builder()

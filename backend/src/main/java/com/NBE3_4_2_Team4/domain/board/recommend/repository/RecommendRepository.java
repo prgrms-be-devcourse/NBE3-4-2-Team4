@@ -6,5 +6,5 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecommendRepository extends JpaRepository<Recommend, Long> {
-    boolean findByQuestionAndMember(Question question, Member member);
+    boolean existsByQuestionAndMember(Question question, Member member);
 }
