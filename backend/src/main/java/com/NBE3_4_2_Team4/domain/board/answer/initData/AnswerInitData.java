@@ -6,8 +6,6 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
@@ -25,12 +23,12 @@ public class AnswerInitData {
     @Lazy
     private AnswerInitData self;
 
-    @Bean
-    public ApplicationRunner answerInitDataApplicationRunner() {
-        return args -> {
-            self.work1();
-        };
-    }
+//    @Bean
+//    public ApplicationRunner answerInitDataApplicationRunner() {
+//        return args -> {
+//            self.work1();
+//        };
+//    }
 
     @Transactional
     public void work1() {

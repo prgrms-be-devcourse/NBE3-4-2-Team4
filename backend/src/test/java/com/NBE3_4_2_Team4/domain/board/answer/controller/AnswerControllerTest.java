@@ -2,6 +2,8 @@ package com.NBE3_4_2_Team4.domain.board.answer.controller;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 public class AnswerControllerTest {
+    @Autowired
+    QuestionService questionService;
     @Autowired
     AnswerService answerService;
     @Autowired
@@ -158,5 +162,32 @@ public class AnswerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 답변이 삭제 되었습니다.".formatted(answer.getId())));
+    }
+
+    @Test
+    @DisplayName("특정 질문글 내 전체 답변 조회")
+    void t6() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(get("/api/questions/1/answers"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(AnswerController.class))
+                .andExpect(handler().methodName("items"))
+                .andExpect(status().isOk());
+
+        Question question = questionService.findById(1);
+        List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
+
+        for(int i = 0; i < answers.size(); i++) {
+            Answer answer = answers.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$[%d].id".formatted(i)).value(answer.getId()))
+                    .andExpect(jsonPath("$[%d].createdAt".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].modifiedAt".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].questionId".formatted(i)).value(answer.getQuestion().getId()))
+                    .andExpect(jsonPath("$[%d].content".formatted(i)).value(answer.getContent()));
+        }
     }
 }

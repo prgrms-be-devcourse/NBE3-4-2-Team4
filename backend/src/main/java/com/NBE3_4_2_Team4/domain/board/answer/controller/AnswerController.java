@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -25,18 +26,15 @@ public class AnswerController {
     private final AnswerService answerService;
     private final QuestionService questionService;
 
-    @ModelAttribute("question")
-    public Question getQuestion(@PathVariable long questionId) {
-        return questionService.findById(questionId).get();
-    }
-
     @Operation(summary = "Write Answer", description = "질문글에 새로운 답변을 등록합니다.")
     @PostMapping
     @Transactional
     public RsData<AnswerDto> write(
-            @ModelAttribute("question") Question question,
+            @PathVariable long questionId,
             @RequestBody @Valid AnswerRequestDto answerRequestDto
     ) {
+        Question question = questionService.findById(questionId).get();
+
         Answer answer = answerService.write(
                 question,
                 answerRequestDto.content()
@@ -53,7 +51,7 @@ public class AnswerController {
     @PutMapping("/{id}")
     @Transactional
     public RsData<AnswerDto> modify(
-            @ModelAttribute("question") Question question,
+            @PathVariable long questionId,
             @RequestBody @Valid AnswerRequestDto answerRequestDto,
             @PathVariable("id") long id
     ) {
@@ -74,7 +72,7 @@ public class AnswerController {
     @DeleteMapping("/{id}")
     @Transactional
     public RsData<Empty> delete(
-            @ModelAttribute("question") Question question,
+            @PathVariable long questionId,
             @PathVariable("id") long id
     ) {
         Answer answer = answerService.findById(id).orElseThrow(
@@ -87,5 +85,19 @@ public class AnswerController {
                 "200-1",
                 "%d번 답변이 삭제 되었습니다.".formatted(answer.getId())
         );
+    }
+
+    @Operation(summary = "Get All Answers by Question Id", description = "특정 질문글의 모든 답변을 가져옵니다.")
+    @GetMapping
+    @Transactional
+    public List<AnswerDto> items(
+            @PathVariable long questionId
+    ) {
+        Question question = questionService.findById(questionId).get();
+        List<Answer> answers = answerService.findByQuestionOrderByIdDesc(question);
+
+        return answers.stream()
+                .map(AnswerDto::new)
+                .toList();
     }
 }
