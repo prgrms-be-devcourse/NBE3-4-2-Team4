@@ -34,6 +34,10 @@ spring:
         highlight_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.H2Dialect
+      javax:
+        persistence:
+          lock:
+            timeout: 3000
   config:
     import: application-secret.yml
 springdoc:
