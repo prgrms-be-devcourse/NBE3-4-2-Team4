@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
-import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
@@ -48,15 +47,6 @@ public class MemberController {
         return StringUtils.isBlank(token) ?  "not logged in" : token;
     }
 
-    //OAuth2 없이 직접 로그인하는 경우. 당장의 요구 조건 하에선 호출되지 않음.
-    @PostMapping("/api/login")
-    public RsData<String> login(
-            @RequestBody LoginRequestDto loginRequestDto,
-            HttpServletResponse resp) {
-        String token = memberService.login(loginRequestDto);
-        httpManager.setJwtCookie(resp, token, 30);
-        return new RsData<>("200-1", "OK", token);
-    }
 
     @PostMapping("/api/logout")
     public ResponseEntity<RsData<Empty>> logout(HttpServletRequest req){

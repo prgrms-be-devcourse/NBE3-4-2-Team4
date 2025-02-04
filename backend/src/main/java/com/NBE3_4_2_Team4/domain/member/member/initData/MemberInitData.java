@@ -1,7 +1,5 @@
 package com.NBE3_4_2_Team4.domain.member.member.initData;
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;

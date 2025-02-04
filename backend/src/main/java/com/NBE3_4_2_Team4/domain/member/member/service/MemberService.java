@@ -1,12 +1,8 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
-import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
-import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,24 +17,13 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtManager jwtManager;
     private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
 
     public long count(){
         return memberRepository.count();
     }
 
-    public String login(LoginRequestDto loginRequestDto) {
-        String email = loginRequestDto.email();
-        String password = loginRequestDto.password();
 
-        Member member = memberRepository.findByUsername(email).orElseThrow();
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new InValidPasswordException();
-        }
-
-        return jwtManager.generateToken(member);
-    }
 
     public String getLogoutUrl(Member member){
         if (member != null) {
