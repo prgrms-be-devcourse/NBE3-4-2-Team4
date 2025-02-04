@@ -1,7 +1,6 @@
-package com.NBE3_4_2_Team4.global.config;
+package com.NBE3_4_2_Team4.global.security.oauth2.userInfo;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.impl.KakaoUserInfo;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.impl.NaverUserInfo;
 import org.springframework.security.oauth2.core.user.OAuth2User;

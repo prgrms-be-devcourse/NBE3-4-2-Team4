@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
-import com.NBE3_4_2_Team4.global.config.OAuth2UserInfoFactory;
+import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfoFactory;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
