@@ -34,5 +34,8 @@ public class MemberInitData {
         String nickname = "관리자";
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.NONE;
         memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
+
+        memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, oAuth2Provider);
+
     }
 }
