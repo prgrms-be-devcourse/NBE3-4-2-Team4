@@ -49,7 +49,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data[0].product_price").value(10000))
                 .andExpect(jsonPath("$.data[0].product_description").value("스타벅스 쿠폰1입니다."))
                 .andExpect(jsonPath("$.data[0].product_image_url").value("http://example.com/path/image1.jpg"))
-                .andExpect(jsonPath("$.data[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data[0].product_sale_state").value("SOLDOUT"))
                 // 두번째 data 정합성 체크
                 .andExpect(jsonPath("$.data[1].product_id").value(2))
@@ -57,7 +57,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data[1].product_price").value(15000))
                 .andExpect(jsonPath("$.data[1].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data[1].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data[1].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data[1].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data[1].product_sale_state").value("SOLDOUT"));
     }
 
@@ -79,7 +79,6 @@ class ProductControllerTest {
                 .andExpect(handler().methodName("getAllProductsWithPaging"))
                 .andExpect(status().isOk())
                 // 페이지 정보 정합성 체크
-                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
                 .andExpect(jsonPath("$.data.page_size").value(1))
                 .andExpect(jsonPath("$.data.total_pages").value(2))
@@ -92,7 +91,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.items[0].product_price").value(15000))
                 .andExpect(jsonPath("$.data.items[0].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data.items[0].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data.items[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.items[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.items[0].product_sale_state").value("SOLDOUT"));
     }
 
@@ -114,7 +113,6 @@ class ProductControllerTest {
                 .andExpect(handler().methodName("getProductsByCategory"))
                 .andExpect(status().isOk())
                 // 첫번째 data 정합성 체크
-                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.keyword").value("기프티콘"))
                 .andExpect(jsonPath("$.data.products").isArray())
                 .andExpect(jsonPath("$.data.products[0].product_id").value(1))
@@ -122,7 +120,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].product_price").value(10000))
                 .andExpect(jsonPath("$.data.products[0].product_description").value("스타벅스 쿠폰1입니다."))
                 .andExpect(jsonPath("$.data.products[0].product_image_url").value("http://example.com/path/image1.jpg"))
-                .andExpect(jsonPath("$.data.products[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.products[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.products[0].product_sale_state").value("SOLDOUT"))
                 // 두번째 data 정합성 체크
                 .andExpect(jsonPath("$.data.products[1].product_id").value(2))
@@ -130,7 +128,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.products[1].product_price").value(15000))
                 .andExpect(jsonPath("$.data.products[1].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data.products[1].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data.products[1].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.products[1].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.products[1].product_sale_state").value("SOLDOUT"));
     }
 
@@ -152,7 +150,6 @@ class ProductControllerTest {
                 .andExpect(handler().methodName("getProductsByCategoryWithPaging"))
                 .andExpect(status().isOk())
                 // 페이지 정보 정합성 체크
-                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.keyword").value("기프티콘"))
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
                 .andExpect(jsonPath("$.data.page_size").value(1))
@@ -166,7 +163,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.items[0].product_price").value(15000))
                 .andExpect(jsonPath("$.data.items[0].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data.items[0].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data.items[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.items[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.items[0].product_sale_state").value("SOLDOUT"));
     }
 
@@ -185,10 +182,9 @@ class ProductControllerTest {
         // then
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
-                .andExpect(handler().methodName("getProductsByCategory"))
+                .andExpect(handler().methodName("getProductsBySaleState"))
                 .andExpect(status().isOk())
                 // 첫번째 data 정합성 체크
-                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.keyword").value("SOLDOUT"))
                 .andExpect(jsonPath("$.data.products").isArray())
                 .andExpect(jsonPath("$.data.products[0].product_id").value(1))
@@ -196,7 +192,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.products[0].product_price").value(10000))
                 .andExpect(jsonPath("$.data.products[0].product_description").value("스타벅스 쿠폰1입니다."))
                 .andExpect(jsonPath("$.data.products[0].product_image_url").value("http://example.com/path/image1.jpg"))
-                .andExpect(jsonPath("$.data.products[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.products[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.products[0].product_sale_state").value("SOLDOUT"))
                 // 두번째 data 정합성 체크
                 .andExpect(jsonPath("$.data.products[1].product_id").value(2))
@@ -204,7 +200,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.products[1].product_price").value(15000))
                 .andExpect(jsonPath("$.data.products[1].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data.products[1].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data.products[1].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.products[1].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.products[1].product_sale_state").value("SOLDOUT"));
     }
 
@@ -213,7 +209,7 @@ class ProductControllerTest {
     void getProductsBySaleStateWithPagingTest() throws Exception {
 
         // given
-        String url = "/api/products/state/all?sale_state_keyword=SOLDOUT&page=1&pageSize=1";
+        String url = "/api/products/state?sale_state_keyword=SOLDOUT&page=1&pageSize=1";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -223,10 +219,9 @@ class ProductControllerTest {
         // then
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
-                .andExpect(handler().methodName("getProductsByCategoryWithPaging"))
+                .andExpect(handler().methodName("getProductsBySaleStateWithPaging"))
                 .andExpect(status().isOk())
                 // 페이지 정보 정합성 체크
-                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.keyword").value("SOLDOUT"))
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
                 .andExpect(jsonPath("$.data.page_size").value(1))
@@ -240,7 +235,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.items[0].product_price").value(15000))
                 .andExpect(jsonPath("$.data.items[0].product_description").value("스타벅스 쿠폰2입니다."))
                 .andExpect(jsonPath("$.data.items[0].product_image_url").value("http://example.com/path/image2.jpg"))
-                .andExpect(jsonPath("$.data.items[0].product_categories").value("기프티콘/음료/커피"))
+                .andExpect(jsonPath("$.data.items[0].product_category").value("기프티콘/음료/커피"))
                 .andExpect(jsonPath("$.data.items[0].product_sale_state").value("SOLDOUT"));
     }
 }
