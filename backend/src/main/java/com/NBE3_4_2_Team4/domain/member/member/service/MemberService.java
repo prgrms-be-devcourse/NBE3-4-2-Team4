@@ -57,7 +57,7 @@ public class MemberService {
             String password,
             String nickname,
             Member.Role role,
-            String oAuth2ProviderName){
+            Member.OAuth2Provider oAuth2Provider){
         memberRepository
                 .findByUsername(username)
                 .ifPresent(_ ->{
@@ -65,7 +65,7 @@ public class MemberService {
                 });
         return memberRepository.save(Member.builder()
                 .role(role)
-                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName))
+                .oAuth2Provider(oAuth2Provider)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
@@ -77,8 +77,8 @@ public class MemberService {
             String username,
             String password,
             String nickname,
-            String oAuth2ProviderName){
-        return signUp(username, password, nickname, Member.Role.USER, oAuth2ProviderName);
+            Member.OAuth2Provider oAuth2Provider){
+        return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
     }
 
 
@@ -86,7 +86,7 @@ public class MemberService {
         member.setNickname(nickname);
     }
 
-    public Member signUpOrModify(String username, String password, String nickname, String oAuth2ProviderName) {
+    public Member signUpOrModify(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         if (member.isPresent()) {
             Member memberToModify = member.get();
@@ -94,6 +94,6 @@ public class MemberService {
             return memberToModify;
         }
 
-        return userSignUp(username, password, nickname, oAuth2ProviderName);
+        return userSignUp(username, password, nickname, oAuth2Provider);
     }
 }
