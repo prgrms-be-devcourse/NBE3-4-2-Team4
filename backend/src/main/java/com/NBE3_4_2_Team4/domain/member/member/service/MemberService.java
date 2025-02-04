@@ -24,8 +24,6 @@ public class MemberService {
         return memberRepository.count();
     }
 
-
-
     public String getLogoutUrl(Member member){
         if (member != null) {
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
@@ -67,7 +65,6 @@ public class MemberService {
         return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
     }
 
-
     public void modify(Member member, String nickname){
         member.setNickname(nickname);
     }
@@ -81,5 +78,11 @@ public class MemberService {
         }
 
         return userSignUp(username, password, nickname, oAuth2Provider);
+    }
+
+    public void delete(Member member) {
+        member.getQuestions().forEach(question -> question.setAuthor(null));
+        member.getAnswers().forEach(answer -> answer.setAuthor(null));
+        memberRepository.delete(member);
     }
 }

@@ -1,5 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.member.entity;
 
+import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -7,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,13 +44,17 @@ public class Member {
     @Setter
     private String nickname;
 
-    private LocalDate lastAttendanceDate;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private Long point;
+
+    @OneToMany(mappedBy = "author")
+    private List<Question> questions;
+
+    @OneToMany(mappedBy = "author")
+    private List<Answer> answers;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;
