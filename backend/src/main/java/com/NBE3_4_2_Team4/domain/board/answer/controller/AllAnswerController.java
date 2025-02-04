@@ -4,10 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerRequestDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,9 +38,7 @@ public class AllAnswerController {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public AnswerDto item(@PathVariable long id) {
-        Answer answer = answerService.findById(id).orElseThrow(
-                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
-        );
+        Answer answer = answerService.findById(id);
 
         return new AnswerDto(answer);
     }
@@ -55,15 +50,7 @@ public class AllAnswerController {
             @RequestBody @Valid AnswerRequestDto answerRequestDto,
             @PathVariable("id") long id
     ) {
-        Answer answer = answerService.findById(id).orElseThrow(
-                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
-        );
-
-        Member actor = AuthManager.getMemberFromContext();
-
-        answer.checkActorCanModify(actor);
-
-        answerService.modify(answer, answerRequestDto.content());
+        Answer answer = answerService.modify(id, answerRequestDto.content());
 
         return new RsData<>(
                 "200-1",
@@ -78,19 +65,11 @@ public class AllAnswerController {
     public RsData<Empty> delete(
             @PathVariable("id") long id
     ) {
-        Answer answer = answerService.findById(id).orElseThrow(
-                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
-        );
-
-        Member actor = AuthManager.getMemberFromContext();
-
-        answer.checkActorCanDelete(actor);
-
-        answerService.delete(answer);
+        answerService.delete(id);
 
         return new RsData<>(
                 "200-1",
-                "%d번 답변이 삭제 되었습니다.".formatted(answer.getId())
+                "%d번 답변이 삭제 되었습니다.".formatted(id)
         );
     }
 }

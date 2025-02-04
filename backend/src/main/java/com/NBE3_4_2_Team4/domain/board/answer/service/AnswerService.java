@@ -4,6 +4,8 @@ import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,8 +40,12 @@ public class AnswerService {
         return answerRepository.findFirstByOrderByIdDesc();
     }
 
-    public Optional<Answer> findById(long id) {
-        return answerRepository.findById(id);
+    public Answer findById(long id) {
+        Answer answer = answerRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-2", "해당 답변은 존재하지 않습니다.")
+        );
+
+        return answer;
     }
 
     public List<Answer> findAll() {
@@ -52,13 +58,43 @@ public class AnswerService {
         return answerRepository.findAll(pageable);
     }
 
-    public Answer modify(Answer answer, String content) {
+    public void checkActorCanModify(Answer answer, Member actor) {
+        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+
+        if (actor.equals(answer.getAuthor())) return;
+
+        throw new ServiceException("403-2", "작성자만 답변을 수정할 수 있습니다.");
+    }
+
+    public void checkActorCanDelete(Answer answer, Member actor) {
+        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+
+        if (actor.getRole() == Member.Role.ADMIN) return;
+
+        if (actor.equals(answer.getAuthor())) return;
+
+        throw new ServiceException("403-2", "작성자만 답변을 삭제할 수 있습니다.");
+    }
+
+    public Answer modify(long id, String content) {
+        Answer answer = findById(id);
+
+        Member actor = AuthManager.getMemberFromContext();
+
+        checkActorCanModify(answer, actor);
+
         answer.setContent(content);
 
         return answer;
     }
 
-    public void delete(Answer answer) {
+    public void delete(long id) {
+        Answer answer = findById(id);
+
+        Member actor = AuthManager.getMemberFromContext();
+
+        checkActorCanDelete(answer, actor);
+
         answerRepository.delete(answer);
     }
 

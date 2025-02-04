@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 public class AnswerDto {
     @NonNull
-    private long id;
+    private final long id;
 
     @NonNull
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     @NonNull
-    private LocalDateTime modifiedAt;
+    private final LocalDateTime modifiedAt;
 
     @NonNull
     private final long questionId;
@@ -27,7 +27,7 @@ public class AnswerDto {
     private final String authorName;
 
     @NonNull
-    private String content;
+    private final String content;
 
     public AnswerDto(Answer answer) {
         this.id = answer.getId();

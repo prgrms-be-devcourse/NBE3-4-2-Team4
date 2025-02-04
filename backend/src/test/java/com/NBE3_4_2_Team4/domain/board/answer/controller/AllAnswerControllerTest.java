@@ -78,7 +78,7 @@ public class AllAnswerControllerTest {
                 .perform(get("/api/answers/1"))
                 .andDo(print());
 
-        Answer answer = answerService.findById(1).get();
+        Answer answer = answerService.findById(1);
 
         resultActions
                 .andExpect(handler().handlerType(AllAnswerController.class))
@@ -127,7 +127,7 @@ public class AllAnswerControllerTest {
                 )
                 .andDo(print());
 
-        Answer answer = answerService.findById(1).get();
+        Answer answer = answerService.findById(1);
 
         resultActions
                 .andExpect(handler().handlerType(AllAnswerController.class))
@@ -139,7 +139,7 @@ public class AllAnswerControllerTest {
                 .andExpect(jsonPath("$.data.created_at").exists())
                 .andExpect(jsonPath("$.data.modified_at").exists())
                 .andExpect(jsonPath("$.data.question_id").value(answer.getQuestion().getId()))
-                .andExpect(jsonPath("$.data.content").value(answer.getContent()));
+                .andExpect(jsonPath("$.data.content").value("답변 내용 new"));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class AllAnswerControllerTest {
     @DisplayName("답변 삭제")
     @WithUserDetails("admin@test.com")
     void t4() throws Exception {
-        Answer answer = answerService.findById(1).get();
+        Answer answer = answerService.findById(1);
 
         ResultActions resultActions = mvc
                 .perform(delete("/api/answers/1"))
