@@ -34,6 +34,9 @@ public class PointServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private PointHistoryService pointHistoryService;
+
     private Member member1;
     private Member member2;
     private Long member1Id;
@@ -60,8 +63,8 @@ public class PointServiceTest {
         memberRepository.save(member1);
         memberRepository.save(member2);
 
-        pointService.createHistory(member1, null, 10, PointCategory.ANSWER, "a");
-        pointService.createHistory(member2, null, 10, PointCategory.ANSWER, "b");
+        pointHistoryService.createHistory(member1, null, 10, PointCategory.ANSWER, "a");
+        pointHistoryService.createHistory(member2, null, 10, PointCategory.ANSWER, "b");
 
         member1Id = member1.getId();
         member2Id = member2.getId();
@@ -102,7 +105,7 @@ public class PointServiceTest {
     @Test
     @DisplayName("history creation test")
     void t4() {
-        long id = pointService.createHistory(member1, null, 10, PointCategory.ANSWER, "a");
+        long id = pointHistoryService.createHistory(member1, null, 10, PointCategory.ANSWER, "a");
         PointHistory pointHistory = pointHistoryRepository.findById(id).orElseThrow(() -> new RuntimeException("히스토리 없음"));
         assertEquals(member1.getId(), pointHistory.getMember().getId());
 

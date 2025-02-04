@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.point.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
 import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
@@ -17,15 +18,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PointService {
-    private final PointHistoryRepository pointHistoryRepository;
     private final MemberRepository memberRepository;
+    private final PointHistoryService pointHistoryService;
 
-    //포인트를 전송하는 로직 ex) 지식인 채택, 포인트 선물 등등
+    //포인트를 전송 로직: 지식인 채택, 포인트 선물 등등
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -38,21 +40,19 @@ public class PointService {
         Member recipient = memberRepository.findByUsernameWithLock(toUsername)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", toUsername)));
 
-        //잔고 포인트 계산
-        long recipientBalance = recipient.getPoint() + amount;
+        //잔고 포인트 계산 & update
         long senderBalance = sender.getPoint() - amount;
         validateBalance(senderBalance);
-
         sender.setPoint(senderBalance);
-        recipient.setPoint(recipientBalance);
+        recipient.setPoint(recipient.getPoint() + amount);
 
         //기록 생성
         String correlationId = UUID.randomUUID().toString();
-        createHistory(sender, recipient, amount * -1, pointCategory, correlationId);
-        createHistory(recipient, sender, amount, pointCategory, correlationId);
+        pointHistoryService.createHistory(sender, recipient, amount * -1, pointCategory, correlationId);
+        pointHistoryService.createHistory(recipient, sender, amount, pointCategory, correlationId);
     }
 
-    //포인트 차감 로직. 상품구매 등
+    //포인트 차감 로직: 상품구매 등
     @Transactional
     public void deductPoints(String from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -65,9 +65,10 @@ public class PointService {
         member.setPoint(updatedBalance);
 
         String correlationId = UUID.randomUUID().toString();
-        createHistory(member, null, amount * -1, pointCategory, correlationId);
+        pointHistoryService.createHistory(member, null, amount * -1, pointCategory, correlationId);
     }
-    //포인트 적립, 출석체크, 보상등
+
+    //포인트 적립: 출석체크, 보상등
     @Transactional
     public void accumulatePoints(String to, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -77,30 +78,9 @@ public class PointService {
         member.setPoint(member.getPoint() + amount);
 
         String correlationId = UUID.randomUUID().toString();
-        createHistory(member, null, amount, pointCategory, correlationId);
+        pointHistoryService.createHistory(member, null, amount, pointCategory, correlationId);
     }
 
-    @Transactional
-    Long createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
-        PointHistory pointHistory = PointHistory.builder()
-                .pointCategory(pointCategory)
-                .amount(amount)
-                .correlationId(correlationId)
-                .member(member)
-                .counterMember(counterMember)
-                .build();
-
-        pointHistoryRepository.save(pointHistory);
-        return pointHistory.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public PageDto<PointHistoryRes> getHistoryPage(Member member, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new PageDto<PointHistoryRes>(pointHistoryRepository
-                .findByMember(member, pageable)
-                .map(PointHistoryRes::from));
-    }
 
     private void validateAmount(long amount) {
         if (amount <= 0) throw new PointClientException("거래금액이 0이나 음수가 될 수 없습니다");
