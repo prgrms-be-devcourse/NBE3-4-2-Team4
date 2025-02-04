@@ -31,6 +31,15 @@ public class QuestionController {
         );
     }
 
+    @GetMapping("/recommends")
+    public PageDto<QuestionDto> getRecommended(@RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int pageSize) {
+        return new PageDto<>(
+                questionService.findByRecommends(page, pageSize)
+                        .map(QuestionDto::new)
+        );
+    }
+
     @GetMapping("/{id}")
     public QuestionDto getQuestion(@PathVariable long id) {
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
@@ -40,10 +49,8 @@ public class QuestionController {
 
     @DeleteMapping("/{id}")
     public RsData<Void> delete(@PathVariable long id) {
-        if (!questionService.findById(id).isPresent()) {
-            throw new QuestionNotFoundException();
-        }
         questionService.delete(id);
+
         return new RsData<>(
                 "200-1",
                 "게시글 삭제가 완료되었습니다."
@@ -69,7 +76,6 @@ public class QuestionController {
     @Transactional
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
-
         questionService.update(question, reqBody.title(), reqBody.content());
 
         return new RsData<>(

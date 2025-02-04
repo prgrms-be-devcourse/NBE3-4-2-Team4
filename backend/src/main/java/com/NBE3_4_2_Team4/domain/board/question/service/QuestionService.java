@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,12 +64,18 @@ public class QuestionService {
         return questionRepository.findByTitleLike(searchKeyword, pageRequest);
     }
 
+    public Page<Question> findByRecommends(int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        return questionRepository.findRecommendedQuestions(pageRequest);
+    }
+
     public Optional<Question> findById(long id) {
         return questionRepository.findById(id);
     }
 
     public void delete(long id) {
-        questionRepository.deleteById(id);
+        Question question = questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
+        questionRepository.delete(question);
     }
 
     public void update(Question q, String title, String content) {
