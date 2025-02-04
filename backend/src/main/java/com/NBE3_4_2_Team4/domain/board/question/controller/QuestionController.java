@@ -38,6 +38,15 @@ public class QuestionController {
         );
     }
 
+    @GetMapping("/recommends")
+    public PageDto<QuestionDto> getRecommended(@RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int pageSize) {
+        return new PageDto<>(
+                questionService.findByRecommends(page, pageSize)
+                        .map(QuestionDto::new)
+        );
+    }
+
     @GetMapping("/{id}")
     public QuestionDto getQuestion(@PathVariable long id) {
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
@@ -87,7 +96,7 @@ public class QuestionController {
     }
 
     @PostMapping("/{questionId}/recommend")
-    public RsData<Void> recommend(@PathVariable long questionId) {
+    public RsData<Void> recommend(@PathVariable long questionId) { // 게시글 추천
         Member member = AuthManager.getMemberFromContext();
         recommendService.recommend(questionId, member.getId());
 

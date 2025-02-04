@@ -63,6 +63,11 @@ public class QuestionService {
         return questionRepository.findByTitleLike(searchKeyword, pageRequest);
     }
 
+    public Page<Question> findByRecommends(int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        return questionRepository.findRecommendedQuestions(pageRequest);
+    }
+
     public Optional<Question> findById(long id) {
         return questionRepository.findById(id);
     }
