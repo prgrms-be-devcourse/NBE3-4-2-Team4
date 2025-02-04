@@ -11,6 +11,7 @@ import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +45,9 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageDto<GetItems> getProducts(int page, int pageSize) {
 
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
-        Page<Product> products = productRepository.findAll(pageRequest);
+        Page<Product> products = productRepository.findAll(pageable);
 
         return new PageDto<>(products.map(product -> new GetItems(
                 product,
@@ -95,10 +96,10 @@ public class ProductService {
             saveChildCategories(productCategory, leafCategories);
         }
 
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
         // 최하위 카테고리에 해당하는 상품들 페이징 처리하여 조회
-        Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageRequest);
+        Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageable);
 
         return new PageDtoWithKeyword<>(
                 products.map(product -> new GetItems(
@@ -127,6 +128,26 @@ public class ProductService {
                                 product.getSaleState().getName()
                         ))
                         .toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PageDtoWithKeyword<GetItems> getProductsBySaleStateKeyword(String saleStateKeyword, int page, int pageSize) {
+
+        SaleState saleState = SaleState.fromString(saleStateKeyword)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid saleState keyword: " + saleStateKeyword));
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        Page<Product> products = productRepository.findBySaleStateLike(saleState, pageable);
+
+        return new PageDtoWithKeyword<>(
+                products.map(product -> new GetItems(
+                        product,
+                        makeFullCategory(product),
+                        product.getSaleState().getName()
+                )),
+                saleStateKeyword
+        );
     }
 
     private String makeFullCategory(Product product) {

@@ -83,11 +83,30 @@ public class ProductController {
     }
 
     @GetMapping("/state/all")
-    @Operation(summary = "판매 상태별 상품 조회", description = "판매 상품별 상품을 조회합니다.")
+    @Operation(summary = "판매 상태별 상품 조회", description = "판매 상태별 상품을 조회합니다.")
     RsData<GetItemsByKeyword> getProductsBySaleState(
             @RequestParam(name = "sale_state_keyword") String saleStateKeyword) {
 
         GetItemsByKeyword products = productService.getProductsBySaleStateKeyword(saleStateKeyword);
+
+        return new RsData<>(
+                "200-1",
+                "OK",
+                products
+        );
+    }
+
+
+    @GetMapping("/state")
+    @Operation(summary = "판매 상태별 상품 조회 (페이징)", description = "판매 상태별 상품을 페이징 처리하여 조회합니다.")
+    RsData<PageDto<GetItems>> getProductsBySaleStateWithPaging(
+            @RequestParam(name = "sale_state_keyword") String saleStateKeyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "4") int pageSize
+    ) {
+
+        PageDtoWithKeyword<GetItems> products = productService.getProductsBySaleStateKeyword(
+                saleStateKeyword, page, pageSize);
 
         return new RsData<>(
                 "200-1",
