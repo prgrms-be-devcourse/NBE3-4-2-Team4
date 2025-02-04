@@ -24,4 +24,6 @@ public class Answer extends BaseTime {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private boolean selected;
 }
