@@ -5,7 +5,6 @@ import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
-import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -13,13 +12,8 @@ import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -55,10 +49,8 @@ public class QuestionController {
 
     @DeleteMapping("/{id}")
     public RsData<Void> delete(@PathVariable long id) {
-        if (!questionService.findById(id).isPresent()) {
-            throw new QuestionNotFoundException();
-        }
         questionService.delete(id);
+
         return new RsData<>(
                 "200-1",
                 "게시글 삭제가 완료되었습니다."
@@ -84,7 +76,6 @@ public class QuestionController {
     @Transactional
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
-
         questionService.update(question, reqBody.title(), reqBody.content());
 
         return new RsData<>(
