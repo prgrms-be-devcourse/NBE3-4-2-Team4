@@ -2,11 +2,9 @@ package com.NBE3_4_2_Team4.global.security.user;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
 import java.util.Map;
 
 @Getter

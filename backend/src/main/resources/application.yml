@@ -48,3 +48,7 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
+custom: #   이 둘은 실제 서비스 시 변경 or prod.yml 을 만들고 거기에 변경 값 추가
+  domain:
+    backend: "http://localhost:${server.port}"
+    frontend: "http://localhost:3000"

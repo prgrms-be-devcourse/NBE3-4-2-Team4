@@ -1,37 +1,40 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
-import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
-import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtManager jwtManager;
+    private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
 
     public long count(){
         return memberRepository.count();
     }
 
-    public String login(LoginRequestDto loginRequestDto) {
-        String email = loginRequestDto.email();
-        String password = loginRequestDto.password();
 
-        Member member = memberRepository.findByUsername(email).orElseThrow();
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new InValidPasswordException();
+
+    public String getLogoutUrl(Member member){
+        if (member != null) {
+            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+            OAuth2LogoutService oAuth2LogoutService = oAuth2LogoutServiceFactory.get(oAuthProvider);
+            if (oAuth2LogoutService != null) {
+                return oAuth2LogoutService.getLogoutUrl();
+            }
+            throw new RuntimeException("no OAuth provider found");
         }
-
-        return jwtManager.generateToken(member);
+        throw new RuntimeException("no member logged in");
     }
 
     public Member signUp(
@@ -39,7 +42,7 @@ public class MemberService {
             String password,
             String nickname,
             Member.Role role,
-            String oAuth2ProviderName){
+            Member.OAuth2Provider oAuth2Provider){
         memberRepository
                 .findByUsername(username)
                 .ifPresent(_ ->{
@@ -47,7 +50,7 @@ public class MemberService {
                 });
         return memberRepository.save(Member.builder()
                 .role(role)
-                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName))
+                .oAuth2Provider(oAuth2Provider)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
@@ -59,8 +62,8 @@ public class MemberService {
             String username,
             String password,
             String nickname,
-            String oAuth2ProviderName){
-        return signUp(username, password, nickname, Member.Role.USER, oAuth2ProviderName);
+            Member.OAuth2Provider oAuth2Provider){
+        return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
     }
 
 
@@ -68,7 +71,7 @@ public class MemberService {
         member.setNickname(nickname);
     }
 
-    public Member signUpOrModify(String username, String password, String nickname, String oAuth2ProviderName) {
+    public Member signUpOrModify(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         if (member.isPresent()) {
             Member memberToModify = member.get();
@@ -76,6 +79,6 @@ public class MemberService {
             return memberToModify;
         }
 
-        return userSignUp(username, password, nickname, oAuth2ProviderName);
+        return userSignUp(username, password, nickname, oAuth2Provider);
     }
 }
