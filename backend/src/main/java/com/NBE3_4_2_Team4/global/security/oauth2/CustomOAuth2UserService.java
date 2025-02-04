@@ -10,11 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -30,22 +28,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getClientRegistration()
                 .getRegistrationId()
                 .toUpperCase();
-//        log.warn("providerTypeCode: {}", providerTypeCode);
-//        Map<String, Object> attributes = oAuth2User.getAttributes();
-//        log.warn("attributes: {}", attributes);
-//        Map<String, String> attributeProperties;
-//        switch (providerTypeCode) {
-//            case "KAKAO":
-//                attributeProperties = (Map<String, String>) attributes.get("properties");
-//                oAuth2Id = oAuth2User.getName();
-//                break;
-//            case "NAVER":
-//                attributeProperties = (Map<String, String>) attributes.get("response");
-//                oAuth2Id = attributeProperties.get("id");
-//                break;
-//            default:
-//                throw new RuntimeException("Unknown providerTypeCode: " + providerTypeCode);
-//        }
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(providerTypeCode);
         OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory
                 .getOAuth2UserInfo
