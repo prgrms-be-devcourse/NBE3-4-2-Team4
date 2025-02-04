@@ -1,7 +1,5 @@
 package com.NBE3_4_2_Team4.domain.member.member.initData;
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.member.dto.request.SignUpRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +34,7 @@ public class MemberInitData {
         String nickname = "관리자";
         String oAuth2ProviderName = "NONE";
         memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2ProviderName);
+
+        memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, "NONE");
     }
 }
