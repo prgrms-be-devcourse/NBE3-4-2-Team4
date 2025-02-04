@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.product.saleState.entity;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductSaleState {
