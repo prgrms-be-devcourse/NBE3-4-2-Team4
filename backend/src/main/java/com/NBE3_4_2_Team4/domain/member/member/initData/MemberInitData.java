@@ -32,9 +32,10 @@ public class MemberInitData {
         String username = "admin@test.com";
         String password = "1234";
         String nickname = "관리자";
-        String oAuth2ProviderName = "NONE";
-        memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2ProviderName);
+        Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.NONE;
+        memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
 
-        memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, "NONE");
+        memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, oAuth2Provider);
+
     }
 }

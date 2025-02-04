@@ -1,6 +1,8 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
@@ -11,9 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Component
 public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestResolver {
     private final DefaultOAuth2AuthorizationRequestResolver defaultResolver;
+
+    @Value("${custom.domain.frontend}")
+    private String frontDomain;
 
     public CustomOAuth2RequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
         this.defaultResolver = new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
@@ -36,10 +42,12 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
             return null;
         }
 
-        String redirectUrl = Objects.requireNonNullElse(request.getParameter("redirectUrl"), "http://localhost:3000/");
-
+        String redirectUrl = Objects.requireNonNullElse(request.getParameter("redirectUrl"), frontDomain);
         Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
         if (!redirectUrl.isEmpty()) {
+            //이거 주석 풀면 매번 카카오 계정 로그인 해야 함
+//            String prompt = "login";
+//            additionalParameters.put("prompt",prompt);
             additionalParameters.put("state", redirectUrl);
         }
 

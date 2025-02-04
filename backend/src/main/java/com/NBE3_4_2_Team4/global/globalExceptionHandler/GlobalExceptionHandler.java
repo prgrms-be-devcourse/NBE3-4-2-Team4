@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.globalExceptionHandler;
 
+import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -38,6 +39,16 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(InValidAccessException.class)
+    public ResponseEntity<RsData<Empty>> handleInValidAccessException(InValidAccessException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new RsData<>(
+                        "400-1",
+                        e.getMessage() // 커스텀 메시지 사용
+                ));
+    }
+  
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RsData<Empty>> handle(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult()
