@@ -25,29 +25,34 @@ public class PointService {
     private final PointHistoryRepository pointHistoryRepository;
     private final MemberRepository memberRepository;
 
+    //포인트를 전송하는 로직 ex) 지식인 채택, 포인트 선물 등등
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
         validateAmount(amount);
         if (fromUsername.equals(toUsername)) throw new PointClientException("자기 자신에게 송금할 수 없습니다");
 
+        //보낸이 받는이 조회 & 락
         Member sender = memberRepository.findByUsernameWithLock(fromUsername)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", fromUsername)));
 
         Member recipient = memberRepository.findByUsernameWithLock(toUsername)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", toUsername)));
 
+        //잔고 포인트 계산
         long recipientBalance = recipient.getPoint() + amount;
         long senderBalance = sender.getPoint() - amount;
-
         validateBalance(senderBalance);
+
         sender.setPoint(senderBalance);
         recipient.setPoint(recipientBalance);
 
+        //기록 생성
         String correlationId = UUID.randomUUID().toString();
         createHistory(sender, recipient, amount * -1, pointCategory, correlationId);
         createHistory(recipient, sender, amount, pointCategory, correlationId);
     }
 
+    //포인트 차감 로직. 상품구매 등
     @Transactional
     public void deductPoints(String from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -62,7 +67,7 @@ public class PointService {
         String correlationId = UUID.randomUUID().toString();
         createHistory(member, null, amount * -1, pointCategory, correlationId);
     }
-
+    //포인트 적립, 출석체크, 보상등
     @Transactional
     public void accumulatePoints(String to, long amount, PointCategory pointCategory) {
         validateAmount(amount);
