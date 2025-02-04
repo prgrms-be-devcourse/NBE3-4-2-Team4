@@ -76,7 +76,7 @@ public class PointService {
     }
 
     @Transactional
-    private void createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
+    Long createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
         PointHistory pointHistory = PointHistory.builder()
                 .pointCategory(pointCategory)
                 .amount(amount)
@@ -86,6 +86,7 @@ public class PointService {
                 .build();
 
         pointHistoryRepository.save(pointHistory);
+        return pointHistory.getId();
     }
 
     @Transactional(readOnly = true)
