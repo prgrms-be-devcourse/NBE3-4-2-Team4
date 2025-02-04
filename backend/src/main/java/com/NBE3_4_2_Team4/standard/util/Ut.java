@@ -1,5 +1,9 @@
 package com.NBE3_4_2_Team4.standard.util;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Ut {
@@ -142,6 +147,33 @@ public class Ut {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static class PageableUtil{
+        /**
+         * Pageable 객체를 생성하는 유틸리티 클래스입니다.
+         * 기본적으로 페이지 번호는 1, 페이지 크기는 10, 정렬 기준은 "id"로 설정됩니다.
+         *
+         * 정렬 기준은 엔티티의 필드 명에 맞춰 지정할 수 있으며, 주석을 풀고 `sortString` 파라미터를
+         * 추가하여 사용자가 원하는 필드로 정렬할 수 있습니다.
+         *
+         * @param page 페이지 번호 (기본값: 1)
+         * @param size 페이지 크기 (기본값: 10)
+//         * @param sortString 정렬할 기준
+         * @return 정렬된 Pageable 객체
+         */
+        public static Pageable pageable(Integer page, Integer size
+//                                        ,String sortString
+                                        ) {
+            int pageNumber = Objects.requireNonNullElse(page, 1);
+            int sizeNumber = Objects.requireNonNullElse(size, 10);
+            String sort =
+//                    Objects.requireNonNullElse(sortString,
+                        "id"
+//                    )
+            ;
+            return PageRequest.of(pageNumber - 1, sizeNumber, Sort.by(Sort.Order.desc(sort)));
         }
     }
 }
