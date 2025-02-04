@@ -6,11 +6,10 @@ import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
 import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageDto<GetItems> getProducts(int page, int pageSize) {
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
         Page<Product> products = productRepository.findAll(pageable);
 
@@ -93,7 +92,7 @@ public class ProductService {
             saveChildCategories(productCategory, leafCategories);
         }
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
         // 최하위 카테고리에 해당하는 상품들 페이징 처리하여 조회
         Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageable);
@@ -134,7 +133,7 @@ public class ProductService {
         SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid saleState keyword: " + saleStateKeyword));
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
         Page<Product> products = productRepository.findBySaleStateLike(saleState, pageable);
 
