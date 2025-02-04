@@ -29,6 +29,9 @@ public class AnswerDto {
     @NonNull
     private final String content;
 
+    @NonNull
+    private final boolean selected;
+
     public AnswerDto(Answer answer) {
         this.id = answer.getId();
         this.createdAt = answer.getCreatedAt();
@@ -37,5 +40,6 @@ public class AnswerDto {
         this.authorId = answer.getAuthor().getId();
         this.authorName = answer.getAuthor().getNickname();
         this.content = answer.getContent();
+        this.selected = answer.isSelected();
     }
 }

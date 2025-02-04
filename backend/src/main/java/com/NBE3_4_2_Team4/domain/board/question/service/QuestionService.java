@@ -31,7 +31,7 @@ public class QuestionService {
         return questionRepository.count();
     }
 
-    public Question write(String title, String content, Long categoryId, Member author) {
+    public Question write(String title, String content, Long categoryId, Member author, long point) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
         return questionRepository.save(Question.builder()
@@ -39,6 +39,7 @@ public class QuestionService {
                 .content(content)
                 .author(author)
                 .category(category)
+                .point(point)
                 .build());
     }
 

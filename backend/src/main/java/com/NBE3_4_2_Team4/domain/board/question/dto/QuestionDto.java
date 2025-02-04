@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.dto;
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
+import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
@@ -23,7 +23,7 @@ public class QuestionDto {
     private final LocalDateTime createdAt;
     @NonNull
     private final LocalDateTime modifiedAt;
-    private final Answer selectedAnswer;
+    private final AnswerDto selectedAnswer;
     @NonNull
     private final boolean closed;
     @NonNull
@@ -37,7 +37,7 @@ public class QuestionDto {
         this.categoryName = question.getCategory().getName();
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
-        this.selectedAnswer = question.getSelectedAnswer();
+        this.selectedAnswer = new AnswerDto(question.getSelectedAnswer());
         this.closed = question.isClosed();
         this.point = question.getPoint();
     }

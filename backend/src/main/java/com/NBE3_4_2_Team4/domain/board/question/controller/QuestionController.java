@@ -71,7 +71,7 @@ public class QuestionController {
     @Operation(summary = "질문 등록")
     public RsData<QuestionWriteResDto> write(@RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member author = AuthManager.getMemberFromContext();
-        Question q = questionService.write(reqBody.title(), reqBody.content(), reqBody.categoryId(), author);
+        Question q = questionService.write(reqBody.title(), reqBody.content(), reqBody.categoryId(), author, reqBody.point());
 
         return new RsData<>(
                 "200-1",
