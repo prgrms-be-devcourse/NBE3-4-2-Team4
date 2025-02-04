@@ -150,7 +150,7 @@ public class Ut {
         }
     }
 
-    public static class PageableUtil{
+    public static class pageable{
         /**
          * Pageable 객체를 생성하는 유틸리티 클래스입니다.
          * 기본적으로 페이지 번호는 1, 페이지 크기는 10, 정렬 기준은 "id"로 설정됩니다.
