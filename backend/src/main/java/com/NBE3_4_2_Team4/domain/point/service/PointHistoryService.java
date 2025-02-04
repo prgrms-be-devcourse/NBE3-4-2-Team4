@@ -46,7 +46,7 @@ public class PointHistoryService {
         Pageable pageable = PageRequest.of(pointHistoryReq.getPage()-1, size, Sort.by("createdAt").descending());
         return new PageDto<PointHistoryRes>(pointHistoryRepository
                 .findByFilters(
-                        1L,
+                        member.getId(),
                         pointHistoryReq.getPointCategory(),
                         pointHistoryReq.getStartDateTime(),
                         pointHistoryReq.getEndDateTime(),

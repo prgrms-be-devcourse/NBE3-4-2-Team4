@@ -30,7 +30,6 @@ public class PointController {
     public RsData<Empty> transfer(@Valid @RequestBody PointTransferReq reqDto) {
         Member sender = getMemberFromContext();
         if (sender == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
-        ;
 
         pointService.transfer(sender.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
 
@@ -46,7 +45,6 @@ public class PointController {
         Member member = getMemberFromContext();
         if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
 
-
         PageDto<PointHistoryRes> points = pointHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
 
         return new RsData<>(
@@ -59,8 +57,7 @@ public class PointController {
     @GetMapping()
     public RsData<PageDto<PointHistoryRes>> getPointHistories(@Valid @ModelAttribute PointHistoryReq pointHistoryReq) {
         Member member = getMemberFromContext();
-        //if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
-
+        if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
 
         PageDto<PointHistoryRes> points =
                 pointHistoryService.getHistoryPageWithFilter(member, POINT_HISTORY_SIZE, pointHistoryReq);
