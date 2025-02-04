@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
-    private final RecommendService recommendService;
 
     @GetMapping
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
@@ -92,17 +91,6 @@ public class QuestionController {
                 "200-1",
                 "%d번 게시글 수정이 완료되었습니다.".formatted(id),
                 new QuestionDto(question)
-        );
-    }
-
-    @PostMapping("/{questionId}/recommend")
-    public RsData<Void> recommend(@PathVariable long questionId) { // 게시글 추천
-        Member member = AuthManager.getMemberFromContext();
-        recommendService.recommend(questionId, member.getId());
-
-        return new RsData<>(
-                "200-1",
-                "게시글 추천이 완료되었습니다."
         );
     }
 }
