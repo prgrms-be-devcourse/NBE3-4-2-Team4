@@ -163,7 +163,7 @@ public class Ut {
 //         * @param sortString 정렬할 기준
          * @return 정렬된 Pageable 객체
          */
-        public static Pageable pageable(Integer page, Integer size
+        public static Pageable makePageable(Integer page, Integer size
 //                                        ,String sortString
                                         ) {
             int pageNumber = Objects.requireNonNullElse(page, 1);
