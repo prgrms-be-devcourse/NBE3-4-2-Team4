@@ -4,9 +4,7 @@ import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
 import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
 import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
-import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +24,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
-    private final ProductSaleStateRepository productSaleStateRepository;
 
     @Transactional(readOnly = true)
     public List<GetItems> getProducts() {
@@ -114,14 +111,14 @@ public class ProductService {
     @Transactional(readOnly = true)
     public GetItemsByKeyword getProductsBySaleStateKeyword(String saleStateKeyword) {
 
-        SaleState saleState = SaleState.fromString(saleStateKeyword)
+        // 판매 상태 파라미터 유효성 체크
+        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid saleState keyword: " + saleStateKeyword));
 
-        ProductSaleState productSaleState = productSaleStateRepository.findByName(saleState)
-                .orElseThrow(() -> new NoSuchElementException("No ProductSaleState found for saleState: " + saleState));
+        List<Product> products = productRepository.findBySaleStateLike(saleState);
 
         return new GetItemsByKeyword(saleStateKeyword,
-                productSaleState.getProduct().stream()
+                products.stream()
                         .map(product -> new GetItems(
                                 product,
                                 makeFullCategory(product),
@@ -133,7 +130,8 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageDtoWithKeyword<GetItems> getProductsBySaleStateKeyword(String saleStateKeyword, int page, int pageSize) {
 
-        SaleState saleState = SaleState.fromString(saleStateKeyword)
+        // 판매 상태 파라미터 유효성 체크
+        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid saleState keyword: " + saleStateKeyword));
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));

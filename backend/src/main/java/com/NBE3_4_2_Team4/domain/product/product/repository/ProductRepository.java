@@ -23,5 +23,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM Product p " +
                 "JOIN ProductSaleState pss ON p.saleState = pss " +
             "WHERE pss.name = :name")
+    List<Product> findBySaleStateLike(@Param("name") SaleState saleState);
+
+    @Query("SELECT p " +
+            "FROM Product p " +
+                "JOIN ProductSaleState pss ON p.saleState = pss " +
+            "WHERE pss.name = :name")
     Page<Product> findBySaleStateLike(@Param("name") SaleState saleState, Pageable pageable);
 }
