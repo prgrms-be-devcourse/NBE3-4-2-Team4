@@ -23,6 +23,7 @@ public class OAuth2LogoutFactoryConfig {
         Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceMap = new HashMap<>();
         oAuth2LogoutServiceMap.put(Member.OAuth2Provider.NONE, defaultLogoutService);
         oAuth2LogoutServiceMap.put(Member.OAuth2Provider.KAKAO, kakaoLogoutService);
+        oAuth2LogoutServiceMap.put(Member.OAuth2Provider.NAVER, defaultLogoutService);
         return oAuth2LogoutServiceMap;
     }
 }
