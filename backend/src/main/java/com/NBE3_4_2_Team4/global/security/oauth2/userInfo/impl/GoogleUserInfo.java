@@ -3,20 +3,22 @@ package com.NBE3_4_2_Team4.global.security.oauth2.userInfo.impl;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.Map;
+
 public class GoogleUserInfo implements OAuth2UserInfo {
-    private final OAuth2User oAuth2User;
+    private final Map<String, Object> attributes;
 
     public GoogleUserInfo(OAuth2User oAuth2User) {
-        this.oAuth2User = oAuth2User;
+        attributes =  oAuth2User.getAttributes();
     }
 
     @Override
     public String getOAuth2Id() {
-        return "";
+        return attributes.get("sub").toString();
     }
 
     @Override
     public String getNickname() {
-        return "";
+        return attributes.get("family_name").toString() + attributes.get("given_name").toString();
     }
 }

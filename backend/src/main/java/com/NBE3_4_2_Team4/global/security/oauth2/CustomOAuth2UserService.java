@@ -13,6 +13,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 
 @Slf4j
 @Component
@@ -28,6 +30,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getClientRegistration()
                 .getRegistrationId()
                 .toUpperCase();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        log.warn("attributes: {}", attributes);
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(providerTypeCode);
         OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory
                 .getOAuth2UserInfo
@@ -37,6 +41,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
         Member member = memberService.signUpOrModify(username, "", nickname, oAuth2Provider);
+        log.error("member: {}", member);
         return new CustomUser(member);
     }
 }

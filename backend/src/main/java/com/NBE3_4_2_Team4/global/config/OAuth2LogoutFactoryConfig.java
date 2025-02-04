@@ -24,6 +24,7 @@ public class OAuth2LogoutFactoryConfig {
         oAuth2LogoutServiceMap.put(Member.OAuth2Provider.NONE, defaultLogoutService);
         oAuth2LogoutServiceMap.put(Member.OAuth2Provider.KAKAO, kakaoLogoutService);
         oAuth2LogoutServiceMap.put(Member.OAuth2Provider.NAVER, defaultLogoutService);
+        oAuth2LogoutServiceMap.put(Member.OAuth2Provider.GOOGLE, defaultLogoutService);
         return oAuth2LogoutServiceMap;
     }
 }
