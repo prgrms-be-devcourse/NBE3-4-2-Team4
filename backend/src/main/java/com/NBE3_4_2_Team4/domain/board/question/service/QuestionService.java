@@ -6,6 +6,8 @@ import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepos
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
+import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
+    private final PointService pointService;
 
     public QuestionCategory createCategory(String name) {
         return questionCategoryRepository.save(QuestionCategory.builder()
@@ -33,14 +36,18 @@ public class QuestionService {
 
     public Question write(String title, String content, Long categoryId, Member author, long point) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
-
-        return questionRepository.save(Question.builder()
+        Question question = Question.builder()
                 .title(title)
                 .content(content)
                 .author(author)
                 .category(category)
                 .point(point)
-                .build());
+                .build();
+
+        //질문글 작성 시 포인트 차감
+        pointService.deductPoints(author.getUsername(), point, PointCategory.QUESTION);
+
+        return questionRepository.save(question);
     }
 
     public List<Question> findAll() {
