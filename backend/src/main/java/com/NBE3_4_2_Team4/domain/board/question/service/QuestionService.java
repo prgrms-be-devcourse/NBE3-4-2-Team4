@@ -10,6 +10,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -108,15 +109,26 @@ public class QuestionService {
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         Answer answer = answerService.findById(answerId);
+        Member actor = AuthManager.getMemberFromContext();
 
         if(question.isClosed())
             throw new ServiceException("400-1", "이미 채택이 완료된 질문입니다.");
+
+        if(actor == null)
+            throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+
+        if(!actor.equals(question.getAuthor()))
+            throw new ServiceException("403-2", "작성자만 답변을 채택할 수 있습니다.");
+
+        if(question.getId() != answer.getQuestion().getId())
+            throw new ServiceException("403-3", "해당 질문글 내의 답변만 채택할 수 있습니다.");
 
         question.setSelectedAnswer(answer);
         question.setClosed(true);
         answer.setSelected(true);
         answer.setSelectedAt(LocalDateTime.now());
 
+        //질문글 채택 시 채택된 답변 작성자 포인트 지급
         pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
 
         return question;
