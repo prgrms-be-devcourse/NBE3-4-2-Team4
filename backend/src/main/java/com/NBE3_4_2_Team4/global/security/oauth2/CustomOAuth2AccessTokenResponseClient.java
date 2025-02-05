@@ -1,7 +1,9 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.endpoint.*;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.stereotype.Component;
 import java.util.HashMap;
@@ -19,17 +21,16 @@ public class CustomOAuth2AccessTokenResponseClient implements OAuth2AccessTokenR
         this.tokenResponseClient = new RestClientAuthorizationCodeTokenResponseClient();
     }
 
-
     @Override
     public OAuth2AccessTokenResponse getTokenResponse(OAuth2AuthorizationCodeGrantRequest authorizationGrantRequest) {
         OAuth2AccessTokenResponse tokenResponse =  tokenResponseClient.getTokenResponse(authorizationGrantRequest);
 
-        if (tokenResponse.getRefreshToken() != null) {
-            log.error("🔥 Received Refresh Token: {}", tokenResponse.getRefreshToken().getTokenValue());
-        } else {
-            log.error("❌ No Refresh Token received!");
+        OAuth2RefreshToken refreshToken = tokenResponse.getRefreshToken();
+        if (refreshToken == null) {
+            log.info("❌ 리프레시 토큰 값을 받지 못했습니다. 리프레시 토큰을 지급하지 않는 서비스일 수 있습니다. 현재 서비스 : {}", authorizationGrantRequest.getClientRegistration().getClientName());
         }
-        String refreshTokenValue = tokenResponse.getRefreshToken() != null ? tokenResponse.getRefreshToken().getTokenValue() : null;
+
+        String refreshTokenValue = refreshToken == null ? null : refreshToken.getTokenValue();
         Map<String, Object> additionalParameters = new HashMap<>(tokenResponse.getAdditionalParameters());
 
         if (refreshTokenValue != null) {
