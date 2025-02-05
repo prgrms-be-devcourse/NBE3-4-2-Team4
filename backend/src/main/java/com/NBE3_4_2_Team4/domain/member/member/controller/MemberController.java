@@ -73,7 +73,8 @@ public class MemberController {
         }
 
         req.getSession().removeAttribute("logoutRequested");
-
+        Member member = AuthManager.getMemberFromContext();
+        memberService.logout(member);
         httpManager.expireJwtCookie(resp);
 
         return ResponseEntity

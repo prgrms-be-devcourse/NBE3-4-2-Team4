@@ -6,6 +6,7 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutServ
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public long count(){
         return memberRepository.count();
@@ -32,6 +34,14 @@ public class MemberService {
                 return oAuth2LogoutService.getLogoutUrl();
             }
             throw new RuntimeException("no OAuth provider found");
+        }
+        throw new RuntimeException("no member logged in");
+    }
+
+    public void logout(Member member){
+        if (member != null) {
+            String username = member.getUsername();
+            redisTemplate.delete(username);
         }
         throw new RuntimeException("no member logged in");
     }
