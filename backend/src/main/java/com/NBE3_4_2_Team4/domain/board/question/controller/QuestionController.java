@@ -6,7 +6,7 @@ import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
@@ -42,7 +42,9 @@ public class QuestionController {
 
     @GetMapping("/{id}")
     public QuestionDto getQuestion(@PathVariable long id) {
-        Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionService.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
 
         return new QuestionDto(question);
     }
@@ -75,7 +77,9 @@ public class QuestionController {
     @PutMapping("/{id}")
     @Transactional
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
-        Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionService.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
         questionService.update(question, reqBody.title(), reqBody.content());
 
         return new RsData<>(

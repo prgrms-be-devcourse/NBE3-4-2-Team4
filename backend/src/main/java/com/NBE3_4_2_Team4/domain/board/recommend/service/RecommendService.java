@@ -6,8 +6,7 @@ import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
 import com.NBE3_4_2_Team4.domain.board.recommend.repository.RecommendRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
-import com.NBE3_4_2_Team4.global.exceptions.RecommendAlreadyException;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +22,13 @@ public class RecommendService {
 
     @Transactional
     public void recommend(long questionId, long memberId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionRepository.findById(questionId).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
         Member member = memberRepository.findById(memberId).orElseThrow();
 
         if (recommendRepository.existsByQuestionAndMember(question, member)) { // 중복 추천 방지
-            throw new RecommendAlreadyException();
+            throw new ServiceException("400-1", "이미 추천한 게시글입니다.");
         }
         Recommend recommend = Recommend.builder()
                 .question(question)
@@ -39,7 +40,9 @@ public class RecommendService {
 
     @Transactional
     public void cancelRecommend(long questionId, long memberId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionRepository.findById(questionId).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
         Member member = memberRepository.findById(memberId).orElseThrow();
 
         Recommend recommend = recommendRepository.findByQuestionAndMember(question, member)

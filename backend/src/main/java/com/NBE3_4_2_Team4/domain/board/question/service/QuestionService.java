@@ -5,7 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.QuestionNotFoundException;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,7 +74,9 @@ public class QuestionService {
     }
 
     public void delete(long id) {
-        Question question = questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
         questionRepository.delete(question);
     }
 
