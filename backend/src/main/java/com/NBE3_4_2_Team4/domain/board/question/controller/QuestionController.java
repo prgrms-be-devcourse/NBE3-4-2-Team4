@@ -99,4 +99,19 @@ public class QuestionController {
                 new QuestionDto(question)
         );
     }
+
+    @PutMapping("/{id}/select/{answerId}")
+    @Transactional
+    public RsData<QuestionDto> select(
+            @PathVariable long id,
+            @PathVariable long answerId
+    ) {
+        Question question = questionService.select(id, answerId);
+
+        return new RsData<>(
+                "200-2",
+                "%d번 게시글의 %d번 답변이 채택되었습니다.".formatted(id, answerId),
+                new QuestionDto(question)
+        );
+    }
 }

@@ -1,5 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.service;
 
+import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
+import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +26,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
     private final PointService pointService;
+    private final AnswerService answerService;
 
     public QuestionCategory createCategory(String name) {
         return questionCategoryRepository.save(QuestionCategory.builder()
@@ -97,5 +101,24 @@ public class QuestionService {
         }
         q.setTitle(title);
         q.setContent(content);
+    }
+
+    public Question select(long id, long answerId) {
+        Question question = findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
+        Answer answer = answerService.findById(answerId);
+
+        if(question.isClosed())
+            throw new ServiceException("400-1", "이미 채택이 완료된 질문입니다.");
+
+        question.setSelectedAnswer(answer);
+        question.setClosed(true);
+        answer.setSelected(true);
+        answer.setSelectedAt(LocalDateTime.now());
+
+        pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
+
+        return question;
     }
 }
