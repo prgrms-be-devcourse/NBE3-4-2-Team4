@@ -51,10 +51,10 @@ public class Member {
     private Long point;
 
     @OneToMany(mappedBy = "author")
-    private List<Question> questions;
+    private List<Question> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
-    private List<Answer> answers;
+    private List<Answer> answers = new ArrayList<>();
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;

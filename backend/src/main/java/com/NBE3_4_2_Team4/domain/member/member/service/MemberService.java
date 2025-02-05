@@ -99,10 +99,13 @@ public class MemberService {
 
             String refreshToken = redisTemplate.opsForValue().get(member.getUsername());
 
+            log.info("Refresh token (memberService): {}", refreshToken);
+
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
             OAuth2DisconnectService oAuth2DisconnectService = oAuth2DisconnectServiceFactory.get(oAuthProvider);
 
             if (oAuth2DisconnectService != null && oAuth2DisconnectService.disconnect(refreshToken)) {
+                log.info("Disconnect token (memberService): {}", oAuth2DisconnectService.getClass().getName());
                 redisTemplate.delete(member.getUsername());
             }
 

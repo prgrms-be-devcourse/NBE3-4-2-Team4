@@ -111,7 +111,8 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/members/withdrawal")
+//    @DeleteMapping
+    @GetMapping("/api/members/withdrawal")
     public RsData<Empty> withdrawalMembership(){
         Member member = AuthManager.getMemberFromContext();
         memberService.withdrawalMembership(member);

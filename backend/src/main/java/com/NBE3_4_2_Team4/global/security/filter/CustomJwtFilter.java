@@ -6,6 +6,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -32,13 +33,25 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
+    //일단 쿠키에서 토큰 받아오는 로직 (프론트에서 헤더에 JWT 넣는 방식 구현 이후 삭제 예정)
+    private String getJwtToken2(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("accessToken")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String jwtToken = getJwtToken(request);
+        String jwtToken = getJwtToken2(request);
 
         if (jwtToken == null) {
             filterChain.doFilter(request, response);

@@ -4,16 +4,18 @@ import com.NBE3_4_2_Team4.global.security.oauth2.token.service.OAuth2TokenServic
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NaverTokenService implements OAuth2TokenService {
-    @Value("${spring.security.oauth2.client.registration.naver.clientId}")
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String clientId;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
@@ -21,6 +23,7 @@ public class NaverTokenService implements OAuth2TokenService {
 
     @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
     private String naverTokenUrl;
+
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,6 +44,7 @@ public class NaverTokenService implements OAuth2TokenService {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             try {
+                log.info("response for naver token : {}",response.getBody());
                 return objectMapper.readTree(response.getBody())
                         .get("access_token").asText();
             } catch (JsonProcessingException e) {
