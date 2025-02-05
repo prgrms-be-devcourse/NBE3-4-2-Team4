@@ -112,7 +112,7 @@ public class AllAnswerControllerTest {
 
     @Test
     @DisplayName("답변 수정")
-    @WithUserDetails("admin@test.com")
+    @WithUserDetails("test@test.com")
     void t3() throws Exception {
         ResultActions resultActions = mvc
                 .perform(patch("/api/answers/1")
@@ -144,7 +144,7 @@ public class AllAnswerControllerTest {
 
     @Test
     @DisplayName("답변 수정, with no input")
-    @WithUserDetails("admin@test.com")
+    @WithUserDetails("test@test.com")
     void t3_1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(patch("/api/answers/1")
@@ -194,7 +194,7 @@ public class AllAnswerControllerTest {
 
     @Test
     @DisplayName("답변 수정, with wrong actor")
-    @WithUserDetails("test@test.com")
+    @WithUserDetails("admin@test.com")
     void t3_3() throws Exception {
         ResultActions resultActions = mvc
                 .perform(patch("/api/answers/1")
@@ -275,7 +275,7 @@ public class AllAnswerControllerTest {
 
     @Test
     @DisplayName("답변 삭제, with wrong actor")
-    @WithUserDetails("test@test.com")
+    @WithUserDetails("test2@test.com")
     void t4_2() throws Exception {
         ResultActions resultActions = mvc
                 .perform(delete("/api/answers/1"))

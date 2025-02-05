@@ -37,7 +37,9 @@ public class QuestionDto {
         this.categoryName = question.getCategory().getName();
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
-        this.selectedAnswer = new AnswerDto(question.getSelectedAnswer());
+        this.selectedAnswer = question.getSelectedAnswer() != null
+                ? new AnswerDto(question.getSelectedAnswer())
+                : null;
         this.closed = question.isClosed();
         this.point = question.getPoint();
     }

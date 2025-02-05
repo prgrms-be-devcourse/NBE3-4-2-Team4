@@ -49,10 +49,10 @@ public class AnswerInitData {
         Question question1 = questionService.findById(1).get();
         Question question2 = questionService.findById(2).get();
 
-        Member admin = memberRepository.findByUsername("admin@test.com").get();
+        Member author = memberRepository.findByUsername("test@test.com").get();
 
-        Answer answer1 = answerService.write(question1, admin, "답변 내용1");
-        Answer answer2 = answerService.write(question1, admin, "답변 내용2");
-        Answer answer3 = answerService.write(question2, admin, "답변 내용3");
+        Answer answer1 = answerService.write(question1, author, "답변 내용1");
+        Answer answer2 = answerService.write(question1, author, "답변 내용2");
+        Answer answer3 = answerService.write(question2, author, "답변 내용3");
     }
 }

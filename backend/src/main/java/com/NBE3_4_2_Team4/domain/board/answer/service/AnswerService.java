@@ -22,6 +22,9 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
 
     public Answer write(Question question, Member author, String content) {
+        if(author.getId() == question.getAuthor().getId())
+            throw new ServiceException("400-1", "작성자는 답변을 등록할 수 없습니다.");
+
         Answer answer = Answer
                 .builder()
                 .question(question)
