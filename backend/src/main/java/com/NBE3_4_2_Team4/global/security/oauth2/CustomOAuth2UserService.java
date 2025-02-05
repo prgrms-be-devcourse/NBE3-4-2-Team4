@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 
 @Slf4j
@@ -23,16 +26,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.error("Client Registration: {}", userRequest.getClientRegistration());
-
-        // accessToken 정보 출력
-        log.error("Access Token: {}", userRequest.getAccessToken().getTokenValue());
-
-        // 기타 필요한 정보 출력
-        log.error("Access Token Expiry: {}", userRequest.getAccessToken().getExpiresAt());
-        log.error("Scope: {}", userRequest.getAccessToken().getScopes());
+        String refreshToken = userRequest.getAdditionalParameters().get("refresh_token").toString();
+        log.error("refresh Token: {}", refreshToken);
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.error("Loading user {}", oAuth2User);
         String providerTypeCode = userRequest
                 .getClientRegistration()
                 .getRegistrationId()

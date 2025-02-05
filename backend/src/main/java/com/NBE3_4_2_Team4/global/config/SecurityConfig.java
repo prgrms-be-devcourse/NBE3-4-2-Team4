@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.global.config;
 import com.NBE3_4_2_Team4.global.security.accessDeniedHandler.CustomAccessDeniedHandler;
 import com.NBE3_4_2_Team4.global.security.authenticationEntryPoint.CustomAuthenticationEntryPoint;
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
+import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2AccessTokenResponseClient;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2RequestResolver;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class SecurityConfig {
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
-
+    private final CustomOAuth2AccessTokenResponseClient accessTokenResponseClient;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -56,8 +57,10 @@ public class SecurityConfig {
                             oauth2Login.successHandler(oAuth2SuccessHandler);
                             oauth2Login.authorizationEndpoint(authorizationEndpointConfig ->
                                     authorizationEndpointConfig.authorizationRequestResolver(oAuth2RequestResolver));
-                        }
-                )
+                            oauth2Login.tokenEndpoint(tokenEndpointConfig ->
+                                    tokenEndpointConfig.accessTokenResponseClient(accessTokenResponseClient));
+                        });
+
         ;
         return http.build();
     }
