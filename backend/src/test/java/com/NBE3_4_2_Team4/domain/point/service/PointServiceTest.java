@@ -3,9 +3,12 @@ package com.NBE3_4_2_Team4.domain.point.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
+import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,7 +68,9 @@ public class PointServiceTest {
         memberRepository.save(member2);
 
         pointHistoryService.createHistory(member1, null, 10, PointCategory.ANSWER, "a");
-        pointHistoryService.createHistory(member2, null, 10, PointCategory.ANSWER, "b");
+        pointHistoryService.createHistory(member1, null, 15, PointCategory.ANSWER, "b");
+        pointHistoryService.createHistory(member1, null, 15, PointCategory.PURCHASE, "b");
+        pointHistoryService.createHistory(member2, null, 10, PointCategory.ANSWER, "c");
 
         member1Id = member1.getId();
         member2Id = member2.getId();
@@ -113,9 +119,18 @@ public class PointServiceTest {
         assertTrue(Duration.between(pointHistory.getCreatedAt(), createdAt).getSeconds() < 5);
     }
 
-//    @Test
-//    @DisplayName("history page")
-//    void t5() {
-//        pointService.getHistoryPage()
-//    }
+    @Test
+    @DisplayName("history page")
+    void t5() {
+        LocalDate today = LocalDate.now();
+
+        PointHistoryReq dto = new PointHistoryReq();
+        dto.setPage(1);
+        dto.setPointCategory(PointCategory.ANSWER);
+        dto.setStartDate(today.minusDays(30));
+        dto.setEndDate(today);
+
+        PageDto<PointHistoryRes> res = pointHistoryService.getHistoryPageWithFilter(member1, 10, dto);
+        assertEquals(2, res.getTotalItems());
+    }
 }
