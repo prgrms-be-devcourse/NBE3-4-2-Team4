@@ -5,7 +5,6 @@ import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
 import com.NBE3_4_2_Team4.domain.board.recommend.repository.RecommendRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.NoSuchElementException;
 public class RecommendService {
     private final QuestionRepository questionRepository;
     private final RecommendRepository recommendRepository;
-    private final MemberRepository memberRepository;
 
     @Transactional
     public void recommend(long questionId, Member member) {
@@ -29,6 +27,10 @@ public class RecommendService {
         if (recommendRepository.existsByQuestionAndMember(question, member)) { // 중복 추천 방지
             throw new ServiceException("400-1", "이미 추천한 게시글입니다.");
         }
+        if (question.getAuthor().equals(member)) { // 본인 글 추천 방지
+            throw new ServiceException("400-2", "자신의 게시글은 추천할 수 없습니다.");
+        }
+
         Recommend recommend = Recommend.builder()
                 .question(question)
                 .member(member)

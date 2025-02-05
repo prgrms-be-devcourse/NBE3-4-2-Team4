@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.domain.board.recommend.controller;
 
-import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 public class RecommendControllerTest {
-    @Autowired
-    private RecommendService recommendService;
     @Autowired
     private MockMvc mvc;
 
@@ -76,5 +73,21 @@ public class RecommendControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.result_code").value("400-1"))
                 .andExpect(jsonPath("$.msg").value("이미 추천한 게시글입니다."));
+    }
+
+    @Test
+    @DisplayName("본인 글 추천 방지")
+    @WithUserDetails("admin@test.com")
+    void t4() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                post("/api/questions/1/recommend")
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(RecommendController.class))
+                .andExpect(handler().methodName("recommend"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.result_code").value("400-2"))
+                .andExpect(jsonPath("$.msg").value("자신의 게시글은 추천할 수 없습니다."));
     }
 }
