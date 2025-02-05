@@ -165,4 +165,72 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.has_more").value(false))
                 .andExpect(jsonPath("$.items.length()").value(2));
     }
+
+    @Test
+    @DisplayName("추천 게시글 조회")
+    void t8() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions/recommends"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getRecommended"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_items").value(2))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void t9() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions/100000"))
+                .andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestion"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 삭제")
+    @WithUserDetails("admin@test.com")
+    void t10() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                delete("/api/questions/100000")
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    @WithUserDetails("admin@test.com")
+    void t11() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/questions/100000")
+                        .content("""
+                                {
+                                    "title": "title1 수정",
+                                    "content": "content1 수정",
+                                    "category_id": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
 }
