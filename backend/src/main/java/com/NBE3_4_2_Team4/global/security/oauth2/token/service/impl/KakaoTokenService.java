@@ -16,9 +16,11 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoTokenService implements OAuth2TokenService {
     @Value("${spring.security.oauth2.client.registration.kakao.clientId}")
     private String clientId;
-    private static final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    private String kakaoTokenUrl;
+
     private final RestTemplate restTemplate;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String getFreshAccessToken(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
@@ -30,7 +32,7 @@ public class KakaoTokenService implements OAuth2TokenService {
         body.add("refresh_token", refreshToken);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(KAKAO_TOKEN_URL, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(kakaoTokenUrl, requestEntity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             try {
