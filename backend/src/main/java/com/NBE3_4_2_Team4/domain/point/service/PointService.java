@@ -27,7 +27,7 @@ public class PointService {
     private final MemberRepository memberRepository;
     private final PointHistoryService pointHistoryService;
 
-    //포인트를 전송 로직: 지식인 채택, 포인트 선물 등등
+    //포인트를 전송 로직
     @Transactional
     public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -52,7 +52,7 @@ public class PointService {
         pointHistoryService.createHistory(recipient, sender, amount, pointCategory, correlationId);
     }
 
-    //포인트 차감 로직: 상품구매 등
+    //포인트 차감 로직
     @Transactional
     public void deductPoints(String from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
@@ -68,7 +68,7 @@ public class PointService {
         pointHistoryService.createHistory(member, null, amount * -1, pointCategory, correlationId);
     }
 
-    //포인트 적립: 출석체크, 보상등
+    //포인트 적립
     @Transactional
     public void accumulatePoints(String to, long amount, PointCategory pointCategory) {
         validateAmount(amount);
