@@ -91,8 +91,9 @@ public class Member {
 
     public enum OAuth2Provider{
         NONE("NONE"),
-        KAKAO("KAKAO");
-
+        KAKAO("KAKAO"),
+        NAVER("NAVER"),
+        GOOGLE("GOOGLE");
         private final String value;
 
         OAuth2Provider(String value){

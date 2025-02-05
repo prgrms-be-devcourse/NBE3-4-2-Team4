@@ -1,24 +1,35 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
-import com.NBE3_4_2_Team4.domain.member.dto.request.LoginRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
+import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
     private final HttpManager httpManager;
+
+    @Value("${custom.domain.frontend}")
+    private String frontDomain;
 
     @ExceptionHandler(InValidPasswordException.class)
     public ResponseEntity<RsData<Empty>> handleInValidPasswordException(InValidPasswordException e) {
@@ -36,20 +47,42 @@ public class MemberController {
         return StringUtils.isBlank(token) ?  "not logged in" : token;
     }
 
-    @PostMapping("/api/login")
-    public RsData<String> login(
-            @RequestBody LoginRequestDto loginRequestDto,
-            HttpServletResponse resp) {
-        String token = memberService.login(loginRequestDto);
-        httpManager.setJwtCookie(resp, token, 30);
-        return new RsData<>("200-1", "OK", token);
+
+    @PostMapping("/api/logout")
+    public ResponseEntity<RsData<Empty>> logout(HttpServletRequest req){
+        Member member = AuthManager.getMemberFromContext();
+        String redirectUrl = memberService.getLogoutUrl(member);
+
+        req.getSession().setAttribute("logoutRequested", true);
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", redirectUrl)
+                .body(new RsData<>("302-1",
+                        String.format("Trying to log out for %s",
+                        Objects.requireNonNull(member).getOAuth2Provider().name())));
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/api/logout")
-    public RsData<Empty> logout(HttpServletResponse resp) {
+
+    @GetMapping(OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL)
+    public ResponseEntity<RsData<Empty>> logoutComplete(HttpServletRequest req, HttpServletResponse resp) {
+        Boolean logoutRequested = (Boolean) req.getSession().getAttribute("logoutRequested");
+
+        if (logoutRequested == null || !logoutRequested) {
+            String remoteAddr = req.getRemoteAddr();
+            throw new InValidAccessException(remoteAddr, OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL);
+        }
+
+        req.getSession().removeAttribute("logoutRequested");
+
         httpManager.expireJwtCookie(resp);
-        return new RsData<>("204-1", "No Content");
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", frontDomain)
+                .body(new RsData<>(
+                        "302-1",
+                        String.format("logout complete. redirecting to %s ", frontDomain)
+                ));
     }
 
     @PostMapping("/api/test")
