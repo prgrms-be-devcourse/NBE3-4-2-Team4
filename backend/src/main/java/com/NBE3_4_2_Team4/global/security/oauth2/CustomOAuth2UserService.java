@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 
 @Slf4j
 @Component
@@ -44,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
         if (refreshToken != null && !refreshToken.isBlank()){
-            redisTemplate.opsForValue().set(username, refreshToken);
+            redisTemplate.opsForValue().set(username, refreshToken, 1, TimeUnit.DAYS);
         }
 
         Member member = memberService.signUpOrModify(username, "", nickname, oAuth2Provider);
