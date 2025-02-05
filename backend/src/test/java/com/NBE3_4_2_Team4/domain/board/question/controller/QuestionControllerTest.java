@@ -86,7 +86,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title21",
                                     "content": "content21",
-                                    "categoryId": 1
+                                    "category_id": 1
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -133,7 +133,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "categoryId": 1
+                                    "category_id": 1
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))

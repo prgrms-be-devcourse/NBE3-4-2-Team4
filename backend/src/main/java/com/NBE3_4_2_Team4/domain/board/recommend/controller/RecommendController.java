@@ -16,7 +16,7 @@ public class RecommendController {
     @PostMapping
     public RsData<Void> recommend(@PathVariable long questionId) { // 게시글 추천
         Member member = AuthManager.getMemberFromContext();
-        recommendService.recommend(questionId, member.getId());
+        recommendService.recommend(questionId, member);
 
         return new RsData<>(
                 "200-1",
@@ -27,7 +27,7 @@ public class RecommendController {
     @DeleteMapping
     public RsData<Void> cancelRecommend(@PathVariable long questionId) { // 게시글 추천 취소
         Member member = AuthManager.getMemberFromContext();
-        recommendService.cancelRecommend(questionId, member.getId());
+        recommendService.cancelRecommend(questionId, member);
 
         return new RsData<>(
                 "200-1",

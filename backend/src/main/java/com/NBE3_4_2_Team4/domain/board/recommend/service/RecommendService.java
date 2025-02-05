@@ -21,11 +21,10 @@ public class RecommendService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void recommend(long questionId, long memberId) {
+    public void recommend(long questionId, Member member) {
         Question question = questionRepository.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        Member member = memberRepository.findById(memberId).orElseThrow();
 
         if (recommendRepository.existsByQuestionAndMember(question, member)) { // 중복 추천 방지
             throw new ServiceException("400-1", "이미 추천한 게시글입니다.");
@@ -39,11 +38,10 @@ public class RecommendService {
     }
 
     @Transactional
-    public void cancelRecommend(long questionId, long memberId) {
+    public void cancelRecommend(long questionId, Member member) {
         Question question = questionRepository.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        Member member = memberRepository.findById(memberId).orElseThrow();
 
         Recommend recommend = recommendRepository.findByQuestionAndMember(question, member)
                 .orElseThrow(NoSuchElementException::new);
