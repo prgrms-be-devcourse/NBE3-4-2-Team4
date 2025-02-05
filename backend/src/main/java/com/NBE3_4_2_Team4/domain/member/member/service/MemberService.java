@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
+    private final Map<Member.OAuth2Provider, OAuth2DisconnectService> oAuth2DisconnectServiceFactory;
     private final RedisTemplate<String, String> redisTemplate;
 
     public long count(){
@@ -90,9 +92,23 @@ public class MemberService {
         return userSignUp(username, password, nickname, oAuth2Provider);
     }
 
-    public void delete(Member member) {
-        member.getQuestions().forEach(question -> question.setAuthor(null));
-        member.getAnswers().forEach(answer -> answer.setAuthor(null));
-        memberRepository.delete(member);
+    public void withdrawalMembership(Member member) {
+        if (member != null) {
+            member.getQuestions().forEach(question -> question.setAuthor(null));
+            member.getAnswers().forEach(answer -> answer.setAuthor(null));
+
+            String refreshToken = redisTemplate.opsForValue().get(member.getUsername());
+
+            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+            OAuth2DisconnectService oAuth2DisconnectService = oAuth2DisconnectServiceFactory.get(oAuthProvider);
+
+            if (oAuth2DisconnectService != null && oAuth2DisconnectService.disconnect(refreshToken)) {
+                redisTemplate.delete(member.getUsername());
+            }
+
+            memberRepository.delete(member);
+        }else {
+            throw new RuntimeException("no member logged in");
+        }
     }
 }

@@ -110,4 +110,12 @@ public class MemberController {
     public ResponseEntity<Void> test5(){
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/api/members/withdrawal")
+    public RsData<Empty> withdrawalMembership(){
+        Member member = AuthManager.getMemberFromContext();
+        memberService.withdrawalMembership(member);
+        return new RsData<>("204-1",
+                "cancel membership done");
+    }
 }
