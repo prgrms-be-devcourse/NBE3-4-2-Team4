@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.endpoint.*;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
