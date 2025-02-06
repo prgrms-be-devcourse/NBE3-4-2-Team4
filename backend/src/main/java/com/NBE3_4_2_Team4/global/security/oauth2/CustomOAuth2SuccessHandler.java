@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+    @Value("${custom.jwt.accessToken.validMinute:30}")
+    int accessTokenValidMinute;
+
+    @Value("${custom.jwt.refreshToken.validHour:24}")
+    int refreshTokenValidHour;
+
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
 
@@ -26,9 +33,9 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication auth) {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         Member member = customUser.getMember();
-        String token = jwtManager.generateAccessToken(member);
+        String accessToken = jwtManager.generateAccessToken(member);
         String refreshToken = jwtManager.generateRefreshToken(member);
-        httpManager.setAccessTokenCookie(resp, token, 30);
+        httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour);
         String targetUrl = req.getParameter("state");
         setDefaultTargetUrl(targetUrl);
         super.onAuthenticationSuccess(req, resp, auth);
