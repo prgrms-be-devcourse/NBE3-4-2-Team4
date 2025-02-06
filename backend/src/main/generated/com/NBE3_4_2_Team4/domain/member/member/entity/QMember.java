@@ -23,6 +23,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final DatePath<java.time.LocalDate> lastAttendanceDate = createDate("lastAttendanceDate", java.time.LocalDate.class);
+
     public final StringPath nickname = createString("nickname");
 
     public final EnumPath<Member.OAuth2Provider> oAuth2Provider = createEnum("oAuth2Provider", Member.OAuth2Provider.class);

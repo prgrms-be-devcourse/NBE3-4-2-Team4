@@ -90,7 +90,8 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title21",
                                     "content": "content21",
-                                    "category_id": 1
+                                    "category_id": 1,
+                                    "point" : 100
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -109,6 +110,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.category_name").value("category1"))
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.item.point").value(100))
                 .andExpect(jsonPath("$.data.total_count").value(21L));
     }
 
@@ -137,7 +139,8 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1
+                                    "category_id": 1,
+                                    "point" : 100
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -245,7 +248,8 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1
+                                    "category_id": 1,
+                                    "point": 100
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -268,7 +272,8 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1
+                                    "category_id": 1,
+                                    "point": 100
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
