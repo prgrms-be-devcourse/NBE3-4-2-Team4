@@ -8,6 +8,8 @@ public enum PointCategory {
     PURCHASE("상품구매"),
     QUESTION("질문등록"),
     ANSWER("답변채택"),
+    EXPIRED_QUESTION ("만료된질문"),
+    REFUND("포인트반환"),
     ADMIN("관리자"),
     ATTENDANCE("출석");
 

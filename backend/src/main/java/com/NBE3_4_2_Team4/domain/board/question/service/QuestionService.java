@@ -7,9 +7,9 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,7 +111,7 @@ public class QuestionService {
         Member actor = AuthManager.getMemberFromContext();
 
         if(question.isClosed())
-            throw new ServiceException("400-1", "이미 채택이 완료된 질문입니다.");
+            throw new ServiceException("400-1", "만료된 질문입니다.");
 
         if(actor == null)
             throw new ServiceException("401-1", "로그인 후 이용해주세요.");
@@ -128,5 +130,38 @@ public class QuestionService {
         pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
 
         return question;
+    }
+
+    //7일 이상 질문들 closed 처리
+    @Transactional
+    public long closeQuestionsIfExpired() {
+        LocalDateTime expirationDate = LocalDateTime.now().minusDays(7);
+
+        List<Question> expiredQuestions = questionRepository.findByCreatedAtBeforeAndClosed(expirationDate, false);
+
+        for (Question question : expiredQuestions) {
+            question.setClosed(true);
+
+            if(question.getAnswers().size() == 0) {
+                //답변자가 없는 경우 질문자에게 포인트 반환
+                pointService.accumulatePoints(question.getAuthor().getUsername(), question.getPoint(), PointCategory.REFUND);
+
+                continue;
+            }
+
+            long selectedPoint = question.getPoint() != 0 && question.getPoint() / question.getAnswers().size() > 1
+                    ? question.getPoint() / question.getAnswers().size()
+                    : 1; //최소 1포인트는 받을 수 있도록
+
+            for(Answer answer : question.getAnswers()) {
+                //채택된건 아니므로 selected는 false 상태에서 포인트 지급된 날짜만 입력
+                answer.setSelectedAt(LocalDateTime.now());
+
+                //분배된 포인트 지급
+                pointService.accumulatePoints(answer.getAuthor().getUsername(), selectedPoint, PointCategory.EXPIRED_QUESTION);
+            }
+        }
+
+        return expiredQuestions.size();
     }
 }
