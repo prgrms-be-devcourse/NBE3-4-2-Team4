@@ -350,7 +350,7 @@ public class QuestionControllerTest {
                 .andExpect(handler().methodName("select"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.result_code").value("400-1"))
-                .andExpect(jsonPath("$.msg").value("이미 채택이 완료된 질문입니다."));
+                .andExpect(jsonPath("$.msg").value("만료된 질문입니다."));
     }
 
     @Test
