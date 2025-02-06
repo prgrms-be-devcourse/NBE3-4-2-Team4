@@ -233,4 +233,42 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.result_code").value("404-1"))
                 .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
     }
+
+    @Test
+    @DisplayName("글 작성자가 아닌 경우 게시글 수정 불가")
+    @WithUserDetails("test@test.com")
+    void t12() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/questions/1")
+                        .content("""
+                                {
+                                    "title": "title1 수정",
+                                    "content": "content1 수정",
+                                    "category_id": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.result_code").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("게시글 작성자만 수정할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("글 작성자가 아닌 경우 게시글 삭제 불가")
+    @WithUserDetails("test@test.com")
+    void t13() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                delete("/api/questions/1")
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.result_code").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("게시글 작성자만 삭제할 수 있습니다."));
+    }
 }
