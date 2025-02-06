@@ -7,7 +7,8 @@ public enum PointCategory {
     TRANSFER("송금"),
     PURCHASE("상품구매"),
     ANSWER("답변채택"),
-    ADMIN("관리자");
+    ADMIN("관리자"),
+    ATTENDANCE("출석");
 
     private final String displayName;
 

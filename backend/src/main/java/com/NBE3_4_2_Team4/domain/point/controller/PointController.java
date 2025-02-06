@@ -16,7 +16,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.NBE3_4_2_Team4.global.security.AuthManager.getMemberFromContext;
+import static com.NBE3_4_2_Team4.global.security.AuthManager.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +26,22 @@ public class PointController {
     private final PointHistoryService pointHistoryService;
     private final static int POINT_HISTORY_SIZE = 10;
 
+    @PutMapping("/attendance")
+    public RsData<Empty> attendance() {
+        Member member = getNonNullMember();
+        pointService.attend(member.getId());
+
+        return new RsData<>(
+                "200-1",
+                "출석 성공",
+                new Empty()
+        );
+    }
+
     @PutMapping("/transfer")
     public RsData<Empty> transfer(@Valid @RequestBody PointTransferReq reqDto) {
-        Member sender = getMemberFromContext();
-        if (sender == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
-
-        pointService.transfer(sender.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
+        Member member = getNonNullMember();
+        pointService.transfer(member.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
 
         return new RsData<>(
                 "200-1",
@@ -42,9 +52,7 @@ public class PointController {
 
     @GetMapping("/all")
     public RsData<PageDto<PointHistoryRes>> getPointHistoriesWithDateAndCategory(@RequestParam(defaultValue = "1") int page) {
-        Member member = getMemberFromContext();
-        if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
-
+        Member member = getNonNullMember();
         PageDto<PointHistoryRes> points = pointHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
 
         return new RsData<>(
@@ -56,9 +64,7 @@ public class PointController {
 
     @GetMapping()
     public RsData<PageDto<PointHistoryRes>> getPointHistories(@Valid @ModelAttribute PointHistoryReq pointHistoryReq) {
-        Member member = getMemberFromContext();
-        if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
-
+        Member member = getNonNullMember();
         PageDto<PointHistoryRes> points =
                 pointHistoryService.getHistoryPageWithFilter(member, POINT_HISTORY_SIZE, pointHistoryReq);
 
