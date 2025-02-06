@@ -1,6 +1,6 @@
 import ClientPage from "./ClientPage";
-import type { components } from "@/lib/backend/apiV1/schema";
-import { NextResponse } from "next/server";
+import createClient from "openapi-fetch";
+import type { paths, components } from "@/lib/backend/apiV1/schema";
 
 function convertSnakeToCamel<T>(obj: T): T {
   if (Array.isArray(obj)) {
@@ -18,17 +18,39 @@ function convertSnakeToCamel<T>(obj: T): T {
 
 type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
 
-export default async function Page({searchParams}: {searchParams: {page?: string}}) {
-  const page = searchParams?.page ? `?page=${searchParams.page}` : "";
-  const response = await fetch(`http://localhost:8080/api/questions${page}`);
+const client = createClient<paths>({
+  baseUrl: "http://localhost:8080",
+});
 
-  if (!response.ok) {
-    console.error("API 요청 실패:", response.status, response.statusText);
-    return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
+export default async function Page({searchParams}: {searchParams: {page?: string; searchKeyword?: string}}) {
+  const { page = 1, searchKeyword = "" } = await searchParams;
+
+  try {
+    const response = await client.GET("/api/questions", {
+      params: {
+        query: { 
+          page: Number(page),
+          searchKeyword 
+        },
+      },
+    });
+
+    // response 에러 반환 시 처리
+    if (!response || !response.data) {
+      throw new Error("API 응답이 유효하지 않습니다.");
+    }
+
+    const data = response.data;
+    const body: PageDtoQuestionDto = convertSnakeToCamel(data);
+
+    return <ClientPage body={body} />;
+  } catch (error) {
+    console.error("API 요청 실패:", error);
+
+    return (
+      <div className="flex justify-center items-center h-96">
+        데이터를 불러오는 중 오류가 발생했습니다.
+      </div>
+    );
   }
-
-  const data = await response.json();
-  const body: PageDtoQuestionDto = convertSnakeToCamel(data);
-
-  return <ClientPage body={body} />;
 }

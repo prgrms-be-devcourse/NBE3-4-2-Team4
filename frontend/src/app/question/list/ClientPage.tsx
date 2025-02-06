@@ -23,29 +23,29 @@ export default function ClientPage({ body }: ClientPageProps) {
   return (
     <div className="container mx-auto px-4">
       <h2>지식인 리스트</h2>
-        <div>
-        <div>currentPageNumber: {body.currentPageNumber}</div>
-        <div>pageSize: {body.pageSize}</div>
-        <div>totalPages: {body.totalPages}</div>
-        <div>totalItems: {body.totalItems}</div>
-        
-        <hr /><br />
-        <ul>
-          {body.items?.map((item: QuestionDto) => (
-            <li key={item.id}>
-              <div>id: {item.id}</div>
-              <div>title: {item.title}</div>
-              <div>content: {item.content}</div>
-              <div>authorName: {item.name}</div>
-              <div>createdAt: {item.createdAt}</div>
-              <div>modifiedAt: {item.modifiedAt}</div><br />
-            </li>
-          ))}
-        </ul>
+      <hr /><br />
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+        <input type="text" placeholder="검색어를 입력하세요"
+         className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"/>
+        <button
+        className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+        검색</button>
       </div>
 
+      <ul>
+        {body.items?.map((item: QuestionDto) => (
+          <li key={item.id}>
+            <div>제목: {item.title}</div>
+            <div>내용: {item.content}</div>
+            <div>작성자: {item.name}</div>
+            <div>작성 일시: {item.createdAt}</div><br />
+          </li>
+        ))}
+      </ul>
+
       {/* 페이지 이동 버튼 */}
-      <div>
+      <div className="flex justify-center gap-2">
         <button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1}>
           이전
         </button>
@@ -53,7 +53,7 @@ export default function ClientPage({ body }: ClientPageProps) {
           다음
         </button>
       </div>
-  
+
     </div>
   );
 }
