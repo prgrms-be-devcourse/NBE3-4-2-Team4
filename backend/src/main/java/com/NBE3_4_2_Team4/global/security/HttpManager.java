@@ -22,9 +22,9 @@ public class HttpManager {
         resp.addCookie(cookie); // 응답에 쿠키 추가
     }
 
-    public void setJwtCookie(
-            HttpServletResponse resp, String jwtToken, int minute){
-        this.setCookie(resp, "accessToken", jwtToken, minute);
+    public void setAccessTokenCookie(
+            HttpServletResponse resp, String accessToken, int minute){
+        this.setCookie(resp, "accessToken", accessToken, minute);
     }
 
     public String getCookieValue(
