@@ -1,7 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import jakarta.transaction.Transactional;
