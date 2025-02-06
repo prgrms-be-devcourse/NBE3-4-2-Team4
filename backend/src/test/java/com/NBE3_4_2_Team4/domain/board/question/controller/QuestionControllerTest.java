@@ -171,6 +171,26 @@ public class QuestionControllerTest {
     }
 
     @Test
+    @DisplayName("게시글 검색, with answer content")
+    void t7_1() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                        get("/api/questions?searchKeyword=답변&keywordType=ANSWER_CONTENT")
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_pages").value(1))
+                .andExpect(jsonPath("$.total_items").value(2))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(2));
+    }
+
+    @Test
     @DisplayName("추천 게시글 조회")
     void t8() throws Exception {
         ResultActions resultActions = mvc.perform(get("/api/questions/recommends"))

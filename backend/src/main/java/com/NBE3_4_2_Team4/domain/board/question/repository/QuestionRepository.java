@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryCustom {
     Page<Question> findByTitleLike(String title, Pageable pageable);
     Optional<Question> findFirstByOrderByIdDesc();
 

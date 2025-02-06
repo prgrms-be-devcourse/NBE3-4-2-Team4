@@ -11,6 +11,7 @@ import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,13 +68,10 @@ public class QuestionService {
         return questionRepository.findAll(pageRequest);
     }
 
-    public Page<Question> findByListed(int page, int pageSize, String searchKeyword) {
-        if (searchKeyword == null) return findByListed(page, pageSize);
-
+    public Page<Question> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        searchKeyword = "%" + searchKeyword + "%";
 
-        return questionRepository.findByTitleLike(searchKeyword, pageRequest);
+        return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest);
     }
 
     public Page<Question> findByRecommends(int page, int pageSize) {

@@ -12,6 +12,7 @@ import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +28,12 @@ public class QuestionController {
     @GetMapping
     @Operation(summary = "질문 글 조회 with 검색", description = "지식인 질문을 검색어, 페이지, 페이지 크기를 기준으로 조회")
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
+                                             @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
                                              @RequestParam(defaultValue = "1") int page,
                                              @RequestParam(defaultValue = "10") int pageSize) {
+
         return new PageDto<>(
-                questionService.findByListed(page, pageSize, searchKeyword)
+                questionService.findByListed(page, pageSize, searchKeyword, keywordType)
                         .map(QuestionDto::new)
         );
     }
@@ -102,6 +105,7 @@ public class QuestionController {
 
     @PutMapping("/{id}/select/{answerId}")
     @Transactional
+    @Operation(summary = "답변 채택", description = "질문 id에 해당하는 질문 내 해당 답변 id를 채택, 작성자만 채택 가능, 답변 채택 시 답변 작성자에게 포인트를 지급")
     public RsData<QuestionDto> select(
             @PathVariable long id,
             @PathVariable long answerId
