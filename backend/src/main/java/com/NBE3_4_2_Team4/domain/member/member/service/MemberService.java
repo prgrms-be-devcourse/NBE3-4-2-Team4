@@ -100,7 +100,7 @@ public class MemberService {
                 OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
 
                 if (!oAuth2DisconnectService.disconnect(refreshToken)) {
-                    throw new RuntimeException();
+                    throw new RuntimeException("disconnect failed");
                 }
 
                 oAuth2RefreshTokenRepository.deleteByMember(member);
