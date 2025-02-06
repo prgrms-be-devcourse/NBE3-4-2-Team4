@@ -11,9 +11,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 질문 글 단건조회
+         * @description 질문 id에 해당하는 글 조회
+         */
         get: operations["getQuestion"];
+        /**
+         * 질문 수정
+         * @description 질문 id에 해당하는 글 수정, 작성자만 수정 가능
+         */
         put: operations["update"];
         post?: never;
+        /**
+         * 질문 삭제
+         * @description 질문 id에 해당하는 글 삭제, 작성자만 삭제 가능
+         */
         delete: operations["delete"];
         options?: never;
         head?: never;
@@ -91,8 +103,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 질문 글 조회 with 검색
+         * @description 지식인 질문을 검색어, 페이지, 페이지 크기를 기준으로 조회
+         */
         get: operations["getQuestions"];
         put?: never;
+        /** 질문 등록 */
         post: operations["write"];
         delete?: never;
         options?: never;
@@ -109,7 +126,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 게시글 추천
+         * @description 중복 추천 불가, 본인 글 추천 불가
+         */
         post: operations["recommend"];
+        /** 게시글 추천 취소 */
         delete: operations["cancelRecommend"];
         options?: never;
         head?: never;
@@ -255,6 +277,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 질문 글 조회
+         * @description 지식인 질문을 페이지, 페이지 크기를 기준으로 조회
+         */
         get: operations["getRecommended"];
         put?: never;
         post?: never;
@@ -470,15 +496,15 @@ export interface components {
         };
         QuestionDto: {
             /** Format: int64 */
-            id?: number;
-            title?: string;
-            content?: string;
-            name?: string;
-            categoryName?: string;
+            id: number;
+            title: string;
+            content: string;
+            name: string;
+            categoryName: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         RsDataQuestionDto: {
             resultCode: string;
