@@ -30,22 +30,6 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
     @Override
     public boolean disconnect(String refreshToken) {
         String accessToken = naverTokenService.getFreshAccessToken(refreshToken);
-        log.info("Access token for naver: {}", accessToken);
-
-        //토근 유효성 검사 API - 밑에 로직 동작 안하길래 AccessToken 유효한지 확인하기 위한 호출. 추후 삭제 예정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + accessToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        String tokenValidationUrl= "https://openapi.naver.com/v1/nid/me";
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(tokenValidationUrl, HttpMethod.GET, entity, String.class);
-            log.info("test response : {}", response.getBody());
-        }catch (HttpClientErrorException e) {
-            log.warn("test response fail : {}", e.getResponseBodyAsString());
-        }
-        //
-
 
         // 실제 사용할, 네이버 연결 끊기 매서드
         String url = UriComponentsBuilder.fromUriString(naverTokenUrl)
@@ -55,18 +39,14 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
                 .queryParam("access_token", accessToken)
                 .toUriString();
 
-
-        log.info("Trying Disconnect naver: {}", url);
-
         try {
-            HttpHeaders headers1 = new HttpHeaders();
-            HttpEntity<Void> entity2 = new HttpEntity<>(headers1);
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
             //네이버 연결 끊기 API
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity2, String.class);
-            log.info("response for disconnecting: {}", response.getBody());
+            restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
             return true;
         }catch (HttpClientErrorException e){
-            log.error("Failed to disconnect from Naver");
+            log.error("Failed to disconnect for Naver");
             log.error(e.getLocalizedMessage());
             throw new RuntimeException(e);
         }

@@ -28,7 +28,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         String refreshToken = userRequest.getAdditionalParameters().get("refresh_token").toString();
-        log.error("refresh Token: {}", refreshToken);
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String providerTypeCode = userRequest
                 .getClientRegistration()
@@ -50,6 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         Member member = memberService.signUpOrModify(username, "", nickname, oAuth2Provider);
+        log.info("member: {}", member);
         return new CustomUser(member);
     }
 }
