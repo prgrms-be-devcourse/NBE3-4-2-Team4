@@ -39,7 +39,7 @@ public class KaKaoDisconnectService implements OAuth2DisconnectService {
         }catch (HttpClientErrorException e){
             log.error("Failed to disconnect from Kakao");
             log.error(e.getLocalizedMessage());
-            throw new RuntimeException(e);
+            return false;
         }
     }
 }

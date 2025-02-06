@@ -1,5 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
@@ -8,7 +10,6 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutServ
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     public long count(){
         return memberRepository.count();
@@ -86,20 +87,25 @@ public class MemberService {
 
     public void withdrawalMembership(Member member) {
         if (member != null) {
+            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+
+            if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
+                OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository
+                        .findByMember(member)
+                        .orElseThrow();
+                String refreshToken = oAuth2RefreshToken.getRefreshToken();
+
+                OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
+
+                if (!oAuth2DisconnectService.disconnect(refreshToken)) {
+                    throw new RuntimeException();
+                }
+
+                oAuth2RefreshTokenRepository.deleteByMember(member);
+            }
+
             member.getQuestions().forEach(question -> question.setAuthor(null));
             member.getAnswers().forEach(answer -> answer.setAuthor(null));
-
-            String refreshToken = redisTemplate.opsForValue().get(member.getUsername());
-
-            log.info("Refresh token (memberService): {}", refreshToken);
-
-            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-            OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
-
-            if (oAuth2DisconnectService != null && oAuth2DisconnectService.disconnect(refreshToken)) {
-                log.info("Disconnect token (memberService): {}", oAuth2DisconnectService.getClass().getName());
-                redisTemplate.delete(member.getUsername());
-            }
 
             memberRepository.delete(member);
         }else {

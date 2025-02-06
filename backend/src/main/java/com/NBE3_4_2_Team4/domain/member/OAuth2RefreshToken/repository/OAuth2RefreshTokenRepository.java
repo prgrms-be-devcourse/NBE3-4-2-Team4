@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface OAuth2RefreshTokenRepository extends JpaRepository<OAuth2RefreshToken, Long> {
     Optional<OAuth2RefreshToken> findByMember(Member member);
+    void deleteByMember(Member member);
 }

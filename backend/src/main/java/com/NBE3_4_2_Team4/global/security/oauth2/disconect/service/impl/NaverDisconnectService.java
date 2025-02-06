@@ -54,7 +54,7 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
         }catch (HttpClientErrorException e){
             log.error("Failed to disconnect for Naver");
             log.error(e.getLocalizedMessage());
-            throw new RuntimeException(e);
+            return false;
         }
     }
 }
