@@ -9,9 +9,23 @@ public enum PointCategory {
     ANSWER("답변채택"),
     ADMIN("관리자");
 
-    private final String name;
+    private final String displayName;
 
     PointCategory(String name) {
-        this.name = name;
+        this.displayName = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.displayName;
+    }
+
+    public static PointCategory fromString(String displayName) {
+        for (PointCategory category : PointCategory.values()) {
+            if (category.displayName.equalsIgnoreCase(displayName)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("Unknown enum type " + displayName);
     }
 }

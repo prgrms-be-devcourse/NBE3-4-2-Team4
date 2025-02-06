@@ -1,6 +1,8 @@
 package com.NBE3_4_2_Team4.global.globalExceptionHandler;
 
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
+import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
+import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
@@ -65,5 +67,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(rsData.getStatusCode())
                 .body(rsData);
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<RsData<Empty>> handleMemberNotFoundException(MemberNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new RsData<>(
+                        "404-1",
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(PointClientException.class)
+    public ResponseEntity<RsData<Empty>> handlePointClientException(PointClientException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new RsData<>(
+                        "400-1",
+                        e.getMessage()
+                ));
     }
 }

@@ -278,8 +278,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 질문 글 조회
-         * @description 지식인 질문을 페이지, 페이지 크기를 기준으로 조회
+         * 추천 글 조회
+         * @description 추천 수 기준으로 내림차순 정렬
          */
         get: operations["getRecommended"];
         put?: never;
@@ -418,6 +418,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getPointHistories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/points/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPointHistoriesWithDateAndCategory"];
         put?: never;
         post?: never;
         delete?: never;
@@ -619,6 +635,20 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItems"][];
         };
+        PointHistoryReq: {
+            /** Format: int32 */
+            page: number;
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** @enum {string} */
+            pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
+            /** Format: date-time */
+            endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
+        };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
             currentPageNumber?: number;
@@ -638,7 +668,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             /** @enum {string} */
-            pointCategory?: "TRANSFER" | "PURCHASE" | "ANSWER" | "ADMIN";
+            pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
@@ -1530,6 +1560,37 @@ export interface operations {
         };
     };
     getPointHistories: {
+        parameters: {
+            query: {
+                pointHistoryReq: components["schemas"]["PointHistoryReq"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoPointHistoryRes"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getPointHistoriesWithDateAndCategory: {
         parameters: {
             query?: {
                 page?: number;
