@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.entity;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -55,6 +56,9 @@ public class Member {
 
     @OneToMany(mappedBy = "author")
     private List<Answer> answers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OAuth2RefreshToken oauth2RefreshToken;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;
