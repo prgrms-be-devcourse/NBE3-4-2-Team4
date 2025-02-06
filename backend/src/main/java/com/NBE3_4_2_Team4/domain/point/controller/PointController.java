@@ -10,6 +10,8 @@ import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -21,12 +23,14 @@ import static com.NBE3_4_2_Team4.global.security.AuthManager.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/points")
+@Tag(name = "PointController", description = "API 포인트 컨트롤러")
 public class PointController {
     private final PointService pointService;
     private final PointHistoryService pointHistoryService;
     private final static int POINT_HISTORY_SIZE = 10;
 
     @PutMapping("/attendance")
+    @Operation(summary="출석요청", description="출석요청이 이미 완료이면 에러")
     public RsData<Empty> attendance() {
         Member member = getNonNullMember();
         pointService.attend(member.getId());
@@ -39,6 +43,7 @@ public class PointController {
     }
 
     @PutMapping("/transfer")
+    @Operation(summary="포인트 송금 기능")
     public RsData<Empty> transfer(@Valid @RequestBody PointTransferReq reqDto) {
         Member member = getNonNullMember();
         pointService.transfer(member.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
@@ -51,6 +56,7 @@ public class PointController {
     }
 
     @GetMapping("/all")
+    @Operation(summary="포인트 기록 조회(필터 없는버전)")
     public RsData<PageDto<PointHistoryRes>> getPointHistoriesWithDateAndCategory(@RequestParam(defaultValue = "1") int page) {
         Member member = getNonNullMember();
         PageDto<PointHistoryRes> points = pointHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
@@ -63,6 +69,7 @@ public class PointController {
     }
 
     @GetMapping()
+    @Operation(summary="포인트 기록 조회(날짜 & 카테고리 필터포함)")
     public RsData<PageDto<PointHistoryRes>> getPointHistories(@Valid @ModelAttribute PointHistoryReq pointHistoryReq) {
         Member member = getNonNullMember();
         PageDto<PointHistoryRes> points =
