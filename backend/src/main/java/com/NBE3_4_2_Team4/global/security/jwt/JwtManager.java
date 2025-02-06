@@ -31,7 +31,7 @@ public class JwtManager {
         }
     }
 
-    public String generateToken(Member member) {
+    public String generateAccessToken(Member member) {
         return Jwts.builder()
                 .claim("id", member.getId())
                 .claim("username", member.getUsername())

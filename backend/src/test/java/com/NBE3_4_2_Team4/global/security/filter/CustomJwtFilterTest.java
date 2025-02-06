@@ -79,7 +79,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - products/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter3() throws Exception {
-        String jwtToken = jwtManager.generateToken(member);
+        String jwtToken = jwtManager.generateAccessToken(member);
 
         mockMvc.perform(post("/api/products/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
@@ -91,7 +91,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - questions/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter4() throws Exception {
-        String jwtToken = jwtManager.generateToken(member);
+        String jwtToken = jwtManager.generateAccessToken(member);
 
         mockMvc.perform(post("/api/questions/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
@@ -103,7 +103,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - answers/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter5() throws Exception {
-        String jwtToken = jwtManager.generateToken(member);
+        String jwtToken = jwtManager.generateAccessToken(member);
 
         mockMvc.perform(post("/api/answers/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
@@ -125,7 +125,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 일반 유저의 JWT 있는 경우 (인증 성공, 인가 실패)")
     public void testCustomJwtFilter7() throws Exception {
-        String jwtToken = jwtManager.generateToken(member);
+        String jwtToken = jwtManager.generateAccessToken(member);
 
         mockMvc.perform(post("/api/admin/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
@@ -137,7 +137,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
     public void testCustomJwtFilter8() throws Exception {
-        String jwtToken = jwtManager.generateToken(admin);
+        String jwtToken = jwtManager.generateAccessToken(admin);
 
         mockMvc.perform(post("/api/admin/test")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
@@ -149,7 +149,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("로그아웃 성공 테스트 - 헤더에 사용자의 JWT 있는 경우")
     public void testCustomJwtFilter9() throws Exception {
-        String jwtToken = jwtManager.generateToken(member);
+        String jwtToken = jwtManager.generateAccessToken(member);
 
         mockMvc.perform(post("/api/logout")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
