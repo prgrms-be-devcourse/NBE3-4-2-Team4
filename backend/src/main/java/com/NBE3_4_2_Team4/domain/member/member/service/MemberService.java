@@ -22,7 +22,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
-    private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
     private final Map<Member.OAuth2Provider, OAuth2DisconnectService> oAuth2DisconnectServiceFactory;
     private final RedisTemplate<String, String> redisTemplate;
 
