@@ -6,12 +6,14 @@ import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class ProductRequestDto {
 
     @Getter
+    @Builder
     @AllArgsConstructor
     public static class writeItem {
 

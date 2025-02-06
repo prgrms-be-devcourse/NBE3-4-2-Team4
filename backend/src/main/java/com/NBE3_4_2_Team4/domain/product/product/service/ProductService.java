@@ -30,6 +30,12 @@ public class ProductService {
     private final ProductSaleStateRepository productSaleStateRepository;
 
     @Transactional(readOnly = true)
+    public long countProducts() {
+        return productRepository.count();
+    }
+
+
+    @Transactional(readOnly = true)
     public List<GetItem> getProducts() {
 
         List<Product> products = productRepository.findAll();
