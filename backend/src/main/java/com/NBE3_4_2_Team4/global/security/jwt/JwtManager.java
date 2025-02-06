@@ -15,17 +15,20 @@ import java.util.Map;
 @Slf4j
 @Component
 public class JwtManager {
-    private final long jwtValidMinute;
-
+    private final long accessTokenValidMinute;
+    private final long refreshTokenValidHour;
     private final SecretKey key;
 
     public JwtManager(
             @Value("${custom.jwt.secretKey:key}") String jwtSecretKey,
-            @Value("${jwt.secret.valid.minute:30}") long jwtValidMinute){
+            @Value("${custom.jwt.accessToken.validMinute:30}") long accessTokenValidMinute,
+            @Value("${custom.jwt.refreshToken.validHour:24}") long refreshTokenValidHour
+            ){
         try {
             byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
             this.key = Keys.hmacShaKeyFor(keyBytes);
-            this.jwtValidMinute = jwtValidMinute;
+            this.accessTokenValidMinute = accessTokenValidMinute;
+            this.refreshTokenValidHour = refreshTokenValidHour;
         }catch (IllegalArgumentException e){
             throw new RuntimeException("키 값은 Base64로 디코딩 가능한 값이어야 합니다. yml 관련 파일을 확인해보세요.");
         }
@@ -39,7 +42,16 @@ public class JwtManager {
                 .claim("role", member.getRole().name())
                 .claim("OAuth2Provider", member.getOAuth2Provider().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtValidMinute * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenValidMinute * 60 * 1000))
+                .signWith(key)
+                .compact();
+    }
+
+    public String generateRefreshToken(Member member) {
+        return Jwts.builder()
+                .claim("id", member.getId())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenValidHour * 60 * 60 * 1000))
                 .signWith(key)
                 .compact();
     }
