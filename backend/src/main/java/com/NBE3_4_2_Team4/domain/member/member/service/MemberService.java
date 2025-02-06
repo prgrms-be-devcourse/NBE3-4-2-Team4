@@ -39,13 +39,6 @@ public class MemberService {
         throw new RuntimeException("no member logged in");
     }
 
-    public void logout(Member member){
-        if (member != null) {
-            String username = member.getUsername();
-            redisTemplate.delete(username);
-        }
-        throw new RuntimeException("no member logged in");
-    }
 
     public Member signUp(
             String username,
