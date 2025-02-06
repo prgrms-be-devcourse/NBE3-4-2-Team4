@@ -66,6 +66,8 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
             //이거 주석 풀면 매번 카카오 계정 로그인 해야 함
 //            String prompt = "login";
 //            additionalParameters.put("prompt",prompt);
+            String accessType = "offline";
+            additionalParameters.put("access_type", accessType);
             additionalParameters.put("state", redirectUrl);
         }
 
