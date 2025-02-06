@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl;
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.token.service.impl.NaverTokenService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,11 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
 
     private final NaverTokenService naverTokenService;
     private final RestTemplate restTemplate;
+
+    @Override
+    public Member.OAuth2Provider getProvider(){
+        return Member.OAuth2Provider.NAVER;
+    }
 
     @Override
     public boolean disconnect(String refreshToken) {

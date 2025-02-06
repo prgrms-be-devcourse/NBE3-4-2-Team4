@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl;
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.token.service.impl.KakaoTokenService;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +14,15 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class KaKaoDisconnectService implements OAuth2DisconnectService {
+    private static final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
+
     private final KakaoTokenService kakaoTokenService;
     private final RestTemplate restTemplate;
-    private static final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
+
+    @Override
+    public Member.OAuth2Provider getProvider(){
+        return Member.OAuth2Provider.KAKAO;
+    }
 
     public boolean disconnect(String refreshToken){
         String accessToken = kakaoTokenService.getFreshAccessToken(refreshToken);

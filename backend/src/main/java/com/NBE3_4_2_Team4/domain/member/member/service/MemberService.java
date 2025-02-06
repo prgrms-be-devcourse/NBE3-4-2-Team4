@@ -22,7 +22,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
-    private final Map<Member.OAuth2Provider, OAuth2DisconnectService> oAuth2DisconnectServiceFactory;
     private final RedisTemplate<String, String> redisTemplate;
 
     public long count(){
@@ -103,7 +102,7 @@ public class MemberService {
             log.info("Refresh token (memberService): {}", refreshToken);
 
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-            OAuth2DisconnectService oAuth2DisconnectService = oAuth2DisconnectServiceFactory.get(oAuthProvider);
+            OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
 
             if (oAuth2DisconnectService != null && oAuth2DisconnectService.disconnect(refreshToken)) {
                 log.info("Disconnect token (memberService): {}", oAuth2DisconnectService.getClass().getName());

@@ -16,13 +16,20 @@ public class OAuth2Manager {
     private final Map<Member.OAuth2Provider, OAuth2DisconnectService> oauth2DisconnectServiceMap = new HashMap<>();
 
     @Autowired
-    public OAuth2Manager(List<OAuth2LogoutService> oAuth2LogoutServiceList){
+    public OAuth2Manager(List<OAuth2LogoutService> oAuth2LogoutServiceList, List<OAuth2DisconnectService> oAuth2DisconnectServiceList){
         for (OAuth2LogoutService oAuth2LogoutService : oAuth2LogoutServiceList) {
             oauth2LogoutServiceMap.put(oAuth2LogoutService.getOAuth2Provider(), oAuth2LogoutService);
+        }
+        for (OAuth2DisconnectService oAuth2DisconnectService : oAuth2DisconnectServiceList) {
+            oauth2DisconnectServiceMap.put(oAuth2DisconnectService.getProvider(), oAuth2DisconnectService);
         }
     }
 
     public OAuth2LogoutService getOAuth2LogoutService(Member.OAuth2Provider oAuth2Provider){
         return oauth2LogoutServiceMap.get(oAuth2Provider);
+    }
+
+    public OAuth2DisconnectService getOAuth2DisconnectService(Member.OAuth2Provider oAuth2Provider){
+        return oauth2DisconnectServiceMap.get(oAuth2Provider);
     }
 }

@@ -2,12 +2,12 @@ package com.NBE3_4_2_Team4.domain.member.member.controller;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
-import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
+import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,13 +63,13 @@ public class MemberController {
     }
 
 
-    @GetMapping(OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL)
+    @GetMapping(OAuth2LogoutService.LOGOUT_COMPLETE_URL)
     public ResponseEntity<RsData<Empty>> logoutComplete(HttpServletRequest req, HttpServletResponse resp) {
         Boolean logoutRequested = (Boolean) req.getSession().getAttribute("logoutRequested");
 
         if (logoutRequested == null || !logoutRequested) {
             String remoteAddr = req.getRemoteAddr();
-            throw new InValidAccessException(remoteAddr, OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL);
+            throw new InValidAccessException(remoteAddr, OAuth2LogoutService.LOGOUT_COMPLETE_URL);
         }
 
         req.getSession().removeAttribute("logoutRequested");

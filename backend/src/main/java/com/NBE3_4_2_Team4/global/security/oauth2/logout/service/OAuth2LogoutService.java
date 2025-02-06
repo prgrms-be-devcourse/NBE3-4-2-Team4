@@ -8,11 +8,12 @@ public abstract class OAuth2LogoutService {
     @Value("${custom.domain.backend}")
     String backendDomain;
 
+    public static final String LOGOUT_COMPLETE_URL = "/api/logout/complete";
+
     public abstract Member.OAuth2Provider getOAuth2Provider();
 
     public String getLogoutRedirectUrl() {
-        String logoutCompleteUrl = "/api/logout/complete";
-        return backendDomain + logoutCompleteUrl;
+        return backendDomain + LOGOUT_COMPLETE_URL;
     }
 
     public String getLogoutUrl(){
