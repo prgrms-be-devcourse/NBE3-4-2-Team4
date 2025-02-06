@@ -29,7 +29,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.size()),
                 products
         );
     }
@@ -38,14 +38,14 @@ public class ProductController {
     @Operation(summary = "전체 상품 조회 (페이징)", description = "전체 상품을 페이징 처리하여 조회합니다.")
     RsData<PageDto<GetItem>> getAllProductsWithPaging(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "4") int pageSize
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
 
         PageDto<GetItem> products = productService.getProducts(page, pageSize);
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.getItems().size()),
                 products
         );
     }
@@ -60,7 +60,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.products().size()),
                 products
         );
     }
@@ -70,14 +70,14 @@ public class ProductController {
     RsData<PageDto<GetItem>> getProductsByCategoryWithPaging(
             @RequestParam(name = "category_keyword") String categoryKeyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "4") int pageSize
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
 
         PageDtoWithKeyword<GetItem> products = productService.getProductsByCategoryKeyword(categoryKeyword, page, pageSize);
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.getItems().size()),
                 products
         );
     }
@@ -92,7 +92,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.products().size()),
                 products
         );
     }
@@ -103,7 +103,7 @@ public class ProductController {
     RsData<PageDto<GetItem>> getProductsBySaleStateWithPaging(
             @RequestParam(name = "sale_state_keyword") String saleStateKeyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "4") int pageSize
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
 
         PageDtoWithKeyword<GetItem> products = productService.getProductsBySaleStateKeyword(
@@ -111,7 +111,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d건의 상품이 조회되었습니다.".formatted(products.getItems().size()),
                 products
         );
     }
@@ -126,7 +126,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d번 상품이 조회되었습니다.".formatted(product.getProductId()),
                 product
         );
     }
@@ -141,7 +141,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d번 상품이 생성되었습니다.".formatted(product.getProductId()),
                 product
         );
     }
@@ -157,7 +157,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK",
+                "%d번 상품이 수정되었습니다.".formatted(product.getProductId()),
                 product
         );
     }
@@ -172,8 +172,7 @@ public class ProductController {
 
         return new RsData<>(
                 "200-1",
-                "OK"
+                "%d번 상품이 삭제되었습니다.".formatted(productId)
         );
     }
-
 }

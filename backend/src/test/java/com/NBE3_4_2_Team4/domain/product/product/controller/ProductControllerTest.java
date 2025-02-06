@@ -45,6 +45,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getAllProducts"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("5건의 상품이 조회되었습니다."))
                 .andExpect(jsonPath("$.data").isArray())
                 // 첫번째 data 정합성 체크
                 .andExpect(jsonPath("$.data[0].product_id").value(1))
@@ -81,6 +83,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getAllProductsWithPaging"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("1건의 상품이 조회되었습니다."))
                 // 페이지 정보 정합성 체크
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
                 .andExpect(jsonPath("$.data.page_size").value(1))
@@ -115,6 +119,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getProductsByCategory"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("2건의 상품이 조회되었습니다."))
                 .andExpect(jsonPath("$.data.keyword").value("상품권"))
                 .andExpect(jsonPath("$.data.products").isArray())
                 // 첫번째 data 정합성 체크
@@ -152,6 +158,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getProductsByCategoryWithPaging"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("1건의 상품이 조회되었습니다."))
                 // 페이지 정보 정합성 체크
                 .andExpect(jsonPath("$.data.keyword").value("상품권"))
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
@@ -187,6 +195,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getProductsBySaleState"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("1건의 상품이 조회되었습니다."))
                 .andExpect(jsonPath("$.data.keyword").value("SOLDOUT"))
                 .andExpect(jsonPath("$.data.products").isArray())
                 // 첫번째 data 정합성 체크
@@ -216,6 +226,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getProductsBySaleStateWithPaging"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("1건의 상품이 조회되었습니다."))
                 // 페이지 정보 정합성 체크
                 .andExpect(jsonPath("$.data.keyword").value("ONSALE"))
                 .andExpect(jsonPath("$.data.current_page_number").value(1))
@@ -251,6 +263,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("getProduct"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("1번 상품이 조회되었습니다."))
                 // 데이터 정합성 체크
                 .andExpect(jsonPath("$.data.product_id").value(1))
                 .andExpect(jsonPath("$.data.product_name").value("딸기라떼"))
@@ -290,6 +304,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("writeProduct"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("6번 상품이 생성되었습니다."))
                 // 데이터 정합성 체크
                 .andExpect(jsonPath("$.data.product_id").value(6));
     }
@@ -323,6 +339,8 @@ class ProductControllerTest {
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("updateProduct"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("5번 상품이 수정되었습니다."))
                 // 데이터 정합성 체크
                 .andExpect(jsonPath("$.data.product_id").value(5))
                 .andExpect(jsonPath("$.data.product_name").value("테스트용 상품 (수정)"))
@@ -350,6 +368,8 @@ class ProductControllerTest {
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
                 .andExpect(handler().methodName("deleteProduct"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("result_code").value("200-1"))
+                .andExpect(jsonPath("msg").value("6번 상품이 삭제되었습니다."));
     }
 }
