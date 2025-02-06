@@ -1,12 +1,8 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +50,10 @@ public class QuestionControllerTest {
                 .andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currentPageNumber").value(3))
-                .andExpect(jsonPath("$.pageSize").value(7))
-                .andExpect(jsonPath("$.totalItems").value(20))
-                .andExpect(jsonPath("$.hasMore").value(false))
+                .andExpect(jsonPath("$.current_page_number").value(3))
+                .andExpect(jsonPath("$.page_size").value(7))
+                .andExpect(jsonPath("$.total_items").value(20))
+                .andExpect(jsonPath("$.has_more").value(false))
                 .andExpect(jsonPath("$.items.length()").value(6));
     }
 
@@ -73,8 +69,8 @@ public class QuestionControllerTest {
                 .andExpect(handler().methodName("getQuestion"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.modifiedAt").value(Matchers.startsWith(question.getModifiedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.modified_at").value(Matchers.startsWith(question.getModifiedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.title").value("title1"))
                 .andExpect(jsonPath("$.content").value("content1"))
                 .andExpect(jsonPath("$.name").value("관리자"));
@@ -90,7 +86,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title21",
                                     "content": "content21",
-                                    "categoryId": 1
+                                    "category_id": 1
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -101,15 +97,15 @@ public class QuestionControllerTest {
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("write"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("21번 게시글 생성이 완료되었습니다."))
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
-                .andExpect(jsonPath("$.data.item.categoryName").value("category1"))
-                .andExpect(jsonPath("$.data.item.createdAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.item.modifiedAt").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.totalCount").value(21L));
+                .andExpect(jsonPath("$.data.item.category_name").value("category1"))
+                .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.total_count").value(21L));
     }
 
     @Test
@@ -123,7 +119,7 @@ public class QuestionControllerTest {
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("게시글 삭제가 완료되었습니다."));
     }
 
@@ -137,7 +133,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "categoryId": 1
+                                    "category_id": 1
                                 }
                                 """)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
@@ -146,7 +142,7 @@ public class QuestionControllerTest {
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("update"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("1번 게시글 수정이 완료되었습니다."));
     }
 
@@ -162,11 +158,117 @@ public class QuestionControllerTest {
                 .andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currentPageNumber").value(1))
-                .andExpect(jsonPath("$.pageSize").value(10))
-                .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.totalItems").value(2))
-                .andExpect(jsonPath("$.hasMore").value(false))
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_pages").value(1))
+                .andExpect(jsonPath("$.total_items").value(2))
+                .andExpect(jsonPath("$.has_more").value(false))
                 .andExpect(jsonPath("$.items.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("추천 게시글 조회")
+    void t8() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions/recommends"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getRecommended"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_items").value(2))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void t9() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions/100000"))
+                .andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestion"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 삭제")
+    @WithUserDetails("admin@test.com")
+    void t10() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                delete("/api/questions/100000")
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    @WithUserDetails("admin@test.com")
+    void t11() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/questions/100000")
+                        .content("""
+                                {
+                                    "title": "title1 수정",
+                                    "content": "content1 수정",
+                                    "category_id": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.result_code").value("404-1"))
+                .andExpect(jsonPath("$.msg").value("게시글이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("글 작성자가 아닌 경우 게시글 수정 불가")
+    @WithUserDetails("test@test.com")
+    void t12() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/questions/1")
+                        .content("""
+                                {
+                                    "title": "title1 수정",
+                                    "content": "content1 수정",
+                                    "category_id": 1
+                                }
+                                """)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.result_code").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("게시글 작성자만 수정할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("글 작성자가 아닌 경우 게시글 삭제 불가")
+    @WithUserDetails("test@test.com")
+    void t13() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                delete("/api/questions/1")
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.result_code").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("게시글 작성자만 삭제할 수 있습니다."));
     }
 }

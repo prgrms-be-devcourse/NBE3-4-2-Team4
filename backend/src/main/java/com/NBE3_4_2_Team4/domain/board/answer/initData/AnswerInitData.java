@@ -36,8 +36,8 @@ public class AnswerInitData {
     @Bean
     public ApplicationRunner answerInitDataApplicationRunner() {
         return args -> {
-            questionInitData.initData();
             memberInitData.work();
+            questionInitData.initData();
             self.work();
         };
     }

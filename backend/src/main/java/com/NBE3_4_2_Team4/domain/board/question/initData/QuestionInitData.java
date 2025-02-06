@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.initData;
 
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -20,6 +21,7 @@ public class QuestionInitData {
     private final QuestionService questionService;
     private final MemberRepository memberRepository;
     private final MemberInitData memberInitData;
+    private final RecommendService recommendService;
 
     @Autowired
     @Lazy
@@ -38,11 +40,17 @@ public class QuestionInitData {
         if (questionService.count() > 0) return;
 
         Member admin = memberRepository.findByUsername("admin@test.com").orElseThrow();
+        Member testUser = memberRepository.findByUsername("test@test.com").orElseThrow();
+
         questionService.createCategory("category1");
         questionService.createCategory("category2");
 
         for (int i = 1; i <= 20; i++) {
-            questionService.write("title" + i, "content" + i, (long)i % 2 + 1, admin);
+            Member author = (i >= 10) ? testUser : admin;
+            questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author);
         }
+
+        recommendService.recommend(1L, testUser);
+        recommendService.recommend(11L, admin);
     }
 }

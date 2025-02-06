@@ -34,7 +34,14 @@ public class Question extends BaseTime {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Recommend> recommends;
 
+    @OneToOne
+    private Answer selectedAnswer;
+
     public long getRecommendCount() { // 추천 수 반환
         return recommends.size();
+    }
+
+    public boolean isSelectedAnswer(Answer answer) { // 채택된 답변인지 확인
+        return selectedAnswer != null && selectedAnswer.equals(answer);
     }
 }
