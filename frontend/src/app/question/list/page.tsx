@@ -18,8 +18,10 @@ function convertSnakeToCamel<T>(obj: T): T {
 
 type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
 
-export default async function Page() {
-  const response = await fetch("http://localhost:8080/api/questions");
+export default async function Page({searchParams}: {searchParams: {page?: string}}) {
+  const page = searchParams?.page ? `?page=${searchParams.page}` : "";
+  const response = await fetch(`http://localhost:8080/api/questions${page}`);
+
   if (!response.ok) {
     console.error("API 요청 실패:", response.status, response.statusText);
     return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
@@ -27,7 +29,6 @@ export default async function Page() {
 
   const data = await response.json();
   const body: PageDtoQuestionDto = convertSnakeToCamel(data);
-  console.log("API 응답:", body); // 응답 확인
 
   return <ClientPage body={body} />;
 }
