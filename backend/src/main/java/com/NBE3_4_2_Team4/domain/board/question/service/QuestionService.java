@@ -73,14 +73,20 @@ public class QuestionService {
         return questionRepository.findById(id);
     }
 
-    public void delete(long id) {
+    public void delete(long id, Member actor) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
+        if (!question.getAuthor().equals(actor)) {
+            throw new ServiceException("403-1", "게시글 작성자만 삭제할 수 있습니다.");
+        }
         questionRepository.delete(question);
     }
 
-    public void update(Question q, String title, String content) {
+    public void update(Question q, String title, String content, Member actor) {
+        if (!q.getAuthor().equals(actor)) {
+            throw new ServiceException("403-1", "게시글 작성자만 수정할 수 있습니다.");
+        }
         q.setTitle(title);
         q.setContent(content);
     }

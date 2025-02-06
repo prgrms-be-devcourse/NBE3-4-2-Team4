@@ -58,7 +58,8 @@ public class QuestionController {
     @DeleteMapping("/{id}")
     @Operation(summary = "질문 삭제", description = "질문 id에 해당하는 글 삭제, 작성자만 삭제 가능")
     public RsData<Void> delete(@PathVariable long id) {
-        questionService.delete(id);
+        Member actor = AuthManager.getMemberFromContext();
+        questionService.delete(id, actor);
 
         return new RsData<>(
                 "200-1",
@@ -86,10 +87,11 @@ public class QuestionController {
     @Transactional
     @Operation(summary = "질문 수정", description = "질문 id에 해당하는 글 수정, 작성자만 수정 가능")
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
+        Member actor = AuthManager.getMemberFromContext();
         Question question = questionService.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        questionService.update(question, reqBody.title(), reqBody.content());
+        questionService.update(question, reqBody.title(), reqBody.content(), actor);
 
         return new RsData<>(
                 "200-1",
