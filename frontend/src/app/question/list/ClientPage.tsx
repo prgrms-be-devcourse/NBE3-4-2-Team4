@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
 
@@ -14,10 +15,24 @@ export default function ClientPage({ body }: ClientPageProps) {
   const searchParams = useSearchParams();
 
   const currentPage = Number(searchParams.get("page")) || 1;
+  const [searchKeyword, setSearchKeyword] = useState(searchParams.get("searchKeyword") || "");
 
   // 페이지 이동 함수
   const changePage = (newPage: number) => {
-    router.push(`?page=${newPage}`);
+    const queryParams = new URLSearchParams();
+    queryParams.set("page", newPage.toString());
+
+    if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
+    router.push(`?${queryParams.toString()}`);
+  };
+
+  // 검색 실행 함수
+  const handleSearch = () => {
+    const queryParams = new URLSearchParams();
+    queryParams.set("page", "1"); // 검색 시 1페이지부터 시작
+
+    if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
+    router.push(`?${queryParams.toString()}`);
   };
 
   return (
@@ -27,9 +42,12 @@ export default function ClientPage({ body }: ClientPageProps) {
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
         <input type="text" placeholder="검색어를 입력하세요"
-         className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"/>
+         className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"
+         value={searchKeyword}
+         onChange={(e) => setSearchKeyword(e.target.value)}/>
         <button
-        className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+        className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        onClick={handleSearch}>
         검색</button>
       </div>
 
