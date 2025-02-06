@@ -92,6 +92,12 @@ public class MemberService {
 
     public void withdrawalMembership(Member member) {
         if (member != null) {
+            Long memberId = member.getId();
+
+            if (memberId == null || !memberRepository.existsById(memberId)) {
+                throw new RuntimeException("no member found with id");
+            }
+
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
             if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
@@ -112,7 +118,7 @@ public class MemberService {
             member.getQuestions().forEach(question -> question.setAuthor(null));
             member.getAnswers().forEach(answer -> answer.setAuthor(null));
 
-            memberRepository.delete(member);
+            memberRepository.deleteById(memberId);
         }else {
             throw new RuntimeException("no member logged in");
         }

@@ -62,5 +62,6 @@ public class HttpManager {
     public void expireJwtCookie(
             HttpServletResponse resp){
         deleteCookie(resp, "accessToken");
+        deleteCookie(resp, "refreshToken");
     }
 }
