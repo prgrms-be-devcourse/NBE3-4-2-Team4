@@ -36,7 +36,7 @@ public class QuestionController {
     }
 
     @GetMapping("/recommends")
-    @Operation(summary = "질문 글 조회", description = "지식인 질문을 페이지, 페이지 크기를 기준으로 조회")
+    @Operation(summary = "추천 글 조회", description = "추천 수 기준으로 내림차순 정렬")
     public PageDto<QuestionDto> getRecommended(@RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int pageSize) {
         return new PageDto<>(
