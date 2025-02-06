@@ -5,11 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,16 +28,17 @@ public class GoogleTokenService implements OAuth2TokenService {
     public String getFreshAccessToken(String refreshToken) {
         String googleTokenUrl = "https://oauth2.googleapis.com/token";
 
-        String url = UriComponentsBuilder.fromUriString(googleTokenUrl)
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("client_id", clientId)
-                .queryParam("client_secret", clientSecret)
-                .queryParam("refresh_token", refreshToken)
-                .toUriString();
-
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+        body.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(googleTokenUrl, requestEntity, String.class);
         if (response.getStatusCode() == HttpStatus.OK) {
             try {
                 return objectMapper.readTree(response.getBody())
