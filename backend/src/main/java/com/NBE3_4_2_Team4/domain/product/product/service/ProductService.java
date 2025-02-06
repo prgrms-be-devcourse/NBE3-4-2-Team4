@@ -4,7 +4,9 @@ import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
 import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
 import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
+import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.*;
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
 
 @Service
@@ -23,14 +27,15 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductSaleStateRepository productSaleStateRepository;
 
     @Transactional(readOnly = true)
-    public List<GetItems> getProducts() {
+    public List<GetItem> getProducts() {
 
         List<Product> products = productRepository.findAll();
 
         return products.stream()
-                .map(product -> new GetItems(
+                .map(product -> new GetItem(
                         product,
                         makeFullCategory(product),
                         product.getSaleState().getName()))
@@ -39,13 +44,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageDto<GetItems> getProducts(int page, int pageSize) {
+    public PageDto<GetItem> getProducts(int page, int pageSize) {
 
         Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
         Page<Product> products = productRepository.findAll(pageable);
 
-        return new PageDto<>(products.map(product -> new GetItems(
+        return new PageDto<>(products.map(product -> new GetItem(
                 product,
                 makeFullCategory(product),
                 product.getSaleState().getName()
@@ -72,7 +77,7 @@ public class ProductService {
 
         return new GetItemsByKeyword(categoryKeyword,
                 products.stream()
-                        .map(product -> new GetItems(
+                        .map(product -> new GetItem(
                                 product,
                                 makeFullCategory(product),
                                 product.getSaleState().getName()
@@ -81,7 +86,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageDtoWithKeyword<GetItems> getProductsByCategoryKeyword(String categoryKeyword, int page, int pageSize) {
+    public PageDtoWithKeyword<GetItem> getProductsByCategoryKeyword(String categoryKeyword, int page, int pageSize) {
 
         // keyword 포함되는 categories 가져오기
         List<ProductCategory> categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword);
@@ -98,7 +103,7 @@ public class ProductService {
         Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageable);
 
         return new PageDtoWithKeyword<>(
-                products.map(product -> new GetItems(
+                products.map(product -> new GetItem(
                         product,
                         makeFullCategory(product),
                         product.getSaleState().getName()
@@ -118,7 +123,7 @@ public class ProductService {
 
         return new GetItemsByKeyword(saleStateKeyword,
                 products.stream()
-                        .map(product -> new GetItems(
+                        .map(product -> new GetItem(
                                 product,
                                 makeFullCategory(product),
                                 product.getSaleState().getName()
@@ -127,7 +132,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageDtoWithKeyword<GetItems> getProductsBySaleStateKeyword(String saleStateKeyword, int page, int pageSize) {
+    public PageDtoWithKeyword<GetItem> getProductsBySaleStateKeyword(String saleStateKeyword, int page, int pageSize) {
 
         // 판매 상태 파라미터 유효성 체크
         SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
@@ -138,13 +143,95 @@ public class ProductService {
         Page<Product> products = productRepository.findBySaleStateLike(saleState, pageable);
 
         return new PageDtoWithKeyword<>(
-                products.map(product -> new GetItems(
+                products.map(product -> new GetItem(
                         product,
                         makeFullCategory(product),
                         product.getSaleState().getName()
                 )),
                 saleStateKeyword
         );
+    }
+
+    @Transactional(readOnly = true)
+    public GetItem getProduct(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product id: " + productId));
+
+        return new GetItem(
+                product,
+                makeFullCategory(product),
+                product.getSaleState().getName()
+        );
+    }
+
+    @Transactional
+    public GetItem writeProduct(writeItem request) {
+
+        List<ProductCategory> categories = splitAndSaveByFullCategory(request.getProductCategory());
+
+        ProductSaleState saleState = findAndSaveBySaleState(request.getProductSaleState())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product saleState: " + request.getProductSaleState()));
+
+        Product product = productRepository.save(request.toProduct(categories.getLast(), saleState));
+
+        return new GetItem(
+                product,
+                makeFullCategory(product),
+                product.getSaleState().getName()
+        );
+    }
+
+    @Transactional
+    public GetItem updateProduct(Long productId, updateItem request) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException(productId + "번 상품을 찾을 수 없습니다."));
+
+        if (request.getProductName() != null) {
+            product.updateName(request.getProductName());
+        }
+
+        if (request.getProductPrice() != null) {
+            product.updatePrice(request.getProductPrice());
+        }
+
+        if (request.getProductDescription() != null) {
+            product.updateDescription(request.getProductDescription());
+        }
+
+        if (request.getProductImageUrl() != null) {
+            product.updateImageUrl(request.getProductImageUrl());
+        }
+
+        if (request.getProductCategory() != null) {
+            List<ProductCategory> categories = splitAndSaveByFullCategory(request.getProductCategory());
+            product.updateCategory(categories.getLast());
+        }
+
+        if (request.getProductSaleState() != null) {
+            ProductSaleState saleState = findAndSaveBySaleState(request.getProductSaleState())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid product saleState: " + request.getProductSaleState()));
+
+            product.updateSaleState(saleState);
+        }
+
+        Product updateProduct = productRepository.save(product);
+
+        return new GetItem(
+                updateProduct,
+                makeFullCategory(updateProduct),
+                product.getSaleState().getName()
+        );
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException(productId + "번 상품을 찾을 수 없습니다."));
+
+        productRepository.delete(product);
     }
 
     private String makeFullCategory(Product product) {
@@ -180,5 +267,58 @@ public class ProductService {
         children.forEach(child -> {
             saveChildCategories(child, leafCategories);
         });
+    }
+
+
+    private List<ProductCategory> splitAndSaveByFullCategory(String fullCategory) {
+
+        List<ProductCategory> categories = new ArrayList<>();
+        AtomicReference<ProductCategory> parent = new AtomicReference<>(null);
+
+        StringTokenizer st = new StringTokenizer(fullCategory, "/");
+        while (st.hasMoreTokens()) {
+
+            String categoryName = st.nextToken().trim();
+            if (categoryName.isEmpty()) {
+                continue;
+            }
+
+            // category가 존재하지 않을 경우, 새로 생성 후 저장
+            ProductCategory category = productCategoryRepository.findByNameAndParent(categoryName, parent.get())
+                    .orElseGet(() -> {
+                        ProductCategory saved = ProductCategory.builder()
+                                .name(categoryName)
+                                .parent(parent.get())
+                                .build();
+                        return productCategoryRepository.save(saved);
+                    });
+
+            categories.add(category);
+            parent.set(category);
+        }
+
+        return categories;
+    }
+
+    private Optional<ProductSaleState> findAndSaveBySaleState(String requestSaleState) {
+
+        // 판매 상태 파라미터 유효성 체크
+        SaleState saleState = SaleState.fromString(requestSaleState.toUpperCase())
+                .orElseGet(() -> null);
+
+        if (saleState == null) {
+            return Optional.empty();
+        }
+
+        // 판매 상태가 존재하지 않을 경우,
+        ProductSaleState productSaleState = productSaleStateRepository.findByName(saleState)
+                .orElseGet(() -> {
+                    ProductSaleState saved = ProductSaleState.builder()
+                            .name(saleState)
+                            .build();
+                    return productSaleStateRepository.save(saved);
+                });
+
+        return Optional.of(productSaleState);
     }
 }
