@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -123,10 +122,9 @@ public class QuestionService {
         if(question.getId() != answer.getQuestion().getId())
             throw new ServiceException("403-3", "해당 질문글 내의 답변만 채택할 수 있습니다.");
 
+        answerService.select(answer);
         question.setSelectedAnswer(answer);
         question.setClosed(true);
-        answer.setSelected(true);
-        answer.setSelectedAt(LocalDateTime.now());
 
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
         pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);

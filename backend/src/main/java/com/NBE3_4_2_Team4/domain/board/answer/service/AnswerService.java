@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,5 +110,12 @@ public class AnswerService {
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
         return answerRepository.findByQuestion(question, pageable);
+    }
+
+    public Answer select(Answer answer) {
+        answer.setSelected(true);
+        answer.setSelectedAt(LocalDateTime.now());
+
+        return answer;
     }
 }
