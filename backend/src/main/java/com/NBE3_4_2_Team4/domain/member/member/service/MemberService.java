@@ -31,11 +31,13 @@ public class MemberService {
     public String getLogoutUrl(Member member){
         if (member != null) {
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-            OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
-            if (oAuth2LogoutService != null) {
+
+            if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
+                OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
                 return oAuth2LogoutService.getLogoutUrl();
+            }else {
+                return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
             }
-            throw new RuntimeException("no OAuth provider found");
         }
         throw new RuntimeException("no member logged in");
     }
