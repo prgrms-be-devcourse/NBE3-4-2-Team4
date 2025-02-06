@@ -1,17 +1,13 @@
 package com.NBE3_4_2_Team4.global.security.oauth2.logout.service.impl;
 
-import com.NBE3_4_2_Team4.global.config.OAuth2LogoutFactoryConfig;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultLogoutService implements OAuth2LogoutService {
-    @Value("${custom.domain.backend}")
-    private String backendDomain;
-
+public class DefaultLogoutService extends OAuth2LogoutService {
     @Override
-    public String getLogoutUrl() {
-        return backendDomain + OAuth2LogoutFactoryConfig.LOGOUT_COMPLETE_URL;
+    public Member.OAuth2Provider getOAuth2Provider() {
+        return Member.OAuth2Provider.NONE;
     }
 }

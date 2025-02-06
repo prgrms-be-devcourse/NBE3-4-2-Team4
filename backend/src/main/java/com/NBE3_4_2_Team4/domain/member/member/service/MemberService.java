@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OAuth2Manager oAuth2Manager;
     private final Map<Member.OAuth2Provider, OAuth2LogoutService> oAuth2LogoutServiceFactory;
     private final Map<Member.OAuth2Provider, OAuth2DisconnectService> oAuth2DisconnectServiceFactory;
     private final RedisTemplate<String, String> redisTemplate;
@@ -31,7 +33,7 @@ public class MemberService {
     public String getLogoutUrl(Member member){
         if (member != null) {
             Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-            OAuth2LogoutService oAuth2LogoutService = oAuth2LogoutServiceFactory.get(oAuthProvider);
+            OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
             if (oAuth2LogoutService != null) {
                 return oAuth2LogoutService.getLogoutUrl();
             }
