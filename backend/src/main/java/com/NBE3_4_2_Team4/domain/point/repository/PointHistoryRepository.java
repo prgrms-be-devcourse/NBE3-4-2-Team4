@@ -26,7 +26,7 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
         (:startDateTime IS NULL OR :endDateTime IS NULL) OR
         (p.createdAt BETWEEN :startDateTime AND :endDateTime)
     )
-    AND (:memberId IS NULL OR p.member.id = :memberId)
+    AND (p.member.id = :memberId)
     """)
     Page<PointHistory> findByFilters(
             @Param("memberId") Long memberId,

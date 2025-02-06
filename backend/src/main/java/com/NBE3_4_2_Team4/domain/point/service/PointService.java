@@ -10,14 +10,17 @@ import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
+import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -81,6 +84,23 @@ public class PointService {
         pointHistoryService.createHistory(member, null, amount, pointCategory, correlationId);
     }
 
+    @Transactional
+    public void attend(Long memberId) {
+        LocalDate today = LocalDate.now();
+
+        //락으로 여러번 출석실행 방지
+        Member member = memberRepository.findByIdWithLock(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 유저입니다"));
+        LocalDate lastAttendance = member.getLastAttendanceDate();
+
+        //현재 날짜보다 전이면 포인트지급 & 마지막 출석일 업데이트, 아니면 에러
+        if (lastAttendance == null || lastAttendance.isBefore(today)) {
+            accumulatePoints(member.getUsername(), PointConstants.ATTENDANCE_POINT, PointCategory.ATTENDANCE);
+            member.setLastAttendanceDate(today);
+        } else {
+            throw new PointClientException("출석실패: 이미 출석했습니다");
+        }
+    }
 
     private void validateAmount(long amount) {
         if (amount <= 0) throw new PointClientException("거래금액이 0이나 음수가 될 수 없습니다");
