@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,7 +55,7 @@ public class MemberService {
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
-                .point(100L)
+                .point(PointConstants.INITIAL_POINT)
                 .build());
     }
 
