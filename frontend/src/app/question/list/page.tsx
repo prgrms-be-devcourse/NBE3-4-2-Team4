@@ -1,6 +1,6 @@
 import ClientPage from "./ClientPage";
 import createClient from "openapi-fetch";
-import type { paths, components } from "@/lib/backend/apiV1/schema";
+import type { paths } from "@/lib/backend/apiV1/schema";
 
 function convertSnakeToCamel<T>(obj: T): T {
   if (Array.isArray(obj)) {
@@ -15,8 +15,6 @@ function convertSnakeToCamel<T>(obj: T): T {
   }
   return obj;
 }
-
-type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
 
 const client = createClient<paths>({
   baseUrl: "http://localhost:8080",
@@ -41,7 +39,7 @@ export default async function Page({searchParams}: {searchParams: {page?: string
     }
 
     const data = response.data;
-    const body: PageDtoQuestionDto = convertSnakeToCamel(data);
+    const body = convertSnakeToCamel(data);
 
     return <ClientPage body={body} />;
   } catch (error) {
