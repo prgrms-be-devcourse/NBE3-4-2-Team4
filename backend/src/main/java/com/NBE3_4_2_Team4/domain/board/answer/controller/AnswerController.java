@@ -26,7 +26,7 @@ public class AnswerController {
     private final AnswerService answerService;
     private final QuestionService questionService;
 
-    @Operation(summary = "Write Answer", description = "질문글에 새로운 답변을 등록합니다.")
+    @Operation(summary = "답변 등록", description = "질문글에 새로운 답변을 등록합니다.")
     @PostMapping
     @Transactional
     public RsData<AnswerDto> write(
@@ -52,7 +52,7 @@ public class AnswerController {
         );
     }
 
-    @Operation(summary = "Get All Answers by Question Id", description = "특정 질문글의 모든 답변을 가져옵니다.")
+    @Operation(summary = "질문 글 내 답변 다건 조회", description = "특정 질문글의 모든 답변을 가져옵니다.")
     @GetMapping
     @Transactional
     public PageDto<AnswerDto> items(

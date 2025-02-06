@@ -189,13 +189,13 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get All Answers by Question Id
+         * 질문 글 내 답변 다건 조회
          * @description 특정 질문글의 모든 답변을 가져옵니다.
          */
         get: operations["items"];
         put?: never;
         /**
-         * Write Answer
+         * 답변 등록
          * @description 질문글에 새로운 답변을 등록합니다.
          */
         post: operations["write_1"];
@@ -293,21 +293,21 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Answer by Id
+         * 답변 단건 조회
          * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
          */
         get: operations["item"];
         put?: never;
         post?: never;
         /**
-         * Delete Answer
+         * 답변 삭제
          * @description 답변을 삭제합니다.
          */
         delete: operations["delete_1"];
         options?: never;
         head?: never;
         /**
-         * Update Answer
+         * 답변 수정
          * @description 답변를 수정합니다.
          */
         patch: operations["modify"];
@@ -511,7 +511,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get All Answers
+         * 답변 전체 다건 조회
          * @description 모든 답변을 가져옵니다.
          */
         get: operations["items_1"];
