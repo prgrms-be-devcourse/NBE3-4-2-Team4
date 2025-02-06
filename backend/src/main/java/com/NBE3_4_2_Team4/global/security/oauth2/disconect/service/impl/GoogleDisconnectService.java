@@ -40,7 +40,7 @@ public class GoogleDisconnectService implements OAuth2DisconnectService {
             restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             return true;
         }catch (HttpClientErrorException e){
-            log.error("Failed to disconnect for Naver");
+            log.error("Failed to disconnect for Google");
             log.error(e.getLocalizedMessage());
             return false;
         }

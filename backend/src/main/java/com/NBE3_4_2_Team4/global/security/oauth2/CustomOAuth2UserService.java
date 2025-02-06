@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
@@ -23,6 +24,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final OAuth2UserInfoFactory oAuth2UserInfoFactory;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
+    @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         String refreshToken = (String) userRequest.getAdditionalParameters().getOrDefault("refresh_token", null);
@@ -44,14 +46,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
         Member member = memberService.signUpOrModify(username, "", nickname, oAuth2Provider);
-        log.info("member: {}", member);
 
         if (refreshToken != null && !refreshToken.isBlank()) {
-            OAuth2RefreshToken oAuth2RefreshToken = OAuth2RefreshToken.builder()
-                    .member(member)
-                    .refreshToken(refreshToken)
-                    .build();
-            oAuth2RefreshTokenRepository.save(oAuth2RefreshToken);
+            OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository.findByMember(member)
+                    .orElse(null); // 먼저 찾기만 함
+            if (oAuth2RefreshToken != null) {
+                // 이미 존재하는 경우 업데이트
+                oAuth2RefreshToken.setRefreshToken(refreshToken);
+                oAuth2RefreshTokenRepository.save(oAuth2RefreshToken); // 업데이트
+            } else {
+                // 없으면 새로 저장
+                oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
+                        .member(member)
+                        .refreshToken(refreshToken)
+                        .build());
+            }
         }
 
         return new CustomUser(member);

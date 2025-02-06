@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -24,6 +26,7 @@ public class MemberService {
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
+    @Transactional(readOnly = true)
     public long count(){
         return memberRepository.count();
     }

@@ -57,8 +57,8 @@ public class Member {
     @OneToMany(mappedBy = "author")
     private List<Answer> answers = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private OAuth2RefreshToken oauth2RefreshToken;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private OAuth2RefreshToken oauth2RefreshToken = null;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;

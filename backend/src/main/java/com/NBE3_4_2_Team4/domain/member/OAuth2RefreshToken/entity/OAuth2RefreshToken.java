@@ -2,10 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -20,5 +17,6 @@ public class OAuth2RefreshToken {
     @OneToOne
     private Member member;
 
+    @Setter
     private String refreshToken;
 }
