@@ -112,5 +112,7 @@ public class MemberController {
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member member = AuthManager.getMemberFromContext();
         memberService.modify(member, nicknameUpdateRequestDto);
+        return new RsData<>("200-1",
+                "nickname updated");
     }
 }

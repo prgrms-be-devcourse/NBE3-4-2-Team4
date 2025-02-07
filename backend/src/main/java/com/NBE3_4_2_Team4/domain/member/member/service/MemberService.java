@@ -32,18 +32,22 @@ public class MemberService {
         return memberRepository.count();
     }
 
-    public String getLogoutUrl(Member member){
-        if (member != null) {
-            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-
-            if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
-                OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
-                return oAuth2LogoutService.getLogoutUrl();
-            }else {
-                return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
-            }
+    private void memberNullCheck(Member member) {
+        if (member == null || member.getId() == null) {
+            throw new RuntimeException("member is null");
         }
-        throw new RuntimeException("no member logged in");
+    }
+
+    public String getLogoutUrl(Member member){
+        memberNullCheck(member);
+        Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+
+        if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
+            OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
+            return oAuth2LogoutService.getLogoutUrl();
+        }else {
+            return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
+        }
     }
 
 
@@ -75,6 +79,7 @@ public class MemberService {
     }
 
     public void modify(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        memberNullCheck(member);
         Member memberData = memberRepository
                 .findById(member.getId())
                 .orElseThrow(() -> new RuntimeException("member not found"));
@@ -89,36 +94,34 @@ public class MemberService {
     }
 
     public void withdrawalMembership(Member member) {
-        if (member != null) {
-            Long memberId = member.getId();
+        memberNullCheck(member);
 
-            if (memberId == null || !memberRepository.existsById(memberId)) {
-                throw new RuntimeException("no member found with id");
-            }
+        Long memberId = member.getId();
 
-            Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
-
-            if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
-                OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository
-                        .findByMember(member)
-                        .orElseThrow();
-                String refreshToken = oAuth2RefreshToken.getRefreshToken();
-
-                OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
-
-                if (!oAuth2DisconnectService.disconnect(refreshToken)) {
-                    throw new RuntimeException("disconnect failed");
-                }
-
-                oAuth2RefreshTokenRepository.deleteByMember(member);
-            }
-
-            member.getQuestions().forEach(question -> question.setAuthor(null));
-            member.getAnswers().forEach(answer -> answer.setAuthor(null));
-
-            memberRepository.deleteById(memberId);
-        }else {
-            throw new RuntimeException("no member logged in");
+        if (!memberRepository.existsById(memberId)) {
+            throw new RuntimeException("no member found with id");
         }
+
+        Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+
+        if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
+            OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository
+                    .findByMember(member)
+                    .orElseThrow();
+            String refreshToken = oAuth2RefreshToken.getRefreshToken();
+
+            OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
+
+            if (!oAuth2DisconnectService.disconnect(refreshToken)) {
+                throw new RuntimeException("disconnect failed");
+            }
+
+            oAuth2RefreshTokenRepository.deleteByMember(member);
+        }
+
+        member.getQuestions().forEach(question -> question.setAuthor(null));
+        member.getAnswers().forEach(answer -> answer.setAuthor(null));
+
+        memberRepository.deleteById(memberId);
     }
 }

@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
@@ -225,7 +226,8 @@ public class MemberServiceTest {
     void modifyTest(){
         assertEquals("test nickname", member.getNickname());
 
-        memberService.modify(member, "new nickname");
+        NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname")
+        memberService.modify(member, nicknameUpdateRequestDto);
 
         assertEquals("new nickname", member.getNickname());
     }
