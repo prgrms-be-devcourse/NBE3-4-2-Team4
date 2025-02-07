@@ -1,12 +1,7 @@
 package com.NBE3_4_2_Team4.domain.product.product.initData;
 
-import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
-import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository;
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
-import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
+import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto;
+import com.NBE3_4_2_Team4.domain.product.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -15,16 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Configuration
 @RequiredArgsConstructor
 public class ProductInitData {
 
-    private final ProductRepository productRepository;
-    private final ProductCategoryRepository productCategoryRepository;
-    private final ProductSaleStateRepository productSaleStateRepository;
+    private final ProductService productService;
 
     @Autowired
     @Lazy
@@ -40,54 +30,63 @@ public class ProductInitData {
     @Transactional
     public void createInitProducts() {
 
-        // TODO: 제품 생성 API 만든 후 Service에서 처리하도록 수정 필요
-
-        if (productRepository.count() > 0) {
+        if (productService.countProducts() > 0) {
             return;
         }
 
-        ProductCategory productCategory1 = ProductCategory.builder()
-                .name("기프티콘")
-                .build();
+        productService.writeProduct(
+                ProductRequestDto.writeItem.builder()
+                        .productName("딸기라떼")
+                        .productPrice(3800)
+                        .productDescription("빽다방 딸기라떼입니다.")
+                        .productImageUrl("http://example.com/path/pack1.jpg")
+                        .productCategory("카페/빽다방")
+                        .productSaleState("ONSALE")
+                        .build()
+        );
 
-        ProductCategory productCategory2 = ProductCategory.builder()
-                .name("음료")
-                .parent(productCategory1)
-                .build();
+        productService.writeProduct(
+                ProductRequestDto.writeItem.builder()
+                        .productName("오리지널 핫번 + 아메리카노(L)")
+                        .productPrice(6100)
+                        .productDescription("이디야 오리지널 핫번 + 아메리카노(L) 세트입니다.")
+                        .productImageUrl("http://example.com/path/ediya1.jpg")
+                        .productCategory("카페/이디야")
+                        .productSaleState("SOLDOUT")
+                        .build()
+        );
 
-        ProductCategory productCategory3 = ProductCategory.builder()
-                .name("커피")
-                .parent(productCategory2)
-                .build();
+        productService.writeProduct(
+                ProductRequestDto.writeItem.builder()
+                        .productName("올리브영 기프트카드 2만원권")
+                        .productPrice(20000)
+                        .productDescription("올리브영 기프트카드 2만원권 입니다.")
+                        .productImageUrl("http://example.com/path/gift1.jpg")
+                        .productCategory("상품권/올리브영")
+                        .productSaleState("ONSALE")
+                        .build()
+        );
 
-        List<ProductCategory> productCategories = List.of(productCategory1, productCategory2, productCategory3);
-        productCategoryRepository.saveAll(productCategories);
+        productService.writeProduct(
+                ProductRequestDto.writeItem.builder()
+                        .productName("교보문고 기프트카드 3만원권")
+                        .productPrice(30000)
+                        .productDescription("기프트카드 3만원권 입니다.")
+                        .productImageUrl("http://example.com/path/gift2.jpg")
+                        .productCategory("상품권/교보문고")
+                        .productSaleState("ONSALE")
+                        .build()
+        );
 
-        ProductSaleState productSaleState1 = ProductSaleState.builder()
-                .name(SaleState.SOLDOUT)
-                .build();
-
-        productSaleStateRepository.save(productSaleState1);
-
-        Product product1 = Product.builder()
-                .name("스타벅스 세트1")
-                .price(10000)
-                .description("스타벅스 쿠폰1입니다.")
-                .imageUrl("http://example.com/path/image1.jpg")
-                .category(productCategory3)
-                .saleState(productSaleState1)
-                .build();
-
-        Product product2 = Product.builder()
-                .name("스타벅스 세트2")
-                .price(15000)
-                .description("스타벅스 쿠폰2입니다.")
-                .imageUrl("http://example.com/path/image2.jpg")
-                .category(productCategory3)
-                .saleState(productSaleState1)
-                .build();
-
-        List<Product> products = List.of(product1, product2);
-        productRepository.saveAll(products);
+        productService.writeProduct(
+                ProductRequestDto.writeItem.builder()
+                        .productName("뿌링클콤보+콜라1.25L")
+                        .productPrice(22500)
+                        .productDescription("BHC 뿌링클 콤보 + 콜라 1.25L 세트입니다.")
+                        .productImageUrl("http://example.com/path/chicken.jpg")
+                        .productCategory("치킨/BHC")
+                        .productSaleState("ONSALE")
+                        .build()
+        );
     }
 }

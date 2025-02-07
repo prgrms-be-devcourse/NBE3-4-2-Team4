@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class AllAnswerController {
     private final AnswerService answerService;
 
-    @Operation(summary = "Get All Answers", description = "모든 답변을 가져옵니다.")
+    @Operation(summary = "답변 전체 다건 조회", description = "모든 답변을 가져옵니다.")
     @GetMapping
     @Transactional(readOnly = true)
     public PageDto<AnswerDto> items(
@@ -34,7 +34,7 @@ public class AllAnswerController {
         );
     }
 
-    @Operation(summary = "Get Answer by Id", description = "답변 Id를 기준으로 특정 답변을 가져옵니다.")
+    @Operation(summary = "답변 단건 조회", description = "답변 Id를 기준으로 특정 답변을 가져옵니다.")
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public AnswerDto item(@PathVariable long id) {
@@ -43,7 +43,7 @@ public class AllAnswerController {
         return new AnswerDto(answer);
     }
 
-    @Operation(summary = "Update Answer", description = "답변를 수정합니다.")
+    @Operation(summary = "답변 수정", description = "답변를 수정합니다.")
     @PatchMapping("/{id}")
     @Transactional
     public RsData<AnswerDto> modify(
@@ -59,7 +59,7 @@ public class AllAnswerController {
         );
     }
 
-    @Operation(summary = "Delete Answer", description = "답변을 삭제합니다.")
+    @Operation(summary = "답변 삭제", description = "답변을 삭제합니다.")
     @DeleteMapping("/{id}")
     @Transactional
     public RsData<Empty> delete(

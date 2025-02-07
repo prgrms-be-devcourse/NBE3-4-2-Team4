@@ -47,9 +47,9 @@ public class QuestionInitData {
 
         for (int i = 1; i <= 20; i++) {
             Member author = (i >= 10) ? testUser : admin;
-            questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author);
+            questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author, i);
         }
-        questionService.write("공간 여백 테스트", "lorem ipsum dolor ".repeat(100), 1L, admin);
+        questionService.write("공간 여백 테스트", "lorem ipsum dolor ".repeat(100), 1L, admin, 100);
 
         recommendService.recommend(1L, testUser);
         recommendService.recommend(11L, admin);

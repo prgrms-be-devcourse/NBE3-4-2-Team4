@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -24,4 +26,8 @@ public class Answer extends BaseTime {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private boolean selected;
+
+    private LocalDateTime selectedAt;
 }

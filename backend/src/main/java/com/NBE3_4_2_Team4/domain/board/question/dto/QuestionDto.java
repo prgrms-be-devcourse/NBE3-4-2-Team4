@@ -30,6 +30,12 @@ public class QuestionDto {
 
     private final List<AnswerDto> answers;
 
+    private final AnswerDto selectedAnswer;
+    @NonNull
+    private final boolean closed;
+    @NonNull
+    private final long point;
+
     public QuestionDto(Question question) {
         this.id = question.getId();
         this.title = question.getTitle();
@@ -43,5 +49,10 @@ public class QuestionDto {
                 .stream()
                 .map(AnswerDto::new)
                 .toList();
+        this.selectedAnswer = question.getSelectedAnswer() != null
+                ? new AnswerDto(question.getSelectedAnswer())
+                : null;
+        this.closed = question.isClosed();
+        this.point = question.getPoint();
     }
 }

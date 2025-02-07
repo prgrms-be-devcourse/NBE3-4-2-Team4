@@ -17,7 +17,7 @@ public class ProductResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetItems {
+    public static class GetItem {
 
         private Long productId;
 
@@ -33,7 +33,7 @@ public class ProductResponseDto {
 
         private String productSaleState;
 
-        public GetItems(Product product, String productCategory, SaleState productSaleState) {
+        public GetItem(Product product, String productCategory, SaleState productSaleState) {
             this.productId = product.getId();
             this.productName = product.getName();
             this.productPrice = product.getPrice();
@@ -45,7 +45,7 @@ public class ProductResponseDto {
     }
 
     @Builder
-    public record GetItemsByKeyword(String keyword, List<GetItems> products) {
+    public record GetItemsByKeyword(String keyword, List<GetItem> products) {
 
     }
 

@@ -1,11 +1,12 @@
 package com.NBE3_4_2_Team4.domain.point.controller;
 
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/products")
-public class AdminPointController {
+@Tag(name = "PointAdminController", description = "API 어드민 전용 포인트 컨트롤러")
+public class PointAdminController {
     private final PointService pointService;
 
+    @Operation(summary="유저에게 포인트를 적립")
     @PutMapping("/accumulate")
     public RsData<Empty> accumulateForMember(@RequestBody @Validated PointTransferReq reqDto) {
 
@@ -32,6 +35,7 @@ public class AdminPointController {
         );
     }
 
+    @Operation(summary="유저에게서 포인트를 차감")
     @PutMapping("/deduct")
     public RsData<Empty> deductFromMember(@RequestBody @Validated PointTransferReq reqDto) {
 
