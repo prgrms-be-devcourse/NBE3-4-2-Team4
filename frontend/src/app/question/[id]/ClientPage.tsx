@@ -19,7 +19,7 @@ export default function ClientPage({ question } : { question: QuestionDto }) {
                 </div>
                 
                 {/* 작성 정보 */}
-                <div className="flex flex-col items-end text-gray-600  dark:text-gray-100 text-sm gap-2">
+                <div className="flex flex-col items-end text-gray-600 dark:text-gray-100 text-sm gap-2">
                     <span>작성자: {question.name}</span>
                     <span>{formatDate(question.createdAt)}</span>
                 </div>
@@ -39,6 +39,19 @@ export default function ClientPage({ question } : { question: QuestionDto }) {
                 </button>
             </div>
             </div>
+        </div>
+
+        {/* 답변 리스트 */}
+        <div className="flex flex-col gap-2 mt-6">
+            {question.answers?.map((answer) => (
+            <div key={answer.id} className="dark:bg-gray-800 border p-3 rounded-md bg-gray-100">
+                <div className="flex justify-between items-center mb-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">작성자: {answer.authorName}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-300">작성 일시: {formatDate(answer.createdAt)}</p>
+                </div>
+                <p>{answer.content}</p>
+            </div>
+            ))}
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">

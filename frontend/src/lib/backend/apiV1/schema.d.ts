@@ -510,6 +510,20 @@ export interface components {
             /** Format: int64 */
             categoryId: number;
         };
+        AnswerDto: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+            /** Format: int64 */
+            questionId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorName: string;
+            content: string;
+        };
         QuestionDto: {
             /** Format: int64 */
             id: number;
@@ -523,6 +537,7 @@ export interface components {
             modifiedAt: string;
             /** Format: int64 */
             recommendCount?: number;
+            answers?: components["schemas"]["AnswerDto"][];
         };
         RsDataQuestionDto: {
             resultCode: string;
@@ -550,20 +565,6 @@ export interface components {
             data: Record<string, never>;
         };
         AnswerRequestDto: {
-            content: string;
-        };
-        AnswerDto: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            modifiedAt: string;
-            /** Format: int64 */
-            questionId: number;
-            /** Format: int64 */
-            authorId: number;
-            authorName: string;
             content: string;
         };
         RsDataAnswerDto: {
