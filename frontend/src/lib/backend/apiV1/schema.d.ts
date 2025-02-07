@@ -32,6 +32,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/{id}/select/{answerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 답변 채택
+         * @description 질문 id에 해당하는 질문 내 해당 답변 id를 채택, 작성자만 채택 가능, 답변 채택 시 답변 작성자에게 포인트를 지급
+         */
+        put: operations["select"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/points/transfer": {
         parameters: {
             query?: never;
@@ -40,7 +60,28 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** 포인트 송금 기능 */
         put: operations["transfer"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/points/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 출석요청
+         * @description 출석요청이 이미 완료이면 에러
+         */
+        put: operations["attendance"];
         post?: never;
         delete?: never;
         options?: never;
@@ -56,6 +97,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** 유저에게서 포인트를 차감 */
         put: operations["deductFromMember"];
         post?: never;
         delete?: never;
@@ -72,6 +114,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** 유저에게 포인트를 적립 */
         put: operations["accumulateForMember"];
         post?: never;
         delete?: never;
@@ -146,13 +189,13 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get All Answers by Question Id
+         * 질문 글 내 답변 다건 조회
          * @description 특정 질문글의 모든 답변을 가져옵니다.
          */
         get: operations["items"];
         put?: never;
         /**
-         * Write Answer
+         * 답변 등록
          * @description 질문글에 새로운 답변을 등록합니다.
          */
         post: operations["write_1"];
@@ -250,21 +293,21 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Answer by Id
+         * 답변 단건 조회
          * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
          */
         get: operations["item"];
         put?: never;
         post?: never;
         /**
-         * Delete Answer
+         * 답변 삭제
          * @description 답변을 삭제합니다.
          */
         delete: operations["delete_1"];
         options?: never;
         head?: never;
         /**
-         * Update Answer
+         * 답변 수정
          * @description 답변를 수정합니다.
          */
         patch: operations["modify"];
@@ -417,6 +460,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 포인트 기록 조회(날짜 & 카테고리 필터포함) */
         get: operations["getPointHistories"];
         put?: never;
         post?: never;
@@ -433,6 +477,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 포인트 기록 조회(필터 없는버전) */
         get: operations["getPointHistoriesWithDateAndCategory"];
         put?: never;
         post?: never;
@@ -466,7 +511,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get All Answers
+         * 답변 전체 다건 조회
          * @description 모든 답변을 가져옵니다.
          */
         get: operations["items_1"];
@@ -509,6 +554,25 @@ export interface components {
             content: string;
             /** Format: int64 */
             categoryId: number;
+            /** Format: int64 */
+            point: number;
+        };
+        AnswerDto: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+            /** Format: int64 */
+            questionId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorName: string;
+            content: string;
+            selected: boolean;
+            /** Format: date-time */
+            selectedAt?: string;
         };
         QuestionDto: {
             /** Format: int64 */
@@ -521,6 +585,10 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
+            selectedAnswer?: components["schemas"]["AnswerDto"];
+            closed: boolean;
+            /** Format: int64 */
+            point: number;
         };
         RsDataQuestionDto: {
             resultCode: string;
@@ -548,20 +616,6 @@ export interface components {
             data: Record<string, never>;
         };
         AnswerRequestDto: {
-            content: string;
-        };
-        AnswerDto: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            modifiedAt: string;
-            /** Format: int64 */
-            questionId: number;
-            /** Format: int64 */
-            authorId: number;
-            authorName: string;
             content: string;
         };
         RsDataAnswerDto: {
@@ -643,11 +697,11 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
-            /** Format: date-time */
-            endDateTime?: string;
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
             /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
@@ -668,7 +722,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
@@ -781,6 +835,38 @@ export interface operations {
             };
         };
     };
+    select: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                answerId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     transfer: {
         parameters: {
             query?: never;
@@ -793,6 +879,35 @@ export interface operations {
                 "application/json": components["schemas"]["PointTransferReq"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    attendance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -911,6 +1026,7 @@ export interface operations {
         parameters: {
             query?: {
                 searchKeyword?: string;
+                keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
                 page?: number;
                 pageSize?: number;
             };

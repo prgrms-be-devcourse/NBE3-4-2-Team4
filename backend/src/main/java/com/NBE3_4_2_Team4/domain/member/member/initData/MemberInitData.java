@@ -36,6 +36,6 @@ public class MemberInitData {
         memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
 
         memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, oAuth2Provider);
-
+        memberService.signUp("test2@test.com", password, "테스트 유저2", Member.Role.USER, oAuth2Provider);
     }
 }

@@ -38,7 +38,7 @@ public class AnswerControllerTest {
 
     @Test
     @DisplayName("답변 등록")
-    @WithUserDetails("admin@test.com")
+    @WithUserDetails("test@test.com")
     void t1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(post("/api/questions/1/answers")
@@ -119,6 +119,31 @@ public class AnswerControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.result_code").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("Unauthorized"));
+    }
+
+    @Test
+    @DisplayName("답변 등록, with question author")
+    @WithUserDetails("admin@test.com")
+    void t1_3() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(post("/api/questions/1/answers")
+                        .content("""
+                                {
+                                    "content": "답변 내용 new"
+                                }
+                                """.stripIndent())
+                        .contentType(
+                                new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                        )
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(AnswerController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.result_code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("작성자는 답변을 등록할 수 없습니다."));
     }
 
     @Test

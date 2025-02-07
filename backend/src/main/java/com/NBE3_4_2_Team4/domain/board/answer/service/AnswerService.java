@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,9 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
 
     public Answer write(Question question, Member author, String content) {
+        if(author.getId() == question.getAuthor().getId())
+            throw new ServiceException("400-1", "작성자는 답변을 등록할 수 없습니다.");
+
         Answer answer = Answer
                 .builder()
                 .question(question)
@@ -106,5 +110,12 @@ public class AnswerService {
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
         return answerRepository.findByQuestion(question, pageable);
+    }
+
+    public Answer select(Answer answer) {
+        answer.setSelected(true);
+        answer.setSelectedAt(LocalDateTime.now());
+
+        return answer;
     }
 }

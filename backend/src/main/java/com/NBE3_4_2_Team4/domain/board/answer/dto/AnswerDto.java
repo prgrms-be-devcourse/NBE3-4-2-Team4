@@ -29,6 +29,11 @@ public class AnswerDto {
     @NonNull
     private final String content;
 
+    @NonNull
+    private final boolean selected;
+
+    private final LocalDateTime selectedAt;
+
     public AnswerDto(Answer answer) {
         this.id = answer.getId();
         this.createdAt = answer.getCreatedAt();
@@ -37,5 +42,7 @@ public class AnswerDto {
         this.authorId = answer.getAuthor().getId();
         this.authorName = answer.getAuthor().getNickname();
         this.content = answer.getContent();
+        this.selected = answer.isSelected();
+        this.selectedAt = answer.getSelectedAt();
     }
 }

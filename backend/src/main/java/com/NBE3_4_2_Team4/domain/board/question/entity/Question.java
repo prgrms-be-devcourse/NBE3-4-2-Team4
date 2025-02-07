@@ -37,6 +37,10 @@ public class Question extends BaseTime {
     @OneToOne
     private Answer selectedAnswer;
 
+    private boolean closed; //질문 상태(답변 추가 가능 여부)
+
+    private long point;
+
     public long getRecommendCount() { // 추천 수 반환
         return recommends.size();
     }
