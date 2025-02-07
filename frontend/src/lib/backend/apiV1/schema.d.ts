@@ -642,20 +642,6 @@ export interface components {
             /** Format: date-time */
             selectedAt?: string;
         };
-        AnswerDto: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            modifiedAt: string;
-            /** Format: int64 */
-            questionId: number;
-            /** Format: int64 */
-            authorId: number;
-            authorName: string;
-            content: string;
-        };
         QuestionDto: {
             /** Format: int64 */
             id: number;
@@ -829,9 +815,9 @@ export interface components {
             /** @enum {string} */
             pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
