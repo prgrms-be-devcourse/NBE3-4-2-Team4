@@ -37,20 +37,30 @@ export default function ClientPage({ body }: ClientPageProps) {
     router.push(`?${queryParams.toString()}`);
   };
 
+  const createQuestion = () => {
+    router.push("/question/write");
+  }
+
   return (
     <div className="container mx-auto px-4">
       <h2>지식인 리스트</h2>
       <hr /><br />
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
-        <input type="text" placeholder="제목을 입력하세요"
-         className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"
-         value={searchKeyword}
-         onChange={(e) => setSearchKeyword(e.target.value)}/>
+      <div className="flex justify-between items-center">
         <button
-        className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        onClick={handleSearch}>
-        검색</button>
+        className="border-2 border-teal-500 bg-teal-500 text-white px-4 py-2 font-bold rounded-md hover:bg-teal-600"
+        onClick={createQuestion}
+        >글쓰기</button>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+          <input type="text" placeholder="제목을 입력하세요"
+          className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}/>
+          <button
+          className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          onClick={handleSearch}>
+          검색</button>
+        </div>
       </div>
       <br />
 
