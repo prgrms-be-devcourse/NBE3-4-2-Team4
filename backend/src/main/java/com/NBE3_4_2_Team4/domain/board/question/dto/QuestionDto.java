@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.dto;
 
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
 
@@ -22,6 +23,8 @@ public class QuestionDto {
     private final LocalDateTime createdAt;
     @NonNull
     private final LocalDateTime modifiedAt;
+    @Nonnull
+    private final Long recommendCount;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
@@ -31,5 +34,6 @@ public class QuestionDto {
         this.categoryName = question.getCategory().getName();
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
+        this.recommendCount = question.getRecommendCount();
     }
 }
