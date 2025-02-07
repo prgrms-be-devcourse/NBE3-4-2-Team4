@@ -49,7 +49,7 @@ public class CustomJwtFilterTest {
     void setUp() {
         member = Member.builder()
                 .id(1L)
-                .username("testUser")
+                .username("test@test.com")
                 .nickname("nickname")
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
@@ -76,7 +76,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - api/questions 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter2() throws Exception {
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
         String body = objectMapper.writeValueAsString(reqBody);
 
         mockMvc.perform(post("/api/questions")
@@ -92,7 +92,7 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter3() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
 
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
         String body = objectMapper.writeValueAsString(reqBody);
 
         mockMvc.perform(post("/api/questions")

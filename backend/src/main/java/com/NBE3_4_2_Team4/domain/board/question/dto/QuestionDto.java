@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -45,10 +46,10 @@ public class QuestionDto {
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
         this.recommendCount = question.getRecommendCount();
-        this.answers = question.getAnswers()
+        this.answers = question.getAnswers() == null ? new ArrayList<>() :question.getAnswers()
                 .stream()
                 .map(AnswerDto::new)
-                .toList();
+                .toList();;
         this.selectedAnswer = question.getSelectedAnswer() != null
                 ? new AnswerDto(question.getSelectedAnswer())
                 : null;
