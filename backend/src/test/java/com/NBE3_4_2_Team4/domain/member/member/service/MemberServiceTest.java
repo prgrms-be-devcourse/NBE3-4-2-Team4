@@ -112,79 +112,53 @@ public class MemberServiceTest {
                 .build();
 
         String logoutUrl = memberService.getLogoutUrl(member);
+
         assertEquals(OAuth2LogoutService.LOGOUT_COMPLETE_URL, logoutUrl);
+
         verify(oAuth2Manager, times(0))
                 .getOAuth2LogoutService(any());
     }
 
-    @Test
-    void getLogoutUrlTest2(){
-        String testKakaoLogoutUrl = "test kakao logout url";
+    @ParameterizedTest
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    void getLogoutUrlTest2(Member.OAuth2Provider provider) {
+        member.setOAuth2Provider(provider);
+        Member testMember = member;
 
-        when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.KAKAO))
-                .thenReturn(kakaoLogoutService);
-        when(kakaoLogoutService.getLogoutUrl())
-                .thenReturn(testKakaoLogoutUrl);
+        when(oAuth2Manager.getOAuth2LogoutService(provider)).
+                thenReturn(switch (provider) {
+                    case NONE -> null;
+                    case KAKAO -> kakaoLogoutService;
+                    case NAVER -> naverLogoutService;
+                    case GOOGLE -> googleLogoutService;
+                });
 
-        Member member = Member.builder()
-                .oAuth2Provider(Member.OAuth2Provider.KAKAO)
-                .build();
+        String logoutUrl = String.format("Logout url for %s", provider.name());
 
-        String logoutUrl = memberService.getLogoutUrl(member);
-        assertEquals(testKakaoLogoutUrl, logoutUrl);
-        verify(oAuth2Manager, times(1)).getOAuth2LogoutService(Member.OAuth2Provider.KAKAO);
+        when(switch (provider) {
+            case NONE -> null;
+            case KAKAO -> kakaoLogoutService.getLogoutUrl();
+            case NAVER -> naverLogoutService.getLogoutUrl();
+            case GOOGLE -> googleLogoutService.getLogoutUrl();
+        })
+                .thenReturn(logoutUrl);
+
+        String actualLogoutUrl = memberService.getLogoutUrl(testMember);
+        assertEquals(logoutUrl, actualLogoutUrl);
     }
 
-    @Test
-    void getLogoutUrlTest3(){
-        String testNaverLogoutUrl = "test naver logout url";
-
-        when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.NAVER))
-                .thenReturn(naverLogoutService);
-        when(naverLogoutService.getLogoutUrl())
-                .thenReturn(testNaverLogoutUrl);
-
-        Member member = Member.builder()
-                .oAuth2Provider(Member.OAuth2Provider.NAVER)
-                .build();
-
-        String logoutUrl = memberService.getLogoutUrl(member);
-        assertEquals(testNaverLogoutUrl, logoutUrl);
-        verify(oAuth2Manager, times(1))
-                .getOAuth2LogoutService(Member.OAuth2Provider.NAVER);
-    }
-
-    @Test
-    void getLogoutUrlTest4(){
-        String testGoogleLogoutUrl = "test google logout url";
-
-        when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE))
-                .thenReturn(googleLogoutService);
-        when(googleLogoutService.getLogoutUrl())
-                .thenReturn(testGoogleLogoutUrl);
-
-        Member member = Member.builder()
-                .oAuth2Provider(Member.OAuth2Provider.GOOGLE)
-                .build();
-
-        String logoutUrl = memberService.getLogoutUrl(member);
-        assertEquals(testGoogleLogoutUrl, logoutUrl);
-        verify(oAuth2Manager, times(1))
-                .getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE);
-    }
-
-    @Test
-    void getLogoutUrlTest5(){
-        when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE))
+    @ParameterizedTest
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    void getLogoutUrlTest3(Member.OAuth2Provider provider){
+        when(oAuth2Manager.getOAuth2LogoutService(provider))
                 .thenReturn(null);
 
-        Member member = Member.builder()
-                .oAuth2Provider(Member.OAuth2Provider.GOOGLE)
-                .build();
+        member.setOAuth2Provider(provider);
+        Member testMember = member;
 
-        assertThrows(RuntimeException.class, () -> memberService.getLogoutUrl(member));
+        assertThrows(RuntimeException.class, () -> memberService.getLogoutUrl(testMember));
         verify(oAuth2Manager, times(1))
-                .getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE);
+                .getOAuth2LogoutService(provider);
     }
 
     @Test
