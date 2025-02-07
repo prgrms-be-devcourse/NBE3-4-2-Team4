@@ -1,5 +1,7 @@
+import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
 import { convertSnakeToCamel } from "@/utils/convertCase";
+import React from "react";
 
 async function getQuestionDetail(id: string) {
   try {
@@ -14,9 +16,46 @@ async function getQuestionDetail(id: string) {
   }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const question = await getQuestionDetail(params.id);
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ pageSize?: string; page?: string }>;
+}) {
+  const param = await params;
+  const searchParam = await searchParams;
+
+  const question = await getQuestionDetail(param.id);
   const body = convertSnakeToCamel(question);
+
+  const pageSize = Number(searchParam.pageSize) || 5;
+  const page = Number(searchParam.page) || 1;
+
+  const responseAnswer = await client.GET(
+    "/api/questions/{questionId}/answers",
+    {
+      params: {
+        path: {
+          questionId: Number(param.id),
+        },
+        query: {
+          pageSize,
+          page,
+        },
+      },
+    }
+  );
+
+  const answers = convertSnakeToCamel(responseAnswer.data) ?? {
+    items: [],
+    currentPageNumber: 1,
+    pageSize,
+    totalPages: 0,
+    totalItems: 0,
+    hasMore: false,
+  };
+
   if (!question) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -25,5 +64,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     );
   }
 
-  return <ClientPage question={body} />;
+  return (
+    <ClientPage
+      question={body}
+      pageSize={pageSize}
+      page={page}
+      answers={answers}
+    />
+  );
 }

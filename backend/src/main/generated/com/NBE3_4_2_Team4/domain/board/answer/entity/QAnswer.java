@@ -61,7 +61,7 @@ public class QAnswer extends EntityPathBase<Answer> {
 
     public QAnswer(Class<? extends Answer> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.author = inits.isInitialized("author") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("author")) : null;
+        this.author = inits.isInitialized("author") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("author"), inits.get("author")) : null;
         this.question = inits.isInitialized("question") ? new com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion(forProperty("question"), inits.get("question")) : null;
     }
 
