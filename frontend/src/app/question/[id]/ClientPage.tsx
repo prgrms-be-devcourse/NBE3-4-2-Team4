@@ -17,7 +17,7 @@ export default function ClientPage({ question } : { question: QuestionDto }) {
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">{question.title}</h3>
                     <p className="text-gray-800 dark:text-gray-100 leading-relaxed mb-4">{question.content}</p>
                 </div>
-                
+
                 {/* 작성 정보 */}
                 <div className="flex flex-col items-end text-gray-600 dark:text-gray-100 text-sm gap-2">
                     <span>작성자: {question.name}</span>

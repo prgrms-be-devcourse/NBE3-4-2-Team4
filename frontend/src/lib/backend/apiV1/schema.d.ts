@@ -654,7 +654,7 @@ export interface components {
             /** Format: date-time */
             modifiedAt: string;
             /** Format: int64 */
-            recommendCount?: number;
+            recommendCount: number;
             answers?: components["schemas"]["AnswerDto"][];
             selectedAnswer?: components["schemas"]["AnswerDto"];
             closed: boolean;
