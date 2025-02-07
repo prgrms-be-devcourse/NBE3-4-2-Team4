@@ -327,23 +327,23 @@ public class MemberServiceTest {
     }
 
     @Test
-    void modifyTest1(){
+    void updateNicknameTest1(){
         when(memberRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
         NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname");
         assertThrows(RuntimeException.class, () ->
-                memberService.modify(member, nicknameUpdateRequestDto));
+                memberService.updateNickname(member, nicknameUpdateRequestDto));
     }
 
     @Test
-    void modifyTest2(){
+    void updateNicknameTest2(){
         when(memberRepository.findById(any()))
                 .thenReturn(Optional.of(member));
         assertEquals("test nickname", member.getNickname());
 
         NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname");
-        memberService.modify(member, nicknameUpdateRequestDto);
+        memberService.updateNickname(member, nicknameUpdateRequestDto);
 
         assertEquals("new nickname", member.getNickname());
     }

@@ -128,10 +128,10 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/nickname")
-    public RsData<Empty> updateMembers(
+    public RsData<Empty> updateMembersNickname(
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member member = AuthManager.getNonNullMember();
-        memberService.modify(member, nicknameUpdateRequestDto);
+        memberService.updateNickname(member, nicknameUpdateRequestDto);
         return new RsData<>("200-1",
                 "nickname updated");
     }

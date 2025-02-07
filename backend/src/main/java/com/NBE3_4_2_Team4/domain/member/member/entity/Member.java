@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -27,15 +28,18 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false)
     private Role role;
 
     @Column(nullable = false)
+    @Setter(AccessLevel.NONE)
     private OAuth2Provider oAuth2Provider;
 
     @Column(nullable = false, unique = true)
+    @Setter(AccessLevel.NONE)
     private String username;
 
     @Column(nullable = false)
@@ -43,10 +47,10 @@ public class Member {
 
     private String phoneNumber;
 
-    @Setter
     private String nickname;
 
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -120,5 +124,13 @@ public class Member {
             }
             throw new IllegalArgumentException("OAuth2Provider not found");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Member member) {
+            return Objects.equals(member.getId(), this.getId());
+        }
+        return false;
     }
 }

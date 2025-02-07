@@ -52,15 +52,15 @@ public class MemberService {
     public String getLogoutUrl(Member member){
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
-        if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
-            OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
-            if (oAuth2LogoutService == null) {
-                throw new RuntimeException("Logout service not found");
-            }
-            return oAuth2LogoutService.getLogoutUrl();
-        }else {
+        if (oAuthProvider.equals(Member.OAuth2Provider.NONE)){
             return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
         }
+
+        OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
+        if (oAuth2LogoutService == null) {
+            throw new RuntimeException("Logout service not found");
+        }
+        return oAuth2LogoutService.getLogoutUrl();
     }
 
     public Member signUp(
@@ -90,9 +90,8 @@ public class MemberService {
         return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
     }
 
-    public void modify(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
-        Member memberData = memberRepository
-                .findById(member.getId())
+    public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        Member memberData = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new RuntimeException("member not found"));
         String newNickname = nicknameUpdateRequestDto.newNickname();
         memberData.setNickname(newNickname);
