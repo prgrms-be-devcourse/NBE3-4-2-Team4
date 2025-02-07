@@ -2,9 +2,14 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
+import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
+import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
@@ -32,6 +37,20 @@ public class MemberService {
         return memberRepository.count();
     }
 
+    public Member adminLogin(AdminLoginRequestDto adminLoginRequestDto) {
+        String adminUsername = adminLoginRequestDto.adminUsername();
+        Member member = memberRepository.findByUsername(adminUsername)
+                .orElseThrow(() -> new MemberNotFoundException(adminUsername));
+
+        if (!member.getPassword().equals(passwordEncoder.encode(adminLoginRequestDto.password()))) {
+            throw new InValidPasswordException();
+        }
+        if (!member.getRole().equals(Member.Role.ADMIN)){
+            throw new RuntimeException("Role not allowed");
+        }
+        return member;
+    }
+
     public String getLogoutUrl(Member member){
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
@@ -45,7 +64,6 @@ public class MemberService {
             return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
         }
     }
-
 
     public Member signUp(
             String username,

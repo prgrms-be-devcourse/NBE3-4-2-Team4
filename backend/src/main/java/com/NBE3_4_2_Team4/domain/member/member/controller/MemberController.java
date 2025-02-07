@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
+import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
@@ -8,6 +9,7 @@ import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +36,7 @@ import java.util.Objects;
 public class MemberController {
     private final MemberService memberService;
     private final HttpManager httpManager;
+    private final JwtManager jwtManager;
 
     @Value("${custom.domain.frontend}")
     private String frontDomain;
@@ -46,6 +49,23 @@ public class MemberController {
                         "400-2",
                         e.getMessage()
                 ));
+    }
+
+    @PostMapping("/api/admin/login")
+    public RsData<Empty> adminLogin(
+            @RequestBody @Valid AdminLoginRequestDto adminLoginRequestDto,
+            HttpServletResponse resp
+    ){
+        Member member = memberService.adminLogin(adminLoginRequestDto);
+        String accessToken = jwtManager.generateAccessToken(member);
+        int accessTokenValidMinute = jwtManager.getAccessTokenValidMinute();
+
+        String refreshToken = jwtManager.generateRefreshToken(member);
+        int refreshTokenValidHour = jwtManager.getRefreshTokenValidHour();
+        httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour );
+
+        return new RsData<>("200-1",
+                "admin login complete");
     }
 
 

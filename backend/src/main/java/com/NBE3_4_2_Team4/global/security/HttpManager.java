@@ -27,7 +27,7 @@ public class HttpManager {
     }
 
     public void setRefreshTokenCookie(HttpServletResponse resp, String refreshToken, int hour){
-        this.setCookie(resp, "refreshToken", refreshToken, hour);
+        this.setCookie(resp, "refreshToken", refreshToken, hour * 60);
     }
 
     public void setJWTCookie(

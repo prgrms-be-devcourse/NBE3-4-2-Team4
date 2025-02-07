@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,15 +17,17 @@ import java.util.Map;
 @Slf4j
 @Component
 public class JwtManager {
-    private final long accessTokenValidMinute;
-    private final long refreshTokenValidHour;
+    @Getter
+    private final int accessTokenValidMinute;
+    @Getter
+    private final int refreshTokenValidHour;
     private final SecretKey key;
     private final MemberRepository memberRepository;
 
     public JwtManager(
             @Value("${custom.jwt.secretKey:key}") String jwtSecretKey,
-            @Value("${custom.jwt.accessToken.validMinute:30}") long accessTokenValidMinute,
-            @Value("${custom.jwt.refreshToken.validHour:24}") long refreshTokenValidHour,
+            @Value("${custom.jwt.accessToken.validMinute:30}") int accessTokenValidMinute,
+            @Value("${custom.jwt.refreshToken.validHour:24}") int refreshTokenValidHour,
             MemberRepository memberRepository
             ){
         try {
@@ -46,7 +49,7 @@ public class JwtManager {
                 .claim("role", member.getRole().name())
                 .claim("OAuth2Provider", member.getOAuth2Provider().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenValidMinute * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 60 * 1000))
                 .signWith(key)
                 .compact();
     }
@@ -55,7 +58,7 @@ public class JwtManager {
         return Jwts.builder()
                 .claim("id", member.getId())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenValidHour * 60 * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + (long) refreshTokenValidHour * 60 * 60 * 1000))
                 .signWith(key)
                 .compact();
     }
