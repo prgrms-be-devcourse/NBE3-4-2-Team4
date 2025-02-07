@@ -52,11 +52,9 @@ public class MemberService {
             String nickname,
             Member.Role role,
             Member.OAuth2Provider oAuth2Provider){
-        memberRepository
-                .findByUsername(username)
-                .ifPresent(_ ->{
-                    throw new RuntimeException();
-                });
+        if (memberRepository.existsByUsername(username)) {
+            throw new RuntimeException("member already exists");
+        }
         return memberRepository.save(Member.builder()
                 .role(role)
                 .oAuth2Provider(oAuth2Provider)
