@@ -67,7 +67,7 @@ public class JwtManager {
                 .parseSignedClaims(refreshToken)
                 .getPayload();
 
-        Long id = (Long) claims.get("id");
+        Long id = ((Integer) claims.get("id")).longValue();
         Member member = memberRepository.findById(id)
                 .orElseThrow();
 
@@ -75,7 +75,7 @@ public class JwtManager {
     }
 
     public Map<String, Object> getClaims(String accessToken)  throws ExpiredJwtException {
-        if (accessToken == null || accessToken.isEmpty()) {
+        if (accessToken == null || accessToken.isBlank()) {
             throw new JwtException("Token is empty");
         }
         try {
