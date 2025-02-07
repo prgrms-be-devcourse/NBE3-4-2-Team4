@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
+import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,5 +105,12 @@ public class MemberController {
         memberService.withdrawalMembership(member);
         return new RsData<>("204-1",
                 "withdrawal membership done");
+    }
+
+    @PatchMapping("/api/members/nickname")
+    public RsData<Empty> updateMembers(
+            @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        Member member = AuthManager.getMemberFromContext();
+        memberService.modify(member, nicknameUpdateRequestDto);
     }
 }

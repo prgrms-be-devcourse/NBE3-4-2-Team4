@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
@@ -73,19 +74,18 @@ public class MemberService {
         return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
     }
 
-    public void modify(Member member, String nickname){
-        member.setNickname(nickname);
+    public void modify(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        Member memberData = memberRepository
+                .findById(member.getId())
+                .orElseThrow(() -> new RuntimeException("member not found"));
+        String newNickname = nicknameUpdateRequestDto.newNickname();
+        memberData.setNickname(newNickname);
     }
 
     public Member signUpOrModify(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
-        if (member.isPresent()) {
-            Member memberToModify = member.get();
-            modify(memberToModify, nickname);
-            return memberToModify;
-        }
+        return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
 
-        return userSignUp(username, password, nickname, oAuth2Provider);
     }
 
     public void withdrawalMembership(Member member) {
