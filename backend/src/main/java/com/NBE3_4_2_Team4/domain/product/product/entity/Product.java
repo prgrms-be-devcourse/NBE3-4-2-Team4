@@ -36,4 +36,28 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductSaleState saleState;     // 상품 판매 상태
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateCategory(ProductCategory category) {
+        this.category = category;
+    }
+
+    public void updateSaleState(ProductSaleState saleState) {
+        this.saleState = saleState;
+    }
 }

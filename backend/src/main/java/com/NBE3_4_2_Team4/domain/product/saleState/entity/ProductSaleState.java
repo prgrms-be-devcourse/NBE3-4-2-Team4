@@ -26,5 +26,5 @@ public class ProductSaleState {
     private SaleState name;                                  // 상품 판매 상태명
 
     @OneToMany(mappedBy = "saleState", cascade = CascadeType.ALL)
-    private List<Product> product = new ArrayList<>();       // 상품 리스트
+    private List<Product> products;                          // 상품 리스트
 }
