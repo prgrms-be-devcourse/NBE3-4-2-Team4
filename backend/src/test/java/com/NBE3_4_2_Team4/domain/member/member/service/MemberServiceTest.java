@@ -3,9 +3,12 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
+import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.GoogleDisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.KaKaoDisconnectService;
@@ -103,6 +106,77 @@ public class MemberServiceTest {
         long count = memberService.count();
         assertEquals(count, randomCount);
         verify(memberRepository, times(1)).count();
+    }
+
+    @Test
+    void adminLoginTest1(){
+        member.setRole(Member.Role.ADMIN);
+
+        AdminLoginRequestDto adminLoginRequestDto = AdminLoginRequestDto.builder()
+                .adminUsername(username)
+                .password(password)
+                .build();
+
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.of(member));
+
+        when(passwordEncoder.encode(password))
+                .thenReturn(password);
+
+        Member member = memberService.adminLogin(adminLoginRequestDto);
+        assertNotNull(member);
+        assertEquals(member.getUsername(), username);
+        assertEquals(member.getPassword(), password);
+        verify(memberRepository, times(1)).findByUsername(username);
+    }
+
+
+    @Test
+    void adminLoginTest2(){
+        AdminLoginRequestDto adminLoginRequestDto = AdminLoginRequestDto.builder()
+                .adminUsername(username)
+                .password(password)
+                .build();
+
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.empty());
+
+        assertThrows(MemberNotFoundException.class, () -> memberService.adminLogin(adminLoginRequestDto));
+        verify(memberRepository, times(1)).findByUsername(username);
+    }
+
+    @Test
+    void adminLoginTest3(){
+        AdminLoginRequestDto adminLoginRequestDto = AdminLoginRequestDto.builder()
+                .adminUsername(username)
+                .password(password)
+                .build();
+
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.of(member));
+
+        when(passwordEncoder.encode(password))
+                .thenReturn("encodedPassword");
+
+        assertThrows(InValidPasswordException.class, () -> memberService.adminLogin(adminLoginRequestDto));
+        verify(memberRepository, times(1)).findByUsername(username);
+    }
+
+    @Test
+    void adminLoginTest4(){
+        AdminLoginRequestDto adminLoginRequestDto = AdminLoginRequestDto.builder()
+                .adminUsername(username)
+                .password(password)
+                .build();
+
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.of(member));
+
+        when(passwordEncoder.encode(password))
+                .thenReturn(password);
+
+        assertThrows(RuntimeException.class, () -> memberService.adminLogin(adminLoginRequestDto));
+        verify(memberRepository, times(1)).findByUsername(username);
     }
 
     @Test
