@@ -3,8 +3,10 @@ package com.NBE3_4_2_Team4.global.security.filter;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
+import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
 @SpringBootTest
@@ -37,7 +40,8 @@ public class CustomJwtFilterTest {
     @Autowired
     private JwtManager jwtManager;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Member member;
 
@@ -107,23 +111,31 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter6() throws Exception {
+        RsData<String> responseData = new RsData<>("401-1", "Unauthorized", "인증이 필요합니다.");
 
+        String expectedJson = objectMapper.writeValueAsString(responseData);
         mockMvc.perform(put("/api/admin/products//accumulate")
                         .with(csrf())
                 )
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expectedJson));
     }
 
     @Test
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 일반 유저의 JWT 있는 경우 (인증 성공, 인가 실패)")
     public void testCustomJwtFilter7() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
+        RsData<String> responseData = new RsData<>("403-1", "Forbidden", "권한이 부족합니다.");
 
+        String expectedJson = objectMapper.writeValueAsString(responseData);
         mockMvc.perform(put("/api/admin/products//accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .with(csrf())
                 )
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expectedJson));
     }
 
     @Test

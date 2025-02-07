@@ -60,8 +60,6 @@ public class SecurityConfig {
                             oauth2Login.tokenEndpoint(tokenEndpointConfig ->
                                     tokenEndpointConfig.accessTokenResponseClient(accessTokenResponseClient));
                         });
-
-        ;
         return http.build();
     }
 
