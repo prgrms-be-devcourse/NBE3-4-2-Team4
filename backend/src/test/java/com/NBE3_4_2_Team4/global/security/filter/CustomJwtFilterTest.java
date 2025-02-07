@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -59,9 +60,9 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    @DisplayName("필터 안 걸려있는 url 에 대한 post 테스트")
+    @DisplayName("필터 안 걸려있는 url 에 대한 get 테스트")
     public void testCustomJwtFilter1() throws Exception {
-        mockMvc.perform(post("/api/test")
+        mockMvc.perform(get("/api/questions")
                         .with(csrf())
                 )
                 .andExpect(status().isOk());

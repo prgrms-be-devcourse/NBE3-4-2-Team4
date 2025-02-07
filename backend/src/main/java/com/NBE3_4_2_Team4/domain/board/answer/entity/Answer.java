@@ -24,9 +24,6 @@ public class Answer extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
-    @ManyToOne
-    Member author;
-
     @Column(columnDefinition = "TEXT")
     private String content;
 
