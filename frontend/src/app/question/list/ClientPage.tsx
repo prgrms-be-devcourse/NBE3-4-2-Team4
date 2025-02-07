@@ -57,11 +57,11 @@ export default function ClientPage({ body }: ClientPageProps) {
       <ul className="flex flex-col gap-4">
         {body.items?.map((item: QuestionDto) => (
           <li key={item.id}
-          className="flex items-center justify-between border-2 border-gray-300 p-3 rounded-md">
+          className="flex items-center dark:bg-gray-800 justify-between border-2 border-gray-300 p-3 rounded-md">
             <Link href={`/question/${item.id}`} className="flex items-center justify-between w-full block">
               <div className="flex-1 font-semibold text-lg truncate">{item.title}</div>
-              <div className="w-40 text-gray-600 text-sm text-center">{item.name}</div>
-              <div className="w-56 text-gray-500 text-sm text-right">작성 일시: {formatDate(item.createdAt)}</div><br />
+              <div className="w-40 text-sm text-center">{item.name}</div>
+              <div className="w-56 text-sm text-right">작성 일시: {formatDate(item.createdAt)}</div><br />
             </Link>
           </li>
         ))}

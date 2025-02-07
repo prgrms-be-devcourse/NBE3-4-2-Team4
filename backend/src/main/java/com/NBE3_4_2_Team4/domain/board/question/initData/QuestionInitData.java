@@ -49,7 +49,7 @@ public class QuestionInitData {
             Member author = (i >= 10) ? testUser : admin;
             questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author);
         }
-        questionService.write("공간 여백 테스트", "lorem ipsum dolor".repeat(100), 1L, admin);
+        questionService.write("공간 여백 테스트", "lorem ipsum dolor ".repeat(100), 1L, admin);
 
         recommendService.recommend(1L, testUser);
         recommendService.recommend(11L, admin);
