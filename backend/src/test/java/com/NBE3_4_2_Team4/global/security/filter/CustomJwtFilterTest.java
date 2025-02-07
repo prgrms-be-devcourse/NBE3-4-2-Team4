@@ -6,7 +6,6 @@ import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
-import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.nio.charset.StandardCharsets;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
