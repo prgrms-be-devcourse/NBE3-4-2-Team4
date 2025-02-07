@@ -34,10 +34,12 @@ public class GoogleDisconnectService implements OAuth2DisconnectService {
         String url = UriComponentsBuilder.fromUriString(googleDisconnectUrl)
                 .queryParam("token", accessToken)
                 .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
         try {
-            HttpHeaders headers = new HttpHeaders();
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-            restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            restTemplate.postForEntity(url, entity, String.class);
             return true;
         }catch (HttpClientErrorException e){
             log.error("Failed to disconnect for Google");

@@ -31,10 +31,10 @@ public class KaKaoDisconnectService implements OAuth2DisconnectService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("Authorization", String.format("Bearer %s", accessToken));
 
-        HttpEntity<String> requestEntity = new HttpEntity<>("{}",headers);
+        HttpEntity<String> entity = new HttpEntity<>("{}",headers);
 
         try {
-            restTemplate.postForEntity(KAKAO_UNLINK_URL, requestEntity, String.class);
+            restTemplate.postForEntity(KAKAO_UNLINK_URL, entity, String.class);
             return true;
         }catch (HttpClientErrorException e){
             log.error("Failed to disconnect from Kakao");

@@ -44,7 +44,7 @@ public class GoogleTokenService implements OAuth2TokenService {
             return objectMapper.readTree(response.getBody())
                         .get("access_token").asText();
         }catch (HttpClientErrorException | JsonProcessingException e){
-            log.error(e.getMessage());
+            log.error("error occurred while get accessToken for google. msg : {}",e.getMessage());
             return null;
         }
     }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,18 +41,13 @@ public class NaverTokenService implements OAuth2TokenService {
                 .toUriString();
 
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            try {
-                log.info("response for naver token : {}",response.getBody());
-                return objectMapper.readTree(response.getBody())
-                        .get("access_token").asText();
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Failed to parse access token", e);
-            }
-        }else {
-            throw new RuntimeException("Failed to parse access token");
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+            return objectMapper.readTree(response.getBody())
+                    .get("access_token").asText();
+        }catch (HttpClientErrorException | JsonProcessingException e) {
+            log.error("error occurred while get accessToken for naver. msg : {}",e.getMessage());
+            return null;
         }
     }
 }

@@ -37,19 +37,14 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
     public boolean disconnect(String refreshToken) {
         String accessToken = naverTokenService.getFreshAccessToken(refreshToken);
 
-        // 실제 사용할, 네이버 연결 끊기 매서드
         String url = UriComponentsBuilder.fromUriString(naverTokenUrl)
                 .queryParam("grant_type", "delete")
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
                 .queryParam("access_token", accessToken)
                 .toUriString();
-
         try {
-            HttpHeaders headers = new HttpHeaders();
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-            //네이버 연결 끊기 API
-            restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            restTemplate.getForEntity( url, String.class);
             return true;
         }catch (HttpClientErrorException e){
             log.error("Failed to disconnect for Naver");

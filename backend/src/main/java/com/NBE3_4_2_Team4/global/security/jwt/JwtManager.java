@@ -66,6 +66,7 @@ public class JwtManager {
                 .build()
                 .parseSignedClaims(refreshToken)
                 .getPayload();
+
         Long id = (Long) claims.get("id");
         Member member = memberRepository.findById(id)
                 .orElseThrow();
