@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
@@ -29,7 +29,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
     private final PointService pointService;
-    private final AnswerService answerService;
+    private final AnswerRepository answerRepository;
 
     public QuestionCategory createCategory(String name) {
         return questionCategoryRepository.save(QuestionCategory.builder()
@@ -107,7 +107,7 @@ public class QuestionService {
         Question question = findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        Answer answer = answerService.findById(answerId);
+        Answer answer = answerRepository.findById(answerId).get();
         Member actor = AuthManager.getMemberFromContext();
 
         if(question.isClosed())
@@ -122,7 +122,7 @@ public class QuestionService {
         if(question.getId() != answer.getQuestion().getId())
             throw new ServiceException("403-3", "해당 질문글 내의 답변만 채택할 수 있습니다.");
 
-        answerService.select(answer);
+        answer.select();
         question.setSelectedAnswer(answer);
         question.setClosed(true);
 
@@ -155,7 +155,7 @@ public class QuestionService {
 
             for(Answer answer : question.getAnswers()) {
                 //채택된건 아니므로 selected는 false 상태에서 포인트 지급된 날짜만 입력
-                answer.setSelectedAt(LocalDateTime.now());
+                answer.setSelectedAt();
 
                 //분배된 포인트 지급
                 pointService.accumulatePoints(answer.getAuthor().getUsername(), selectedPoint, PointCategory.EXPIRED_QUESTION);

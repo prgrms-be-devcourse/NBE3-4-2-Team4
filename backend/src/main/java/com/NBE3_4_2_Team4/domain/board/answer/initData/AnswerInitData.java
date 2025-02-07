@@ -55,8 +55,8 @@ public class AnswerInitData {
 
         Member author = memberRepository.findByUsername(member1Username).get();
 
-        Answer answer1 = answerService.write(question1, author, "답변 내용1");
-        Answer answer2 = answerService.write(question1, author, "답변 내용2");
-        Answer answer3 = answerService.write(question2, author, "답변 내용3");
+        Answer answer1 = answerService.save(question1, author, "답변 내용1");
+        Answer answer2 = answerService.save(question1, author, "답변 내용2");
+        Answer answer3 = answerService.save(question2, author, "답변 내용3");
     }
 }
