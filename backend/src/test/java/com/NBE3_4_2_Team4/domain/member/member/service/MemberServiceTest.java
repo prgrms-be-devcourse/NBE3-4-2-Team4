@@ -1,11 +1,15 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
 
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.GoogleDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.KaKaoDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.NaverDisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.impl.GoogleLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.impl.KakaoLogoutService;
@@ -15,12 +19,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -54,6 +61,15 @@ public class MemberServiceTest {
     @Mock
     private GoogleLogoutService googleLogoutService;
 
+    @Mock
+    private KaKaoDisconnectService kaKaoDisconnectService;
+
+    @Mock
+    private NaverDisconnectService naverDisconnectService;
+
+    @Mock
+    private GoogleDisconnectService googleDisconnectService;
+
     private final String username = "test username";
     private final String password = "test password";
     private final String nickname = "test nickname";
@@ -72,6 +88,8 @@ public class MemberServiceTest {
                 .password(password)
                 .nickname(nickname)
                 .point(PointConstants.INITIAL_POINT)
+                .questions(new ArrayList<>())
+                .answers(new ArrayList<>())
                 .build();
     }
 
@@ -313,5 +331,74 @@ public class MemberServiceTest {
         assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
 
         verify(memberRepository, times(1)).save(any());
+    }
+
+    @Test
+    void withdrawTest1(){
+        when(memberRepository.existsById(1L))
+                .thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> memberService.withdrawalMembership(member));
+    }
+
+    @Test
+    void withdrawTest2(){
+        when(memberRepository.existsById(1L))
+                .thenReturn(true);
+
+        memberService.withdrawalMembership(member);
+
+        verify(oAuth2RefreshTokenRepository, times(0))
+                .findByMember(any());
+
+        verify(oAuth2Manager, times(0))
+                .getOAuth2DisconnectService(any());
+
+        verify(memberRepository, times(1))
+                .deleteById(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    void withdrawTest(Member.OAuth2Provider provider) {
+        when(memberRepository.existsById(1L))
+                .thenReturn(true);
+
+        member.setOAuth2Provider(provider);
+        Member testMember = member;
+
+        OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
+                1L,
+                testMember,
+                provider.name().toLowerCase() + " token"
+        );
+
+        when(oAuth2RefreshTokenRepository.findByMember(testMember))
+                .thenReturn(Optional.of(oAuth2RefreshToken));
+
+        when(oAuth2Manager.getOAuth2DisconnectService(provider)).
+            thenReturn(switch (provider) {
+                case NONE -> null;
+                case KAKAO -> kaKaoDisconnectService;
+                case NAVER -> naverDisconnectService;
+                case GOOGLE -> googleDisconnectService;
+            });
+
+        when(switch (provider) {
+            case NONE -> null;
+            case KAKAO -> kaKaoDisconnectService.disconnect(any());
+            case NAVER -> naverDisconnectService.disconnect(any());
+            case GOOGLE -> googleDisconnectService.disconnect(any());
+        })
+                .thenReturn(true);
+
+        assertDoesNotThrow(() -> memberService.withdrawalMembership(testMember));
+
+        verify(oAuth2RefreshTokenRepository, times(1))
+                .findByMember(any());
+        verify(oAuth2Manager, times(1))
+                .getOAuth2DisconnectService(any());
+        verify(memberRepository, times(1))
+                .deleteById(any());
     }
 }
