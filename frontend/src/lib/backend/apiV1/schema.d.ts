@@ -642,6 +642,20 @@ export interface components {
             /** Format: date-time */
             selectedAt?: string;
         };
+        AnswerDto: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+            /** Format: int64 */
+            questionId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorName: string;
+            content: string;
+        };
         QuestionDto: {
             /** Format: int64 */
             id: number;

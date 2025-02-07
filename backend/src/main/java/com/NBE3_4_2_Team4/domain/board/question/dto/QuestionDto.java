@@ -36,6 +36,8 @@ public class QuestionDto {
     @NonNull
     private final long point;
 
+    private final List<AnswerDto> answers;
+
     public QuestionDto(Question question) {
         this.id = question.getId();
         this.title = question.getTitle();
