@@ -171,6 +171,10 @@ public class MemberServiceTest {
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
+        verify(passwordEncoder,times(0))
+                .encode(any());
+        verify(memberRepository, times(0))
+                .save(any());
     }
 
     @Test
@@ -373,6 +377,83 @@ public class MemberServiceTest {
         verify(oAuth2Manager, times(1))
                 .getOAuth2DisconnectService(any());
         verify(memberRepository, times(1))
+                .deleteById(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    void withdrawTest3(Member.OAuth2Provider provider) {
+        when(memberRepository.existsById(1L))
+                .thenReturn(true);
+
+        member.setOAuth2Provider(provider);
+        Member testMember = member;
+
+        OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
+                1L,
+                testMember,
+                provider.name().toLowerCase() + " token"
+        );
+
+        when(oAuth2RefreshTokenRepository.findByMember(testMember))
+                .thenReturn(Optional.of(oAuth2RefreshToken));
+
+        when(oAuth2Manager.getOAuth2DisconnectService(provider)).
+                thenReturn(null);
+
+        Throwable throwable=  assertThrows(RuntimeException.class, () -> memberService.withdrawalMembership(testMember));
+
+        assertEquals(throwable.getMessage(), "disconnect failed");
+        verify(oAuth2RefreshTokenRepository, times(1))
+                .findByMember(any());
+        verify(oAuth2Manager, times(1))
+                .getOAuth2DisconnectService(any());
+        verify(memberRepository, times(0))
+                .deleteById(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    void withdrawTest4(Member.OAuth2Provider provider) {
+        when(memberRepository.existsById(1L))
+                .thenReturn(true);
+
+        member.setOAuth2Provider(provider);
+        Member testMember = member;
+
+        OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
+                1L,
+                testMember,
+                provider.name().toLowerCase() + " token"
+        );
+
+        when(oAuth2RefreshTokenRepository.findByMember(testMember))
+                .thenReturn(Optional.of(oAuth2RefreshToken));
+
+        when(oAuth2Manager.getOAuth2DisconnectService(provider)).
+                thenReturn(switch (provider) {
+                    case NONE -> null;
+                    case KAKAO -> kaKaoDisconnectService;
+                    case NAVER -> naverDisconnectService;
+                    case GOOGLE -> googleDisconnectService;
+                });
+
+        when(switch (provider) {
+            case NONE -> null;
+            case KAKAO -> kaKaoDisconnectService.disconnect(any());
+            case NAVER -> naverDisconnectService.disconnect(any());
+            case GOOGLE -> googleDisconnectService.disconnect(any());
+        })
+                .thenReturn(false);
+
+        Throwable throwable=  assertThrows(RuntimeException.class, () -> memberService.withdrawalMembership(testMember));
+
+        assertEquals(throwable.getMessage(), "disconnect failed");
+        verify(oAuth2RefreshTokenRepository, times(1))
+                .findByMember(any());
+        verify(oAuth2Manager, times(1))
+                .getOAuth2DisconnectService(any());
+        verify(memberRepository, times(0))
                 .deleteById(any());
     }
 }
