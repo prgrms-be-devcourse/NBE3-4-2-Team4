@@ -1,27 +1,31 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -33,12 +37,12 @@ public class CustomJwtFilterTest {
     @Autowired
     private JwtManager jwtManager;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private Member member;
 
     private Member admin;
 
-    @Value("${custom.domain.backend}")
-    private String backendDomain;
 
     @BeforeEach
     void setUp() {
@@ -69,55 +73,42 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    @DisplayName("필터 걸려있는 url - products/test 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
+    @DisplayName("필터 걸려있는 url - api/questions 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter2() throws Exception {
-        mockMvc.perform(post("/api/products/test")
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L);
+        String body = objectMapper.writeValueAsString(reqBody);
+
+        mockMvc.perform(post("/api/questions")
                         .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
                 )
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("필터 걸려있는 url - products/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
+    @DisplayName("필터 걸려있는 url - api/questions 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter3() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
 
-        mockMvc.perform(post("/api/products/test")
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L);
+        String body = objectMapper.writeValueAsString(reqBody);
+
+        mockMvc.perform(post("/api/questions")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
                 )
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("필터 걸려있는 url - questions/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
-    public void testCustomJwtFilter4() throws Exception {
-        String jwtToken = jwtManager.generateAccessToken(member);
-
-        mockMvc.perform(post("/api/questions/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken))
-                        .with(csrf())
-                )
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("필터 걸려있는 url - answers/test 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
-    public void testCustomJwtFilter5() throws Exception {
-        String jwtToken = jwtManager.generateAccessToken(member);
-
-        mockMvc.perform(post("/api/answers/test")
-                        .header("Authorization", String.format("Bearer %s", jwtToken))
-                        .with(csrf())
-                )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter6() throws Exception {
 
-        mockMvc.perform(post("/api/admin/test")
+        mockMvc.perform(put("/api/admin/products//accumulate")
                         .with(csrf())
                 )
                 .andExpect(status().isUnauthorized());
@@ -128,7 +119,7 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter7() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
 
-        mockMvc.perform(post("/api/admin/test")
+        mockMvc.perform(put("/api/admin/products//accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .with(csrf())
                 )
@@ -136,13 +127,18 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
+    @DisplayName("필터 걸려있는 url - api/point/products/accumulate 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
     public void testCustomJwtFilter8() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(admin);
 
-        mockMvc.perform(post("/api/admin/test")
+        PointTransferReq pointTransferReq = new PointTransferReq("test@test.com", 1L);
+        String body = objectMapper.writeValueAsString(pointTransferReq);
+
+        mockMvc.perform(put("/api/admin/products/accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
                 )
                 .andExpect(status().isOk());
     }
@@ -157,7 +153,7 @@ public class CustomJwtFilterTest {
                         .with(csrf())
                 )
                 .andExpect(status().isFound())
-                .andExpect(header().string(HttpHeaders.LOCATION, backendDomain + OAuth2LogoutService.LOGOUT_COMPLETE_URL))
+                .andExpect(header().string(HttpHeaders.LOCATION, OAuth2LogoutService.LOGOUT_COMPLETE_URL))
                 .andDo(print());
     }
 

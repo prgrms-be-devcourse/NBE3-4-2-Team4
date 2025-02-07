@@ -70,7 +70,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getAccessToken2(request);
+        String accessToken = getAccessToken(request);
 
         if (accessToken == null) {
             filterChain.doFilter(request, response);
