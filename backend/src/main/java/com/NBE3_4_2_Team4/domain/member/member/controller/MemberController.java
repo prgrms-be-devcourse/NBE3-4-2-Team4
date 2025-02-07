@@ -58,7 +58,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
     })
     public ResponseEntity<RsData<Empty>> logout(HttpServletRequest req){
-        Member member = AuthManager.getMemberFromContext();
+        Member member = AuthManager.getNonNullMember();
         String redirectUrl = memberService.getLogoutUrl(member);
 
         req.getSession().setAttribute("logoutRequested", true);
@@ -101,7 +101,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
     })
     public RsData<Empty> withdrawalMembership(){
-        Member member = AuthManager.getMemberFromContext();
+        Member member = AuthManager.getNonNullMember();
         memberService.withdrawalMembership(member);
         return new RsData<>("204-1",
                 "withdrawal membership done");
@@ -110,7 +110,7 @@ public class MemberController {
     @PatchMapping("/api/members/nickname")
     public RsData<Empty> updateMembers(
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
-        Member member = AuthManager.getMemberFromContext();
+        Member member = AuthManager.getNonNullMember();
         memberService.modify(member, nicknameUpdateRequestDto);
         return new RsData<>("200-1",
                 "nickname updated");

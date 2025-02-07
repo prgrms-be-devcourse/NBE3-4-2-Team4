@@ -32,14 +32,7 @@ public class MemberService {
         return memberRepository.count();
     }
 
-    private void memberNullCheck(Member member) {
-        if (member == null || member.getId() == null) {
-            throw new RuntimeException("member is null");
-        }
-    }
-
     public String getLogoutUrl(Member member){
-        memberNullCheck(member);
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
         if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
@@ -79,7 +72,6 @@ public class MemberService {
     }
 
     public void modify(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
-        memberNullCheck(member);
         Member memberData = memberRepository
                 .findById(member.getId())
                 .orElseThrow(() -> new RuntimeException("member not found"));
@@ -87,15 +79,13 @@ public class MemberService {
         memberData.setNickname(newNickname);
     }
 
-    public Member signUpOrModify(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
+    public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
 
     }
 
     public void withdrawalMembership(Member member) {
-        memberNullCheck(member);
-
         Long memberId = member.getId();
 
         if (!memberRepository.existsById(memberId)) {

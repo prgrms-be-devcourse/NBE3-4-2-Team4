@@ -17,11 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +33,7 @@ public class MemberServiceTest {
     @InjectMocks
     private MemberService memberService;
 
-    @Spy
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
@@ -65,14 +65,16 @@ public class MemberServiceTest {
     @BeforeEach
     void setUp() {
         member = Member.builder()
+                .id(1L)
                 .role(role)
                 .oAuth2Provider(oAuth2Provider)
                 .username(username)
-                .password(passwordEncoder.encode(password))
+                .password(password)
                 .nickname(nickname)
                 .point(PointConstants.INITIAL_POINT)
                 .build();
     }
+
     @Test
     @DisplayName("총 멤버 수 카운팅 테스트")
     void countTest() {
@@ -87,15 +89,6 @@ public class MemberServiceTest {
 
     @Test
     void getLogoutUrlTest1(){
-        Throwable exception = assertThrows(RuntimeException.class, () -> {
-            memberService.getLogoutUrl(null);
-        });
-
-        assertEquals("no member logged in", exception.getMessage());
-    }
-
-    @Test
-    void getLogoutUrlTest2(){
         Member member = Member.builder()
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .build();
@@ -107,7 +100,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    void getLogoutUrlTest3(){
+    void getLogoutUrlTest2(){
         String testKakaoLogoutUrl = "test kakao logout url";
 
         when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.KAKAO))
@@ -125,7 +118,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    void getLogoutUrlTest4(){
+    void getLogoutUrlTest3(){
         String testNaverLogoutUrl = "test naver logout url";
 
         when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.NAVER))
@@ -144,7 +137,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    void getLogoutUrlTest5(){
+    void getLogoutUrlTest4(){
         String testGoogleLogoutUrl = "test google logout url";
 
         when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE))
@@ -167,8 +160,8 @@ public class MemberServiceTest {
         when(memberRepository.existsByUsername(username))
                 .thenReturn(true);
 
-        assertThrows(RuntimeException.class, () -> memberService
-                .signUp(username, password, nickname, role, oAuth2Provider));
+        assertThrows(RuntimeException.class, () ->
+                memberService.signUp(username, password, nickname, role, oAuth2Provider));
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
@@ -182,11 +175,11 @@ public class MemberServiceTest {
         when(memberRepository.save(any()))
                 .thenReturn(member);
 
-        Member newMember = memberService
-                .signUp(username, password, nickname, role, oAuth2Provider);
+        Member newMember =
+                memberService.signUp(username, password, nickname, role, oAuth2Provider);
 
         assertEquals(username, newMember.getUsername());
-        assertNotEquals(password, newMember.getPassword());
+        assertEquals(password, newMember.getPassword());
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
@@ -194,6 +187,8 @@ public class MemberServiceTest {
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
+        verify(passwordEncoder,times(1))
+                .encode(any());
         verify(memberRepository, times(1))
                 .save(any());
     }
@@ -210,7 +205,7 @@ public class MemberServiceTest {
                 .userSignUp(username, password, nickname, oAuth2Provider);
 
         assertEquals(username, newMember.getUsername());
-        assertNotEquals(password, newMember.getPassword());
+        assertEquals(password, newMember.getPassword());
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
@@ -223,10 +218,22 @@ public class MemberServiceTest {
     }
 
     @Test
-    void modifyTest(){
+    void modifyTest1(){
+        when(memberRepository.findById(any()))
+                .thenReturn(Optional.empty());
+
+        NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname");
+        assertThrows(RuntimeException.class, () ->
+                memberService.modify(member, nicknameUpdateRequestDto));
+    }
+
+    @Test
+    void modifyTest2(){
+        when(memberRepository.findById(any()))
+                .thenReturn(Optional.of(member));
         assertEquals("test nickname", member.getNickname());
 
-        NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname")
+        NicknameUpdateRequestDto nicknameUpdateRequestDto = new NicknameUpdateRequestDto("new nickname");
         memberService.modify(member, nicknameUpdateRequestDto);
 
         assertEquals("new nickname", member.getNickname());

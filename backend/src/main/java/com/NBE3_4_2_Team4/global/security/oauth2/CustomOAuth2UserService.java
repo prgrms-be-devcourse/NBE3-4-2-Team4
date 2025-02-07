@@ -45,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String nickname = oAuth2UserInfo.getNickname();
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
-        Member member = memberService.signUpOrModify(username, "", nickname, oAuth2Provider);
+        Member member = memberService.signUpOrIn(username, "", nickname, oAuth2Provider);
 
         if (refreshToken != null && !refreshToken.isBlank()) {
             OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository.findByMember(member)
