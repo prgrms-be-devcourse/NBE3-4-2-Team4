@@ -1,20 +1,7 @@
 import ClientPage from "./ClientPage";
 import createClient from "openapi-fetch";
 import type { paths } from "@/lib/backend/apiV1/schema";
-
-function convertSnakeToCamel<T>(obj: T): T {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertSnakeToCamel(item)) as T;
-  } else if (typeof obj === "object" && obj !== null) {
-    return Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
-        convertSnakeToCamel(value),
-      ])
-    ) as T;
-  }
-  return obj;
-}
+import { convertSnakeToCamel } from "@/utils/convertCase";
 
 const client = createClient<paths>({
   baseUrl: "http://localhost:8080",

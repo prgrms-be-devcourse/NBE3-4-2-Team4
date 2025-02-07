@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
-import { format } from "date-fns";
+import { formatDate } from "@/utils/dateUtils";
 import Link from "next/link";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
@@ -10,10 +10,6 @@ type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
 
 interface ClientPageProps {
   body: PageDtoQuestionDto;
-}
-
-function formatDate(date: string) {
-  return format(new Date(date), "yyyy년 MM월 dd일 HH:mm:ss");
 }
 
 export default function ClientPage({ body }: ClientPageProps) {

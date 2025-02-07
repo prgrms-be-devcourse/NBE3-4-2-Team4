@@ -1,5 +1,6 @@
 "use client";
 import type { components } from "@/lib/backend/apiV1/schema";
+import { formatDate } from "@/utils/dateUtils";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -12,7 +13,7 @@ export default function ClientPage({ question } : { question: QuestionDto }) {
         <h3>{question.title}</h3>
         <p>{question.content}</p>
         <p>작성자: {question.name}</p>
-        <p>작성일: {question.createdAt}</p>
+        <p>작성일: {formatDate(question.createdAt)}</p>
         <p>카테고리: {question.categoryName}</p>
         <p>추천 수: {question.recommendCount}</p>
       </div>
