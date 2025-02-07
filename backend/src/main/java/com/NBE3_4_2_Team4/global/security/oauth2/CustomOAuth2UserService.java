@@ -4,6 +4,8 @@ import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshT
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfoFactory;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
+import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfoService;
+import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.impl.OAuth2UserInfoClass;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberService memberService;
+    private final OAuth2Manager oAuth2Manager;
     private final OAuth2UserInfoFactory oAuth2UserInfoFactory;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
@@ -37,9 +40,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(providerTypeCode);
 
-        OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory
-                .getOAuth2UserInfo
-                        (oAuth2Provider, oAuth2User);
+        OAuth2UserInfoService oAuth2UserInfoService = oAuth2Manager.getOAuth2UserInfoService(oAuth2Provider);
+
+        OAuth2UserInfoClass oAuth2UserInfo = oAuth2UserInfoService.getOAuth2UserInfo(oAuth2User);
 
         String oAuth2Id = oAuth2UserInfo.getOAuth2Id();
         String nickname = oAuth2UserInfo.getNickname();
