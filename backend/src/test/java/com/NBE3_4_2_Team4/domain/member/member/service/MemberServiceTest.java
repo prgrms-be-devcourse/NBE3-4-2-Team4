@@ -156,6 +156,20 @@ public class MemberServiceTest {
     }
 
     @Test
+    void getLogoutUrlTest5(){
+        when(oAuth2Manager.getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE))
+                .thenReturn(null);
+
+        Member member = Member.builder()
+                .oAuth2Provider(Member.OAuth2Provider.GOOGLE)
+                .build();
+
+        assertThrows(RuntimeException.class, () -> memberService.getLogoutUrl(member));
+        verify(oAuth2Manager, times(1))
+                .getOAuth2LogoutService(Member.OAuth2Provider.GOOGLE);
+    }
+
+    @Test
     void signUpTest1(){
         when(memberRepository.existsByUsername(username))
                 .thenReturn(true);
@@ -208,6 +222,31 @@ public class MemberServiceTest {
         assertEquals(password, newMember.getPassword());
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
+        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+
+        verify(memberRepository,times(1))
+                .existsByUsername(username);
+        verify(memberRepository, times(1))
+                .save(any());
+    }
+
+    @Test
+    void signUpTest4(){
+        when(memberRepository.existsByUsername(username))
+                .thenReturn(false);
+
+        member.setRole(Member.Role.ADMIN);
+        when(memberRepository.save(any()))
+                .thenReturn(member);
+
+        Member newMember = memberService
+                .signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
+
+        assertEquals(username, newMember.getUsername());
+        assertEquals(password, newMember.getPassword());
+        assertEquals(nickname, newMember.getNickname());
+        assertEquals(Member.Role.ADMIN, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
         assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
 
