@@ -277,4 +277,41 @@ public class MemberServiceTest {
 
         assertEquals("new nickname", member.getNickname());
     }
+
+    @Test
+    void signUpOrInTest1(){
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.of(member));
+
+        Member signInMember =
+                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
+
+        assertEquals(member, signInMember);
+        assertEquals(username, signInMember.getUsername());
+        assertEquals(password, signInMember.getPassword());
+        assertEquals(nickname, signInMember.getNickname());
+        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
+
+        verify(memberRepository, times(0)).save(any());
+    }
+
+    @Test
+    void signUpOrInTest2(){
+        when(memberRepository.findByUsername(username))
+                .thenReturn(Optional.empty());
+
+        when(memberRepository.save(any()))
+                .thenReturn(member);
+
+        Member signInMember =
+                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
+
+        assertEquals(member, signInMember);
+        assertEquals(username, signInMember.getUsername());
+        assertEquals(password, signInMember.getPassword());
+        assertEquals(nickname, signInMember.getNickname());
+        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
+
+        verify(memberRepository, times(1)).save(any());
+    }
 }
