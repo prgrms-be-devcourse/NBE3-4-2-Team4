@@ -648,9 +648,9 @@ export interface components {
             /** @enum {string} */
             pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
             /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
