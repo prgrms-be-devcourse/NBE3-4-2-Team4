@@ -37,6 +37,10 @@ public class QuestionService {
                 .build());
     }
 
+    public List<QuestionCategory> getCategories() {
+        return questionCategoryRepository.findAll();
+    }
+
     public long count() {
         return questionRepository.count();
     }

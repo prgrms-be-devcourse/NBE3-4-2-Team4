@@ -221,6 +221,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 상품 조회 (페이징)
+         * @description 전체 상품을 페이징 처리하여 조회합니다.
+         */
+        get: operations["getAllProductsWithPaging"];
+        put?: never;
+        /**
+         * 단건 상품 생성
+         * @description 단건 상품을 생성합니다.
+         */
+        post: operations["writeProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/test": {
         parameters: {
             query?: never;
@@ -285,6 +309,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단건 상품 조회
+         * @description 단건 상품을 조회합니다.
+         */
+        get: operations["getProduct"];
+        put?: never;
+        post?: never;
+        /**
+         * 단건 상품 삭제
+         * @description 단건 상품을 삭제합니다.
+         */
+        delete: operations["deleteProduct"];
+        options?: never;
+        head?: never;
+        /**
+         * 단건 상품 수정
+         * @description 단건 상품을 수정합니다.
+         */
+        patch: operations["updateProduct"];
+        trace?: never;
+    };
     "/api/answers/{id}": {
         parameters: {
             query?: never;
@@ -333,7 +385,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/products": {
+    "/api/questions/categories": {
         parameters: {
             query?: never;
             header?: never;
@@ -341,10 +393,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 전체 상품 조회 (페이징)
-         * @description 전체 상품을 페이징 처리하여 조회합니다.
+         * 카테고리 조회
+         * @description 카테고리 목록 가져오기
          */
-        get: operations["getAllProductsWithPaging"];
+        get: operations["getCategories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -574,20 +626,6 @@ export interface components {
             /** Format: date-time */
             selectedAt?: string;
         };
-        AnswerDto: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            modifiedAt: string;
-            /** Format: int64 */
-            questionId: number;
-            /** Format: int64 */
-            authorId: number;
-            authorName: string;
-            content: string;
-        };
         QuestionDto: {
             /** Format: int64 */
             id: number;
@@ -599,16 +637,13 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
-<<<<<<< HEAD
             /** Format: int64 */
             recommendCount?: number;
             answers?: components["schemas"]["AnswerDto"][];
-=======
             selectedAnswer?: components["schemas"]["AnswerDto"];
             closed: boolean;
             /** Format: int64 */
             point: number;
->>>>>>> main
         };
         RsDataQuestionDto: {
             resultCode: string;
@@ -643,6 +678,40 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
+        writeItem: {
+            productName: string;
+            /** Format: int32 */
+            productPrice: number;
+            productDescription: string;
+            productImageUrl: string;
+            productCategory: string;
+            productSaleState: string;
+        };
+        GetItem: {
+            /** Format: int64 */
+            productId?: number;
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
+        RsDataGetItem: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetItem"];
+        };
+        updateItem: {
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
         PageDtoQuestionDto: {
             /** Format: int32 */
             currentPageNumber?: number;
@@ -667,18 +736,12 @@ export interface components {
             hasMore?: boolean;
             items?: components["schemas"]["AnswerDto"][];
         };
-        GetItems: {
+        QuestionCategoryDto: {
             /** Format: int64 */
-            productId?: number;
-            productName?: string;
-            /** Format: int32 */
-            productPrice?: number;
-            productDescription?: string;
-            productImageUrl?: string;
-            productCategory?: string;
-            productSaleState?: string;
+            id?: number;
+            name?: string;
         };
-        PageDtoGetItems: {
+        PageDtoGetItem: {
             /** Format: int32 */
             currentPageNumber?: number;
             /** Format: int32 */
@@ -688,26 +751,26 @@ export interface components {
             /** Format: int64 */
             totalItems?: number;
             hasMore?: boolean;
-            items?: components["schemas"]["GetItems"][];
+            items?: components["schemas"]["GetItem"][];
         };
-        RsDataPageDtoGetItems: {
+        RsDataPageDtoGetItem: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["PageDtoGetItems"];
+            data: components["schemas"]["PageDtoGetItem"];
         };
         GetItemsByKeyword: {
             keyword?: string;
-            products?: components["schemas"]["GetItems"][];
+            products?: components["schemas"]["GetItem"][];
         };
         RsDataGetItemsByKeyword: {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItemsByKeyword"];
         };
-        RsDataListGetItems: {
+        RsDataListGetItem: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["GetItems"][];
+            data: components["schemas"]["GetItem"][];
         };
         PointHistoryReq: {
             /** Format: int32 */
@@ -717,15 +780,11 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-<<<<<<< HEAD
-            pointCategory?: "송금" | "상품구매" | "답변채택" | "관리자";
-=======
             pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
->>>>>>> main
-            /** Format: date-time */
-            startDateTime?: string;
             /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
@@ -1271,6 +1330,71 @@ export interface operations {
             };
         };
     };
+    getAllProductsWithPaging: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    writeProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["writeItem"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     test2: {
         parameters: {
             query?: never;
@@ -1369,6 +1493,103 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deleteProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    updateProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["updateItem"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
             };
             /** @description Bad Request */
             400: {
@@ -1510,12 +1731,9 @@ export interface operations {
             };
         };
     };
-    getAllProductsWithPaging: {
+    getCategories: {
         parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1528,7 +1746,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItems"];
+                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
                 };
             };
             /** @description Bad Request */
@@ -1561,7 +1779,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItems"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItem"];
                 };
             };
             /** @description Bad Request */
@@ -1625,7 +1843,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItems"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItem"];
                 };
             };
             /** @description Bad Request */
@@ -1685,7 +1903,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItems"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItem"];
                 };
             };
             /** @description Bad Request */

@@ -1,6 +1,20 @@
 "use Client";
+// import { useState } from "react";
+import type { components } from "@/lib/backend/apiV1/schema";
 
-export default function ClientPage() {
+type CategoryDto = components["schemas"]["QuestionCategoryDto"];
+
+interface Props {
+    categories: CategoryDto[];
+}
+
+export default function ClientPage({ categories }: Props) {
+    // const [selectedCategory, setSelectedCategory] = useState<CategoryDto | null>(null);
+
+    // const handleCategoryClick = (category: CategoryDto) => {
+    //     setSelectedCategory(category);
+    // };
+
     return (
         <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-2">글쓰기</h2>
@@ -27,6 +41,13 @@ export default function ClientPage() {
 
             {/* 카테고리 설정 */}
             <label className="block text-lg font-semibold mb-2">카테고리</label>
+            <div className="flex flex-row mb-3">
+                <ul className="flex gap-4">
+                    {categories.map((category) => (
+                    <li key={category.id}>{category.name}</li>
+                    ))}
+                </ul>
+            </div>
 
             {/* 작성 버튼 */}
             <button
