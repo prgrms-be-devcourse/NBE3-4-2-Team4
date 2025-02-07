@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,7 +31,7 @@ public class RecommendControllerTest {
     @WithUserDetails("test@test.com")
     void t1() throws Exception {
         ResultActions resultActions = mvc.perform(
-                post("/api/questions/2/recommend")
+                put("/api/questions/2/recommend")
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
@@ -48,39 +47,23 @@ public class RecommendControllerTest {
     @WithUserDetails("test@test.com")
     void t2() throws Exception {
         ResultActions resultActions = mvc.perform(
-                delete("/api/questions/1/recommend")
-                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-        ).andDo(print());
-
-        resultActions.andExpect(handler().handlerType(RecommendController.class))
-                .andExpect(handler().methodName("cancelRecommend"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("게시글 추천을 취소하었습니다."));
-    }
-
-    @Test
-    @DisplayName("이미 추천한 1번 질문 중복 추천 방지")
-    @WithUserDetails("test@test.com")
-    void t3() throws Exception {
-        ResultActions resultActions = mvc.perform(
-                post("/api/questions/1/recommend")
+                put("/api/questions/1/recommend")
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
         resultActions.andExpect(handler().handlerType(RecommendController.class))
                 .andExpect(handler().methodName("recommend"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.result_code").value("400-1"))
-                .andExpect(jsonPath("$.msg").value("이미 추천한 게시글입니다."));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result_code").value("200-2"))
+                .andExpect(jsonPath("$.msg").value("게시글 추천을 취소하였습니다."));
     }
 
     @Test
     @DisplayName("본인 글 추천 방지")
     @WithUserDetails("admin@test.com")
-    void t4() throws Exception {
+    void t3() throws Exception {
         ResultActions resultActions = mvc.perform(
-                post("/api/questions/1/recommend")
+                put("/api/questions/1/recommend")
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 

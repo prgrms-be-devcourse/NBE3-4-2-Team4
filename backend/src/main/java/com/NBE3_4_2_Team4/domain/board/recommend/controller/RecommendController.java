@@ -16,27 +16,22 @@ import org.springframework.web.bind.annotation.*;
 public class RecommendController {
     private final RecommendService recommendService;
 
-    @PostMapping
-    @Operation(summary = "게시글 추천", description = "중복 추천 불가, 본인 글 추천 불가")
+    @PutMapping
+    @Operation(summary = "게시글 추천", description = "추천/취소 토글, 중복 추천 불가, 본인 글 추천 불가")
     public RsData<Void> recommend(@PathVariable long questionId) { // 게시글 추천
         Member member = AuthManager.getMemberFromContext();
-        recommendService.recommend(questionId, member);
+        boolean isRecommended = recommendService.toggleRecommend(questionId, member);
 
-        return new RsData<>(
-                "200-1",
-                "게시글 추천이 완료되었습니다."
-        );
-    }
-
-    @DeleteMapping
-    @Operation(summary = "게시글 추천 취소")
-    public RsData<Void> cancelRecommend(@PathVariable long questionId) { // 게시글 추천 취소
-        Member member = AuthManager.getMemberFromContext();
-        recommendService.cancelRecommend(questionId, member);
-
-        return new RsData<>(
-                "200-1",
-                "게시글 추천을 취소하었습니다."
-        );
+        if (isRecommended) {
+            return new RsData<>(
+                    "200-1",
+                    "게시글 추천이 완료되었습니다."
+            );
+        } else {
+            return new RsData<>(
+                    "200-2",
+                    "게시글 추천을 취소하였습니다."
+            );
+        }
     }
 }
