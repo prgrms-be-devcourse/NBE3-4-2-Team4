@@ -26,6 +26,14 @@ import java.util.Objects;
 @EntityListeners({AuditingEntityListener.class})
 @ToString
 public class Member {
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Member member) {
+            return Objects.equals(member.getId(), this.getId());
+        }
+        return false;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -35,7 +43,6 @@ public class Member {
     private Role role;
 
     @Column(nullable = false)
-    @Setter(AccessLevel.NONE)
     private OAuth2Provider oAuth2Provider;
 
     @Column(nullable = false, unique = true)
@@ -124,13 +131,5 @@ public class Member {
             }
             throw new IllegalArgumentException("OAuth2Provider not found");
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Member member) {
-            return Objects.equals(member.getId(), this.getId());
-        }
-        return false;
     }
 }

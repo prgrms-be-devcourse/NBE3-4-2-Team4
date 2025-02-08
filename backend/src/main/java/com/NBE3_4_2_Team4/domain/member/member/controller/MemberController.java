@@ -52,6 +52,12 @@ public class MemberController {
     }
 
     @PostMapping("/api/admin/login")
+    @Operation(summary = "login with admin role", description = "관리자 회원의 로그인 요청을 처리합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "괸라자 로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "비밀번호 불일치"),
+            @ApiResponse(responseCode = "403", description = "관리자 권한이 아닌 계정의 로그인 시도")
+    })
     public RsData<Empty> adminLogin(
             @RequestBody @Valid AdminLoginRequestDto adminLoginRequestDto,
             HttpServletResponse resp
@@ -72,7 +78,7 @@ public class MemberController {
     @PostMapping("/api/logout")
     @Operation(summary = "request for logout", description = "로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "", headers = {
+            @ApiResponse(responseCode = "302", description = "로그아웃 요청 성공", headers = {
                     @Header(name = "Location", description = "로그아웃 후 리다이렉트 될 URL (OAuth2 서비스에 따라 다름)")
             }),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
@@ -127,6 +133,12 @@ public class MemberController {
                 "withdrawal membership done");
     }
 
+    @Operation(summary = "update member nickname", description = "회원의 닉네임을 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 닉네임 변경 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
+    })
     @PatchMapping("/api/members/nickname")
     public RsData<Empty> updateMembersNickname(
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
