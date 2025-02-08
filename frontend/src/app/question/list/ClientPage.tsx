@@ -20,6 +20,29 @@ export default function ClientPage({ body }: ClientPageProps) {
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const [searchKeyword, setSearchKeyword] = useState(searchParams.get("searchKeyword") || "");
+  const [keywordType, setKeywordType] = useState(searchParams.get("keywordType") || "ALL");
+
+  const options = ['전체', '제목', '내용', '작성자', '답변 내용'];
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  const optionMapping: { [key: string]: string } = {
+    '전체': 'ALL',
+    '제목': 'TITLE',
+    '내용': 'CONTENT',
+    '작성자': 'AUTHOR',
+    '답변 내용': 'ANSWER_CONTENT',
+  };
+
+  const toggleDropdown = () => { // 검색 조건 드롭다운
+    setIsOpen(!isOpen);
+  };
+
+  const selectOption = (option: string) => {
+    setSelectedOption(option);
+    setKeywordType(optionMapping[option]);
+    setIsOpen(false); // 선택 후 드롭다운 닫기
+  };
 
   // 페이지 이동 함수
   const changePage = (newPage: number) => {
@@ -27,6 +50,7 @@ export default function ClientPage({ body }: ClientPageProps) {
     queryParams.set("page", newPage.toString());
 
     if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
+    if (keywordType) queryParams.set("keywordType", keywordType);
     router.push(`?${queryParams.toString()}`);
   };
 
@@ -36,6 +60,7 @@ export default function ClientPage({ body }: ClientPageProps) {
     queryParams.set("page", "1"); // 검색 시 1페이지부터 시작
 
     if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
+    if (keywordType) queryParams.set("keywordType", keywordType);
     router.push(`?${queryParams.toString()}`);
   };
 
@@ -54,6 +79,28 @@ export default function ClientPage({ body }: ClientPageProps) {
         onClick={createQuestion}
         >글쓰기</button>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+          {/* 검색 입력창 */}
+          <div className="relative">
+            <button
+              className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
+              onClick={toggleDropdown}
+            >
+              {selectedOption ? selectedOption : "선택하세요"}
+              <span className="ml-2">&#9662;</span>
+            </button>
+            {isOpen && (
+              <ul className="absolute bg-white border rounded shadow w-full mt-2">
+                {options.map((option, index) => (
+                  <li key={index}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => selectOption(option)}>
+                  {option}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           <input type="text" placeholder="제목을 입력하세요"
           className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"
           value={searchKeyword}
@@ -62,6 +109,7 @@ export default function ClientPage({ body }: ClientPageProps) {
           className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
           onClick={handleSearch}>
           검색</button>
+
         </div>
       </div>
       <br />
@@ -95,7 +143,7 @@ export default function ClientPage({ body }: ClientPageProps) {
       <br />
 
       {/* 페이지 이동 버튼 */}
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-center gap-2 mb-3">
         <button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1}
           className={`px-4 py-2 rounded-md text-white font-semibold transition ${
             currentPage === 1
