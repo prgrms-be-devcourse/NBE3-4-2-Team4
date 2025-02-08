@@ -69,11 +69,6 @@ public class QuestionService {
         return questionRepository.findFirstByOrderByIdDesc();
     }
 
-    public Page<Question> findByListed(int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findAll(pageRequest);
-    }
-
     public Page<Question> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 

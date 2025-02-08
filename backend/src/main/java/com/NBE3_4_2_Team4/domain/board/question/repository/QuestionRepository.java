@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryCustom {
-    Page<Question> findByTitleLike(String title, Pageable pageable);
     Optional<Question> findFirstByOrderByIdDesc();
 
     @Query("SELECT q FROM Question q WHERE size(q.recommends) > 0 ORDER BY size(q.recommends) DESC")
