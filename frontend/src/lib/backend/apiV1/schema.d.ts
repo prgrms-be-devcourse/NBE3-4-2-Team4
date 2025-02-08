@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/questions/{questionId}/recommend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 게시글 추천
+         * @description 추천/취소 토글, 중복 추천 불가, 본인 글 추천 불가
+         */
+        put: operations["recommend"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{id}": {
         parameters: {
             query?: never;
@@ -155,27 +175,6 @@ export interface paths {
         /** 질문 등록 */
         post: operations["write"];
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/questions/{questionId}/recommend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 게시글 추천
-         * @description 중복 추천 불가, 본인 글 추천 불가
-         */
-        post: operations["recommend"];
-        /** 게시글 추천 취소 */
-        delete: operations["cancelRecommend"];
         options?: never;
         head?: never;
         patch?: never;
@@ -601,6 +600,11 @@ export interface components {
             msg: string;
             data: components["schemas"]["Empty"];
         };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
+        };
         QuestionWriteReqDto: {
             title: string;
             content: string;
@@ -664,11 +668,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionWriteResDto"];
-        };
-        RsDataVoid: {
-            resultCode: string;
-            msg: string;
-            data: Record<string, never>;
         };
         AnswerRequestDto: {
             content: string;
@@ -821,6 +820,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    recommend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getQuestion: {
         parameters: {
             query?: never;
@@ -1159,68 +1189,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionWriteResDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    recommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    cancelRecommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */

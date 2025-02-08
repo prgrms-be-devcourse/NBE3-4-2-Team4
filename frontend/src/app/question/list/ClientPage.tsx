@@ -89,6 +89,20 @@ export default function ClientPage({ body }: ClientPageProps) {
           >
           이전
         </button>
+
+        {/* 페이지 번호 버튼 */}
+        {Array.from({ length: body.totalPages || 1 }, (_, i) => i + 1).map((page) => (
+          <button key={page} onClick={() => changePage(page)}
+            className={`px-3 py-2 rounded-md text-white font-semibold transition ${
+              currentPage === page
+                ? "bg-cyan-100 cursor-not-allowed" // 현재 페이지 비활성화
+                : "bg-cyan-500 hover:bg-cyan-600"
+            }`}
+            >
+            {page}
+          </button>
+        ))}
+
         <button onClick={() => changePage(currentPage + 1)} disabled={currentPage === body.totalPages}
           className={`px-4 py-2 rounded-md text-white font-semibold transition ${
             currentPage === body.totalPages
