@@ -67,7 +67,7 @@ export default function Page({
           <DialogDescription>
             채택된 답변자에게 포인트가 지급됩니다.
             <br />
-            채택 후 새로운 답변을 다시 채택할 수 없습니다.
+            채택 후에는 새로운 답변을 등록할 수 없습니다.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">

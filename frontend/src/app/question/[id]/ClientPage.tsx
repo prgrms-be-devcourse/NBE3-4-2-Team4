@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Lightbulb, MessageCircleWarning, Pencil } from "lucide-react";
+import {
+  Clock,
+  Lightbulb,
+  MessageCircleWarning,
+  Pencil,
+  PencilLine,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -69,11 +75,20 @@ export default function ClientPage({
       </div>
 
       {/* 답변 리스트 */}
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 mt-10 flex items-center gap-1">
-        <Lightbulb width={20} height={20} />{" "}
-        <em className="not-italic text-xl">{question.answers?.length}개</em>의
-        답변이 있습니다.
-      </h3>
+      <div className="flex justify-between items-center mt-10 mb-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1">
+          <Lightbulb width={20} height={20} />{" "}
+          <em className="not-italic text-xl">{question.answers?.length}개</em>의
+          답변이 있습니다.
+        </h3>
+        <Button asChild>
+          <Link href={`/question/${question.id}/answer/write`}>
+            <PencilLine />
+            답변 작성하기
+          </Link>
+        </Button>
+      </div>
+
       <div className="flex flex-col gap-2 mt-6">
         {answers.items
           ?.filter((answer) => !answer.selected)
@@ -123,7 +138,7 @@ export default function ClientPage({
           ))}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+      {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
           답변 작성
         </h3>
@@ -135,7 +150,7 @@ export default function ClientPage({
         <button className="mt-4 px-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md">
           답변 등록
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
