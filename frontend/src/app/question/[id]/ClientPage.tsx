@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Pencil } from "lucide-react";
+import { Clock, Lightbulb, MessageCircleWarning, Pencil } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -69,6 +69,11 @@ export default function ClientPage({
       </div>
 
       {/* 답변 리스트 */}
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 mt-10 flex items-center gap-1">
+        <Lightbulb width={20} height={20} />{" "}
+        <em className="not-italic text-xl">{question.answers?.length}개</em>의
+        답변이 있습니다.
+      </h3>
       <div className="flex flex-col gap-2 mt-6">
         {answers.items
           ?.filter((answer) => !answer.selected)
@@ -91,8 +96,26 @@ export default function ClientPage({
               </CardContent>
               <CardFooter className="flex justify-end">
                 <Button variant="default" asChild>
-                  <Link href={`/question/${question.id}/select/${answer.id}`}>
+                  <Link
+                    href={`/question/${question.id}/answer/${answer.id}/select`}
+                  >
                     답변 채택
+                  </Link>
+                </Button>
+              </CardFooter>
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="outline" asChild>
+                  <Link
+                    href={`/question/${question.id}/answer/${answer.id}/modify`}
+                  >
+                    수정
+                  </Link>
+                </Button>
+                <Button variant="destructive" asChild>
+                  <Link
+                    href={`/question/${question.id}/answer/${answer.id}/delete`}
+                  >
+                    삭제
                   </Link>
                 </Button>
               </CardFooter>

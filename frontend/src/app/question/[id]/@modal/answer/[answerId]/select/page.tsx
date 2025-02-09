@@ -41,6 +41,7 @@ export default function Page({
     if (response.error) {
       toast({
         title: response.error.msg,
+        description: response.error.data.toString(),
         variant: "destructive",
       });
       return;
@@ -65,6 +66,8 @@ export default function Page({
           <DialogTitle>정말 이 답변을 채택하시겠습니까?</DialogTitle>
           <DialogDescription>
             채택된 답변자에게 포인트가 지급됩니다.
+            <br />
+            채택 후 새로운 답변을 다시 채택할 수 없습니다.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
