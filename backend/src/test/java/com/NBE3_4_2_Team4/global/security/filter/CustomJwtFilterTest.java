@@ -7,6 +7,7 @@ import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -91,12 +91,15 @@ public class CustomJwtFilterTest {
     @DisplayName("필터 걸려있는 url - api/questions 에 대한 post 테스트 - 헤더에 JWT 있는 경우 (인증 성공)")
     public void testCustomJwtFilter3() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
+        Cookie accessToken = new Cookie("accessToken", jwtToken);
 
         QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
         String body = objectMapper.writeValueAsString(reqBody);
 
+
         mockMvc.perform(post("/api/questions")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .cookie(accessToken)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
@@ -123,11 +126,15 @@ public class CustomJwtFilterTest {
     @DisplayName("필터 걸려있는 url - admin/test 에 대한 post 테스트 - 헤더에 일반 유저의 JWT 있는 경우 (인증 성공, 인가 실패)")
     public void testCustomJwtFilter7() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
+        Cookie accessToken = new Cookie("accessToken", jwtToken);
+
         RsData<String> responseData = new RsData<>("403-1", "Forbidden", "권한이 부족합니다.");
+
 
         String expectedJson = objectMapper.writeValueAsString(responseData);
         mockMvc.perform(put("/api/admin/products//accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .cookie(accessToken)
                         .with(csrf())
                 )
                 .andExpect(status().isForbidden())
@@ -139,12 +146,14 @@ public class CustomJwtFilterTest {
     @DisplayName("필터 걸려있는 url - api/point/products/accumulate 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
     public void testCustomJwtFilter8() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(admin);
+        Cookie accessToken = new Cookie("accessToken", jwtToken);
 
         PointTransferReq pointTransferReq = new PointTransferReq("test@test.com", 1L);
         String body = objectMapper.writeValueAsString(pointTransferReq);
 
         mockMvc.perform(put("/api/admin/products/accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .cookie(accessToken)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
@@ -156,13 +165,15 @@ public class CustomJwtFilterTest {
     @DisplayName("로그아웃 성공 테스트 - 헤더에 사용자의 JWT 있는 경우")
     public void testCustomJwtFilter9() throws Exception {
         String jwtToken = jwtManager.generateAccessToken(member);
+        Cookie accessToken = new Cookie("accessToken", jwtToken);
 
         mockMvc.perform(post("/api/logout")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .cookie(accessToken)
                         .with(csrf())
                 )
-                .andExpect(status().isFound())
-                .andExpect(header().string(HttpHeaders.LOCATION, OAuth2LogoutService.LOGOUT_COMPLETE_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(OAuth2LogoutService.LOGOUT_COMPLETE_URL)) // 응답 JSON의 data 필드 확인
                 .andDo(print());
     }
 

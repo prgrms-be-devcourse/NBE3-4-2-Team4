@@ -120,8 +120,8 @@ public class MemberServiceTest {
         when(memberRepository.findByUsername(username))
                 .thenReturn(Optional.of(member));
 
-        when(passwordEncoder.encode(password))
-                .thenReturn(password);
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
 
         Member member = memberService.adminLogin(adminLoginRequestDto);
         assertNotNull(member);
@@ -155,8 +155,8 @@ public class MemberServiceTest {
         when(memberRepository.findByUsername(username))
                 .thenReturn(Optional.of(member));
 
-        when(passwordEncoder.encode(password))
-                .thenReturn("encodedPassword");
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(false);
 
         assertThrows(InValidPasswordException.class, () -> memberService.adminLogin(adminLoginRequestDto));
         verify(memberRepository, times(1)).findByUsername(username);
@@ -172,8 +172,8 @@ public class MemberServiceTest {
         when(memberRepository.findByUsername(username))
                 .thenReturn(Optional.of(member));
 
-        when(passwordEncoder.encode(password))
-                .thenReturn(password);
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
 
         assertThrows(RuntimeException.class, () -> memberService.adminLogin(adminLoginRequestDto));
         verify(memberRepository, times(1)).findByUsername(username);
