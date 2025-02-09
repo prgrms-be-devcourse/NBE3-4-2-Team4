@@ -5,10 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class PointTransferReq {
     @NotBlank(message = "username은 필수 입력 값입니다.")
     private String username;
