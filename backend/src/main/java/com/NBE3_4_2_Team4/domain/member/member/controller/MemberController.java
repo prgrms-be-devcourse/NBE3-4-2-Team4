@@ -15,6 +15,8 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutServi
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -76,10 +78,18 @@ public class MemberController {
     }
 
     @GetMapping("/api/members")
-    public RsData<?> getMembers(
+    @Operation(summary = "get member's simple info", description = "멤버의 간단한 정보 (현재는 닉네임만)를 조회합니다. 프론트의 헤더에서 사용합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "로그인 되어 있지 않은 경우"),
+            @ApiResponse(responseCode = "200", description = "로그인 되어 있는 경우.",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = MemberThumbnailInfoResponseDto.class))
+            )
+    })
+    public RsData<?> getMemberThumbnailInfo(
             @CookieValue(value = "accessToken", required = false) String accessToken){
         if (accessToken == null || accessToken.isBlank()) {
-            return new RsData<Empty>("200-2", "User not logged in"); // 로그인되지 않음
+            return new RsData<Empty>("204-1", "User not logged in"); // 로그인되지 않음
         }
 
         MemberThumbnailInfoResponseDto responseDto = jwtManager.getMemberThumbnailInfoFromAccessToken(accessToken);
@@ -90,9 +100,10 @@ public class MemberController {
     @PostMapping("/api/logout")
     @Operation(summary = "request for logout", description = "로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "로그아웃 요청 성공", headers = {
-                    @Header(name = "Location", description = "로그아웃 후 리다이렉트 될 URL (OAuth2 서비스에 따라 다름)")
-            }),
+            @ApiResponse(responseCode = "200", description = "로그인 되어 있는 경우.",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(type = "string", description = "로그아웃 후 리다이렉트 될 URL. 302 사용 시 fetch 에서 오류가 발생해 200으로 설정."))
+            ),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
     })
     public RsData<String> logout(HttpServletRequest req){
@@ -107,6 +118,12 @@ public class MemberController {
 
 
     @GetMapping(OAuth2LogoutService.LOGOUT_COMPLETE_URL)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "로그아웃 성공적으로 처리된 경우.",
+                    headers = {
+                            @Header(name = "Location", description = "로그아웃 후 리다이렉트 될 URL. 기본적으로 http://localhost:3000")
+                    }),
+    })
     @Operation(summary = "logout complete", description = "로그아웃 요청이 성공적으로 실행되었을 때 도착합니다. Cookie 에 담긴 JWT 를 파기하고 프론트의 메인 페이지로 이동합니다.")
     public ResponseEntity<RsData<Empty>> logoutComplete(HttpServletRequest req, HttpServletResponse resp) {
         Boolean logoutRequested = (Boolean) req.getSession().getAttribute("logoutRequested");
