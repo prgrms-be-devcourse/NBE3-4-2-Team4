@@ -40,7 +40,7 @@ public class MemberService {
         Member member = memberRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new MemberNotFoundException(adminUsername));
 
-        if (!member.getPassword().equals(passwordEncoder.encode(adminLoginRequestDto.password()))) {
+        if (!passwordEncoder.matches(adminLoginRequestDto.password(), member.getPassword())) {
             throw new InValidPasswordException();
         }
         if (!member.getRole().equals(Member.Role.ADMIN)){
