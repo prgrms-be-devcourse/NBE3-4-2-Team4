@@ -68,9 +68,21 @@ export default function ClientPage({ body }: ClientPageProps) {
     router.push("/question/write");
   }
 
+  const showRanking = () => {
+    router.push("/question/rank");
+  }
+
   return (
     <div className="container mx-auto px-4">
-      <h2>지식인 리스트</h2>
+      <div className="flex items-center justify-between mb-2">
+        <h2>지식인 게시판</h2>
+        <button
+        className="border-2 border-cyan-500 bg-cyan-500 text-white px-2 font-bold rounded-md hover:bg-cyan-600"
+        onClick={showRanking}>
+            인기글 보기
+        </button>
+      </div>
+
       <hr /><br />
 
       <div className="flex justify-between items-center">
