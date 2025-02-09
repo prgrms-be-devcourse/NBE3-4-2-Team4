@@ -96,7 +96,6 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
     })
     public RsData<String> logout(HttpServletRequest req){
-        log.info("logout called;");
         Member member = AuthManager.getNonNullMember();
         String redirectUrl = memberService.getLogoutUrl(member);
 
