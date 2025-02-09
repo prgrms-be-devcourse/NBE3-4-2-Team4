@@ -33,7 +33,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
     @Value("${custom.jwt.accessToken.validMinute:30}")
     int accessTokenValidMinute;
 
-    private String getAccessToken(HttpServletRequest request) {
+    private String getAccessTokenFromHeader(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
@@ -41,7 +41,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         return null;
     }
     //일단 쿠키에서 토큰 받아오는 로직 (프론트에서 헤더에 JWT 넣는 방식 구현 이후 삭제 예정)
-    private String getAccessToken2(HttpServletRequest request) {
+    private String getAccessTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -70,7 +70,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getAccessToken(request);
+        String accessToken = getAccessTokenFromCookie(request);
 
         if (accessToken == null) {
             filterChain.doFilter(request, response);
