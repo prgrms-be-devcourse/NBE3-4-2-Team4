@@ -483,6 +483,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getMembers"];
+        put?: never;
+        post?: never;
+        /**
+         * withdrawal membership
+         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
+         */
+        delete: operations["withdrawalMembership"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/logout/complete": {
         parameters: {
             query?: never;
@@ -518,26 +538,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/members": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * withdrawal membership
-         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
-         */
-        delete: operations["withdrawalMembership"];
         options?: never;
         head?: never;
         patch?: never;
@@ -655,6 +655,11 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"];
         };
+        RsDataString: {
+            resultCode: string;
+            msg: string;
+            data: string;
+        };
         AdminLoginRequestDto: {
             adminUsername: string;
             password: string;
@@ -736,9 +741,9 @@ export interface components {
             /** @enum {string} */
             pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
             /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
@@ -765,6 +770,11 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["PageDtoPointHistoryRes"];
+        };
+        RsDataObject: {
+            resultCode: string;
+            msg: string;
+            data: unknown;
         };
     };
     responses: never;
@@ -1312,7 +1322,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
                 };
             };
             /** @description Bad Request */
@@ -1330,7 +1340,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
                 };
             };
         };
@@ -1873,12 +1883,14 @@ export interface operations {
             };
         };
     };
-    logoutComplete: {
+    getMembers: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: never;
+            cookie?: {
+                accessToken?: string;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1888,39 +1900,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    items_1: {
-        parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["PageDtoAnswerDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataObject"];
                 };
             };
             /** @description Bad Request */
@@ -1972,6 +1952,67 @@ export interface operations {
             };
             /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    logoutComplete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    items_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoAnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

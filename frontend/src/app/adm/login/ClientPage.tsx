@@ -1,12 +1,10 @@
 "use client";
 import { useState } from "react";
-import { useRouter} from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
 
 type AdminLoginRequestDto = components["schemas"]["AdminLoginRequestDto"];
 
 export default function ClientPage() {
-    const router = useRouter();
     const [formData, setFormData] = useState<AdminLoginRequestDto>({
         adminUsername: "",
         password: "",
@@ -34,13 +32,12 @@ export default function ClientPage() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("로그인 실패:", errorData);
-                throw new Error("로그인 실패");
             }
 
             const data = await response.json();
             console.log("로그인 성공:", data);
 
-            router.push("/adm");
+            window.location.href = "/adm";
         } catch (error) {
             console.error(error);
         }

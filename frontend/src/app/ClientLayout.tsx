@@ -1,6 +1,7 @@
 "use client";
 
 import { Lock } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import ThemeToggleButton from "@/lib/business/components/ThemeToggleButton";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
@@ -18,17 +19,62 @@ import Link from "next/link";
 export function ClientLayout({
   children,
 }: React.ComponentProps<typeof NextThemesProvider>) {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null); // 닉네임 저장
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/members", {
+          method: "GET",
+          credentials: "include", // 쿠키를 포함한 요청을 보낼 때 사용
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+
+          if (data?.result_code === "200-1") { // status 대신 result_code를 확인
+            // 로그인 되어 있을 때
+            return { isAuthenticated: true, nickname: data?.data?.nickname || null };
+          } else {
+            // 로그인 안 되어 있을 때
+            return { isAuthenticated: false, nickname: null };
+          }
+        } else {
+          console.error("로그인 상태 확인 실패:", response.status);
+          return { isAuthenticated: false, nickname: null };
+        }
+      } catch (error) {
+        console.error("로그인 상태 확인 중 오류 발생:", error);
+        return { isAuthenticated: false, nickname: null };
+      }
+    };
+
+    // 비동기 함수 호출 후 처리
+    checkLoginStatus().then((result) => {
+      setIsAuthenticated(result.isAuthenticated);
+      setNickname(result.nickname);
+    });
+  }, []);
 
   const handleLogout = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/logout", {
         method: "POST",
         credentials: "include", // 쿠키를 포함한 요청을 보낼 때 사용
+        redirect: "follow", // 자동 리다이렉트 따라가기
       });
 
       if (response.ok) {
-        // 로그아웃 후 로그인 페이지로 리다이렉트
-        window.location.href = "/login"; // 직접 리다이렉트
+        // 로그아웃 완료 후 리다이렉트 URL을 받는다
+        const data = await response.json();
+        const locationUrl = data.data;
+        if (locationUrl) {
+          window.location.href = locationUrl;
+        } else {
+          console.error("로그아웃 응답 데이터 오류");
+        }
       } else {
         console.error("로그아웃 실패:", response.status);
       }
@@ -63,16 +109,19 @@ export function ClientLayout({
             </Link>
           </Button>
           <div className="flex-grow"></div>
-          {/*{isAuthenticated ? (*/}
-          {/*    <Button variant="link" onClick={handleLogout}>*/}
-          {/*      로그아웃*/}
-          {/*    </Button>*/}
-          {/*) : (*/}
+          {isAuthenticated ? (
+              <>
+                <span>{nickname}</span>
+                <Button variant="link" onClick={handleLogout}>
+                  로그아웃
+                </Button>
+              </>
+          ) : (
               <Button variant="link">
                 <Lock className="mr-2" />
                 <Link href="/login">로그인</Link>
               </Button>
-          {/*// )}*/}
+          )}
           <ThemeToggleButton/>
         </div>
       </header>
