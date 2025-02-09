@@ -14,7 +14,7 @@ public class PointHistoryRes {
     private final Long amount;
     private final LocalDateTime createdAt;
     private final String counterAccountUsername;
-    private final PointCategory pointCategory;
+    private final String pointCategory;
 
     public static PointHistoryRes from(PointHistory pointHistory) {
         Member counterMember = pointHistory.getCounterMember();
@@ -25,7 +25,7 @@ public class PointHistoryRes {
                 .amount(pointHistory.getAmount())
                 .createdAt(pointHistory.getCreatedAt())
                 .counterAccountUsername(counterMemberUsername)
-                .pointCategory(pointHistory.getPointCategory())
+                .pointCategory(pointHistory.getPointCategory().getDisplayName())
                 .build();
     }
 }
