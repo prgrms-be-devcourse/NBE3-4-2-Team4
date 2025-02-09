@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.global.security.oauth2.logout.service;
+package com.NBE3_4_2_Team4.global.security.oauth2.logoutService;
 
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;

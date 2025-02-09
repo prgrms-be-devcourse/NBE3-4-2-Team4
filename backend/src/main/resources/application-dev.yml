@@ -2,8 +2,3 @@ custom:
   domain:
     backend: "http://localhost:${server.port}"
     frontend: "http://localhost:3000"
-spring:
-  data:
-    redis:
-      port: 6379
-      host: localhost

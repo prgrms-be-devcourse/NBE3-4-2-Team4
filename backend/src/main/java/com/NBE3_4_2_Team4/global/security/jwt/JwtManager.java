@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.jwt;
 
+import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import io.jsonwebtoken.*;
@@ -94,5 +95,11 @@ public class JwtManager {
             throw new JwtException("Token is empty2");
         }
         // 예외 처리는 추후 수정할 예정.
+    }
+
+    public MemberThumbnailInfoResponseDto getMemberThumbnailInfoFromAccessToken(String accessToken) {
+        Map<String, Object> claims = getClaims(accessToken);
+        String nickname = (String) claims.get("nickname");
+        return new MemberThumbnailInfoResponseDto(nickname);
     }
 }

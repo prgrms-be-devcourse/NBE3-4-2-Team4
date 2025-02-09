@@ -5,7 +5,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

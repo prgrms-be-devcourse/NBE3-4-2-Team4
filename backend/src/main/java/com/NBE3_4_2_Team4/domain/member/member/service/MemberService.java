@@ -10,7 +10,7 @@ import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

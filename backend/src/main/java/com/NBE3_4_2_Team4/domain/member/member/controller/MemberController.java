@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
@@ -10,7 +11,7 @@ import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.global.security.oauth2.logout.service.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -74,6 +75,17 @@ public class MemberController {
                 "admin login complete");
     }
 
+    @GetMapping("/api/members")
+    public RsData<?> getMembers(
+            @CookieValue(value = "accessToken", required = false) String accessToken){
+        if (accessToken == null || accessToken.isBlank()) {
+            return new RsData<Empty>("200-2", "User not logged in"); // 로그인되지 않음
+        }
+
+        MemberThumbnailInfoResponseDto responseDto = jwtManager.getMemberThumbnailInfoFromAccessToken(accessToken);
+        return new RsData<>("200-1", "find member", responseDto);
+    }
+
 
     @PostMapping("/api/logout")
     @Operation(summary = "request for logout", description = "로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.")
@@ -83,17 +95,15 @@ public class MemberController {
             }),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
     })
-    public ResponseEntity<RsData<Empty>> logout(HttpServletRequest req){
+    public RsData<String> logout(HttpServletRequest req){
+        log.info("logout called;");
         Member member = AuthManager.getNonNullMember();
         String redirectUrl = memberService.getLogoutUrl(member);
 
         req.getSession().setAttribute("logoutRequested", true);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", redirectUrl)
-                .body(new RsData<>("302-1",
-                        String.format("Trying to log out for %s",
-                        Objects.requireNonNull(member).getOAuth2Provider().name())));
+        return new RsData<>("200-3",  String.format("Trying to log out for %s",
+                Objects.requireNonNull(member).getOAuth2Provider().name()), redirectUrl);
     }
 
 
@@ -119,20 +129,6 @@ public class MemberController {
                 ));
     }
 
-    @DeleteMapping("/api/members")
-    @Operation(summary = "withdrawal membership", description = "회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
-    })
-    public RsData<Empty> withdrawalMembership(){
-        Member member = AuthManager.getNonNullMember();
-        memberService.withdrawalMembership(member);
-        return new RsData<>("204-1",
-                "withdrawal membership done");
-    }
-
     @Operation(summary = "update member nickname", description = "회원의 닉네임을 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 닉네임 변경 성공"),
@@ -146,5 +142,19 @@ public class MemberController {
         memberService.updateNickname(member, nicknameUpdateRequestDto);
         return new RsData<>("200-1",
                 "nickname updated");
+    }
+
+    @DeleteMapping("/api/members")
+    @Operation(summary = "withdrawal membership", description = "회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
+    })
+    public RsData<Empty> withdrawalMembership(){
+        Member member = AuthManager.getNonNullMember();
+        memberService.withdrawalMembership(member);
+        return new RsData<>("204-1",
+                "withdrawal membership done");
     }
 }
