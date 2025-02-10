@@ -3,7 +3,7 @@ import {useState} from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
 import { useId } from "@/context/IdContext";
 import { useNickname } from "@/context/NicknameContext";
-import {useRedirectIfAuthenticated} from "@/lib/hooks/useRedirect";  // 경로는 적절히 수정
+import {useRedirectIfAuthenticated} from "@/lib/hooks/useRedirect";
 
 type AdminLoginRequestDto = components["schemas"]["AdminLoginRequestDto"];
 
