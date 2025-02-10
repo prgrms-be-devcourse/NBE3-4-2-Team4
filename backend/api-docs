@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Please sign in</title>
+    <link href="/default-ui.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="content">
+
+
+<h2>Login with OAuth 2.0</h2>
+
+<table class="table table-striped">
+  <tr><td><a href="/oauth2/authorization/naver">Naver</a></td></tr>
+<tr><td><a href="/oauth2/authorization/kakao">Kakao</a></td></tr>
+<tr><td><a href="/oauth2/authorization/google">Google</a></td></tr>
+</table>
+
+    </div>
+  </body>
+</html>

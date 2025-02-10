@@ -28,6 +28,15 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
     @Override
     public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
         OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request);
+
+        if (authorizationRequest == null) {
+            return null;
+        }
+//        // clientRegistrationId가 이미 존재하면 중복 호출 방지
+        if (authorizationRequest.getAttributes().containsKey("clientRegistrationId")) {
+            return authorizationRequest;
+        }
+
         return customizeAuthorizationRequest(authorizationRequest, request);
     }
 
@@ -48,6 +57,8 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
             //이거 주석 풀면 매번 카카오 계정 로그인 해야 함
 //            String prompt = "login";
 //            additionalParameters.put("prompt",prompt);
+            String accessType = "offline";
+            additionalParameters.put("access_type", accessType);
             additionalParameters.put("state", redirectUrl);
         }
 

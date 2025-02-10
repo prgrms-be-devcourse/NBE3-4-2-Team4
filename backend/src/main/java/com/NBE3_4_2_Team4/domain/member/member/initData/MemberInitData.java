@@ -3,17 +3,49 @@ package com.NBE3_4_2_Team4.domain.member.member.initData;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
-
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class MemberInitData {
     private final MemberService memberService;
+
+    @Value("${custom.initData.member.admin.username}")
+    private String adminUsername;
+
+    @Value("${custom.initData.member.admin.password}")
+    private String adminPassword;
+
+    @Value("${custom.initData.member.admin.nickname}")
+    private String adminNickname;
+
+
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
+
+    @Value("${custom.initData.member.member1.password}")
+    private String member1Password;
+
+    @Value("${custom.initData.member.member1.nickname}")
+    private String member1Nickname;
+
+
+    @Value("${custom.initData.member.member2.username}")
+    private String member2Username;
+
+    @Value("${custom.initData.member.member2.password}")
+    private String member2Password;
+
+    @Value("${custom.initData.member.member2.nickname}")
+    private String member2Nickname;
+
 
     @Autowired
     @Lazy
@@ -21,7 +53,7 @@ public class MemberInitData {
 
     @Bean
     public ApplicationRunner memberInitDataApplicationRunner() {
-        return args -> {
+        return _ -> {
             self.work();
         };
     }
@@ -29,13 +61,10 @@ public class MemberInitData {
     @Transactional
     public void work() {
         if (memberService.count() > 0) return;
-        String username = "admin@test.com";
-        String password = "1234";
-        String nickname = "관리자";
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.NONE;
-        memberService.signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
 
-        memberService.signUp("test@test.com", password, "테스트 유저", Member.Role.USER, oAuth2Provider);
-        memberService.signUp("test2@test.com", password, "테스트 유저2", Member.Role.USER, oAuth2Provider);
+        memberService.signUp(adminUsername, adminPassword, adminNickname, Member.Role.ADMIN, oAuth2Provider);
+        memberService.signUp(member1Username, member1Password, member1Nickname, Member.Role.USER, oAuth2Provider);
+        memberService.signUp(member2Username, member2Password, member2Nickname, Member.Role.USER, oAuth2Provider);
     }
 }

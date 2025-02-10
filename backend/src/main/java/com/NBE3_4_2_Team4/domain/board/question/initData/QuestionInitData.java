@@ -7,6 +7,7 @@ import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,12 @@ public class QuestionInitData {
     private final MemberInitData memberInitData;
     private final RecommendService recommendService;
 
+    @Value("${custom.initData.member.admin.username}")
+    private String adminUsername;
+
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
+
     @Autowired
     @Lazy
     private QuestionInitData self;
@@ -41,8 +48,8 @@ public class QuestionInitData {
     public void initData() {
         if (questionService.count() > 0) return;
 
-        Member admin = memberRepository.findByUsername("admin@test.com").orElseThrow();
-        Member testUser = memberRepository.findByUsername("test@test.com").orElseThrow();
+        Member admin = memberRepository.findByUsername(adminUsername).orElseThrow();
+        Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
 
         List<String> categories = List.of("전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
         for (String category : categories) {
@@ -53,7 +60,6 @@ public class QuestionInitData {
             Member author = (i >= 10) ? testUser : admin;
             questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author, i);
         }
-        questionService.write("공간 여백 테스트", "lorem ipsum dolor ".repeat(100), 1L, admin, 100);
 
         recommendService.recommend(1L, testUser);
         recommendService.recommend(11L, admin);
