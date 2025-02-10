@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -45,20 +46,35 @@ public class CustomJwtFilterTest {
     private Member admin;
 
 
+    @Value("${custom.initData.member.admin.username}")
+    private String adminUsername;
+
+    @Value("${custom.initData.member.admin.nickname}")
+    private String adminNickname;
+
+
+
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
+
+    @Value("${custom.initData.member.member1.nickname}")
+    private String member1Nickname;
+
+
     @BeforeEach
     void setUp() {
         member = Member.builder()
                 .id(1L)
-                .username("test@test.com")
-                .nickname("nickname")
+                .username(member1Username)
+                .nickname(member1Nickname)
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .build();
 
         admin = Member.builder()
                 .id(2L)
-                .username("testAdmin")
-                .nickname("nickname")
+                .username(adminUsername)
+                .nickname(adminNickname)
                 .role(Member.Role.ADMIN)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .build();
