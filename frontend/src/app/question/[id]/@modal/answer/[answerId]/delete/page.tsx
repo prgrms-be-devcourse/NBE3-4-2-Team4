@@ -40,7 +40,6 @@ export default function Page({
     if (response.error) {
       toast({
         title: response.error.msg,
-        description: response.error.data.toString(),
         variant: "destructive",
       });
       return;

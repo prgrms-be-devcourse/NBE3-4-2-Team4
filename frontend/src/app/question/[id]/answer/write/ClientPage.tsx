@@ -113,7 +113,11 @@ export default function ClientPage({ params }: { params: { id: string } }) {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2 items-center">
-              <Button variant="outline" onClick={() => router.back()}>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => router.back()}
+              >
                 취소
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
