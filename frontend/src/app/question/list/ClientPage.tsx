@@ -5,6 +5,7 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
 import { MessageCircle } from "lucide-react";
 import { ThumbsUp } from "lucide-react";
+import { Banknote } from "lucide-react";
 import Link from "next/link";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
@@ -131,7 +132,13 @@ export default function ClientPage({ body }: ClientPageProps) {
           <li key={item.id}
           className="flex items-center dark:bg-gray-800 justify-between border-2 border-gray-300 p-3 rounded-md">
             <Link href={`/question/${item.id}`} className="flex items-center justify-between w-full block">
-              <div className="flex-1 font-semibold text-lg truncate">{item.title}</div>
+              <div className="flex flex-1 font-semibold text-lg truncate gap-4 space-between">
+                {item.title}
+                <div className="flex gap-2 items-center text-yellow-500 text-sm font-medium">
+                  <Banknote size={20} />
+                  {item.point}
+                </div>
+              </div>
               <div className="w-40 text-sm text-center flex items-center justify-between">
               {item.recommendCount && item.recommendCount > 0 ? (
                 <span className="flex items-center gap-1 text-purple-500 font-medium">
