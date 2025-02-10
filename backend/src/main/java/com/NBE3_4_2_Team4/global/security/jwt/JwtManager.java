@@ -50,7 +50,7 @@ public class JwtManager {
                 .claim("role", member.getRole().name())
                 .claim("OAuth2Provider", member.getOAuth2Provider().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                 .signWith(key)
                 .compact();
     }
@@ -95,11 +95,5 @@ public class JwtManager {
             throw new JwtException("Token is empty2");
         }
         // 예외 처리는 추후 수정할 예정.
-    }
-
-    public MemberThumbnailInfoResponseDto getMemberThumbnailInfoFromAccessToken(String accessToken) {
-        Map<String, Object> claims = getClaims(accessToken);
-        String nickname = (String) claims.get("nickname");
-        return new MemberThumbnailInfoResponseDto(nickname);
     }
 }

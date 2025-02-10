@@ -87,14 +87,14 @@ public class MemberController {
                     schema = @Schema(implementation = MemberThumbnailInfoResponseDto.class))
             )
     })
-    public RsData<?> getMemberThumbnailInfo(
-            @CookieValue(value = "accessToken", required = false) String accessToken){
-        if (accessToken == null || accessToken.isBlank()) {
+    public RsData<?> getMemberThumbnailInfo(){
+        Member member = AuthManager.getMemberFromContext();
+        if (member == null) {
             return new RsData<Empty>("204-1", "User not logged in"); // 로그인되지 않음
+        }else {
+            MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getNickname());
+            return new RsData<>("200-1", "find member", responseDto);
         }
-
-        MemberThumbnailInfoResponseDto responseDto = jwtManager.getMemberThumbnailInfoFromAccessToken(accessToken);
-        return new RsData<>("200-1", "find member", responseDto);
     }
 
     @GetMapping("/api/members/details")

@@ -40,7 +40,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-    //일단 쿠키에서 토큰 받아오는 로직 (프론트에서 헤더에 JWT 넣는 방식 구현 이후 삭제 예정)
+
     private String getAccessTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -90,7 +90,6 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
             if (refreshToken != null) {
                 accessToken = jwtManager.getFreshAccessToken(refreshToken);
-
                 httpManager.setAccessTokenCookie(response, accessToken, accessTokenValidMinute);
                 Map<String, Object> claims = jwtManager.getClaims(accessToken);
                 Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
