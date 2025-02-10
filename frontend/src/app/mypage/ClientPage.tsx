@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type {components} from "@/lib/backend/apiV1/schema";
 import {ThemeProvider as NextThemesProvider} from "next-themes";
-
+import { useRedirectIfNotAuthenticated } from "@/lib/hooks/useRedirect";
 type MemberDetailInfoResponseDto = components["schemas"]["MemberDetailInfoResponseDto"];
 
 export default function ClientPage({
@@ -13,6 +13,7 @@ export default function ClientPage({
     const [memberInfo, setMemberInfo] = useState<MemberDetailInfoResponseDto | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    useRedirectIfNotAuthenticated();
 
     useEffect(() => {
         const fetchMemberDetail = async () => {

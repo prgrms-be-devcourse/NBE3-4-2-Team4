@@ -1,21 +1,21 @@
 "use client";
-import { useState } from "react";
+import {useState} from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
-import {useRouter} from "next/navigation";
 import { useId } from "@/context/IdContext";
 import { useNickname } from "@/context/NicknameContext";
+import {useRedirectIfAuthenticated} from "@/lib/hooks/useRedirect";  // 경로는 적절히 수정
 
 type AdminLoginRequestDto = components["schemas"]["AdminLoginRequestDto"];
 
 export default function ClientPage() {
+    useRedirectIfAuthenticated();
+
     const [formData, setFormData] = useState<AdminLoginRequestDto>({
         adminUsername: "",
         password: "",
     });
-    const router = useRouter();
     const { setNickname } = useNickname();
     const { setId } = useId();
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };

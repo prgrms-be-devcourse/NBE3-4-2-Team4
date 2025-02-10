@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { components } from "@/lib/backend/apiV1/schema";
 import { useNickname } from "@/context/NicknameContext";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRedirectIfNotAuthenticated } from "@/lib/hooks/useRedirect";  // 경로는 적절히 수정
 
 type NicknameUpdateRequestDto = components["schemas"]["NicknameUpdateRequestDto"];
 
 export default function ClientPage() {
+    useRedirectIfNotAuthenticated();
+
     const [formData, setFormData] = useState<NicknameUpdateRequestDto>({
         newNickname: ""
     });

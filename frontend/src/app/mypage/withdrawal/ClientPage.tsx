@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRedirectIfNotAuthenticated } from "@/lib/hooks/useRedirect";  // 경로는 적절히 수정
 
 export default function WithdrawalPage() {
+    useRedirectIfNotAuthenticated();
+
     const [confirmationText, setConfirmationText] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
