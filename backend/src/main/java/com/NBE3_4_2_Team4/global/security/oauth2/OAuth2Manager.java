@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.service.OAuth2UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
