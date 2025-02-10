@@ -784,6 +784,8 @@ export interface components {
             startDateTime?: string;
             /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
