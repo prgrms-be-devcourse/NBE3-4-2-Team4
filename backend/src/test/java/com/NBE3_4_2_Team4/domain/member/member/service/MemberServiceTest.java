@@ -10,10 +10,10 @@ import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.GoogleDisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.KaKaoDisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl.NaverDisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.GoogleDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.KaKaoDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.NaverDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.DefaultLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.GoogleLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.KakaoLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutService;
@@ -54,6 +54,9 @@ public class MemberServiceTest {
 
     @Mock
     private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
+
+    @Mock
+    private DefaultLogoutService defaultLogoutService;
 
     @Mock
     private KakaoLogoutService kakaoLogoutService;
@@ -179,29 +182,16 @@ public class MemberServiceTest {
         verify(memberRepository, times(1)).findByUsername(username);
     }
 
-    @Test
-    void getLogoutUrlTest1(){
-        Member member = Member.builder()
-                .oAuth2Provider(Member.OAuth2Provider.NONE)
-                .build();
-
-        String logoutUrl = memberService.getLogoutUrl(member);
-
-        assertEquals(OAuth2LogoutService.LOGOUT_COMPLETE_URL, logoutUrl);
-
-        verify(oAuth2Manager, times(0))
-                .getOAuth2LogoutService(any());
-    }
 
     @ParameterizedTest
-    @EnumSource(value = Member.OAuth2Provider.class, names = {"KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"NONE", "KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
     void getLogoutUrlTest2(Member.OAuth2Provider provider) {
         member.setOAuth2Provider(provider);
         Member testMember = member;
 
         when(oAuth2Manager.getOAuth2LogoutService(provider)).
                 thenReturn(switch (provider) {
-                    case NONE -> null;
+                    case NONE -> defaultLogoutService;
                     case KAKAO -> kakaoLogoutService;
                     case NAVER -> naverLogoutService;
                     case GOOGLE -> googleLogoutService;
@@ -210,7 +200,7 @@ public class MemberServiceTest {
         String logoutUrl = String.format("Logout url for %s", provider.name());
 
         when(switch (provider) {
-            case NONE -> null;
+            case NONE -> defaultLogoutService.getLogoutUrl();
             case KAKAO -> kakaoLogoutService.getLogoutUrl();
             case NAVER -> naverLogoutService.getLogoutUrl();
             case GOOGLE -> googleLogoutService.getLogoutUrl();

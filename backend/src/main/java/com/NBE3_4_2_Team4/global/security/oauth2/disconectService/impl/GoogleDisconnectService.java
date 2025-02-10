@@ -1,13 +1,12 @@
-package com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.impl;
+package com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconect.service.OAuth2DisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.token.service.impl.GoogleTokenService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.tokenService.impl.GoogleTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;

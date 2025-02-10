@@ -1,6 +1,6 @@
-package com.NBE3_4_2_Team4.global.security.oauth2.token.service.impl;
+package com.NBE3_4_2_Team4.global.security.oauth2.tokenService.impl;
 
-import com.NBE3_4_2_Team4.global.security.oauth2.token.service.OAuth2TokenService;
+import com.NBE3_4_2_Team4.global.security.oauth2.tokenService.OAuth2TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
