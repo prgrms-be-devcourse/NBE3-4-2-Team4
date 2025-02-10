@@ -3,8 +3,10 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
@@ -26,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberQuerydsl memberQuerydsl;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
@@ -88,6 +91,11 @@ public class MemberService {
             String nickname,
             Member.OAuth2Provider oAuth2Provider){
         return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
+    }
+
+
+    public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
+        return memberQuerydsl.getMemberDetailInfo(member);
     }
 
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){

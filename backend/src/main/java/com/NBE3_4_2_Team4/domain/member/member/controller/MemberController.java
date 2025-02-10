@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -77,7 +78,7 @@ public class MemberController {
                 "admin login complete");
     }
 
-    @GetMapping("/api/members")
+    @GetMapping("/api/members/thumbnail")
     @Operation(summary = "get member's simple info", description = "멤버의 간단한 정보 (현재는 닉네임만)를 조회합니다. 프론트의 헤더에서 사용합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "로그인 되어 있지 않은 경우"),
@@ -96,6 +97,13 @@ public class MemberController {
         return new RsData<>("200-1", "find member", responseDto);
     }
 
+    @GetMapping("/api/members/details")
+    public RsData<MemberDetailInfoResponseDto> getMemberDetailInfo(){
+        Member member = AuthManager.getNonNullMember();
+        MemberDetailInfoResponseDto responseDto = memberService.getMemberDetailInfo(member);
+        log.info("detail info: {}", responseDto);
+        return new RsData<>("200-1", "member found", responseDto);
+    }
 
     @PostMapping("/api/logout")
     @Operation(summary = "request for logout", description = "로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.")
