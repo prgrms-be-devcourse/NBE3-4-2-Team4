@@ -168,7 +168,7 @@ public class QuestionService {
     public void awardRankingPoints() { // 랭킹 순위 질문 포인트 지급
         List<Question> topQuestions = questionRepository.findRecommendedQuestions();
 
-        int[] points = {100, 50, 30}; // 1등 100, 2등 50, 3등 30포인트 지급
+        int[] points = {1000, 500, 300}; // 1등 1000, 2등 500, 3등 300포인트 지급
         int currentRank = 1; // 현재 순위
         long currentRecommendCount = 0; // 현재 순위의 추천수
         int assignedRankCount = 0; // 현재 순위와 동일한 질문의 수
