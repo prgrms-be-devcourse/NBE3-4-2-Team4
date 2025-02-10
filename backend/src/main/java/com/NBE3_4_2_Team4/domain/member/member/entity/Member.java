@@ -34,6 +34,11 @@ public class Member {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
