@@ -70,7 +70,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
       toast({
         title: response.data.msg,
       });
-      router.replace("/");
+      router.replace(`/question/${id}`);
     } catch (error) {
       toast({
         title: "답변 등록 중 오류가 발생했습니다",

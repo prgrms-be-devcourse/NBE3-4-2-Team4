@@ -87,12 +87,14 @@ export default function ClientPage({
           <em className="not-italic text-xl">{question.answers?.length}개</em>의
           답변이 있습니다.
         </h3>
-        <Button asChild>
-          <Link href={`/question/${question.id}/answer/write`}>
-            <PencilLine />
-            답변 작성하기
-          </Link>
-        </Button>
+        {!question.closed && (
+          <Button asChild>
+            <Link href={`/question/${question.id}/answer/write`}>
+              <PencilLine />
+              답변 작성하기
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 mt-6">
@@ -144,31 +146,35 @@ export default function ClientPage({
               <CardContent>
                 <div className="whitespace-pre-line">{answer.content}</div>
               </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button variant="default" asChild>
-                  <Link
-                    href={`/question/${question.id}/answer/${answer.id}/select`}
-                  >
-                    답변 채택
-                  </Link>
-                </Button>
-              </CardFooter>
-              <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline" asChild>
-                  <Link
-                    href={`/question/${question.id}/answer/${answer.id}/modify`}
-                  >
-                    수정
-                  </Link>
-                </Button>
-                <Button variant="destructive" asChild>
-                  <Link
-                    href={`/question/${question.id}/answer/${answer.id}/delete`}
-                  >
-                    삭제
-                  </Link>
-                </Button>
-              </CardFooter>
+              {!question.closed && (
+                <>
+                  <CardFooter className="flex justify-end">
+                    <Button variant="default" asChild>
+                      <Link
+                        href={`/question/${question.id}/answer/${answer.id}/select`}
+                      >
+                        답변 채택
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                  <CardFooter className="flex justify-end gap-2">
+                    <Button variant="outline" asChild>
+                      <Link
+                        href={`/question/${question.id}/answer/${answer.id}/modify`}
+                      >
+                        수정
+                      </Link>
+                    </Button>
+                    <Button variant="destructive" asChild>
+                      <Link
+                        href={`/question/${question.id}/answer/${answer.id}/delete`}
+                      >
+                        삭제
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </>
+              )}
             </Card>
           ))}
       </div>

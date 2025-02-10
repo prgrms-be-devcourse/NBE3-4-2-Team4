@@ -49,7 +49,10 @@ export default function Page({
       title: response.data.msg,
     });
 
-    router.replace(`/question/${id}`);
+    router.back();
+    setTimeout(() => {
+      router.replace(`/question/${id}`);
+    }, 100);
   };
 
   return (
