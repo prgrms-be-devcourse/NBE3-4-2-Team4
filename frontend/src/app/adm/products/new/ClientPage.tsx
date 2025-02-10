@@ -1,9 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+    CardFooter
+} from '@/components/ui/card';
 import client from '@/lib/backend/client';
 
 const saleStates = [
@@ -64,48 +72,62 @@ export default function ClientPage() {
         }
     };
 
-
     return (
-        <div className="p-6 max-w-lg mx-auto">
-            <h1 className="text-2xl font-bold mb-4">상품 등록</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <Input name="product_name"
-                       placeholder="상품명"
-                       value={formData.product_name}
-                       onChange={handleChange} required />
-                <Input name="product_price"
-                       type="number"
-                       placeholder="가격"
-                       value={formData.product_price}
-                       onChange={handleChange} required />
-                <Input name="product_image"
-                       placeholder="이미지 URL"
-                       value={formData.product_image}
-                       onChange={handleChange} required />
-                <Input name="product_description"
-                       placeholder="설명"
-                       value={formData.product_description}
-                       onChange={handleChange} required />
-                <Input name="product_category"
-                       placeholder="카테고리"
-                       value={formData.product_category}
-                       onChange={handleChange} required />
+        <div className="p-6 max-w-2xl mx-auto">
+            <Card className="shadow-lg rounded-xl w-full">
+                <CardHeader>
+                    <CardTitle className="text-xl font-semibold text-gray-800">
+                        상품 등록
+                    </CardTitle>
+                </CardHeader>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1">판매 상태</label>
-                    <select
-                        name="product_sale_state"
-                        value={formData.product_sale_state}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded">
-                        {saleStates.map((state) => (
-                            <option key={state.value} value={state.value}>{state.label}</option>
-                        ))}
-                    </select>
-                </div>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="product_name">상품명</Label>
+                            <Input id="product_name" name="product_name" placeholder="상품명을 입력하세요" value={formData.product_name} onChange={handleChange} required />
+                        </div>
 
-                <Button type="submit" disabled={loading}>{loading ? '등록 중...' : '등록'}</Button>
-            </form>
+                        <div className="space-y-2">
+                            <Label htmlFor="product_price">가격</Label>
+                            <Input id="product_price" name="product_price" type="number" placeholder="상품 가격을 입력하세요" value={formData.product_price} onChange={handleChange} required />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="product_image">이미지 URL</Label>
+                            <Input id="product_image" name="product_image" placeholder="상품 이미지 URL을 입력하세요" value={formData.product_image} onChange={handleChange} required />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="product_description">설명</Label>
+                            <Input id="product_description" name="product_description" placeholder="상품 설명을 입력하세요" value={formData.product_description} onChange={handleChange} required />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="product_category">카테고리</Label>
+                            <Input id="product_category" name="product_category" placeholder="상품 카테고리를 입력하세요" value={formData.product_category} onChange={handleChange} required />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="product_sale_state">판매 상태</Label>
+                            <select id="product_sale_state" name="product_sale_state" value={formData.product_sale_state} onChange={handleChange} className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
+                                {saleStates.map((state) => (
+                                    <option key={state.value} value={state.value}>{state.label}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <CardFooter className="flex justify-between">
+                            <Button variant="outline" type="button" onClick={() => router.back()} className="w-1/3">
+                                취소
+                            </Button>
+                            <Button type="submit" disabled={loading} className="w-2/3 bg-blue-600 hover:bg-blue-700 text-white">
+                                {loading ? "등록 중..." : "등록"}
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

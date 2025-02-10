@@ -3,7 +3,7 @@ import client from "@/lib/backend/client";
 import type { components } from "@/lib/backend/apiV1/schema";
 import ClientPage from "@/app/shop/[product_id]/ClientPage";
 
-export default async function ProductDetailPage({
+export default async function Page({
                                                     params,
                                                 }: {
     params: { product_id: string };
