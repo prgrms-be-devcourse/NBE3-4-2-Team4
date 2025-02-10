@@ -14,8 +14,6 @@ public class RankingPointsScheduler {
 
     // 매일 자정에 실행
     @Scheduled(cron = "0 0 0 * * ?")
-    // 30초마다 실행
-//    @Scheduled(cron = "0/20 * * * * ?")
     public void updateRankingPoints() {
         log.info("랭킹 포인트 지급 스케줄러 실행");
         questionService.awardRankingPoints();

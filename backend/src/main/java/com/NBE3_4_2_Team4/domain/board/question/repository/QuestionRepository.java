@@ -13,10 +13,10 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryCustom {
     Optional<Question> findFirstByOrderByIdDesc();
 
-    @Query("SELECT q FROM Question q WHERE size(q.recommends) > 0 ORDER BY size(q.recommends) DESC")
+    @Query("SELECT q FROM Question q WHERE size(q.recommends) > 0 AND q.rankReceived = false ORDER BY size(q.recommends) DESC")
     Page<Question> findRecommendedQuestions(Pageable pageable);
 
-    @Query("SELECT q FROM Question q WHERE size(q.recommends) > 0 ORDER BY size(q.recommends) DESC")
+    @Query("SELECT q FROM Question q WHERE size(q.recommends) > 0 AND q.rankReceived = false ORDER BY size(q.recommends) DESC")
     List<Question> findRecommendedQuestions();
 
     List<Question> findByCreatedAtBeforeAndClosed(LocalDateTime expirationDate, boolean closed);

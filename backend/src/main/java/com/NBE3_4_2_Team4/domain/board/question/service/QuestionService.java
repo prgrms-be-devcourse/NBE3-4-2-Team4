@@ -194,6 +194,9 @@ public class QuestionService {
                 if (author != null) {
                     pointService.accumulatePoints(author.getUsername(), pointToAward, PointCategory.RANKING);
                 }
+                // 포인트 지급 후 랭킹 포인트 지급 여부 true로 변경
+                question.setRankReceived(true);
+//                questionRepository.save(question);
             }
 
             // 3등 이후는 포인트 지급하지 않음
