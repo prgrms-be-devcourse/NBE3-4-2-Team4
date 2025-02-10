@@ -36,7 +36,7 @@ public class AnswerController {
         );
     }
 
-    @Operation(summary = "질문 글 내 답변 다건 조회", description = "특정 질문글의 모든 답변을 가져옵니다.")
+    @Operation(summary = "질문 글 내 답변 다건 조회", description = "특정 질문글의 채택되지 않은 모든 답변을 가져옵니다.")
     @GetMapping
     public PageDto<AnswerDto> items(
             @PathVariable long questionId,

@@ -173,7 +173,7 @@ export interface paths {
         };
         /**
          * 질문 글 내 답변 다건 조회
-         * @description 특정 질문글의 모든 답변을 가져옵니다.
+         * @description 특정 질문글의 채택되지 않은 모든 답변을 가져옵니다.
          */
         get: operations["items"];
         put?: never;
@@ -815,9 +815,9 @@ export interface components {
             /** @enum {string} */
             pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */

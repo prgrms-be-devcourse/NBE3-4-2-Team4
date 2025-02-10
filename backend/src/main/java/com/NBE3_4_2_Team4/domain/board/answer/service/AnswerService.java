@@ -79,7 +79,7 @@ public class AnswerService {
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
-        return answerRepository.findByQuestion(question, pageable)
+        return answerRepository.findByQuestionAndSelected(question, pageable, false)
                 .map(AnswerDto::new);
     }
 

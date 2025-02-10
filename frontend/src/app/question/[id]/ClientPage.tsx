@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Lightbulb, Pencil, PencilLine } from "lucide-react";
+import { Clock, Crown, Lightbulb, Pencil, PencilLine } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -96,6 +96,35 @@ export default function ClientPage({
       </div>
 
       <div className="flex flex-col gap-2 mt-6">
+        {question.selectedAnswer && (
+          <div className="mb-6 pb-8 border-b border-dashed border-gray-200 dark:border-[rgba(255,255,255,0.1)]">
+            <Card className="shadow-[0_0_10px_0_rgba(0,0,0,0.2)] dark:shadow-[0_0_10px_0_rgba(255,255,255,0.3)]">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default" className="flex items-center">
+                      <Crown width={15} height={15} className="mr-2" />
+                      채택된 답변
+                    </Badge>
+                    <Badge variant="secondary" className="flex items-center">
+                      <Pencil width={14} height={14} className="mr-2" />
+                      {question.selectedAnswer.authorName}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-gray-400 font-light flex justify-end items-center">
+                    <Clock width={14} height={14} className="mr-2" />
+                    {formatDate(question.selectedAnswer.createdAt)}
+                  </p>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="whitespace-pre-line">
+                  {question.selectedAnswer.content}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {answers.items
           ?.filter((answer) => !answer.selected)
           .map((answer) => (
@@ -145,26 +174,30 @@ export default function ClientPage({
       </div>
 
       {/* 페이지 이동 버튼 */}
-      <div className="flex justify-center gap-2 my-10">
-        <Button
-          onClick={() => changePage(currentPage - 1)}
-          disabled={currentPage === 1}
-          variant={currentPage === 1 ? "secondary" : "default"}
-          className={`${currentPage === 1 ? "cursor-not-allowed" : ""}`}
-        >
-          이전
-        </Button>
-        <Button
-          onClick={() => changePage(currentPage + 1)}
-          disabled={currentPage === answers.totalPages}
-          variant={currentPage === answers.totalPages ? "secondary" : "default"}
-          className={`${
-            currentPage === answers.totalPages ? "cursor-not-allowed" : ""
-          }`}
-        >
-          다음
-        </Button>
-      </div>
+      {(answers.totalPages ?? 0) > 1 && (
+        <div className="flex justify-center gap-2 my-10">
+          <Button
+            onClick={() => changePage(currentPage - 1)}
+            disabled={currentPage === 1}
+            variant={currentPage === 1 ? "secondary" : "default"}
+            className={`${currentPage === 1 ? "cursor-not-allowed" : ""}`}
+          >
+            이전
+          </Button>
+          <Button
+            onClick={() => changePage(currentPage + 1)}
+            disabled={currentPage === answers.totalPages}
+            variant={
+              currentPage === answers.totalPages ? "secondary" : "default"
+            }
+            className={`${
+              currentPage === answers.totalPages ? "cursor-not-allowed" : ""
+            }`}
+          >
+            다음
+          </Button>
+        </div>
+      )}
 
       {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
