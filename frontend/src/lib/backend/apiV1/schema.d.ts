@@ -490,7 +490,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getMembers"];
+        /**
+         * get member's simple info
+         * @description 멤버의 간단한 정보 (현재는 닉네임만)를 조회합니다. 프론트의 헤더에서 사용합니다.
+         */
+        get: operations["getMemberThumbnailInfo"];
         put?: never;
         post?: never;
         /**
@@ -770,6 +774,9 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["PageDtoPointHistoryRes"];
+        };
+        MemberThumbnailInfoResponseDto: {
+            nickname: string;
         };
         RsDataObject: {
             resultCode: string;
@@ -1314,15 +1321,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 로그아웃 요청 성공 */
-            302: {
+            /** @description 로그인 되어 있는 경우. */
+            200: {
                 headers: {
-                    /** @description 로그아웃 후 리다이렉트 될 URL (OAuth2 서비스에 따라 다름) */
-                    Location?: unknown;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
+                    "application/json": unknown;
                 };
             };
             /** @description Bad Request */
@@ -1883,7 +1888,7 @@ export interface operations {
             };
         };
     };
-    getMembers: {
+    getMemberThumbnailInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -1894,8 +1899,17 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 로그인 되어 있는 경우. */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberThumbnailInfoResponseDto"];
+                };
+            };
+            /** @description 로그인 되어 있지 않은 경우 */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1970,13 +1984,15 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 로그아웃 성공적으로 처리된 경우. */
+            302: {
                 headers: {
+                    /** @description 로그아웃 후 리다이렉트 될 URL. 기본적으로 http://localhost:3000 */
+                    Location?: unknown;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */

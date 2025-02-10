@@ -30,6 +30,10 @@ export function ClientLayout({
           credentials: "include", // 쿠키를 포함한 요청을 보낼 때 사용
         });
 
+        if (response.status === 204) {
+          return { isAuthenticated: false, nickname: null };
+        }
+
         if (response.ok) {
           const data = await response.json();
           console.log(data);
@@ -111,14 +115,19 @@ export function ClientLayout({
           <div className="flex-grow"></div>
           {isAuthenticated ? (
               <>
-                <span>{nickname}</span>
+                <span className="text-sm font-medium flex items-center">환영합니다,</span>
+                <Link href="/mypage" className="text-sm font-medium flex items-center cursor-pointer">
+                  {nickname}
+                </Link>
+                <span className="text-sm font-medium flex items-center">님</span>
                 <Button variant="link" onClick={handleLogout}>
+                  <Lock className="mr-1"/>
                   로그아웃
                 </Button>
               </>
           ) : (
               <Button variant="link">
-                <Lock className="mr-2" />
+                <Lock className="mr-2"/>
                 <Link href="/login">로그인</Link>
               </Button>
           )}
