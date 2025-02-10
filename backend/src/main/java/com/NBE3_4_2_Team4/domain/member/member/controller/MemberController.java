@@ -62,7 +62,7 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "비밀번호 불일치"),
             @ApiResponse(responseCode = "403", description = "관리자 권한이 아닌 계정의 로그인 시도")
     })
-    public RsData<Empty> adminLogin(
+    public RsData<MemberThumbnailInfoResponseDto> adminLogin(
             @RequestBody @Valid AdminLoginRequestDto adminLoginRequestDto,
             HttpServletResponse resp
     ){
@@ -74,8 +74,10 @@ public class MemberController {
         int refreshTokenValidHour = jwtManager.getRefreshTokenValidHour();
         httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour );
 
+        MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getNickname());
+
         return new RsData<>("200-1",
-                "admin login complete");
+                "admin login complete", responseDto);
     }
 
     @GetMapping("/api/members/thumbnail")
