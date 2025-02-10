@@ -529,6 +529,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * get member's detail info
+         * @description 멤버의 자세한 정보 (포인트 작성 질문/답변 수, 닉네임)를 조회합니다. 마이 페이지에서 사용합니다.
+         */
         get: operations["getMemberDetailInfo"];
         put?: never;
         post?: never;
@@ -1961,9 +1965,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                accessToken?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2005,13 +2007,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 로그인 되어 있는 경우. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
+                    "application/json": components["schemas"]["MemberDetailInfoResponseDto"];
                 };
             };
             /** @description Bad Request */
@@ -2021,6 +2023,15 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
                 };
             };
         };

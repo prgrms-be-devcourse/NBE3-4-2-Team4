@@ -53,6 +53,7 @@ public class QuestionService {
                 .author(author)
                 .category(category)
                 .point(point)
+                .rankReceived(false)
                 .build();
 
         //질문글 작성 시 포인트 차감
