@@ -16,7 +16,7 @@ export default function ClientPage({
   return (
       <>
         <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold text-center my-4">상품 리스트</h1>
+          <h1 className="text-2xl font-bold text-center my-4 mb-10">상품 리스트</h1>
 
           <ProductList
               page={page}

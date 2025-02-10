@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { components } from "@/lib/backend/apiV1/schema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock } from "lucide-react";
+import {components} from "@/lib/backend/apiV1/schema";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Lock} from "lucide-react";
 import PaginationType1Responsive from "../PaginationType1Responsive";
 
 interface ProductListProps {
@@ -14,8 +13,7 @@ interface ProductListProps {
     itemPage: any;
 }
 
-export default function ProductList({ page, pageSize, itemPage }: ProductListProps) {
-    const router = useRouter();
+export default function ProductList({page, pageSize, itemPage}: ProductListProps) {
 
     const normalizedItemPage: components["schemas"]["PageDtoGetItem"] = {
         currentPageNumber: itemPage.data.current_page_number,
@@ -28,19 +26,13 @@ export default function ProductList({ page, pageSize, itemPage }: ProductListPro
 
     return (
         <>
-            <PaginationType1Responsive
-                className="my-6"
-                baseQueryString={`page=${page}&pageSize=${pageSize}`}
-                totalPages={normalizedItemPage.totalPages}
-                currentPageNumber={normalizedItemPage.currentPageNumber}
-            />
-
             {normalizedItemPage.items?.length === 0 ? (
-                <div className="flex flex-col min-h-[calc(100dvh-280px)] items-center justify-center py-12 text-muted-foreground">
+                <div
+                    className="flex flex-col min-h-[calc(100dvh-280px)] items-center justify-center py-12 text-muted-foreground">
                     <p>상품이 없습니다.</p>
                 </div>
             ) : (
-                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {normalizedItemPage.items?.map((item) => (
                         <li key={item.product_id} className="flex flex-col space-y-4">
                             <Link href={`/shop/${item.product_id}`}>
@@ -76,7 +68,7 @@ export default function ProductList({ page, pageSize, itemPage }: ProductListPro
 
                                             {/* 비공개 상품에 대한 잠금 아이콘 */}
                                             {!item.product_category && (
-                                                <Lock className="w-6 h-6 text-muted" />
+                                                <Lock className="w-6 h-6 text-muted"/>
                                             )}
                                         </div>
                                     </CardContent>
@@ -89,7 +81,7 @@ export default function ProductList({ page, pageSize, itemPage }: ProductListPro
 
             <PaginationType1Responsive
                 className="my-6"
-                baseQueryString={`page=${page}&pageSize=${pageSize}`}
+                baseQueryString={`pageSize=${pageSize}`}
                 totalPages={normalizedItemPage.totalPages}
                 currentPageNumber={normalizedItemPage.currentPageNumber}
             />
