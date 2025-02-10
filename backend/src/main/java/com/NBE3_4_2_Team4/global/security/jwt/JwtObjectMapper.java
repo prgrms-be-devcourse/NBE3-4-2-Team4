@@ -14,9 +14,13 @@ public class JwtObjectMapper {
         String roleName = (String) claims.get("role");
         String OAuth2ProviderName = (String) claims.get("OAuth2Provider");
 
-        if (id == null || nickname.isBlank()|| roleName.isBlank() || OAuth2ProviderName.isBlank()) {
+        if (id == null || isNullOrBlank(nickname)|| isNullOrBlank(roleName) || isNullOrBlank(OAuth2ProviderName)) {
             throw new RuntimeException("Invalid claims");
         }
         return new Member(Long.valueOf(id), username, nickname, roleName, OAuth2ProviderName);
+    }
+
+    private boolean isNullOrBlank(String string) {
+        return string == null || string.isBlank();
     }
 }

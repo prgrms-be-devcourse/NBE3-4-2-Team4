@@ -1,5 +1,8 @@
 package com.NBE3_4_2_Team4.domain.member.member.entity;
 
+import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -22,8 +26,22 @@ import java.util.List;
 @EntityListeners({AuditingEntityListener.class})
 @ToString
 public class Member {
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Member member) {
+            return Objects.equals(member.getId(), this.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false)
@@ -33,6 +51,7 @@ public class Member {
     private OAuth2Provider oAuth2Provider;
 
     @Column(nullable = false, unique = true)
+    @Setter(AccessLevel.NONE)
     private String username;
 
     @Column(nullable = false)
@@ -40,16 +59,25 @@ public class Member {
 
     private String phoneNumber;
 
-    @Setter
     private String nickname;
 
-    private LocalDate lastAttendanceDate;
-
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private Long point;
+
+    @OneToMany(mappedBy = "author")
+    private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<Answer> answers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private OAuth2RefreshToken oauth2RefreshToken = null;
+
+    private LocalDate lastAttendanceDate;
 
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName){
         this.id = id;

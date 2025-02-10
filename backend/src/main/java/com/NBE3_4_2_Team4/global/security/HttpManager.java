@@ -22,9 +22,18 @@ public class HttpManager {
         resp.addCookie(cookie); // 응답에 쿠키 추가
     }
 
-    public void setJwtCookie(
-            HttpServletResponse resp, String jwtToken, int minute){
-        this.setCookie(resp, "accessToken", jwtToken, minute);
+    public void setAccessTokenCookie(HttpServletResponse resp, String accessToken, int minute){
+        this.setCookie(resp, "accessToken", accessToken, minute);
+    }
+
+    public void setRefreshTokenCookie(HttpServletResponse resp, String refreshToken, int hour){
+        this.setCookie(resp, "refreshToken", refreshToken, hour * 60);
+    }
+
+    public void setJWTCookie(
+            HttpServletResponse resp, String accessToken, int minute, String refreshToken, int hour){
+        this.setAccessTokenCookie(resp, accessToken, minute);
+        this.setRefreshTokenCookie(resp, refreshToken, hour);
     }
 
     public String getCookieValue(
@@ -53,5 +62,6 @@ public class HttpManager {
     public void expireJwtCookie(
             HttpServletResponse resp){
         deleteCookie(resp, "accessToken");
+        deleteCookie(resp, "refreshToken");
     }
 }

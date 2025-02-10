@@ -10,6 +10,7 @@ import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,9 @@ public class AnswerInitData {
     private final QuestionInitData questionInitData;
     private final MemberRepository memberRepository;
     private final MemberInitData memberInitData;
+
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
 
     @Autowired
     @Lazy
@@ -49,7 +53,7 @@ public class AnswerInitData {
         Question question1 = questionService.findById(1).get();
         Question question2 = questionService.findById(2).get();
 
-        Member author = memberRepository.findByUsername("test@test.com").get();
+        Member author = memberRepository.findByUsername(member1Username).get();
 
         Answer answer1 = answerService.write(question1, author, "답변 내용1");
         Answer answer2 = answerService.write(question1, author, "답변 내용2");
