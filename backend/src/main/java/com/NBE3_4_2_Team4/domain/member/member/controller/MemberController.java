@@ -98,11 +98,21 @@ public class MemberController {
     }
 
     @GetMapping("/api/members/details")
+    @Operation(summary = "get member's detail info", description = "멤버의 자세한 정보 (포인트 작성 질문/답변 수, 닉네임)를 조회합니다. 마이 페이지에서 사용합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 되어 있는 경우.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MemberDetailInfoResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
+    })
     public RsData<MemberDetailInfoResponseDto> getMemberDetailInfo(){
         Member member = AuthManager.getNonNullMember();
         MemberDetailInfoResponseDto responseDto = memberService.getMemberDetailInfo(member);
         return new RsData<>("200-1", "member found", responseDto);
     }
+
+
 
     @PostMapping("/api/logout")
     @Operation(summary = "request for logout", description = "로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.")
@@ -122,6 +132,8 @@ public class MemberController {
         return new RsData<>("200-3",  String.format("Trying to log out for %s",
                 Objects.requireNonNull(member).getOAuth2Provider().name()), redirectUrl);
     }
+
+
 
 
     @GetMapping(OAuth2LogoutService.LOGOUT_COMPLETE_URL)
@@ -152,6 +164,9 @@ public class MemberController {
                 ));
     }
 
+
+
+
     @Operation(summary = "update member nickname", description = "회원의 닉네임을 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 닉네임 변경 성공"),
@@ -166,6 +181,10 @@ public class MemberController {
         return new RsData<>("200-1",
                 "nickname updated");
     }
+
+
+
+
 
     @DeleteMapping("/api/members")
     @Operation(summary = "withdrawal membership", description = "회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.")
