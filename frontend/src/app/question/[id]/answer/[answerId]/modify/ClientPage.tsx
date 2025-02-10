@@ -53,19 +53,16 @@ export default function ClientPage({
 
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
-      const response = await client.POST(
-        "/api/questions/{questionId}/answers",
-        {
-          body: {
-            content: data.content,
+      const response = await client.PATCH("/api/answers/{id}", {
+        body: {
+          content: data.content,
+        },
+        params: {
+          path: {
+            id: Number(answerId),
           },
-          params: {
-            path: {
-              questionId: Number(answerId),
-            },
-          },
-        }
-      );
+        },
+      });
 
       if (response.error) {
         toast({
@@ -81,7 +78,7 @@ export default function ClientPage({
       router.replace("/");
     } catch (error) {
       toast({
-        title: "답변 등록 중 오류가 발생했습니다",
+        title: "답변 수정 중 오류가 발생했습니다",
         variant: "destructive",
       });
     }

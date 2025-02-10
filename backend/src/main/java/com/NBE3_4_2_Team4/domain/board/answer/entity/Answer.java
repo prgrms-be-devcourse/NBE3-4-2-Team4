@@ -53,4 +53,8 @@ public class Answer extends BaseTime {
     public void setSelectedAt() {
         this.selectedAt = LocalDateTime.now();
     }
+
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
 }
