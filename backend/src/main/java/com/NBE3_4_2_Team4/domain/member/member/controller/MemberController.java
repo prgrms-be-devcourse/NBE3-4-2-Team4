@@ -92,7 +92,7 @@ public class MemberController {
         if (member == null) {
             return new RsData<Empty>("204-1", "User not logged in"); // 로그인되지 않음
         }else {
-            MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getNickname());
+            MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getNickname());
             return new RsData<>("200-1", "find member", responseDto);
         }
     }

@@ -9,6 +9,10 @@ import org.hibernate.validator.constraints.Length;
 
 @Builder
 public record MemberThumbnailInfoResponseDto (
+        @JsonProperty("id")
+        @NotNull
+        long id,
+
         @JsonProperty("nickname")
         @NotNull
         @NotBlank

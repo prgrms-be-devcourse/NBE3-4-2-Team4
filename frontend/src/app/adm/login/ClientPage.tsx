@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
+import {useRouter} from "next/navigation";
+import { useId } from "@/context/IdContext";
+import { useNickname } from "@/context/NicknameContext";
 
 type AdminLoginRequestDto = components["schemas"]["AdminLoginRequestDto"];
 
@@ -9,6 +12,9 @@ export default function ClientPage() {
         adminUsername: "",
         password: "",
     });
+    const router = useRouter();
+    const { setNickname } = useNickname();
+    const { setId } = useId();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,13 +33,14 @@ export default function ClientPage() {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("로그인 실패:", errorData);
-            }
-
             const data = await response.json();
-            console.log("로그인 성공:", data);
+
+            if (!response.ok) {
+                console.error("로그인 실패:",data);
+            }else {
+                setId(data.id);
+                setNickname(data.nickname);
+            }
 
             window.location.href = "/adm";
         } catch (error) {
