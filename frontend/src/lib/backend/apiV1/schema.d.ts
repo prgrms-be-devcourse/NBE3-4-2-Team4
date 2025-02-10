@@ -779,11 +779,11 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
-            /** Format: date-time */
-            endDateTime?: string;
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
@@ -804,7 +804,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
