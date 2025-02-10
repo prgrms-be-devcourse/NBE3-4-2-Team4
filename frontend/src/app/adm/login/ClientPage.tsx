@@ -17,8 +17,6 @@ export default function ClientPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log("전송 데이터:", formData); // 확인용 로그
-
         try {
             const response = await fetch("http://localhost:8080/api/admin/login", {
                 method: "POST",

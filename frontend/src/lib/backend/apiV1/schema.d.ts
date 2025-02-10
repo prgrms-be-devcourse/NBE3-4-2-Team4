@@ -836,6 +836,8 @@ export interface components {
             data: components["schemas"]["PageDtoPointHistoryRes"];
         };
         MemberThumbnailInfoResponseDto: {
+            /** Format: int64 */
+            id: number;
             nickname: string;
         };
         RsDataObject: {
