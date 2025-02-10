@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionCategoryDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
@@ -17,6 +18,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -122,5 +125,14 @@ public class QuestionController {
                 "%d번 게시글의 %d번 답변이 채택되었습니다.".formatted(id, answerId),
                 new QuestionDto(question)
         );
+    }
+
+    @GetMapping("/categories")
+    @Transactional(readOnly = true)
+    @Operation(summary = "카테고리 조회", description = "카테고리 목록 가져오기")
+    public List<QuestionCategoryDto> getCategories() {
+        return questionService.getCategories()
+                .stream().map(QuestionCategoryDto::new)
+                .toList();
     }
 }

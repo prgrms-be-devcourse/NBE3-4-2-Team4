@@ -19,6 +19,24 @@ public class RecommendService {
     private final RecommendRepository recommendRepository;
 
     @Transactional
+    public boolean toggleRecommend(long questionId, Member member) {
+        Question question = questionRepository.findById(questionId).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
+
+        // 추천 여부 확인
+        boolean isAlreadyRecommended = recommendRepository.existsByQuestionAndMember(question, member);
+
+        if (isAlreadyRecommended) { // 추천 취소
+            cancelRecommend(questionId, member);
+            return false;
+        } else { // 추천 추가
+            recommend(questionId, member);
+            return true;
+        }
+    }
+
+    @Transactional
     public void recommend(long questionId, Member member) {
         Question question = questionRepository.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")

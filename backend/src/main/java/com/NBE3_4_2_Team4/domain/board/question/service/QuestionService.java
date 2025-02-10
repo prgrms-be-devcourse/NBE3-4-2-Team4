@@ -37,6 +37,10 @@ public class QuestionService {
                 .build());
     }
 
+    public List<QuestionCategory> getCategories() {
+        return questionCategoryRepository.findAll();
+    }
+
     public long count() {
         return questionRepository.count();
     }
@@ -49,6 +53,7 @@ public class QuestionService {
                 .author(author)
                 .category(category)
                 .point(point)
+                .rankReceived(false)
                 .build();
 
         //질문글 작성 시 포인트 차감
@@ -63,11 +68,6 @@ public class QuestionService {
 
     public Optional<Question> findLatest() {
         return questionRepository.findFirstByOrderByIdDesc();
-    }
-
-    public Page<Question> findByListed(int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findAll(pageRequest);
     }
 
     public Page<Question> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
@@ -163,5 +163,46 @@ public class QuestionService {
         }
 
         return expiredQuestions.size();
+    }
+
+    @Transactional
+    public void awardRankingPoints() { // 랭킹 순위 질문 포인트 지급
+        List<Question> topQuestions = questionRepository.findRecommendedQuestions();
+
+        int[] points = {1000, 500, 300}; // 1등 1000, 2등 500, 3등 300포인트 지급
+        int currentRank = 1; // 현재 순위
+        long currentRecommendCount = 0; // 현재 순위의 추천수
+        int assignedRankCount = 0; // 현재 순위와 동일한 질문의 수
+        int accumulatedCount = 0; // 직전까지 지급한 포인트를 받은 사람 수
+
+        for (int i = 0; i < topQuestions.size(); i++) {
+            Question question = topQuestions.get(i);
+            Member author = question.getAuthor();
+
+            if (currentRecommendCount == question.getRecommendCount()) {
+                assignedRankCount++;
+            } else {
+                accumulatedCount += assignedRankCount;
+                currentRank += assignedRankCount;
+                assignedRankCount = 1;
+            }
+
+            currentRecommendCount = question.getRecommendCount();
+
+            // 순위가 3등 이내이고, 직전 순위가 3명을 넘지 않는 경우에만 해당 순위 포인트 지급
+            if (accumulatedCount < 3 && currentRank <= 3) {
+                int pointToAward = points[currentRank - 1]; // 순위에 맞는 포인트(공동 순위 고려)
+                if (author != null) {
+                    pointService.accumulatePoints(author.getUsername(), pointToAward, PointCategory.RANKING);
+                }
+                // 포인트 지급 후 랭킹 포인트 지급 여부 true로 변경
+                question.setRankReceived(true);
+            }
+
+            // 3등 이후는 포인트 지급하지 않음
+            if (currentRank > 3) {
+                break;
+            }
+        }
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Order(1)
 @Configuration
 @RequiredArgsConstructor
@@ -49,14 +51,15 @@ public class QuestionInitData {
         Member admin = memberRepository.findByUsername(adminUsername).orElseThrow();
         Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
 
-        questionService.createCategory("category1");
-        questionService.createCategory("category2");
+        List<String> categories = List.of("전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
+        for (String category : categories) {
+            questionService.createCategory(category);
+        }
 
         for (int i = 1; i <= 20; i++) {
             Member author = (i >= 10) ? testUser : admin;
             questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author, i);
         }
-        questionService.write("공간 여백 테스트", "lorem ipsum dolor ".repeat(100), 1L, admin, 100);
 
         recommendService.recommend(1L, testUser);
         recommendService.recommend(11L, admin);

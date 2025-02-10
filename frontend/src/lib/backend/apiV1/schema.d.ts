@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/questions/{questionId}/recommend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 게시글 추천
+         * @description 추천/취소 토글, 중복 추천 불가, 본인 글 추천 불가
+         */
+        put: operations["recommend"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{id}": {
         parameters: {
             query?: never;
@@ -139,27 +159,6 @@ export interface paths {
         /** 질문 등록 */
         post: operations["write"];
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/questions/{questionId}/recommend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 게시글 추천
-         * @description 중복 추천 불가, 본인 글 추천 불가
-         */
-        post: operations["recommend"];
-        /** 게시글 추천 취소 */
-        delete: operations["cancelRecommend"];
         options?: never;
         head?: never;
         patch?: never;
@@ -349,6 +348,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리 조회
+         * @description 카테고리 목록 가져오기
+         */
+        get: operations["getCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/state": {
         parameters: {
             query?: never;
@@ -510,6 +529,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * get member's detail info
+         * @description 멤버의 자세한 정보 (포인트 작성 질문/답변 수, 닉네임)를 조회합니다. 마이 페이지에서 사용합니다.
+         */
         get: operations["getMemberDetailInfo"];
         put?: never;
         post?: never;
@@ -589,6 +612,11 @@ export interface components {
             msg: string;
             data: components["schemas"]["Empty"];
         };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
+        };
         QuestionWriteReqDto: {
             title: string;
             content: string;
@@ -652,11 +680,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionWriteResDto"];
-        };
-        RsDataVoid: {
-            resultCode: string;
-            msg: string;
-            data: Record<string, never>;
         };
         AnswerRequestDto: {
             content: string;
@@ -736,6 +759,11 @@ export interface components {
             hasMore?: boolean;
             items?: components["schemas"]["AnswerDto"][];
         };
+        QuestionCategoryDto: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+        };
         PageDtoGetItem: {
             /** Format: int32 */
             currentPageNumber?: number;
@@ -775,7 +803,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             startDateTime?: string;
             /** Format: date-time */
@@ -800,7 +828,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
@@ -838,6 +866,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    recommend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getQuestion: {
         parameters: {
             query?: never;
@@ -1149,68 +1208,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionWriteResDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    recommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    cancelRecommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */
@@ -1715,6 +1712,35 @@ export interface operations {
             };
         };
     };
+    getCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getProductsBySaleStateWithPaging: {
         parameters: {
             query: {
@@ -1939,9 +1965,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                accessToken?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1983,13 +2007,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 로그인 되어 있는 경우. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
+                    "application/json": components["schemas"]["MemberDetailInfoResponseDto"];
                 };
             };
             /** @description Bad Request */
@@ -1999,6 +2023,15 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
                 };
             };
         };
