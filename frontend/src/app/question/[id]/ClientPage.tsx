@@ -11,15 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Clock,
-  Lightbulb,
-  MessageCircleWarning,
-  Pencil,
-  PencilLine,
-} from "lucide-react";
+import { Clock, Lightbulb, Pencil, PencilLine } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -34,6 +29,17 @@ export default function ClientPage({
   page: number;
   answers: components["schemas"]["PageDtoAnswerDto"];
 }) {
+  const router = useRouter();
+  const currentPage = Number(page) || 1;
+
+  // 페이지 이동 함수
+  const changePage = (newPage: number) => {
+    const queryParams = new URLSearchParams();
+    queryParams.set("page", newPage.toString());
+
+    router.push(`?${queryParams.toString()}`);
+  };
+
   return (
     <div className="container mx-auto px-4">
       <h2 className="text-2xl font-bold mb-4 border-b pb-2">질문 상세</h2>
@@ -136,6 +142,28 @@ export default function ClientPage({
               </CardFooter>
             </Card>
           ))}
+      </div>
+
+      {/* 페이지 이동 버튼 */}
+      <div className="flex justify-center gap-2 my-10">
+        <Button
+          onClick={() => changePage(currentPage - 1)}
+          disabled={currentPage === 1}
+          variant={currentPage === 1 ? "secondary" : "default"}
+          className={`${currentPage === 1 ? "cursor-not-allowed" : ""}`}
+        >
+          이전
+        </Button>
+        <Button
+          onClick={() => changePage(currentPage + 1)}
+          disabled={currentPage === answers.totalPages}
+          variant={currentPage === answers.totalPages ? "secondary" : "default"}
+          className={`${
+            currentPage === answers.totalPages ? "cursor-not-allowed" : ""
+          }`}
+        >
+          다음
+        </Button>
       </div>
 
       {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
