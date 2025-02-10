@@ -55,10 +55,6 @@ public class MemberService {
     public String getLogoutUrl(Member member){
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
-        if (oAuthProvider.equals(Member.OAuth2Provider.NONE)){
-            return OAuth2LogoutService.LOGOUT_COMPLETE_URL;
-        }
-
         OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
         if (oAuth2LogoutService == null) {
             throw new RuntimeException("Logout service not found");
