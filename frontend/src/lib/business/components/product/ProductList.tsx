@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 import { components } from "@/lib/backend/apiV1/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock } from "lucide-react";
-import PaginationType1Responsive from "./PaginationType1Responsive";
+import PaginationType1Responsive from "../PaginationType1Responsive";
 
-interface PostListProps {
+interface ProductListProps {
     page: number;
     pageSize: number;
     itemPage: any;
 }
 
-export default function PostList({ page, pageSize, itemPage }: PostListProps) {
+export default function ProductList({ page, pageSize, itemPage }: ProductListProps) {
     const router = useRouter();
 
     const normalizedItemPage: components["schemas"]["PageDtoGetItem"] = {
@@ -43,7 +43,7 @@ export default function PostList({ page, pageSize, itemPage }: PostListProps) {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {normalizedItemPage.items?.map((item) => (
                         <li key={item.product_id} className="flex flex-col space-y-4">
-                            <Link href={`/post/${item.product_id}`}>
+                            <Link href={`/shop/${item.product_id}`}>
                                 <Card className="hover:bg-accent/50 transition-colors rounded-xl shadow-lg">
                                     <CardHeader className="relative">
                                         {item.product_image_url && (
