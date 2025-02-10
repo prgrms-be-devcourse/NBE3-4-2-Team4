@@ -25,7 +25,7 @@ export function ClientLayout({
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/members", {
+        const response = await fetch("http://localhost:8080/api/members/thumbnail", {
           method: "GET",
           credentials: "include", // 쿠키를 포함한 요청을 보낼 때 사용
         });

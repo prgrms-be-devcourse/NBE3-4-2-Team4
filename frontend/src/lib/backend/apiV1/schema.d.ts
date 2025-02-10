@@ -483,7 +483,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/members": {
+    "/api/members/thumbnail": {
         parameters: {
             query?: never;
             header?: never;
@@ -497,11 +497,23 @@ export interface paths {
         get: operations["getMemberThumbnailInfo"];
         put?: never;
         post?: never;
-        /**
-         * withdrawal membership
-         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
-         */
-        delete: operations["withdrawalMembership"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getMemberDetailInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -542,6 +554,26 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * withdrawal membership
+         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
+         */
+        delete: operations["withdrawalMembership"];
         options?: never;
         head?: never;
         patch?: never;
@@ -782,6 +814,20 @@ export interface components {
             resultCode: string;
             msg: string;
             data: unknown;
+        };
+        MemberDetailInfoResponseDto: {
+            nickname?: string;
+            /** Format: int64 */
+            point?: number;
+            /** Format: int64 */
+            questionSize?: number;
+            /** Format: int64 */
+            answerSize?: number;
+        };
+        RsDataMemberDetailInfoResponseDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["MemberDetailInfoResponseDto"];
         };
     };
     responses: never;
@@ -1928,7 +1974,7 @@ export interface operations {
             };
         };
     };
-    withdrawalMembership: {
+    getMemberDetailInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -1937,35 +1983,17 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 회원 탈퇴 성공 */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
                 };
             };
             /** @description Bad Request */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2029,6 +2057,53 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    withdrawalMembership: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 회원 탈퇴 성공 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
