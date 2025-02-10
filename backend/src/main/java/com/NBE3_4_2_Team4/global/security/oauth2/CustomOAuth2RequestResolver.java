@@ -30,19 +30,10 @@ public class CustomOAuth2RequestResolver implements OAuth2AuthorizationRequestRe
         OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request);
 
         if (authorizationRequest == null) {
-            log.warn("No authorization request found for request {} /n {}", request.getRequestURI(), request.getQueryString());
-            Map<String, String[]> parameters = request.getParameterMap();
-            for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-                log.warn("key {} :  value {}", entry.getKey(), entry.getValue());
-            };
             return null;
         }
-//
-        log.warn("authorization request found for request {} /n {}", authorizationRequest.getAuthorizationRequestUri(), authorizationRequest.getAuthorizationUri());
-
 //        // clientRegistrationId가 이미 존재하면 중복 호출 방지
         if (authorizationRequest.getAttributes().containsKey("clientRegistrationId")) {
-            log.info("client registration id found {}", authorizationRequest.getAttributes().get("clientRegistrationId"));
             return authorizationRequest;
         }
 
