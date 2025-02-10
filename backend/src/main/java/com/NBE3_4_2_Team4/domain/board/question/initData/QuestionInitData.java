@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Order(1)
 @Configuration
 @RequiredArgsConstructor
@@ -42,8 +44,10 @@ public class QuestionInitData {
         Member admin = memberRepository.findByUsername("admin@test.com").orElseThrow();
         Member testUser = memberRepository.findByUsername("test@test.com").orElseThrow();
 
-        questionService.createCategory("category1");
-        questionService.createCategory("category2");
+        List<String> categories = List.of("전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
+        for (String category : categories) {
+            questionService.createCategory(category);
+        }
 
         for (int i = 1; i <= 20; i++) {
             Member author = (i >= 10) ? testUser : admin;

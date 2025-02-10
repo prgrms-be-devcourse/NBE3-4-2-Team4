@@ -3,9 +3,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
-import { MessageCircle } from "lucide-react";
-import { ThumbsUp } from "lucide-react";
-import { Banknote } from "lucide-react";
+import { MessageCircle, ThumbsUp, Banknote } from "lucide-react";
 import Link from "next/link";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
@@ -132,7 +130,7 @@ export default function ClientPage({ body }: ClientPageProps) {
           <li key={item.id}
           className="flex items-center dark:bg-gray-800 justify-between border-2 border-gray-300 p-3 rounded-md">
             <Link href={`/question/${item.id}`} className="flex items-center justify-between w-full block">
-              <div className="flex flex-1 font-semibold text-lg truncate gap-4 space-between">
+              <div className="flex flex-1 font-semibold text-lg truncate gap-4">
                 {item.title}
                 <div className="flex gap-2 items-center text-yellow-500 text-sm font-medium">
                   <Banknote size={20} />
@@ -154,7 +152,7 @@ export default function ClientPage({ body }: ClientPageProps) {
               ) : <span></span>}
               <span>{item.name}</span>
               </div>
-              <div className="w-56 text-sm text-right">작성 일시: {formatDate(item.createdAt)}</div><br />
+              <div className="w-56 text-sm text-right ms-8">작성 일시: {formatDate(item.createdAt)}</div><br />
             </Link>
           </li>
         ))}
