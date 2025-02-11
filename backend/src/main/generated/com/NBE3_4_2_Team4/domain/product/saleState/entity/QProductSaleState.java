@@ -24,7 +24,7 @@ public class QProductSaleState extends EntityPathBase<ProductSaleState> {
 
     public final EnumPath<SaleState> name = createEnum("name", SaleState.class);
 
-    public final ListPath<com.NBE3_4_2_Team4.domain.product.product.entity.Product, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct> product = this.<com.NBE3_4_2_Team4.domain.product.product.entity.Product, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct>createList("product", com.NBE3_4_2_Team4.domain.product.product.entity.Product.class, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct.class, PathInits.DIRECT2);
+    public final ListPath<com.NBE3_4_2_Team4.domain.product.product.entity.Product, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct> products = this.<com.NBE3_4_2_Team4.domain.product.product.entity.Product, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct>createList("products", com.NBE3_4_2_Team4.domain.product.product.entity.Product.class, com.NBE3_4_2_Team4.domain.product.product.entity.QProduct.class, PathInits.DIRECT2);
 
     public QProductSaleState(String variable) {
         super(ProductSaleState.class, forVariable(variable));

@@ -45,6 +45,8 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public final NumberPath<Long> point = createNumber("point", Long.class);
 
+    public final BooleanPath rankReceived = createBoolean("rankReceived");
+
     public final ListPath<com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend, com.NBE3_4_2_Team4.domain.board.recommend.entity.QRecommend> recommends = this.<com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend, com.NBE3_4_2_Team4.domain.board.recommend.entity.QRecommend>createList("recommends", com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend.class, com.NBE3_4_2_Team4.domain.board.recommend.entity.QRecommend.class, PathInits.DIRECT2);
 
     public final com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer selectedAnswer;
@@ -69,7 +71,7 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public QQuestion(Class<? extends Question> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.author = inits.isInitialized("author") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("author")) : null;
+        this.author = inits.isInitialized("author") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("author"), inits.get("author")) : null;
         this.category = inits.isInitialized("category") ? new QQuestionCategory(forProperty("category")) : null;
         this.selectedAnswer = inits.isInitialized("selectedAnswer") ? new com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer(forProperty("selectedAnswer"), inits.get("selectedAnswer")) : null;
     }

@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.answer.controller;
 
+import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
@@ -42,8 +43,8 @@ public class AllAnswerControllerTest {
                 .perform(get("/api/answers"))
                 .andDo(print());
 
-        Page<Answer> answersPage = answerService
-                .findAll(1, 10);
+        Page<AnswerDto> answersPage = answerService
+                .itemsAll(1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(AllAnswerController.class))
@@ -55,19 +56,21 @@ public class AllAnswerControllerTest {
                 .andExpect(jsonPath("$.total_items").value(answersPage.getTotalElements()))
                 .andExpect(jsonPath("$.has_more").value(answersPage.hasNext()));
 
-        List<Answer> answers = answersPage.getContent();
+        List<AnswerDto> answers = answersPage.getContent();
 
         for(int i = 0; i < answers.size(); i++) {
-            Answer answer = answers.get(i);
+            AnswerDto answer = answers.get(i);
 
             resultActions
                     .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(answer.getId()))
                     .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
                     .andExpect(jsonPath("$.items[%d].modified_at".formatted(i)).exists())
-                    .andExpect(jsonPath("$.items[%d].question_id".formatted(i)).value(answer.getQuestion().getId()))
-                    .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(answer.getAuthor().getId()))
-                    .andExpect(jsonPath("$.items[%d].author_name".formatted(i)).value(answer.getAuthor().getNickname()))
-                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(answer.getContent()));
+                    .andExpect(jsonPath("$.items[%d].question_id".formatted(i)).value(answer.getQuestionId()))
+                    .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(answer.getAuthorId()))
+                    .andExpect(jsonPath("$.items[%d].author_name".formatted(i)).value(answer.getAuthorName()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(answer.getContent()))
+                    .andExpect(jsonPath("$.items[%d].selected".formatted(i)).value(answer.isSelected()))
+                    .andExpect(jsonPath("$.items[%d].selected_at".formatted(i)).value(answer.getSelectedAt()));
         }
     }
 
@@ -78,7 +81,7 @@ public class AllAnswerControllerTest {
                 .perform(get("/api/answers/1"))
                 .andDo(print());
 
-        Answer answer = answerService.findById(1);
+        AnswerDto answer = answerService.item(1);
 
         resultActions
                 .andExpect(handler().handlerType(AllAnswerController.class))
@@ -87,10 +90,12 @@ public class AllAnswerControllerTest {
                 .andExpect(jsonPath("$.id").value(answer.getId()))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andExpect(jsonPath("$.modified_at").exists())
-                .andExpect(jsonPath("$.question_id").value(answer.getQuestion().getId()))
-                .andExpect(jsonPath("$.author_id").value(answer.getAuthor().getId()))
-                .andExpect(jsonPath("$.author_name").value(answer.getAuthor().getNickname()))
-                .andExpect(jsonPath("$.content").value(answer.getContent()));
+                .andExpect(jsonPath("$.question_id").value(answer.getQuestionId()))
+                .andExpect(jsonPath("$.author_id").value(answer.getAuthorId()))
+                .andExpect(jsonPath("$.author_name").value(answer.getAuthorName()))
+                .andExpect(jsonPath("$.content").value(answer.getContent()))
+                .andExpect(jsonPath("$.selected").value(answer.isSelected()))
+                .andExpect(jsonPath("$.selected_at").value(answer.getSelectedAt()));
     }
 
     @Test
@@ -139,7 +144,9 @@ public class AllAnswerControllerTest {
                 .andExpect(jsonPath("$.data.created_at").exists())
                 .andExpect(jsonPath("$.data.modified_at").exists())
                 .andExpect(jsonPath("$.data.question_id").value(answer.getQuestion().getId()))
-                .andExpect(jsonPath("$.data.content").value("답변 내용 new"));
+                .andExpect(jsonPath("$.data.content").value("답변 내용 new"))
+                .andExpect(jsonPath("$.data.selected").value(answer.isSelected()))
+                .andExpect(jsonPath("$.data.selected_at").value(answer.getSelectedAt()));
     }
 
     @Test
@@ -244,7 +251,7 @@ public class AllAnswerControllerTest {
 
     @Test
     @DisplayName("답변 삭제")
-    @WithUserDetails("admin@test.com")
+    @WithUserDetails("test@test.com")
     void t4() throws Exception {
         Answer answer = answerService.findById(1);
 

@@ -11,10 +11,12 @@ import {
   MonitorCog,
   ShoppingCart,
   Lock,
+  Coins
 } from "lucide-react";
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
 import { NicknameProvider, useNickname } from "@/context/NicknameContext";
+import { Toaster } from "@/components/ui/toaster";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -106,6 +108,11 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                 <ShoppingCart /> 포인트 쇼핑
               </Link>
             </Button>
+                      <Button variant="link" asChild>
+                        <Link href="/point/list">
+                            <Coins /> 포인트
+                        </Link>
+                      </Button>
             <div className="flex-grow"></div>
             {isAuthenticated ? (
                 <>
@@ -128,7 +135,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
             <ThemeToggleButton />
           </div>
         </header>
-        <main className="flex-1 flex flex-col">{children}</main>
+        <main className="flex-1 flex flex-col">{children} <Toaster /></main>
         <footer className="p-2 flex justify-center items-center">
           <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
           <Button variant="link" asChild>
