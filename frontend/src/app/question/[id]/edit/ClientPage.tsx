@@ -5,15 +5,14 @@ import client from "@/utils/apiClient";
 import { useToast } from "@/hooks/use-toast";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
-// type QuestionDto = components["schemas"]["QuestionDto"];
+type QuestionDto = components["schemas"]["QuestionDto"];
 
 interface Props {
     categories: CategoryDto[];
-    // questionData: QuestionDto;
-    id: string;
+    questionData: QuestionDto;
 }
 
-export default function ClientPage({ categories, id }: Props) {
+export default function ClientPage({ categories, questionData }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(categories[0].name);
 
@@ -23,11 +22,20 @@ export default function ClientPage({ categories, id }: Props) {
     const [categoryId, setCategoryId] = useState<number | null>(null);
 
     const { toast } = useToast();
-
+    const categoryOrder = [
+        "전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타"
+    ];
+    
     useEffect(() => {
+        const categoryIndex = categoryOrder.indexOf(questionData.categoryName);
         if (categories.length > 0) {
-          setCategoryId(categories[0].id!!); // 첫 번째 카테고리를 기본값으로 설정
-          setSelectedOption(categories[0].name);
+            if (categoryIndex !== -1) {
+                setCategoryId(categories[categoryIndex]?.id || null);
+                setSelectedOption(categoryOrder[categoryIndex]);
+            }
+            setTitle(questionData.title);
+            setContent(questionData.content);
+            setPoints(questionData.point);
         }
       }, [categories]);
 
@@ -50,13 +58,12 @@ export default function ClientPage({ categories, id }: Props) {
             point: points,
         };
     
-        // const id = 23;
         try {
-            if (!window.confirm(`수정하시겠습니까? (ID: ${id})`)) return;
+            if (!window.confirm(`수정하시겠습니까?`)) return;
 
             const response = await client.PUT("/api/questions/{id}", {
                 credentials: "include",
-                params: { path: { id: Number(id) } },
+                params: { path: { id: Number(questionData.id) } },
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -64,14 +71,12 @@ export default function ClientPage({ categories, id }: Props) {
             });
 
             if (response.error) {
-                // alert(response.error.msg);
                 toast({
                     title: response.error.msg,  // 서버에서 전달한 msg를 사용
                     variant: "destructive",
                 });
                 return;
             }
-            // alert(response.data.msg);
             toast({
                 title: response.data.msg,
             });

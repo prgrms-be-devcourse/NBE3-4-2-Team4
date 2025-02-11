@@ -96,10 +96,10 @@ export default function ClientPage({
         });
         return;
       }
-  
       toast({
         title: response.data.msg,
       });
+      window.location.reload();
     } catch (error) {
       toast({
         title: "질문 추천 중 오류가 발생했습니다.",
