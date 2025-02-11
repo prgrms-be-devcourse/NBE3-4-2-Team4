@@ -16,7 +16,7 @@ function formatDate(date: string) {
   return format(new Date(date), "yyyy년 MM월 dd일 HH:mm:ss");
 }
 
-export default function ClientPage({ body } : PageDtoPointHistoryRes) {
+export default function ClientPage({ body }) {
 
 
       const router = useRouter();
@@ -112,9 +112,11 @@ export default function ClientPage({ body } : PageDtoPointHistoryRes) {
 
     console.log(currentPage, data.hasMore);
   return (<div  className="container mx-auto px-4 flex flex-col gap-7">
+      <div className="flex justify-between mt-[10px]">
+      <h1 className="my-3">포인트 페이지</h1>
       <AttendanceButton/>
-    <h1 className="my-3">포인트 페이지</h1>
-             <TransferForm />
+    </div>
+             <TransferForm/>
             <div className="flex flex-col gap-4">
               {/* 시작 날짜 선택 */}
               <div>

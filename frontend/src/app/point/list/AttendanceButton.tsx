@@ -1,4 +1,5 @@
  import createClient from "openapi-fetch";
+ import { useRouter, usePathname } from 'next/navigation';
 
     const client = createClient<paths>({
       baseUrl: "http://localhost:8080",
@@ -6,16 +7,20 @@
 
 export default function AttendanceButton() {
 
+              const router = useRouter();
+              const pathname = usePathname();
+
         const handleAttend = async(e) => {
 
-                   const data = await client.PUT("/api/points/attendance", {});
+                   const data = await client.PUT("/api/points/attendance", {credentials: "include"});
 
                    if (!data.response.ok) {
                                console.log(data);
-                               alert("출석 실패");
+                               alert(data.error.msg);
                                return;
                                }
                            alert("출석 성공!");
+                           router.replace(pathname);
                    }
 
 

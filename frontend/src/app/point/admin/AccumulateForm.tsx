@@ -34,12 +34,13 @@ export default function AccumulateForm() {
           body: {
               username: username,
               amount: Number(amount)
-          }
+          },
+      credentials: "include"
         });
 
         if (!data.response.ok){
                     console.log(response.ok);
-                    alert("실패");
+                    alert("실패: "+data.response.error.msg);
                     return;
                     }
 

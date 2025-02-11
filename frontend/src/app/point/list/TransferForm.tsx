@@ -34,12 +34,16 @@ export default function TransferForm() {
           body: {
               username: username,
               amount: Number(amount)
-          }
+          },
+//                 headers: {
+//                   cookie: cookies,
+//                 },
+            credentials: "include"
         });
 
         if (!data.response.ok){
                     console.log(data.response);
-                    alert("송금 실패");
+                    alert("송금실패: "+data.error.msg);
                     return;
                     }
 

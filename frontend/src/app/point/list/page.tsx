@@ -2,6 +2,7 @@
 import ClientPage from "./ClientPage";
 import createClient from "openapi-fetch";
 import type { paths } from "@/lib/backend/apiV1/schema";
+import { cookies } from "next/headers";
 
     function convertSnakeToCamel<T>(obj: T): T {
       if (Array.isArray(obj)) {
@@ -33,7 +34,8 @@ export default async function Page({
                              }) {
                                  try {
     const { page = 1, startDate, endDate, pointCategory } = await searchParams;
-
+            const stringCookies = cookies().toString();
+            console.log(stringCookies, " cookie")
         const response = await client.GET("/api/points", {
           params: {
             query: {
@@ -42,6 +44,9 @@ export default async function Page({
               endDate,
               pointCategory
             },
+          },
+          headers: {
+            cookie: stringCookies,
           },
         });
 
@@ -52,7 +57,7 @@ export default async function Page({
         const data = response.data;
         const body = convertSnakeToCamel(data);
         console.log(data);
-        return <ClientPage body={body}/>;
+        return <ClientPage body={body} />;
     } catch (error) {
             console.error("API 요청 실패:", error);
             console.log("서버에서 보낸 에러 JSON:", response.error.data);
