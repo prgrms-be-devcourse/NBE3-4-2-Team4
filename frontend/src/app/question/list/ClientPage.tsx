@@ -147,6 +147,9 @@ export default function ClientPage({ body }: ClientPageProps) {
                   <Banknote size={20} />
                   {item.point}
                 </div>
+                <div>
+                  {item.categoryName}
+                </div>
               </div>
               <div className="w-40 text-sm text-center flex items-center justify-between">
               {item.recommendCount && item.recommendCount > 0 ? (

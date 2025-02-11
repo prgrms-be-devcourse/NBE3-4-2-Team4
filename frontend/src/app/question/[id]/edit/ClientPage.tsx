@@ -5,12 +5,14 @@ import client from "@/utils/apiClient";
 import { useToast } from "@/hooks/use-toast";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
+type QuestionDto = components["schemas"]["QuestionDto"];
 
 interface Props {
     categories: CategoryDto[];
+    questionData: QuestionDto;
 }
 
-export default function ClientPage({ categories }: Props) {
+export default function ClientPage({ categories, questionData }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(categories[0].name);
 
@@ -20,11 +22,20 @@ export default function ClientPage({ categories }: Props) {
     const [categoryId, setCategoryId] = useState<number | null>(null);
 
     const { toast } = useToast();
-
+    const categoryOrder = [
+        "전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타"
+    ];
+    
     useEffect(() => {
+        const categoryIndex = categoryOrder.indexOf(questionData.categoryName);
         if (categories.length > 0) {
-          setCategoryId(categories[0].id!!); // 첫 번째 카테고리를 기본값으로 설정
-          setSelectedOption(categories[0].name);
+            if (categoryIndex !== -1) {
+                setCategoryId(categories[categoryIndex]?.id || null);
+                setSelectedOption(categoryOrder[categoryIndex]);
+            }
+            setTitle(questionData.title);
+            setContent(questionData.content);
+            setPoints(questionData.point);
         }
       }, [categories]);
 
@@ -38,12 +49,7 @@ export default function ClientPage({ categories }: Props) {
     };
 
     const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();    
-        // // 제목, 내용, 카테고리, 포인트 유효성 체크
-        // if (!title || !content || !categoryId || points <= 0) {
-        //     alert("제목과 내용을 입력해주세요.");
-        //     return;
-        // }
+        e.preventDefault();
     
         const submitData = {
             title: title,
@@ -53,8 +59,11 @@ export default function ClientPage({ categories }: Props) {
         };
     
         try {
-            const response = await client.POST("/api/questions", {
+            if (!window.confirm(`수정하시겠습니까?`)) return;
+
+            const response = await client.PUT("/api/questions/{id}", {
                 credentials: "include",
+                params: { path: { id: Number(questionData.id) } },
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -62,23 +71,19 @@ export default function ClientPage({ categories }: Props) {
             });
 
             if (response.error) {
-                // alert(response.error.msg);
                 toast({
                     title: response.error.msg,  // 서버에서 전달한 msg를 사용
                     variant: "destructive",
                 });
                 return;
             }
-            // alert(response.data.msg);
             toast({
                 title: response.data.msg,
             });
             window.location.href = "/question/list";
         } catch (error) {
-            // 에러가 발생했을 경우
-            // alert("질문 등록 중 오류가 발생했습니다.");
             toast({
-                title: "질문 등록 중 오류가 발생했습니다.",
+                title: "질문 수정 중 오류가 발생했습니다.",
                 variant: "destructive",
             });
         }
@@ -86,7 +91,7 @@ export default function ClientPage({ categories }: Props) {
 
     return (
         <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-2">글쓰기</h2>
+            <h2 className="text-2xl font-bold mb-2">글 수정하기</h2>
             <hr className="mb-6" />
 
             <form onSubmit={handleFormSubmit}>
@@ -154,7 +159,7 @@ export default function ClientPage({ categories }: Props) {
                 <button
                     type="submit"
                     className="p-3 bg-teal-500 text-white font-bold py-2 rounded-md hover:bg-teal-600 mt-6">
-                    작성하기
+                    수정하기
                 </button>
             </form>
         </div>

@@ -157,7 +157,7 @@ public class QuestionControllerTest {
     @DisplayName("게시글 검색")
     void t7() throws Exception {
         ResultActions resultActions = mvc.perform(
-                get("/api/questions?searchKeyword=0")
+                get("/api/questions?searchKeyword=2&keywordType=TITLE")
                 )
                 .andDo(print());
 

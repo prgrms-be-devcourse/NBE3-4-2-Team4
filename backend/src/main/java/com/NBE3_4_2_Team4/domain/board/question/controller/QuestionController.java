@@ -102,7 +102,7 @@ public class QuestionController {
         Question question = questionService.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        questionService.update(question, reqBody.title(), reqBody.content(), actor);
+        questionService.update(question, reqBody.title(), reqBody.content(), actor, reqBody.point(), reqBody.categoryId());
 
         return new RsData<>(
                 "200-1",
