@@ -59,10 +59,18 @@ export default async function Page({
           throw new Error(response.error.result_code.split("-")[0]);
         }
 
+         const userResponse = await client.GET("/api/members/details", {
+                  headers: {
+                    cookie: stringCookies,
+                  },
+                });
+        console.log(userResponse);
+        const point = userResponse.data.data.point;
+        console.log(point);
         const data = response.data;
         const body = convertSnakeToCamel(data);
         console.log(data);
-        return <ClientPage body={body} />;
+        return <ClientPage body={body} point={point}/>;
     } catch (error) {
 
 

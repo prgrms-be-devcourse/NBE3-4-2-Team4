@@ -17,7 +17,7 @@ function formatDate(date: string) {
   return format(new Date(date), "yyyy년 MM월 dd일 HH:mm:ss");
 }
 
-export default function ClientPage({ body }) {
+export default function ClientPage({ body, point }) {
 
 
       const router = useRouter();
@@ -115,8 +115,11 @@ export default function ClientPage({ body }) {
   return (<div  className="container mx-auto px-4 flex flex-col gap-7">
       <div className="flex justify-between mt-[10px]">
       <h1 className="my-3">포인트 페이지</h1>
+
       <AttendanceButton/>
+
     </div>
+    <h2 className="font-size-[19px]">포인트 잔액: {point}</h2>
              <TransferForm/>
             <div className="flex flex-col gap-4">
               {/* 시작 날짜 선택 */}
