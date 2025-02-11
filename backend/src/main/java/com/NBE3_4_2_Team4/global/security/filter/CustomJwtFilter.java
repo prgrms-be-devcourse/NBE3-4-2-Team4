@@ -103,8 +103,9 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
             if (accessToken == null || accessToken.isBlank()) {
                 tryAgainWithRefreshToken(request, response);
+            }else {
+                setAuthContextWithAccessToken(response, accessToken);
             }
-            setAuthContextWithAccessToken(response, accessToken);
         }catch (ExpiredJwtException e){
             tryAgainWithRefreshToken(request, response);
         } catch (JwtException e){

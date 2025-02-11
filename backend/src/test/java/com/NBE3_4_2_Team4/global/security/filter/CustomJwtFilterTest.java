@@ -192,7 +192,7 @@ public class CustomJwtFilterTest {
         PointTransferReq pointTransferReq = new PointTransferReq("test@test.com", 1L);
         String body = objectMapper.writeValueAsString(pointTransferReq);
 
-        mockMvc.perform(put("/api/admin/products/accumulate")
+        mockMvc.perform(put("/api/admin/points/accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .cookie(accessToken)
                         .with(csrf())
