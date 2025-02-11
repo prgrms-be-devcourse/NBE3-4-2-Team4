@@ -36,6 +36,10 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
     public boolean disconnect(String refreshToken) {
         String accessToken = naverTokenService.getFreshAccessToken(refreshToken);
 
+        if (accessToken == null) {
+            return false;
+        }
+
         String url = UriComponentsBuilder.fromUriString(naverTokenUrl)
                 .queryParam("grant_type", "delete")
                 .queryParam("client_id", clientId)
