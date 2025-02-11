@@ -6,6 +6,7 @@ import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2Refr
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
@@ -48,6 +49,9 @@ public class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private MemberQuerydsl memberQuerydsl;
 
     @Mock
     private OAuth2Manager oAuth2Manager;
@@ -396,8 +400,8 @@ public class MemberServiceTest {
         verify(oAuth2Manager, times(0))
                 .getOAuth2DisconnectService(any());
 
-        verify(memberRepository, times(1))
-                .deleteById(any());
+        verify(memberQuerydsl, times(1))
+                .deleteMember(anyLong());
     }
 
     @ParameterizedTest
@@ -440,8 +444,8 @@ public class MemberServiceTest {
                 .findByMember(any());
         verify(oAuth2Manager, times(1))
                 .getOAuth2DisconnectService(any());
-        verify(memberRepository, times(1))
-                .deleteById(any());
+        verify(memberQuerydsl, times(1))
+                .deleteMember(anyLong());
     }
 
     @ParameterizedTest

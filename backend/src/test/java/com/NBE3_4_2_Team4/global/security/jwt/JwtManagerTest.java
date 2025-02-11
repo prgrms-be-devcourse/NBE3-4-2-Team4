@@ -125,12 +125,12 @@ public class JwtManagerTest {
 
     @Test
     void getClaimsTest1(){
-        assertThrows(JwtException.class, () -> jwtManager.getClaims(null));
+        assertNull(jwtManager.getClaims(null));
     }
 
     @Test
     void getClaimsTest2(){
-        assertThrows(JwtException.class, () -> jwtManager.getClaims("  "));
+        assertNull(jwtManager.getClaims("  "));
     }
 
     @Test

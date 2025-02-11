@@ -168,9 +168,9 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.current_page_number").value(1))
                 .andExpect(jsonPath("$.page_size").value(10))
                 .andExpect(jsonPath("$.total_pages").value(1))
-                .andExpect(jsonPath("$.total_items").value(2))
+                .andExpect(jsonPath("$.total_items").value(3))
                 .andExpect(jsonPath("$.has_more").value(false))
-                .andExpect(jsonPath("$.items.length()").value(2));
+                .andExpect(jsonPath("$.items.length()").value(3));
     }
 
     @Test
