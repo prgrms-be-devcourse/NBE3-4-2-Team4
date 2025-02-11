@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { paths } from "@/lib/backend/apiV1/schema";
 import createClient from "openapi-fetch";
 import { useState } from "react";
+import imageLoader from "@/utils/imageLoader";
 
 const client = createClient<paths>({
     baseUrl: "http://localhost:8080",
@@ -98,6 +99,7 @@ export default function ClientPage({ product, cookieString }) {
                         <CardHeader>
                             {product.product_image_url ? (
                                 <Image
+                                    loader={imageLoader}
                                     src={product.product_image_url}
                                     alt={product.product_name}
                                     width={600}

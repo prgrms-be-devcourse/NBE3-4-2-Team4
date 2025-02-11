@@ -6,6 +6,7 @@ import { components } from "@/lib/backend/apiV1/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock } from "lucide-react";
 import PaginationType1Responsive from "@/lib/business/components/PaginationType1Responsive";
+import imageLoader from "@/utils/imageLoader";
 
 interface ProductListProps {
     page: number;
@@ -43,7 +44,8 @@ export default function ProductList({ page, pageSize, itemPage }: ProductListPro
                                     <CardHeader className="relative">
                                         {item.product_image_url && (
                                             <Image
-                                                src={"https://picsum.photos/200/200"}
+                                                loader={imageLoader}
+                                                src={item.product_image_url}
                                                 alt={item.product_name}
                                                 width={200}
                                                 height={200}
