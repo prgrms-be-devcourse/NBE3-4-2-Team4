@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { number } from "zod";
+import Pagination2 from "@/lib/business/components/Pagination2";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
@@ -30,7 +31,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentPage = Number(searchParams.get("page")) || 1;
   const [searchKeyword, setSearchKeyword] = useState(
     searchParams.get("searchKeyword") || ""
   );
@@ -64,16 +64,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     setSelectedOption(option);
     setKeywordType(optionMapping[option]);
     setIsOpen(false); // 선택 후 드롭다운 닫기
-  };
-
-  // 페이지 이동 함수
-  const changePage = (newPage: number) => {
-    const queryParams = new URLSearchParams();
-    queryParams.set("page", newPage.toString());
-
-    if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
-    if (keywordType) queryParams.set("keywordType", keywordType);
-    router.push(`?${queryParams.toString()}`);
   };
 
   // 검색 실행 함수
@@ -240,48 +230,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
       <br />
 
       {/* 페이지 이동 버튼 */}
-      <div className="flex justify-center gap-2 mb-3">
-        <button
-          onClick={() => changePage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-md text-white font-semibold transition ${
-            currentPage === 1
-              ? "bg-gray-300 cursor-not-allowed" // 이전, 다음 페이지 없을 시 비활성화
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          이전
-        </button>
-
-        {/* 페이지 번호 버튼 */}
-        {Array.from({ length: body.totalPages || 1 }, (_, i) => i + 1).map(
-          (page) => (
-            <button
-              key={page}
-              onClick={() => changePage(page)}
-              className={`px-3 py-2 rounded-md text-white font-semibold transition ${
-                currentPage === page
-                  ? "bg-blue-100 cursor-not-allowed" // 현재 페이지 비활성화
-                  : "bg-blue-300 hover:bg-blue-500"
-              }`}
-            >
-              {page}
-            </button>
-          )
-        )}
-
-        <button
-          onClick={() => changePage(currentPage + 1)}
-          disabled={currentPage === body.totalPages}
-          className={`px-4 py-2 rounded-md text-white font-semibold transition ${
-            currentPage === body.totalPages
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          다음
-        </button>
-      </div>
+      <Pagination2 totalPages={body.totalPages ?? 0} />
     </div>
   );
 }
