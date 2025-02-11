@@ -1,5 +1,5 @@
+import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
-import client from "@/utils/apiClient";
 import { convertSnakeToCamel } from "@/utils/convertCase";
 
 export default async function Page() {
