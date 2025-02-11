@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
+import { useId } from "@/context/IdContext";
 import { MessageCircle, ThumbsUp, Banknote } from "lucide-react";
 import Link from "next/link";
 
@@ -32,6 +33,8 @@ export default function ClientPage({ body }: ClientPageProps) {
     '작성자': 'AUTHOR',
     '답변 내용': 'ANSWER_CONTENT',
   };
+
+  const { id } = useId();
 
   const toggleDropdown = () => { // 검색 조건 드롭다운
     setIsOpen(!isOpen);
@@ -64,6 +67,10 @@ export default function ClientPage({ body }: ClientPageProps) {
   };
 
   const createQuestion = () => {
+    if (!id) {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
     router.push("/question/write");
   }
 

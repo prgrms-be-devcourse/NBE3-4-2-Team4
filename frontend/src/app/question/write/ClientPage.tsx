@@ -11,7 +11,7 @@ interface Props {
 
 export default function ClientPage({ categories }: Props) {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(categories[0].name); // 선택된 카테고리
+    const [selectedOption, setSelectedOption] = useState(categories[0].name);
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -20,8 +20,7 @@ export default function ClientPage({ categories }: Props) {
 
     useEffect(() => {
         if (categories.length > 0) {
-          // 첫 번째 카테고리를 기본값으로 설정
-          setCategoryId(categories[0].id!!);
+          setCategoryId(categories[0].id!!); // 첫 번째 카테고리를 기본값으로 설정
           setSelectedOption(categories[0].name);
         }
       }, [categories]);
@@ -35,30 +34,50 @@ export default function ClientPage({ categories }: Props) {
         setIsOpen(false);
     };
 
-    const handleFormSubmit = async (e: React.FormEvent) => { // form 제출
-        e.preventDefault();
-        if (!title || !content || !categoryId || points <= 0) {
-          alert("제목과 내용을 입력해주세요.");
-          return;
-        }
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();    
+        // // 제목, 내용, 카테고리, 포인트 유효성 체크
+        // if (!title || !content || !categoryId || points <= 0) {
+        //     alert("제목과 내용을 입력해주세요.");
+        //     return;
+        // }
+    
         const submitData = {
             title: title,
             content: content,
-            categoryId: categoryId,
+            categoryId: categoryId!!,
             point: points,
         };
-
+    
         try {
-            const { error } = await client.POST("/api/questions", {
-                body: submitData,
+            const response = await client.POST("/api/questions", {
+                credentials: "include",
                 headers: {
-                "Content-Type": "application/json",
-                }
+                    "Content-Type": "application/json",
+                },
+                body: submitData,
             });
-            alert("질문을 등록하였습니다.");
+
+            if (response.error) {
+                alert(response.error.msg);
+                // toast({
+                //     title: response.error.msg,  // 서버에서 전달한 msg를 사용
+                //     variant: "destructive",
+                // });
+                return;
+            }
+            alert(response.data.msg);
+            // toast({
+            //     title: response.data.msg,
+            // });
+            window.location.href = "/question/list";
         } catch (error) {
-        console.error("요청 실패: ", error);
-        alert("질문 작성 실패");
+            // 에러가 발생했을 경우
+            alert("질문 등록 중 오류가 발생했습니다.");
+            // toast({
+            //     title: "질문 등록 중 오류가 발생했습니다.",
+            //     variant: "destructive",
+            // });
         }
     };
 
@@ -67,72 +86,74 @@ export default function ClientPage({ categories }: Props) {
             <h2 className="text-2xl font-bold mb-2">글쓰기</h2>
             <hr className="mb-6" />
 
-            {/* 제목 입력 */}
-            <label className="block text-lg font-semibold mb-2">제목</label>
-            <input
-                type="text"
-                className="w-full p-2 border rounded-md mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                placeholder="제목을 입력하세요"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-            />
+            <form onSubmit={handleFormSubmit}>
+                {/* 제목 입력 */}
+                <label className="block text-lg font-semibold mb-2">제목</label>
+                <input
+                    type="text"
+                    className="w-full p-2 border rounded-md mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    placeholder="제목을 입력하세요"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
 
-            {/* 내용 입력 */}
-            <label className="block text-lg font-semibold mb-2">내용</label>
-            <textarea
-                className="w-full p-2 border rounded-md h-40 resize-none mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                placeholder="내용을 입력하세요"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
+                {/* 내용 입력 */}
+                <label className="block text-lg font-semibold mb-2">내용</label>
+                <textarea
+                    className="w-full p-2 border rounded-md h-40 resize-none mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    placeholder="내용을 입력하세요"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                />
 
-            <div className="flex gap-10">
-                {/* 카테고리 설정 */}
-                <div>
-                    <label className="block text-lg font-semibold mb-2">카테고리</label>
-                    <div className="relative">
-                        <button
-                        className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
-                        onClick={toggleDropdown}
-                        >
-                        {selectedOption ? selectedOption : "선택하세요"}
-                        <span className="ml-2">&#9662;</span>
-                        </button>
-                        {isOpen && (
-                        <ul className="absolute bg-white border rounded shadow w-full mt-2">
-                            {categories.map((category, index) => (
-                            <li key={index}
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => {
-                                    selectOption(category.name!!);
-                                    setCategoryId(category.id!!);
-                                }}>
-                            {category.name}
-                            </li>
-                            ))}
-                        </ul>
-                        )}
+                <div className="flex gap-10">
+                    {/* 카테고리 설정 */}
+                    <div>
+                        <label className="block text-lg font-semibold mb-2">카테고리</label>
+                        <div className="relative">
+                            <button
+                            type="button"
+                            className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
+                            onClick={toggleDropdown}
+                            >
+                            {selectedOption ? selectedOption : "선택하세요"}
+                            <span className="ml-2">&#9662;</span>
+                            </button>
+                            {isOpen && (
+                            <ul className="absolute bg-white border rounded shadow w-full mt-2">
+                                {categories.map((category, index) => (
+                                <li key={index}
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => {
+                                        selectOption(category.name!!);
+                                        setCategoryId(category.id!!);
+                                    }}>
+                                {category.name}
+                                </li>
+                                ))}
+                            </ul>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 포인트 설정 */}
+                    <div>
+                        <label className="block text-lg font-semibold mb-2">포인트</label>
+                        <input type="number" min={0} step={10} className="border rounded px-4 py-2 w-40" 
+                        placeholder="포인트 입력"
+                        value={points}
+                        onChange={(e) => setPoints(Number(e.target.value))}
+                        />
                     </div>
                 </div>
 
-                {/* 포인트 설정 */}
-                <div>
-                    <label className="block text-lg font-semibold mb-2">포인트</label>
-                    <input type="number" min={0} step={10} className="border rounded px-4 py-2 w-40" 
-                    placeholder="포인트 입력"
-                    value={points}
-                    onChange={(e) => setPoints(Number(e.target.value))}
-                    />
-                </div>
-            </div>
-
-            {/* 작성 버튼 */}
-            <button
-                onClick={handleFormSubmit}
-                className="p-3 bg-teal-500 text-white font-bold py-2 rounded-md hover:bg-teal-600 mt-6">
-                작성하기
-            </button>
-
+                {/* 작성 버튼 */}
+                <button
+                    type="submit"
+                    className="p-3 bg-teal-500 text-white font-bold py-2 rounded-md hover:bg-teal-600 mt-6">
+                    작성하기
+                </button>
+            </form>
         </div>
     );
 }
