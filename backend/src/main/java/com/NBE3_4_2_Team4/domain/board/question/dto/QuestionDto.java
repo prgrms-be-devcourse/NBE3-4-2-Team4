@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.domain.board.question.dto;
 
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
 
@@ -26,7 +25,7 @@ public class QuestionDto {
     private final LocalDateTime createdAt;
     @NonNull
     private final LocalDateTime modifiedAt;
-    @Nonnull
+    @NonNull
     private final Long recommendCount;
 
     private final List<AnswerDto> answers;
@@ -36,6 +35,8 @@ public class QuestionDto {
     private final boolean closed;
     @NonNull
     private final long point;
+    @NonNull
+    private final long authorId;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
@@ -55,5 +56,6 @@ public class QuestionDto {
                 : null;
         this.closed = question.isClosed();
         this.point = question.getPoint();
+        this.authorId = question.getAuthor().getId();
     }
 }

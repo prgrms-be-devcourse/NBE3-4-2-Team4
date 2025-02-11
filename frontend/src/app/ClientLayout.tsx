@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
 import { NicknameProvider, useNickname } from "@/context/NicknameContext";
+import { Toaster } from "@/components/ui/toaster";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -134,7 +135,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
             <ThemeToggleButton />
           </div>
         </header>
-        <main className="flex-1 flex flex-col">{children}</main>
+        <main className="flex-1 flex flex-col">{children} <Toaster /></main>
         <footer className="p-2 flex justify-center items-center">
           <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
           <Button variant="link" asChild>

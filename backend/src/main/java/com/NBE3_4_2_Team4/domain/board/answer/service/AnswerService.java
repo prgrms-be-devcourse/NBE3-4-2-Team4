@@ -1,8 +1,10 @@
 package com.NBE3_4_2_Team4.domain.board.answer.service;
 
+import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -12,36 +14,40 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AnswerService {
     private final AnswerRepository answerRepository;
+    private final QuestionService questionService;
 
-    public Answer write(Question question, Member author, String content) {
+    @Transactional
+    public AnswerDto write(long questionId, String content) {
+        Question question = questionService.findById(questionId).orElseThrow(
+                () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
+        );
+
+        Member actor = AuthManager.getNonNullMember();
+
+        return new AnswerDto(save(question, actor, content));
+    }
+
+    public Answer save(Question question, Member author, String content) {
         if(author.getId() == question.getAuthor().getId())
             throw new ServiceException("400-1", "작성자는 답변을 등록할 수 없습니다.");
 
-        Answer answer = Answer
-                .builder()
-                .question(question)
-                .author(author)
-                .content(content)
-                .build();
-
-        return answerRepository.save(answer);
+        return answerRepository.save(
+                Answer
+                        .builder()
+                        .question(question)
+                        .author(author)
+                        .content(content)
+                        .build());
     }
 
     public long count() {
         return answerRepository.count();
-    }
-
-    public Optional<Answer> findLatest() {
-        return answerRepository.findFirstByOrderByIdDesc();
     }
 
     public Answer findById(long id) {
@@ -52,70 +58,49 @@ public class AnswerService {
         return answer;
     }
 
-    public List<Answer> findAll() {
-        return answerRepository.findAll();
+    @Transactional(readOnly = true)
+    public AnswerDto item(long id) {
+        return new AnswerDto(findById(id));
     }
 
-    public Page<Answer> findAll(int page, int pageSize) {
+    @Transactional(readOnly = true)
+    public Page<AnswerDto> itemsAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
-        return answerRepository.findAll(pageable);
+        return answerRepository.findAll(pageable)
+                .map(AnswerDto::new);
     }
 
-    public void checkActorCanModify(Answer answer, Member actor) {
-        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+    @Transactional(readOnly = true)
+    public Page<AnswerDto> items(long questionId, int page, int pageSize) {
+        Question question = questionService.findById(questionId).orElseThrow(
+                () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
+        );
 
-        if (actor.equals(answer.getAuthor())) return;
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
-        throw new ServiceException("403-2", "작성자만 답변을 수정할 수 있습니다.");
+        return answerRepository.findByQuestionAndSelected(question, pageable, false)
+                .map(AnswerDto::new);
     }
 
-    public void checkActorCanDelete(Answer answer, Member actor) {
-        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
-
-        if (actor.getRole() == Member.Role.ADMIN) return;
-
-        if (actor.equals(answer.getAuthor())) return;
-
-        throw new ServiceException("403-2", "작성자만 답변을 삭제할 수 있습니다.");
-    }
-
-    public Answer modify(long id, String content) {
+    @Transactional
+    public AnswerDto modify(long id, String content) {
         Answer answer = findById(id);
+        Member actor = AuthManager.getNonNullMember();
 
-        Member actor = AuthManager.getMemberFromContext();
+        answer.checkActorCanModify(actor);
+        answer.modify(content);
 
-        checkActorCanModify(answer, actor);
-
-        answer.setContent(content);
-
-        return answer;
+        return new AnswerDto(answer);
     }
 
+    @Transactional
     public void delete(long id) {
         Answer answer = findById(id);
+        Member actor = AuthManager.getNonNullMember();
 
-        Member actor = AuthManager.getMemberFromContext();
-
-        checkActorCanDelete(answer, actor);
+        answer.checkActorCanDelete(actor);
 
         answerRepository.delete(answer);
-    }
-
-    public List<Answer> findByQuestionOrderByIdDesc(Question question) {
-        return answerRepository.findByQuestionOrderByIdDesc(question);
-    }
-
-    public Page<Answer> findByQuestion(Question question, int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
-
-        return answerRepository.findByQuestion(question, pageable);
-    }
-
-    public Answer select(Answer answer) {
-        answer.setSelected(true);
-        answer.setSelectedAt(LocalDateTime.now());
-
-        return answer;
     }
 }
