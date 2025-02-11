@@ -11,6 +11,7 @@ import {
   MonitorCog,
   ShoppingCart,
   Lock,
+  NotebookText
 } from "lucide-react";
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
@@ -106,6 +107,11 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                 <ShoppingCart /> 포인트 쇼핑
               </Link>
             </Button>
+                      <Button variant="link" asChild>
+                        <Link href="/point/list">
+                            <NotebookText /> 포인트
+                        </Link>
+                      </Button>
             <div className="flex-grow"></div>
             {isAuthenticated ? (
                 <>
