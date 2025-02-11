@@ -1,6 +1,6 @@
 "use client";
 
-
+import Link from "next/link";
 import {useRedirectIfNotAuthenticated} from "@/lib/hooks/useRedirect";
 
 export default function ClientPage() {
@@ -14,6 +14,11 @@ export default function ClientPage() {
                 포인트 관리 페이지로 이동
               </a>
         </li>
+    </ul>
+    <ul>
+      <li className="flex justify-center items-center">
+          <Link href="/adm/products/list">상품 관리 페이지로 이동</Link>
+      </li>
     </ul>
   </div>
   );
