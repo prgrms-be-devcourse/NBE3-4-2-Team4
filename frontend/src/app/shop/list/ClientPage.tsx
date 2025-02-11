@@ -1,7 +1,7 @@
 "use client";
 
 import type { components } from "@/lib/backend/apiV1/schema";
-import ProductList from "@/lib/business/components/product/ProductList";
+import ProductList from "@/app/shop/list/ProductList";
 
 export default function ClientPage({
                                      page,

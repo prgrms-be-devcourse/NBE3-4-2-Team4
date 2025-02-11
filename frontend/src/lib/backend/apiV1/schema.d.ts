@@ -109,6 +109,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/order/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 상품 구매 확정
+         * @description 상품의 구매를 확정하고 상품을 구매한 유저의 포인트를 착감합니다.
+         */
+        put: operations["confirm"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/points/deduct": {
         parameters: {
             query?: never;
@@ -673,6 +693,27 @@ export interface components {
             /** Format: int64 */
             amount: number;
         };
+        PurchaseDetails: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+        };
+        GetItem: {
+            /** Format: int64 */
+            productId?: number;
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
+        RsDataGetItem: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetItem"];
+        };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
             /** Format: int64 */
@@ -699,22 +740,6 @@ export interface components {
             productImageUrl: string;
             productCategory: string;
             productSaleState: string;
-        };
-        GetItem: {
-            /** Format: int64 */
-            productId?: number;
-            productName?: string;
-            /** Format: int32 */
-            productPrice?: number;
-            productDescription?: string;
-            productImageUrl?: string;
-            productCategory?: string;
-            productSaleState?: string;
-        };
-        RsDataGetItem: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["GetItem"];
         };
         RsDataString: {
             resultCode: string;
@@ -819,9 +844,9 @@ export interface components {
             /** @enum {string} */
             pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         PageDtoPointHistoryRes: {
             /** Format: int32 */
@@ -1086,6 +1111,41 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PurchaseDetails"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
                 };
             };
             /** @description Bad Request */

@@ -57,7 +57,7 @@ public class PointService {
 
     //포인트 차감 로직
     @Transactional
-    public void deductPoints(String from, long amount, PointCategory pointCategory) {
+    public Long deductPoints(String from, long amount, PointCategory pointCategory) {
         validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(from)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", from)));
@@ -68,7 +68,7 @@ public class PointService {
         member.setPoint(updatedBalance);
 
         String correlationId = UUID.randomUUID().toString();
-        pointHistoryService.createHistory(member, null, amount * -1, pointCategory, correlationId);
+        return pointHistoryService.createHistory(member, null, amount * -1, pointCategory, correlationId);
     }
 
     //포인트 적립

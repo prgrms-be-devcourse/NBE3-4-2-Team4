@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.product.product.entity;
 
+import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder;
 import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
 import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
 import jakarta.persistence.*;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +39,9 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductSaleState saleState;     // 상품 판매 상태
+
+    @OneToMany(mappedBy = "product")        // 주문 리스트
+    private List<ProductOrder> productOrders;
 
     public void updateName(String name) {
         this.name = name;

@@ -1,33 +1,14 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-    // TODO 임시 이미지 추가 (삭제 필요)
+const nextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: 'https',
-                hostname: 'images.unsplash.com',
-            },
-            {
-                protocol: 'https',
-                hostname: 'images.pexels.com',
-            },
-            {
-                protocol: 'https',
-                hostname: 'placeimg.com',
-            },
-            {
-                protocol: 'https',
-                hostname: 'picsum.photos',
-            },
-            {
-                protocol: 'http',
-                hostname: 'example.com',
+                protocol: "https",
+                hostname: "**", // 모든 호스트 허용
             },
         ],
+        loader: "custom", // 로더를 직접 지정
+        unoptimized: true, // Next.js의 이미지 최적화 기능 비활성화
     },
-
 };
 
-export default nextConfig;
+module.exports = nextConfig;
