@@ -8,6 +8,7 @@ import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
@@ -25,12 +26,15 @@ public class PointHistoryInitData {
     @Lazy
     private PointHistoryInitData self;
 
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
+
+    @Value("${custom.initData.member.admin.username}")
+    private String adminUsername;
+
     @Bean
     public ApplicationRunner pointInitDataApplicationRunner() {
         return args -> {
-            if (memberRepository.count() <= 0) {
-
-            }
             self.work();
         };
     }
@@ -40,8 +44,8 @@ public class PointHistoryInitData {
     public void work() {
         if (pointHistoryService.count() > 0) return;
 
-        Member admin = memberRepository.findByUsername("admin@test.com").get();
-        Member member = memberRepository.findByUsername("test@test.com").get();
+        Member admin = memberRepository.findByUsername(adminUsername).get();
+        Member member = memberRepository.findByUsername(member1Username).get();
 
 
         pointHistoryService.createHistory(admin, null, 10, PointCategory.ANSWER, "");
