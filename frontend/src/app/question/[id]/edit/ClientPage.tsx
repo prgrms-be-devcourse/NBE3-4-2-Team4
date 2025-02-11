@@ -5,12 +5,15 @@ import client from "@/utils/apiClient";
 import { useToast } from "@/hooks/use-toast";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
+// type QuestionDto = components["schemas"]["QuestionDto"];
 
 interface Props {
     categories: CategoryDto[];
+    // questionData: QuestionDto;
+    id: string;
 }
 
-export default function ClientPage({ categories }: Props) {
+export default function ClientPage({ categories, id }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(categories[0].name);
 
@@ -38,12 +41,7 @@ export default function ClientPage({ categories }: Props) {
     };
 
     const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();    
-        // // 제목, 내용, 카테고리, 포인트 유효성 체크
-        // if (!title || !content || !categoryId || points <= 0) {
-        //     alert("제목과 내용을 입력해주세요.");
-        //     return;
-        // }
+        e.preventDefault();
     
         const submitData = {
             title: title,
@@ -52,9 +50,13 @@ export default function ClientPage({ categories }: Props) {
             point: points,
         };
     
+        // const id = 23;
         try {
-            const response = await client.POST("/api/questions", {
+            if (!window.confirm(`수정하시겠습니까? (ID: ${id})`)) return;
+
+            const response = await client.PUT("/api/questions/{id}", {
                 credentials: "include",
+                params: { path: { id: Number(id) } },
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -75,10 +77,8 @@ export default function ClientPage({ categories }: Props) {
             });
             window.location.href = "/question/list";
         } catch (error) {
-            // 에러가 발생했을 경우
-            // alert("질문 등록 중 오류가 발생했습니다.");
             toast({
-                title: "질문 등록 중 오류가 발생했습니다.",
+                title: "질문 수정 중 오류가 발생했습니다.",
                 variant: "destructive",
             });
         }
@@ -86,7 +86,7 @@ export default function ClientPage({ categories }: Props) {
 
     return (
         <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-2">글쓰기</h2>
+            <h2 className="text-2xl font-bold mb-2">글 수정하기</h2>
             <hr className="mb-6" />
 
             <form onSubmit={handleFormSubmit}>
@@ -154,7 +154,7 @@ export default function ClientPage({ categories }: Props) {
                 <button
                     type="submit"
                     className="p-3 bg-teal-500 text-white font-bold py-2 rounded-md hover:bg-teal-600 mt-6">
-                    작성하기
+                    수정하기
                 </button>
             </form>
         </div>
