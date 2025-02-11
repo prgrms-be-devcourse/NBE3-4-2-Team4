@@ -7,6 +7,7 @@ import TransferForm from "./TransferForm";
 import AttendanceButton from "./AttendanceButton";
 
 
+
 type PageDtoPointHistoryRes = components["schemas"]["PageDtoPointHistoryRes"];
 type PointHistoryRes = components["schemas"]["PointHistoryRes"];
 
@@ -173,6 +174,11 @@ export default function ClientPage({ body }) {
             <option value="TRANSFER">송금</option>
             <option value="ATTENDANCE">출석</option>
             <option value="ADMIN">관리자</option>
+            <option value="QUESTION">질문등록</option>
+            <option value="EXPIRED_QUESTION">만료된 질문</option>
+            <option value="REFUND">포인트 반환</option>
+            <option value="RANKING">랭킹</option>
+
           </select>
         </div>
 

@@ -3,6 +3,9 @@ import ClientPage from "./ClientPage";
 import createClient from "openapi-fetch";
 import type { paths } from "@/lib/backend/apiV1/schema";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+
 
     function convertSnakeToCamel<T>(obj: T): T {
       if (Array.isArray(obj)) {
@@ -32,7 +35,9 @@ export default async function Page({
                                  pointCategory?: string;
                                };
                              }) {
+
                                  try {
+
     const { page = 1, startDate, endDate, pointCategory } = await searchParams;
             const stringCookies = cookies().toString();
             console.log(stringCookies, " cookie")
@@ -51,7 +56,7 @@ export default async function Page({
         });
 
         if (!response || !response.data) {
-          throw new Error("API 응답이 유효하지 않습니다.");
+          throw new Error(response.error.result_code.split("-")[0]);
         }
 
         const data = response.data;
@@ -59,8 +64,13 @@ export default async function Page({
         console.log(data);
         return <ClientPage body={body} />;
     } catch (error) {
-            console.error("API 요청 실패:", error);
-            console.log("서버에서 보낸 에러 JSON:", response.error.data);
+
+
+                                                 if (error.message === "401") {
+                                                         return redirect("/login");
+                                                     }
+            //console.error("API 요청 실패:", error);
+            //console.log("서버에서 보낸 에러 JSON:", response.error.data);
 
             return (
               <div className="flex justify-center items-center h-96">
