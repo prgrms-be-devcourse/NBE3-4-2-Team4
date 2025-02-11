@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {useRedirectIfNotAuthenticated} from "@/lib/hooks/useRedirect";
+import {useRedirectIfNotAdmin} from "@/lib/hooks/useRedirect";
 
 export default function ClientPage() {
-  useRedirectIfNotAuthenticated();
+  useRedirectIfNotAdmin();
   return (
       <div className="flex flex-col justify-center items-center gap-[10px]">
     <div className="flex-1 flex justify-center items-center">관리자 홈</div>

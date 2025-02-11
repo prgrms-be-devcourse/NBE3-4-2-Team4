@@ -27,6 +27,10 @@ public class KaKaoDisconnectService implements OAuth2DisconnectService {
     public boolean disconnect(String refreshToken){
         String accessToken = kakaoTokenService.getFreshAccessToken(refreshToken);
 
+        if (accessToken == null) {
+            return false;
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("Authorization", String.format("Bearer %s", accessToken));
