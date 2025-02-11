@@ -23,5 +23,5 @@ export default async function Page({
 
     const product: components["schemas"]["GetItem"] = response.data!.data;
 
-    return <ClientPage product={product} />;
+    return <ClientPage product={product} cookieString={cookieStore.toString()}/>;
 }

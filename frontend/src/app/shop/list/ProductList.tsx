@@ -5,7 +5,7 @@ import Link from "next/link";
 import {components} from "@/lib/backend/apiV1/schema";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Lock} from "lucide-react";
-import PaginationType1Responsive from "../PaginationType1Responsive";
+import PaginationType1Responsive from "@/lib/business/components/PaginationType1Responsive";
 
 interface ProductListProps {
     page: number;
