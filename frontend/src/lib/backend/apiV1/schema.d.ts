@@ -109,7 +109,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/products/deduct": {
+    "/api/admin/points/deduct": {
         parameters: {
             query?: never;
             header?: never;
@@ -126,7 +126,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/products/accumulate": {
+    "/api/admin/points/accumulate": {
         parameters: {
             query?: never;
             header?: never;
@@ -839,8 +839,7 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
             counterAccountUsername?: string;
-            /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            pointCategory?: string;
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
 import client from "@/utils/apiClient";
+import { useToast } from "@/hooks/use-toast";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
 
@@ -17,6 +18,8 @@ export default function ClientPage({ categories }: Props) {
     const [content, setContent] = useState("");
     const [points, setPoints] = useState<number>(0);
     const [categoryId, setCategoryId] = useState<number | null>(null);
+
+    const { toast } = useToast();
 
     useEffect(() => {
         if (categories.length > 0) {
@@ -59,25 +62,25 @@ export default function ClientPage({ categories }: Props) {
             });
 
             if (response.error) {
-                alert(response.error.msg);
-                // toast({
-                //     title: response.error.msg,  // 서버에서 전달한 msg를 사용
-                //     variant: "destructive",
-                // });
+                // alert(response.error.msg);
+                toast({
+                    title: response.error.msg,  // 서버에서 전달한 msg를 사용
+                    variant: "destructive",
+                });
                 return;
             }
-            alert(response.data.msg);
-            // toast({
-            //     title: response.data.msg,
-            // });
+            // alert(response.data.msg);
+            toast({
+                title: response.data.msg,
+            });
             window.location.href = "/question/list";
         } catch (error) {
             // 에러가 발생했을 경우
-            alert("질문 등록 중 오류가 발생했습니다.");
-            // toast({
-            //     title: "질문 등록 중 오류가 발생했습니다.",
-            //     variant: "destructive",
-            // });
+            // alert("질문 등록 중 오류가 발생했습니다.");
+            toast({
+                title: "질문 등록 중 오류가 발생했습니다.",
+                variant: "destructive",
+            });
         }
     };
 
