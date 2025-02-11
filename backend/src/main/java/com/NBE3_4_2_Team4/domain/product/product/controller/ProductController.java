@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.domain.product.product.controller;
 
-import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto;
 import com.NBE3_4_2_Team4.domain.product.product.service.ProductService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.*;
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
 
 @RestController
@@ -134,7 +134,7 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "단건 상품 생성", description = "단건 상품을 생성합니다.")
     RsData<GetItem> writeProduct(
-            @RequestBody ProductRequestDto.writeItem request
+            @RequestBody writeItem request
     ) {
 
         GetItem product = productService.writeProduct(request);
@@ -150,7 +150,7 @@ public class ProductController {
     @Operation(summary = "단건 상품 수정", description = "단건 상품을 수정합니다.")
     RsData<GetItem> updateProduct(
             @PathVariable(name = "product_id") Long productId,
-            @RequestBody ProductRequestDto.updateItem request
+            @RequestBody updateItem request
     ) {
 
         GetItem product = productService.updateProduct(productId, request);

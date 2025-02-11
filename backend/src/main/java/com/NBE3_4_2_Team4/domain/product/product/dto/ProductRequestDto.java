@@ -48,6 +48,7 @@ public class ProductRequestDto {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)  // Not Null인 필드만 Json에 추가되도록 설정
