@@ -5,7 +5,7 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/utils/dateUtils";
 import { useId } from "@/context/IdContext";
-import { MessageCircle, ThumbsUp, Banknote } from "lucide-react";
+import { MessageCircle, ThumbsUp, Banknote, Coins, Star } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,6 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { number } from "zod";
 import Pagination2 from "@/lib/business/components/Pagination2";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
@@ -72,6 +75,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     queryParams.set("page", "1"); // 검색 시 1페이지부터 시작
 
     if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
+    //if (keywordType) queryParams.set("keywordType", keywordType);
     if (keywordType) queryParams.set("keywordType", keywordType);
 
     setCategoryValue("전체");
@@ -94,6 +98,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     if (!id) {
       toast({
         title: "로그인 후 이용해주세요.",
+        variant: "destructive",
       });
       return;
     }
@@ -106,25 +111,31 @@ export default function ClientPage({ body, category }: ClientPageProps) {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2>지식인 게시판</h2>
+      <div className="mt-20 mb-10 text-center">
+        <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
+          지식인 게시판
+        </h2>
+        <p className="text-md text-gray-400 mt-3">
+          지식을 나누고 포인트도 얻으세요!
+          <br />
+          함께 성장하는 지식 공유 공간입니다.
+        </p>
+      </div>
+      {/* <div className="flex items-center justify-between mb-2">
         <button
           className="border-2 border-cyan-500 bg-cyan-500 text-white px-2 font-bold rounded-md hover:bg-cyan-600"
           onClick={showRanking}
         >
           인기글 보기
-        </button>
-      </div>
+        </button> 
+      </div> */}
 
-      <hr />
-      <br />
-
-      <div className="flex justify-between items-center">
+      <div className="flex mb-4 md:flex-row flex-col gap-2 md:items-center items-start justify-between">
         <div className="flex gap-2">
           <Button onClick={createQuestion}>글쓰기</Button>
           <div>
             <Select onValueChange={handleCategorySearch} value={categoryValue}>
-              <SelectTrigger className="w-[180px]" id="category">
+              <SelectTrigger className="md:w-[180px] w-[100px]" id="category">
                 <SelectValue placeholder="카테고리로 검색" />
               </SelectTrigger>
               <SelectContent>
@@ -138,11 +149,9 @@ export default function ClientPage({ body, category }: ClientPageProps) {
             </Select>
           </div>
         </div>
-        <div
-          style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}
-        >
+        <div className="flex gap-2">
           {/* 검색 입력창 */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
               onClick={toggleDropdown}
@@ -163,71 +172,91 @@ export default function ClientPage({ body, category }: ClientPageProps) {
                 ))}
               </ul>
             )}
+          </div> */}
+          <div>
+            <Select
+              value={selectedOption}
+              onValueChange={(value) => {
+                setSelectedOption(value);
+                setKeywordType(optionMapping[value]);
+              }}
+            >
+              <SelectTrigger className="md:w-[180px] w-[100px]" id="category">
+                <SelectValue placeholder="전체" />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option, index) => (
+                  <SelectItem key={index} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <input
+          <Input
             type="text"
-            placeholder="제목을 입력하세요"
-            className="border-2 border-gray-300 px-2 rounded-md focus:outline-none focus:border-blue-500"
+            placeholder="검색어을 입력하세요"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
-          <button
-            className="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-            onClick={handleSearch}
-          >
-            검색
-          </button>
+          <Button onClick={handleSearch}>검색</Button>
         </div>
       </div>
-      <br />
 
-      <ul className="flex flex-col gap-4">
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {body.items?.map((item: QuestionDto) => (
-          <li
-            key={item.id}
-            className="flex items-center dark:bg-gray-800 justify-between border-2 border-gray-300 p-3 rounded-md"
-          >
-            <Link
-              href={`/question/${item.id}`}
-              className="flex items-center justify-between w-full block"
-            >
-              <div className="flex flex-1 font-semibold text-lg truncate gap-4">
-                {item.title}
-                <div className="flex gap-2 items-center text-yellow-500 text-sm font-medium">
-                  <Banknote size={20} />
-                  {item.point}
-                </div>
-                <div>{item.categoryName}</div>
-              </div>
-              <div className="w-40 text-sm text-center flex items-center justify-between">
-                {item.recommendCount && item.recommendCount > 0 ? (
-                  <span className="flex items-center gap-1 text-purple-500 font-medium">
-                    <ThumbsUp size={16} />
-                    {item.recommendCount}
-                  </span>
-                ) : (
-                  <span></span>
-                )}
-                {item.answers && item.answers?.length > 0 ? (
-                  <span className="flex items-center gap-1 text-blue-500 font-medium">
-                    <MessageCircle size={16} />
-                    {item.answers?.length}
-                  </span>
-                ) : (
-                  <span></span>
-                )}
-                <span>{item.name}</span>
-              </div>
-              <div className="w-56 text-sm text-right ms-8">
-                작성 일시: {formatDate(item.createdAt)}
-              </div>
-              <br />
+          <li key={item.id}>
+            <Link href={`/question/${item.id}`}>
+              <Card className="hover:shadow-[0_0_10px_0_rgba(0,0,0,0.2)] hover:dark:shadow-[0_0_10px_0_rgba(255,255,255,0.3)] transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className="flex items-center gap-2 grow-0 shrink-0"
+                    >
+                      {item.categoryName}
+                    </Badge>
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      {item.title}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {item.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(item.createdAt)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 text-amber-500">
+                        <Coins size={16} />
+                        {item.point}
+                      </div>
+                      {(item.recommendCount ?? 0) > 0 && (
+                        <span className="flex items-center gap-1 text-sky-400 font-medium">
+                          <ThumbsUp size={16} />
+                          {item.recommendCount}
+                        </span>
+                      )}
+                      {(item.answers?.length ?? 0) > 0 && (
+                        <span className="flex items-center gap-1 text-teal-500 font-medium">
+                          <MessageCircle size={16} />
+                          {item.answers?.length}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </Link>
           </li>
         ))}
       </ul>
-      <br />
 
       {/* 페이지 이동 버튼 */}
       <Pagination2 totalPages={body.totalPages ?? 0} />
