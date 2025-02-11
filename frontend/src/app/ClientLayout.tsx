@@ -16,7 +16,6 @@ import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
 import { NicknameProvider, useNickname } from "@/context/NicknameContext";
 import { RoleProvider, useRole } from "@/context/RoleContext";
-import {router} from "next/client";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -51,10 +50,8 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
 
           if (data?.result_code === "200-1") {
-            console.log(data);
             return { isAuthenticated: true, nickname: data?.data?.nickname || null, id: data?.data?.id , role: data?.data?.role};
           }
         }
