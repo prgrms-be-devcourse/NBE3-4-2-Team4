@@ -109,7 +109,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/products/deduct": {
+    "/api/admin/points/deduct": {
         parameters: {
             query?: never;
             header?: never;
@@ -126,7 +126,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/products/accumulate": {
+    "/api/admin/points/accumulate": {
         parameters: {
             query?: never;
             header?: never;
@@ -300,34 +300,6 @@ export interface paths {
         patch: operations["updateMembersNickname"];
         trace?: never;
     };
-    "/api/products/{product_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 단건 상품 조회
-         * @description 단건 상품을 조회합니다.
-         */
-        get: operations["getProduct"];
-        put?: never;
-        post?: never;
-        /**
-         * 단건 상품 삭제
-         * @description 단건 상품을 삭제합니다.
-         */
-        delete: operations["deleteProduct"];
-        options?: never;
-        head?: never;
-        /**
-         * 단건 상품 수정
-         * @description 단건 상품을 수정합니다.
-         */
-        patch: operations["updateProduct"];
-        trace?: never;
-    };
     "/api/answers/{id}": {
         parameters: {
             query?: never;
@@ -354,6 +326,26 @@ export interface paths {
          * @description 답변를 수정합니다.
          */
         patch: operations["modify"];
+        trace?: never;
+    };
+    "/api/questions/recommends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 추천 글 조회
+         * @description 추천 수 기준으로 내림차순 정렬
+         */
+        get: operations["getRecommended"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/questions/categories": {
@@ -849,8 +841,7 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
             counterAccountUsername?: string;
-            /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            pointCategory?: string;
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
@@ -1602,103 +1593,6 @@ export interface operations {
             };
         };
     };
-    getProduct: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                product_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    deleteProduct: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                product_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    updateProduct: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                product_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["updateItem"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     item: {
         parameters: {
             query?: never;
@@ -1748,6 +1642,73 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getRecommended: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
                 };
             };
             /** @description Bad Request */
