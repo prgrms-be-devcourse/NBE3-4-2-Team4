@@ -723,6 +723,16 @@ export interface components {
             adminUsername: string;
             password: string;
         };
+        MemberThumbnailInfoResponseDto: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        RsDataMemberThumbnailInfoResponseDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["MemberThumbnailInfoResponseDto"];
+        };
         updateItem: {
             productName?: string;
             /** Format: int32 */
@@ -834,9 +844,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["PageDtoPointHistoryRes"];
-        };
-        MemberThumbnailInfoResponseDto: {
-            nickname: string;
         };
         RsDataObject: {
             resultCode: string;
@@ -1412,7 +1419,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberThumbnailInfoResponseDto"];
                 };
             };
             /** @description 비밀번호 불일치 */
@@ -1430,7 +1437,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberThumbnailInfoResponseDto"];
                 };
             };
         };

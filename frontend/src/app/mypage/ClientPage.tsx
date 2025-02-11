@@ -1,11 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type {components} from "@/lib/backend/apiV1/schema";
 import {ThemeProvider as NextThemesProvider} from "next-themes";
-
+import { useRedirectIfNotAuthenticated } from "@/lib/hooks/useRedirect";
 type MemberDetailInfoResponseDto = components["schemas"]["MemberDetailInfoResponseDto"];
 
 export default function ClientPage({
@@ -14,6 +13,7 @@ export default function ClientPage({
     const [memberInfo, setMemberInfo] = useState<MemberDetailInfoResponseDto | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    useRedirectIfNotAuthenticated();
 
     useEffect(() => {
         const fetchMemberDetail = async () => {
@@ -80,10 +80,23 @@ export default function ClientPage({
                 </table>
             </div>
 
+            <div className="mt-4 text-center flex items-center justify-center">
+                <p className="mr-2"><strong>닉네임:</strong> {memberInfo?.nickname}</p>
+                <Link href="/mypage/edit/nickname">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        수정
+                    </button>
+                </Link>
+            </div>
+            <p><strong>현재 포인트:</strong> {memberInfo?.point}</p>
             <div className="mt-4 text-center">
-                <p><strong>닉네임:</strong> {memberInfo?.nickname}</p>
-                <p><strong>현재 포인트:</strong> {memberInfo?.point}</p>
+                <Link href="/mypage/withdrawal">
+                    <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        회원탈퇴
+                    </button>
+                </Link>
             </div>
         </div>
-    );
+    )
+        ;
 };

@@ -1,23 +1,27 @@
 "use client";
-import { useState } from "react";
+import {useState} from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
+import { useId } from "@/context/IdContext";
+import { useNickname } from "@/context/NicknameContext";
+import {useRedirectIfAuthenticated} from "@/lib/hooks/useRedirect";
 
 type AdminLoginRequestDto = components["schemas"]["AdminLoginRequestDto"];
 
 export default function ClientPage() {
+    useRedirectIfAuthenticated();
+
     const [formData, setFormData] = useState<AdminLoginRequestDto>({
         adminUsername: "",
         password: "",
     });
-
+    const { setNickname } = useNickname();
+    const { setId } = useId();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        console.log("전송 데이터:", formData); // 확인용 로그
 
         try {
             const response = await fetch("http://localhost:8080/api/admin/login", {
@@ -29,13 +33,14 @@ export default function ClientPage() {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("로그인 실패:", errorData);
-            }
-
             const data = await response.json();
-            console.log("로그인 성공:", data);
+
+            if (!response.ok) {
+                console.error("로그인 실패:",data);
+            }else {
+                setId(data.id);
+                setNickname(data.nickname);
+            }
 
             window.location.href = "/adm";
         } catch (error) {
