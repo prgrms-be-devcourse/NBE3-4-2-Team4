@@ -90,7 +90,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title21",
                                     "content": "content21",
-                                    "category_id": 1,
+                                    "categoryId": 1,
                                     "point" : 100
                                 }
                                 """)
@@ -107,7 +107,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
-                .andExpect(jsonPath("$.data.item.category_name").value("category1"))
+                .andExpect(jsonPath("$.data.item.category_name").value("전체"))
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.point").value(100))
@@ -139,7 +139,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1,
+                                    "categoryId": 1,
                                     "point" : 100
                                 }
                                 """)
@@ -248,7 +248,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1,
+                                    "categoryId": 1,
                                     "point": 100
                                 }
                                 """)
@@ -272,7 +272,7 @@ public class QuestionControllerTest {
                                 {
                                     "title": "title1 수정",
                                     "content": "content1 수정",
-                                    "category_id": 1,
+                                    "categoryId": 1,
                                     "point": 100
                                 }
                                 """)
