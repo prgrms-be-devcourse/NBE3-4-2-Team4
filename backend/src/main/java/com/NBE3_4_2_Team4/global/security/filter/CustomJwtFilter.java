@@ -89,7 +89,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
             setAuthContextWithAccessToken(response, accessToken);
         }catch (JwtException e){
             httpManager.expireJwtCookie(response);
-            log.error("trying with refresh token failed, msg : {}", e.getMessage());
+            log.warn("trying with refresh token failed, msg : {}", e.getMessage());
         }
     }
 
