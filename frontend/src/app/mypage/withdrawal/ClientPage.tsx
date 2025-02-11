@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRedirectIfNotAuthenticated } from "@/lib/hooks/useRedirect";  // 경로는 적절히 수정
+import { useId } from "@/context/IdContext";
+import { useNickname } from "@/context/NicknameContext";
+import { useRole } from "@/context/RoleContext";
 
 export default function WithdrawalPage() {
     useRedirectIfNotAuthenticated();
@@ -10,6 +13,9 @@ export default function WithdrawalPage() {
     const [confirmationText, setConfirmationText] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const { setNickname } = useNickname();
+    const { setId } = useId();
+    const { setRole } = useRole();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmationText(e.target.value);
@@ -30,6 +36,10 @@ export default function WithdrawalPage() {
 
             if (response.status === 204) {
                 alert("성공적으로 탈퇴하였습니다.");
+                setRole(null);
+                setNickname(null);
+                setId(null);
+
                 window.location.href = "/";
             } else {
                 setError("탈퇴 실패. 서버에 문제가 발생했습니다.");

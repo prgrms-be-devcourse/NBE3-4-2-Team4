@@ -82,6 +82,9 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         if (data.data) {
+          setRole(null);
+          setNickname(null);
+          setId(null);
           window.location.href = data.data;
         }
       } else {
