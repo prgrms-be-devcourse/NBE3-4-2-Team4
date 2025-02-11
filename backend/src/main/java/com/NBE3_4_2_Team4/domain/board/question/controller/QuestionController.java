@@ -34,12 +34,20 @@ public class QuestionController {
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
                                              @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
                                              @RequestParam(defaultValue = "1") int page,
-                                             @RequestParam(defaultValue = "10") int pageSize) {
-
-        return new PageDto<>(
-                questionService.findByListed(page, pageSize, searchKeyword, keywordType)
-                        .map(QuestionDto::new)
-        );
+                                             @RequestParam(defaultValue = "10") int pageSize,
+                                             @RequestParam(defaultValue = "0") long categoryId
+                                             ) {
+        if(categoryId == 0) {
+            return new PageDto<>(
+                    questionService.findByListed(page, pageSize, searchKeyword, keywordType)
+                            .map(QuestionDto::new)
+            );
+        } else {
+            return new PageDto<>(
+                    questionService.getQuestionsByCategory(categoryId, page, pageSize)
+                            .map(QuestionDto::new)
+            );
+        }
     }
 
     @GetMapping("/recommends")
@@ -134,19 +142,5 @@ public class QuestionController {
         return questionService.getCategories()
                 .stream().map(QuestionCategoryDto::new)
                 .toList();
-    }
-
-    @GetMapping("/categories/{categoryId}")
-    @Transactional(readOnly = true)
-    @Operation(summary = "카테고리 조회", description = "카테고리 목록 가져오기")
-    public PageDto<QuestionDto> getQuestionsByCategory(
-            @PathVariable long categoryId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
-    ) {
-        return new PageDto<>(
-                questionService.getQuestionsByCategory(categoryId, page, pageSize)
-                        .map(QuestionDto::new)
-        );
     }
 }

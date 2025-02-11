@@ -399,7 +399,7 @@ public class QuestionControllerTest {
     @DisplayName("카테고리로 질문 검색")
     void t15() throws Exception {
         ResultActions resultActions = mvc
-                .perform(get("/api/questions/categories/1"))
+                .perform(get("/api/questions?categoryId=1"))
                 .andDo(print());
 
         Page<QuestionDto> questionPages = questionService
@@ -408,7 +408,7 @@ public class QuestionControllerTest {
 
         resultActions
                 .andExpect(handler().handlerType(QuestionController.class))
-                .andExpect(handler().methodName("getQuestionsByCategory"))
+                .andExpect(handler().methodName("getQuestions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page_number").value(1))
                 .andExpect(jsonPath("$.page_size").value(10))

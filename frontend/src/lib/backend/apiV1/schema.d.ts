@@ -388,26 +388,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/categories/{categoryId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 카테고리 조회
-         * @description 카테고리 목록 가져오기
-         */
-        get: operations["getQuestionsByCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/products/state": {
         parameters: {
             query?: never;
@@ -1252,6 +1232,7 @@ export interface operations {
                 keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
                 page?: number;
                 pageSize?: number;
+                categoryId?: number;
             };
             header?: never;
             path?: never;
@@ -1819,40 +1800,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getQuestionsByCategory: {
-        parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
-            header?: never;
-            path: {
-                categoryId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
                 };
             };
             /** @description Bad Request */
