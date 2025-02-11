@@ -854,6 +854,7 @@ export interface components {
             data: unknown;
         };
         MemberDetailInfoResponseDto: {
+            username?: string;
             nickname?: string;
             /** Format: int64 */
             point?: number;

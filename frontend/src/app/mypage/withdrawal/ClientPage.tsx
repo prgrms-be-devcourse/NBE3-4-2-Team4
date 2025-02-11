@@ -35,7 +35,7 @@ export default function WithdrawalPage() {
             });
 
             if (response.status === 204) {
-                alert("성공적으로 탈퇴하였습니다.");
+                alert("성공적으로 탈퇴 되었습니다.");
                 setRole(null);
                 setNickname(null);
                 setId(null);

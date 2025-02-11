@@ -131,9 +131,6 @@ public class MemberService {
             oAuth2RefreshTokenRepository.deleteByMember(member);
         }
 
-        member.getQuestions().forEach(question -> question.setAuthor(null));
-        member.getAnswers().forEach(answer -> answer.setAuthor(null));
-
-        memberRepository.deleteById(memberId);
+        memberQuerydsl.deleteMember(memberId);
     }
 }

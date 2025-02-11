@@ -26,6 +26,7 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                 .leftJoin(a)
                 .on(a.author.eq(m))
                 .select(Projections.constructor(MemberDetailInfoResponseDto.class,
+                        m.username,
                         m.nickname,
                         m.point,
                         q.count(),
@@ -34,5 +35,16 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                 .where(m.id.eq(member.getId()))
                 .groupBy(m.nickname)
                 .fetchOne();
+    }
+
+    public void deleteMember(long memberId) {
+        update(q)
+                .setNull(q.author.id)
+                        .where(q.author.id.eq(memberId));
+        update(a)
+                .setNull(a.author.id)
+                .where(a.author.id.eq(memberId));
+        delete(m)
+                .where(m.id.eq(memberId));
     }
 }
