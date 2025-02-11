@@ -7,20 +7,31 @@ import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.util.Date;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,7 +46,7 @@ public class CustomJwtFilterTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoSpyBean
     private JwtManager jwtManager;
 
     @Autowired
@@ -45,6 +56,9 @@ public class CustomJwtFilterTest {
 
     private Member admin;
 
+
+    @Value("${custom.jwt.accessToken.validMinute}")
+    private int accessTokenValidMinute;
 
     @Value("${custom.initData.member.admin.username}")
     private String adminUsername;
@@ -60,6 +74,14 @@ public class CustomJwtFilterTest {
     @Value("${custom.initData.member.member1.nickname}")
     private String member1Nickname;
 
+
+    @Value("${custom.domain.backend}")
+    String backendDomain;
+
+    @Value("${custom.jwt.secretKey:key}")
+    String jwtSecretKey;
+
+    SecretKey key;
 
     @BeforeEach
     void setUp() {
@@ -78,6 +100,9 @@ public class CustomJwtFilterTest {
                 .role(Member.Role.ADMIN)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .build();
+
+        byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
+        key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     @Test
@@ -189,7 +214,7 @@ public class CustomJwtFilterTest {
                         .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(OAuth2LogoutService.LOGOUT_COMPLETE_URL)) // 응답 JSON의 data 필드 확인
+                .andExpect(jsonPath("$.data").value(backendDomain + OAuth2LogoutService.LOGOUT_COMPLETE_URL)) // 응답 JSON의 data 필드 확인
                 .andDo(print());
     }
 
@@ -200,5 +225,95 @@ public class CustomJwtFilterTest {
                         .with(csrf())
                 )
                 .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    @DisplayName("만료된 액세스 토큰 테스트 - 리프레시 토큰 없을 때")
+    public void testCustomJwtFilter11() throws Exception {
+        when(jwtManager.generateAccessToken(member))
+                .thenReturn(Jwts.builder()
+                        .claim("id", member.getId())
+                        .claim("username", member.getUsername())
+                        .claim("nickname", member.getNickname())
+                        .claim("role", member.getRole().name())
+                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .issuedAt(new Date())
+                        .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
+                        .signWith(key)
+                        .compact());
+
+        String jwtToken = jwtManager.generateAccessToken(member);
+        Cookie accessToken = new Cookie("accessToken", jwtToken);
+
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        String body = objectMapper.writeValueAsString(reqBody);
+
+
+        mockMvc.perform(post("/api/questions")
+                        .header("Authorization", String.format("Bearer %s", jwtToken))
+                        .cookie(accessToken)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+                )
+                .andExpect(status().isUnauthorized())
+                .andExpect(cookie().doesNotExist("accessToken"))
+                .andDo(print());
+
+        verify(jwtManager, times(0)).getFreshAccessToken(any());
+    }
+
+    @Test
+    @DisplayName("만료된 액세스 토큰 테스트 - 리프레시 토큰 있을 때")
+    public void testCustomJwtFilter12() throws Exception {
+        when(jwtManager.generateAccessToken(member))
+                .thenReturn(Jwts.builder()
+                        .claim("id", member.getId())
+                        .claim("username", member.getUsername())
+                        .claim("nickname", member.getNickname())
+                        .claim("role", member.getRole().name())
+                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .issuedAt(new Date())
+                        .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
+                        .signWith(key)
+                        .compact());
+
+        String accessToken = jwtManager.generateAccessToken(member);
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+
+        String refreshToken = jwtManager.generateRefreshToken(member);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+
+        Mockito.doReturn(
+                Jwts.builder()
+                        .claim("id", member.getId())
+                        .claim("username", member.getUsername())
+                        .claim("nickname", member.getNickname())
+                        .claim("role", member.getRole().name())
+                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .issuedAt(new Date())
+                        .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
+                        .signWith(key)
+                        .compact()
+        ).when(jwtManager).getFreshAccessToken(eq(refreshToken));
+
+
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        String body = objectMapper.writeValueAsString(reqBody);
+
+
+        mockMvc.perform(post("/api/questions")
+                        .header("Authorization", String.format("Bearer %s", accessToken))
+                        .cookie(accessTokenCookie, refreshTokenCookie)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+                )
+                .andExpect(status().isOk())
+                .andExpect(cookie().exists("accessToken"))
+                .andDo(print());
+
+        verify(jwtManager, times(1)).getFreshAccessToken(eq(refreshToken));
     }
 }
