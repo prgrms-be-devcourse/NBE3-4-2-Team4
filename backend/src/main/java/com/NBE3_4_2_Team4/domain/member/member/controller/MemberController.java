@@ -195,9 +195,10 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
     })
-    public RsData<Empty> withdrawalMembership(){
+    public RsData<Empty> withdrawalMembership(HttpServletResponse resp){
         Member member = AuthManager.getNonNullMember();
         memberService.withdrawalMembership(member);
+        httpManager.expireJwtCookie(resp);
         return new RsData<>("204-1",
                 "withdrawal membership done");
     }
