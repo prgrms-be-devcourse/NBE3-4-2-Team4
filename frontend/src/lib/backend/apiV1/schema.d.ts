@@ -728,6 +728,8 @@ export interface components {
         MemberThumbnailInfoResponseDto: {
             /** Format: int64 */
             id: number;
+            /** @enum {string} */
+            role: "ADMIN" | "USER";
             nickname: string;
         };
         RsDataMemberThumbnailInfoResponseDto: {

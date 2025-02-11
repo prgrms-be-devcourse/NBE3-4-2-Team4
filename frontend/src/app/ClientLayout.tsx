@@ -16,13 +16,15 @@ import {
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
 import { NicknameProvider, useNickname } from "@/context/NicknameContext";
-import { Toaster } from "@/components/ui/toaster";
+import { RoleProvider, useRole } from "@/context/RoleContext";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
       <IdProvider>
         <NicknameProvider>
-          <ClientLayoutContent>{children}</ClientLayoutContent>
+          <RoleProvider>
+            <ClientLayoutContent>{children}</ClientLayoutContent>
+          </RoleProvider>
         </NicknameProvider>
       </IdProvider>
   );
@@ -33,6 +35,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const { nickname } = useNickname();
   const { setNickname } = useNickname();
   const { setId } = useId();
+  const { setRole } = useRole();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -43,28 +46,28 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         });
 
         if (response.status === 204) {
-          return { isAuthenticated: false, nickname: null, id: null };
+          return { isAuthenticated: false, nickname: null, id: null, role: null};
         }
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
 
           if (data?.result_code === "200-1") {
-            console.log(data);
-            return { isAuthenticated: true, nickname: data?.data?.nickname || null, id: data?.data?.id };
+            return { isAuthenticated: true, nickname: data?.data?.nickname || null, id: data?.data?.id , role: data?.data?.role};
           }
         }
       } catch (error) {
         console.error("로그인 상태 확인 중 오류 발생:", error);
+        return { isAuthenticated: false, nickname: null, id: null, role: null};
       }
-      return { isAuthenticated: false, nickname: null, id: null };
+      return { isAuthenticated: false, nickname: null, id: null, role: null};
     };
 
     checkLoginStatus().then((result) => {
       setIsAuthenticated(result.isAuthenticated);
       setNickname(result.nickname);
       setId(result.id);
+      setRole(result.role);
     });
   }, []);
 
@@ -79,6 +82,9 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         if (data.data) {
+          setRole(null);
+          setNickname(null);
+          setId(null);
           window.location.href = data.data;
         }
       } else {
@@ -88,6 +94,17 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       console.error("로그아웃 중 오류 발생:", error);
     }
   };
+
+  if (isAuthenticated === null) {
+    // 로딩 중 상태에서는 레이아웃 깨지지 않도록 유지
+    return (
+        <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <div className="min-h-screen flex items-center justify-center">
+            <p>로딩 중...</p>
+          </div>
+        </NextThemesProvider>
+    );
+  }
 
   return (
       <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
@@ -108,11 +125,11 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                 <ShoppingCart /> 포인트 쇼핑
               </Link>
             </Button>
-                      <Button variant="link" asChild>
-                        <Link href="/point/list">
-                            <Coins /> 포인트
-                        </Link>
-                      </Button>
+            <Button variant="link" asChild>
+              <Link href="/point/list">
+                <Coins /> 포인트
+              </Link>
+            </Button>
             <div className="flex-grow"></div>
             {isAuthenticated ? (
                 <>
@@ -135,7 +152,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
             <ThemeToggleButton />
           </div>
         </header>
-        <main className="flex-1 flex flex-col">{children} <Toaster /></main>
+        <main className="flex-1 flex flex-col">{children}</main>
         <footer className="p-2 flex justify-center items-center">
           <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
           <Button variant="link" asChild>

@@ -6,6 +6,7 @@ import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -65,42 +66,53 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         return null;
     }
 
+    private void setAuthContextWithAccessToken(@NonNull HttpServletResponse response,
+                                               String accessToken) throws JwtException {
+        Map<String, Object> claims = jwtManager.getClaims(accessToken);
+        if (claims != null) {
+            Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
+
+            if (member != null) {
+                authManager.setLogin(member);
+                httpManager.setAccessTokenCookie(response, accessToken, accessTokenValidMinute);
+            }
+        }
+    }
+
+    private void tryAgainWithRefreshToken(@NonNull HttpServletRequest request,
+                                          @NonNull HttpServletResponse response){
+        try{
+            String refreshToken = getRefreshToken(request);
+            if (refreshToken == null || refreshToken.isBlank()) { return;}
+            String accessToken = jwtManager.getFreshAccessToken(refreshToken);
+
+            setAuthContextWithAccessToken(response, accessToken);
+        }catch (JwtException e){
+            httpManager.expireJwtCookie(response);
+            log.warn("trying with refresh token failed, msg : {}", e.getMessage());
+        }
+    }
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getAccessTokenFromCookie(request);
+        try{
+            String accessToken = getAccessTokenFromCookie(request);
 
-        if (accessToken == null) {
+            if (accessToken == null || accessToken.isBlank()) {
+                tryAgainWithRefreshToken(request, response);
+            }else {
+                setAuthContextWithAccessToken(response, accessToken);
+            }
+        }catch (ExpiredJwtException e){
+            tryAgainWithRefreshToken(request, response);
+        } catch (JwtException e){
+            httpManager.expireJwtCookie(response);
+            log.warn("JWT token invalid. msg = {}", e.getMessage());
+        }finally {
             filterChain.doFilter(request, response);
-            return;
         }
-
-        try {
-            Map<String, Object> claims = jwtManager.getClaims(accessToken);
-            Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
-
-            if (member != null) {
-                authManager.setLogin(member);
-            }
-
-        }catch (ExpiredJwtException e) {
-            String refreshToken = getRefreshToken(request);
-
-            if (refreshToken != null) {
-                accessToken = jwtManager.getFreshAccessToken(refreshToken);
-                httpManager.setAccessTokenCookie(response, accessToken, accessTokenValidMinute);
-                Map<String, Object> claims = jwtManager.getClaims(accessToken);
-                Member member = jwtObjectMapper.getMemberByJwtClaims(claims);
-
-                if (member != null) {
-                    authManager.setLogin(member);
-                }
-            }
-        }
-
-
-        filterChain.doFilter(request, response);
     }
 }

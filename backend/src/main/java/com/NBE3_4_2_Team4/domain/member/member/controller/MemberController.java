@@ -74,7 +74,7 @@ public class MemberController {
         int refreshTokenValidHour = jwtManager.getRefreshTokenValidHour();
         httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour );
 
-        MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getNickname());
+        MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getRole(), member.getNickname());
 
         return new RsData<>("200-1",
                 "admin login complete", responseDto);
@@ -94,7 +94,7 @@ public class MemberController {
         if (member == null) {
             return new RsData<Empty>("204-1", "User not logged in"); // 로그인되지 않음
         }else {
-            MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getNickname());
+            MemberThumbnailInfoResponseDto responseDto = new MemberThumbnailInfoResponseDto(member.getId(), member.getRole(), member.getNickname());
             return new RsData<>("200-1", "find member", responseDto);
         }
     }
@@ -195,9 +195,10 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
     })
-    public RsData<Empty> withdrawalMembership(){
+    public RsData<Empty> withdrawalMembership(HttpServletResponse resp){
         Member member = AuthManager.getNonNullMember();
         memberService.withdrawalMembership(member);
+        httpManager.expireJwtCookie(resp);
         return new RsData<>("204-1",
                 "withdrawal membership done");
     }

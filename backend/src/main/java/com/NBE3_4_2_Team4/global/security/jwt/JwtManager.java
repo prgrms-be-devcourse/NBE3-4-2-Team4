@@ -78,9 +78,9 @@ public class JwtManager {
         return generateAccessToken(member);
     }
 
-    public Map<String, Object> getClaims(String accessToken)  throws ExpiredJwtException {
+    public Map<String, Object> getClaims(String accessToken) {
         if (accessToken == null || accessToken.isBlank()) {
-            throw new JwtException("Token is empty");
+            return null;
         }
         try {
             Claims claims = Jwts.parser()
@@ -89,11 +89,8 @@ public class JwtManager {
                     .parseSignedClaims(accessToken)
                     .getPayload();
             return new HashMap<>(claims);
-        } catch (UnsupportedJwtException e){
-            throw new JwtException("Token is empty");
-        }catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
-            throw new JwtException("Token is empty2");
+        }catch (UnsupportedJwtException | MalformedJwtException e){
+            throw new JwtException(e.getLocalizedMessage());
         }
-        // 예외 처리는 추후 수정할 예정.
     }
 }

@@ -184,7 +184,7 @@ public class MemberServiceTest {
 
 
     @ParameterizedTest
-    @EnumSource(value = Member.OAuth2Provider.class, names = {"NONE", "KAKAO", "GOOGLE", "NAVER"}) // NONE 제외
+    @EnumSource(value = Member.OAuth2Provider.class, names = {"NONE", "KAKAO", "GOOGLE", "NAVER"})
     void getLogoutUrlTest2(Member.OAuth2Provider provider) {
         member.setOAuth2Provider(provider);
         Member testMember = member;

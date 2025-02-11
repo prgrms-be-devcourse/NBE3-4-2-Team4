@@ -1,12 +1,9 @@
 package com.NBE3_4_2_Team4.global.security;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Optional;
 
 @Component
 public class HttpManager {
@@ -36,17 +33,6 @@ public class HttpManager {
         this.setRefreshTokenCookie(resp, refreshToken, hour);
     }
 
-    public String getCookieValue(
-            HttpServletRequest req, String name) {
-        return Optional
-                .ofNullable(req.getCookies())
-                .stream() // 1 ~ 0
-                .flatMap(Arrays::stream)
-                .filter(cookie -> cookie.getName().equals(name))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
 
     public void deleteCookie(
             HttpServletResponse resp, String name) {

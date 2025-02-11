@@ -30,6 +30,10 @@ public class GoogleDisconnectService implements OAuth2DisconnectService {
 
         String accessToken = googleTokenService.getFreshAccessToken(refreshToken);
 
+        if (accessToken == null) {
+            return false;
+        }
+
         String url = UriComponentsBuilder.fromUriString(googleDisconnectUrl)
                 .queryParam("token", accessToken)
                 .toUriString();
