@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {components} from "@/lib/backend/apiV1/schema";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Lock} from "lucide-react";
+import { components } from "@/lib/backend/apiV1/schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock } from "lucide-react";
 import PaginationType1Responsive from "@/lib/business/components/PaginationType1Responsive";
 
 interface ProductListProps {
@@ -13,8 +13,7 @@ interface ProductListProps {
     itemPage: any;
 }
 
-export default function ProductList({page, pageSize, itemPage}: ProductListProps) {
-
+export default function ProductList({ page, pageSize, itemPage }: ProductListProps) {
     const normalizedItemPage: components["schemas"]["PageDtoGetItem"] = {
         currentPageNumber: itemPage.data.current_page_number,
         pageSize: itemPage.data.page_size,
@@ -24,16 +23,20 @@ export default function ProductList({page, pageSize, itemPage}: ProductListProps
         items: itemPage.data.items,
     };
 
+    // "ONSALE" 상태인 상품만 필터링
+    const filteredItems = normalizedItemPage.items?.filter(
+        (item) => item.product_sale_state === "ONSALE"
+    ) || [];
+
     return (
         <>
-            {normalizedItemPage.items?.length === 0 ? (
-                <div
-                    className="flex flex-col min-h-[calc(100dvh-280px)] items-center justify-center py-12 text-muted-foreground">
-                    <p>상품이 없습니다.</p>
+            {filteredItems.length === 0 ? (
+                <div className="flex flex-col min-h-[calc(100dvh-280px)] items-center justify-center py-12 text-muted-foreground">
+                    <p>판매 중인 상품이 없습니다.</p>
                 </div>
             ) : (
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {normalizedItemPage.items?.map((item) => (
+                    {filteredItems.map((item) => (
                         <li key={item.product_id} className="flex flex-col space-y-4">
                             <Link href={`/shop/${item.product_id}`}>
                                 <Card className="hover:bg-accent/50 transition-colors rounded-xl shadow-lg">
@@ -68,7 +71,7 @@ export default function ProductList({page, pageSize, itemPage}: ProductListProps
 
                                             {/* 비공개 상품에 대한 잠금 아이콘 */}
                                             {!item.product_category && (
-                                                <Lock className="w-6 h-6 text-muted"/>
+                                                <Lock className="w-6 h-6 text-muted" />
                                             )}
                                         </div>
                                     </CardContent>
