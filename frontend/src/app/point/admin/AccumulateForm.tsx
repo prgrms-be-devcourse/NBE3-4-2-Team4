@@ -39,8 +39,7 @@ export default function AccumulateForm() {
         });
 
         if (!data.response.ok){
-                    console.log(response.ok);
-                    alert("실패: "+data.response.error.msg);
+                    alert("실패: "+data.error.msg);
                     return;
                     }
 
