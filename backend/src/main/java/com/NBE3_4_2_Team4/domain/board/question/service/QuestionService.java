@@ -81,6 +81,14 @@ public class QuestionService {
         return questionRepository.findRecommendedQuestions(pageRequest);
     }
 
+    public Page<Question> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategory(category, pageRequest);
+    }
+
     public Optional<Question> findById(long id) {
         return questionRepository.findById(id);
     }

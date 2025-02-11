@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import org.hamcrest.Matchers;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -107,7 +109,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
-                .andExpect(jsonPath("$.data.item.category_name").value("전체"))
+                .andExpect(jsonPath("$.data.item.category_name").value("연애"))
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.point").value(100))
@@ -391,5 +393,45 @@ public class QuestionControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.result_code").value("403-3"))
                 .andExpect(jsonPath("$.msg").value("해당 질문글 내의 답변만 채택할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("카테고리로 질문 검색")
+    void t15() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(get("/api/questions/categories/1"))
+                .andDo(print());
+
+        Page<QuestionDto> questionPages = questionService
+                .getQuestionsByCategory(1, 1, 10)
+                .map(QuestionDto::new);
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestionsByCategory"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_pages").value(questionPages.getTotalPages()))
+                .andExpect(jsonPath("$.total_items").value(questionPages.getTotalElements()))
+                .andExpect(jsonPath("$.has_more").value(questionPages.hasNext()));
+
+        List<QuestionDto> questions = questionPages.getContent();
+
+        for(int i = 0; i < questions.size(); i++) {
+            QuestionDto question = questions.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(question.getId()))
+                    .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].modified_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(question.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(question.getContent()))
+                    .andExpect(jsonPath("$.items[%d].name".formatted(i)).value(question.getName()))
+                    .andExpect(jsonPath("$.items[%d].recommend_count".formatted(i)).value(question.getRecommendCount()))
+                    .andExpect(jsonPath("$.items[%d].closed".formatted(i)).value(question.isClosed()))
+                    .andExpect(jsonPath("$.items[%d].point".formatted(i)).value(question.getPoint()))
+                    .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
+        }
     }
 }

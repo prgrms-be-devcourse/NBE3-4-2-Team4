@@ -135,4 +135,18 @@ public class QuestionController {
                 .stream().map(QuestionCategoryDto::new)
                 .toList();
     }
+
+    @GetMapping("/categories/{categoryId}")
+    @Transactional(readOnly = true)
+    @Operation(summary = "카테고리 조회", description = "카테고리 목록 가져오기")
+    public PageDto<QuestionDto> getQuestionsByCategory(
+            @PathVariable long categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                questionService.getQuestionsByCategory(categoryId, page, pageSize)
+                        .map(QuestionDto::new)
+        );
+    }
 }
