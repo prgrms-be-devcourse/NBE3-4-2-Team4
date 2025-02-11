@@ -16,6 +16,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useId } from "@/context/IdContext";
 import { useNickname } from "@/context/NicknameContext";
+import client from "@/utils/apiClient";
+import { useToast } from "@/hooks/use-toast";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -34,6 +36,7 @@ export default function ClientPage({
   const currentPage = Number(page) || 1;
   const { id } = useId();
   const { nickname } = useNickname();
+  const { toast } = useToast();
 
   // 페이지 이동 함수
   const changePage = (newPage: number) => {
@@ -41,6 +44,68 @@ export default function ClientPage({
     queryParams.set("page", newPage.toString());
 
     router.push(`?${queryParams.toString()}`);
+  };
+
+  const handleEdit = () => {
+    router.push(`/question/${question.id}/edit`);
+  };
+  
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+  
+    try {
+      const response = await client.DELETE("/api/questions/{id}", {
+        credentials: "include",
+        params: { path: { id: question.id } },
+      });
+  
+      if (response.error) {
+        toast({
+          title: response.error.msg,
+          variant: "destructive",
+        });
+        return;
+      }
+  
+      toast({
+        title: response.data.msg,
+      });
+  
+      alert("삭제되었습니다."); // 삭제 완료 후 알림
+  
+      window.history.back(); // 이전 페이지로 이동
+    } catch (error) {
+      toast({
+        title: "질문 삭제 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleRecommend = async () => {
+    try {
+      const response = await client.PUT("/api/questions/{questionId}/recommend", {
+        credentials: "include",
+        params: { path: { questionId: question.id } },
+      });
+  
+      if (response.error) {
+        toast({
+          title: response.error.msg,
+          variant: "destructive",
+        });
+        return;
+      }
+  
+      toast({
+        title: response.data.msg,
+      });
+    } catch (error) {
+      toast({
+        title: "질문 추천 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -73,12 +138,34 @@ export default function ClientPage({
             {question.categoryName}
           </span>
 
-          {/* 추천 버튼 */}
+          {/* 수정, 삭제, 추천 버튼 */}
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1 bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition">
-              <span>추천</span>
-              <span className="font-bold">{question.recommendCount}</span>
-            </button>
+            {/* 수정 버튼 (작성자만 가능) */}
+            {question.name === nickname && (
+              <button className="flex items-center gap-1 bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              onClick={handleEdit}>
+                <span>수정</span>
+              </button>
+            )}
+
+            {/* 삭제 버튼 (작성자만 가능) */}
+            {question.name === nickname && (
+              <button className="flex items-center gap-1 bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+              onClick={handleDelete}>
+                <span>삭제</span>
+              </button>
+            )}
+
+            {/* 추천 버튼 (모든 사용자 가능) */}
+            {question.name != nickname && (
+              <button
+                onClick={() => handleRecommend()}
+                className="flex items-center gap-1 bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition"
+              >
+                <span>추천</span>
+                <span className="font-bold">{question.recommendCount}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
