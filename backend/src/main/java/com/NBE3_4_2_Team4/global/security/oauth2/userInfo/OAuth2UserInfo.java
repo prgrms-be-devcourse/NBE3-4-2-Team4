@@ -1,7 +1,11 @@
 package com.NBE3_4_2_Team4.global.security.oauth2.userInfo;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface OAuth2UserInfo {
-    String getOAuth2Id();
-    String getNickname();
+@AllArgsConstructor
+@Getter
+public class OAuth2UserInfo {
+    private String oAuth2Id;
+    private String nickname;
 }

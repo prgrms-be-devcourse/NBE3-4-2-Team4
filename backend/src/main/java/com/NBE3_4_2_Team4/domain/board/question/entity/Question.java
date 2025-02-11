@@ -41,8 +41,10 @@ public class Question extends BaseTime {
 
     private long point;
 
+    private boolean rankReceived; // 랭킹 포인트 지급 여부
+
     public long getRecommendCount() { // 추천 수 반환
-        return recommends.size();
+        return recommends == null ? 0 : recommends.size();
     }
 
     public boolean isSelectedAnswer(Answer answer) { // 채택된 답변인지 확인

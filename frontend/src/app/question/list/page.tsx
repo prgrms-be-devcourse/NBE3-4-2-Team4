@@ -1,34 +1,21 @@
 import ClientPage from "./ClientPage";
-import createClient from "openapi-fetch";
-import type { paths } from "@/lib/backend/apiV1/schema";
+import client from "@/utils/apiClient";
+import { convertSnakeToCamel } from "@/utils/convertCase";
 
-function convertSnakeToCamel<T>(obj: T): T {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertSnakeToCamel(item)) as T;
-  } else if (typeof obj === "object" && obj !== null) {
-    return Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
-        convertSnakeToCamel(value),
-      ])
-    ) as T;
-  }
-  return obj;
-}
-
-const client = createClient<paths>({
-  baseUrl: "http://localhost:8080",
-});
-
-export default async function Page({searchParams}: {searchParams: {page?: string; searchKeyword?: string}}) {
-  const { page = 1, searchKeyword = "" } = await searchParams;
+export default async function Page({searchParams}: {searchParams: {
+  page?: string; 
+  searchKeyword?: string;
+  keywordType?: string;
+}}) {
+  const { page = 1, searchKeyword = "", keywordType = "ALL" } = await searchParams;
 
   try {
     const response = await client.GET("/api/questions", {
       params: {
         query: { 
           page: Number(page),
-          searchKeyword 
+          searchKeyword,
+          keywordType: keywordType as "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT" | undefined,
         },
       },
     });

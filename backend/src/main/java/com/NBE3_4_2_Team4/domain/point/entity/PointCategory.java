@@ -10,6 +10,7 @@ public enum PointCategory {
     ANSWER("답변채택"),
     EXPIRED_QUESTION ("만료된질문"),
     REFUND("포인트반환"),
+    RANKING("랭킹"),
     ADMIN("관리자"),
     ATTENDANCE("출석");
 

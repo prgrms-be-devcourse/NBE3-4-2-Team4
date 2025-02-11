@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class QuestionDto {
@@ -23,11 +25,18 @@ public class QuestionDto {
     private final LocalDateTime createdAt;
     @NonNull
     private final LocalDateTime modifiedAt;
+    @NonNull
+    private final Long recommendCount;
+
+    private final List<AnswerDto> answers;
+
     private final AnswerDto selectedAnswer;
     @NonNull
     private final boolean closed;
     @NonNull
     private final long point;
+    @NonNull
+    private final long authorId;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
@@ -37,10 +46,16 @@ public class QuestionDto {
         this.categoryName = question.getCategory().getName();
         this.createdAt = question.getCreatedAt();
         this.modifiedAt = question.getModifiedAt();
+        this.recommendCount = question.getRecommendCount();
+        this.answers = question.getAnswers() == null ? new ArrayList<>() :question.getAnswers()
+                .stream()
+                .map(AnswerDto::new)
+                .toList();;
         this.selectedAnswer = question.getSelectedAnswer() != null
                 ? new AnswerDto(question.getSelectedAnswer())
                 : null;
         this.closed = question.isClosed();
         this.point = question.getPoint();
+        this.authorId = question.getAuthor().getId();
     }
 }

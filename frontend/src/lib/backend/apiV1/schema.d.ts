@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/questions/{questionId}/recommend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 게시글 추천
+         * @description 추천/취소 토글, 중복 추천 불가, 본인 글 추천 불가
+         */
+        put: operations["recommend"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{id}": {
         parameters: {
             query?: never;
@@ -123,22 +143,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/test": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["test1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/questions": {
         parameters: {
             query?: never;
@@ -160,27 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/{questionId}/recommend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 게시글 추천
-         * @description 중복 추천 불가, 본인 글 추천 불가
-         */
-        post: operations["recommend"];
-        /** 게시글 추천 취소 */
-        delete: operations["cancelRecommend"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/questions/{questionId}/answers": {
         parameters: {
             query?: never;
@@ -190,7 +173,7 @@ export interface paths {
         };
         /**
          * 질문 글 내 답변 다건 조회
-         * @description 특정 질문글의 모든 답변을 가져옵니다.
+         * @description 특정 질문글의 채택되지 않은 모든 답변을 가져옵니다.
          */
         get: operations["items"];
         put?: never;
@@ -199,22 +182,6 @@ export interface paths {
          * @description 질문글에 새로운 답변을 등록합니다.
          */
         post: operations["write_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/questions/test": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["test3"];
         delete?: never;
         options?: never;
         head?: never;
@@ -245,22 +212,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/products/test": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["test2"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/logout": {
         parameters: {
             query?: never;
@@ -270,6 +221,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * request for logout
+         * @description 로그아웃을 요청합니다. 연동된 OAuth2 서비스에 따라 다른 url 이 반환됩니다.
+         */
         post: operations["logout"];
         delete?: never;
         options?: never;
@@ -277,7 +232,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/answers/test": {
+    "/api/admin/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -286,14 +241,46 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["test4"];
+        /**
+         * login with admin role
+         * @description 관리자 회원의 로그인 요청을 처리합니다
+         */
+        post: operations["adminLogin"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/admin/test": {
+    "/api/products/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단건 상품 조회
+         * @description 단건 상품을 조회합니다.
+         */
+        get: operations["getProduct"];
+        put?: never;
+        post?: never;
+        /**
+         * 단건 상품 삭제
+         * @description 단건 상품을 삭제합니다.
+         */
+        delete: operations["deleteProduct"];
+        options?: never;
+        head?: never;
+        /**
+         * 단건 상품 수정
+         * @description 단건 상품을 수정합니다.
+         */
+        patch: operations["updateProduct"];
+        trace?: never;
+    };
+    "/api/members/nickname": {
         parameters: {
             query?: never;
             header?: never;
@@ -302,11 +289,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["test5"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * update member nickname
+         * @description 회원의 닉네임을 변경합니다.
+         */
+        patch: operations["updateMembersNickname"];
         trace?: never;
     };
     "/api/products/{product_id}": {
@@ -365,7 +356,7 @@ export interface paths {
         patch: operations["modify"];
         trace?: never;
     };
-    "/api/questions/recommends": {
+    "/api/questions/categories": {
         parameters: {
             query?: never;
             header?: never;
@@ -373,10 +364,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 추천 글 조회
-         * @description 추천 수 기준으로 내림차순 정렬
+         * 카테고리 조회
+         * @description 카테고리 목록 가져오기
          */
-        get: operations["getRecommended"];
+        get: operations["getCategories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -519,6 +510,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/members/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * get member's simple info
+         * @description 멤버의 간단한 정보 (현재는 닉네임만)를 조회합니다. 프론트의 헤더에서 사용합니다.
+         */
+        get: operations["getMemberThumbnailInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * get member's detail info
+         * @description 멤버의 자세한 정보 (포인트 작성 질문/답변 수, 닉네임)를 조회합니다. 마이 페이지에서 사용합니다.
+         */
+        get: operations["getMemberDetailInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/logout/complete": {
         parameters: {
             query?: never;
@@ -526,6 +557,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * logout complete
+         * @description 로그아웃 요청이 성공적으로 실행되었을 때 도착합니다. Cookie 에 담긴 JWT 를 파기하고 프론트의 메인 페이지로 이동합니다.
+         */
         get: operations["logoutComplete"];
         put?: never;
         post?: never;
@@ -555,17 +590,21 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/": {
+    "/api/members": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["home"];
+        get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * withdrawal membership
+         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
+         */
+        delete: operations["withdrawalMembership"];
         options?: never;
         head?: never;
         patch?: never;
@@ -580,6 +619,11 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["Empty"];
+        };
+        RsDataVoid: {
+            resultCode: string;
+            msg: string;
+            data: Record<string, never>;
         };
         QuestionWriteReqDto: {
             title: string;
@@ -617,10 +661,15 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
+            /** Format: int64 */
+            recommendCount: number;
+            answers?: components["schemas"]["AnswerDto"][];
             selectedAnswer?: components["schemas"]["AnswerDto"];
             closed: boolean;
             /** Format: int64 */
             point: number;
+            /** Format: int64 */
+            authorId: number;
         };
         RsDataQuestionDto: {
             resultCode: string;
@@ -641,11 +690,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionWriteResDto"];
-        };
-        RsDataVoid: {
-            resultCode: string;
-            msg: string;
-            data: Record<string, never>;
         };
         AnswerRequestDto: {
             content: string;
@@ -680,6 +724,25 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"];
         };
+        RsDataString: {
+            resultCode: string;
+            msg: string;
+            data: string;
+        };
+        AdminLoginRequestDto: {
+            adminUsername: string;
+            password: string;
+        };
+        MemberThumbnailInfoResponseDto: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        RsDataMemberThumbnailInfoResponseDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["MemberThumbnailInfoResponseDto"];
+        };
         updateItem: {
             productName?: string;
             /** Format: int32 */
@@ -688,6 +751,9 @@ export interface components {
             productImageUrl?: string;
             productCategory?: string;
             productSaleState?: string;
+        };
+        NicknameUpdateRequestDto: {
+            newNickname: string;
         };
         PageDtoQuestionDto: {
             /** Format: int32 */
@@ -712,6 +778,11 @@ export interface components {
             totalItems?: number;
             hasMore?: boolean;
             items?: components["schemas"]["AnswerDto"][];
+        };
+        QuestionCategoryDto: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
         };
         PageDtoGetItem: {
             /** Format: int32 */
@@ -752,7 +823,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             endDateTime?: string;
             /** Format: date-time */
@@ -777,12 +848,31 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "관리자" | "출석";
+            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
         };
         RsDataPageDtoPointHistoryRes: {
             resultCode: string;
             msg: string;
             data: components["schemas"]["PageDtoPointHistoryRes"];
+        };
+        RsDataObject: {
+            resultCode: string;
+            msg: string;
+            data: unknown;
+        };
+        MemberDetailInfoResponseDto: {
+            nickname?: string;
+            /** Format: int64 */
+            point?: number;
+            /** Format: int64 */
+            questionSize?: number;
+            /** Format: int64 */
+            answerSize?: number;
+        };
+        RsDataMemberDetailInfoResponseDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["MemberDetailInfoResponseDto"];
         };
     };
     responses: never;
@@ -793,6 +883,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    recommend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getQuestion: {
         parameters: {
             query?: never;
@@ -1050,33 +1171,6 @@ export interface operations {
             };
         };
     };
-    test1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getQuestions: {
         parameters: {
             query?: {
@@ -1131,68 +1225,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionWriteResDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    recommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    cancelRecommend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */
@@ -1275,33 +1307,6 @@ export interface operations {
             };
         };
     };
-    test3: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getAllProductsWithPaging: {
         parameters: {
             query?: {
@@ -1367,33 +1372,6 @@ export interface operations {
             };
         };
     };
-    test2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     logout: {
         parameters: {
             query?: never;
@@ -1403,13 +1381,95 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 로그인 되어 있는 경우. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataString"];
+                };
+            };
+        };
+    };
+    adminLogin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminLoginRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 괸라자 로그인 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberThumbnailInfoResponseDto"];
+                };
+            };
+            /** @description 비밀번호 불일치 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 관리자 권한이 아닌 계정의 로그인 시도 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberThumbnailInfoResponseDto"];
+                };
+            };
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
             /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
                 };
             };
             /** @description Bad Request */
@@ -1423,11 +1483,13 @@ export interface operations {
             };
         };
     };
-    test4: {
+    deleteProduct: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                product_id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1437,7 +1499,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
             };
             /** @description Bad Request */
             400: {
@@ -1450,24 +1514,83 @@ export interface operations {
             };
         };
     };
-    test5: {
+    updateProduct: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                product_id: number;
+            };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["updateItem"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    updateMembersNickname: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NicknameUpdateRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 회원 닉네임 변경 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1636,47 +1759,9 @@ export interface operations {
             };
         };
     };
-    modify: {
+    getCategories: {
         parameters: {
             query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AnswerRequestDto"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getRecommended: {
-        parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1689,7 +1774,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
                 };
             };
             /** @description Bad Request */
@@ -1922,6 +2007,82 @@ export interface operations {
             };
         };
     };
+    getMemberThumbnailInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 로그인 되어 있는 경우. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberThumbnailInfoResponseDto"];
+                };
+            };
+            /** @description 로그인 되어 있지 않은 경우 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataObject"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getMemberDetailInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 로그인 되어 있는 경우. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberDetailInfoResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMemberDetailInfoResponseDto"];
+                };
+            };
+        };
+    };
     logoutComplete: {
         parameters: {
             query?: never;
@@ -1931,9 +2092,11 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 로그아웃 성공적으로 처리된 경우. */
+            302: {
                 headers: {
+                    /** @description 로그아웃 후 리다이렉트 될 URL. 기본적으로 http://localhost:3000 */
+                    Location?: unknown;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1983,7 +2146,7 @@ export interface operations {
             };
         };
     };
-    home: {
+    withdrawalMembership: {
         parameters: {
             query?: never;
             header?: never;
@@ -1992,17 +2155,35 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 회원 탈퇴 성공 */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": string;
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
