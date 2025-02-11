@@ -660,6 +660,8 @@ export interface components {
             closed: boolean;
             /** Format: int64 */
             point: number;
+            /** Format: int64 */
+            authorId: number;
         };
         RsDataQuestionDto: {
             resultCode: string;

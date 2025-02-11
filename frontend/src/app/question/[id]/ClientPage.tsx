@@ -5,7 +5,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -15,6 +14,8 @@ import { Clock, Crown, Lightbulb, Pencil, PencilLine } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useId } from "@/context/IdContext";
+import { useNickname } from "@/context/NicknameContext";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -31,6 +32,8 @@ export default function ClientPage({
 }) {
   const router = useRouter();
   const currentPage = Number(page) || 1;
+  const { id } = useId();
+  const { nickname } = useNickname();
 
   // 페이지 이동 함수
   const changePage = (newPage: number) => {
@@ -87,7 +90,7 @@ export default function ClientPage({
           <em className="not-italic text-xl">{question.answers?.length}개</em>의
           답변이 있습니다.
         </h3>
-        {!question.closed && (
+        {!question.closed && id !== question.authorId && (
           <Button asChild>
             <Link href={`/question/${question.id}/answer/write`}>
               <PencilLine />
@@ -147,8 +150,8 @@ export default function ClientPage({
                 <div className="whitespace-pre-line">{answer.content}</div>
               </CardContent>
               {!question.closed && (
-                <>
-                  <CardFooter className="flex justify-end">
+                <CardFooter className="flex justify-end gap-2">
+                  {id === question.authorId && (
                     <Button variant="default" asChild>
                       <Link
                         href={`/question/${question.id}/answer/${answer.id}/select`}
@@ -156,8 +159,8 @@ export default function ClientPage({
                         답변 채택
                       </Link>
                     </Button>
-                  </CardFooter>
-                  <CardFooter className="flex justify-end gap-2">
+                  )}
+                  {id === answer.authorId && (
                     <Button variant="outline" asChild>
                       <Link
                         href={`/question/${question.id}/answer/${answer.id}/modify`}
@@ -165,6 +168,8 @@ export default function ClientPage({
                         수정
                       </Link>
                     </Button>
+                  )}
+                  {(id === answer.authorId || nickname === "관리자") && (
                     <Button variant="destructive" asChild>
                       <Link
                         href={`/question/${question.id}/answer/${answer.id}/delete`}
@@ -172,8 +177,8 @@ export default function ClientPage({
                         삭제
                       </Link>
                     </Button>
-                  </CardFooter>
-                </>
+                  )}
+                </CardFooter>
               )}
             </Card>
           ))}

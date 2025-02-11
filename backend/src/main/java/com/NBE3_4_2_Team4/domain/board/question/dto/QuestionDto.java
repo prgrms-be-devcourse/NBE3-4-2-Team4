@@ -35,6 +35,8 @@ public class QuestionDto {
     private final boolean closed;
     @NonNull
     private final long point;
+    @NonNull
+    private final long authorId;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
@@ -54,5 +56,6 @@ public class QuestionDto {
                 : null;
         this.closed = question.isClosed();
         this.point = question.getPoint();
+        this.authorId = question.getAuthor().getId();
     }
 }
