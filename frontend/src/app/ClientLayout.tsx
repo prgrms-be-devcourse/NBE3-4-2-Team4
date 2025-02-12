@@ -51,6 +51,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/adm") && pathname !== "/adm/login";
   const isUserPage = !isAdminPage;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -204,7 +205,10 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
               <span className="text-sm font-medium flex items-center">
                 환영합니다,
               </span>
-              <DropdownMenu>
+              <DropdownMenu
+                open={isDropdownOpen}
+                onOpenChange={setIsDropdownOpen}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button variant="link">{nickname} 님</Button>
                 </DropdownMenuTrigger>
@@ -214,6 +218,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                       variant="link"
                       className="w-full justify-start text-sm font-medium flex items-center"
                       asChild
+                      onClick={() => setIsDropdownOpen(false)}
                     >
                       <Link href="/mypage">
                         <UserRound /> 마이 페이지
@@ -226,6 +231,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                         variant="link"
                         className="w-full justify-start"
                         asChild
+                        onClick={() => setIsDropdownOpen(false)}
                       >
                         <Link href="/adm">
                           <Settings /> 관리자 홈
@@ -234,7 +240,13 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem>
-                    <Button variant="link" onClick={handleLogout}>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                    >
                       <LockOpen className="mr-1" />
                       로그아웃
                     </Button>

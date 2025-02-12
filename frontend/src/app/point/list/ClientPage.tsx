@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import Pagination1 from "@/lib/business/components/Pagination1";
 import { useToast } from "@/hooks/use-toast";
+import { components } from "@/lib/backend/apiV1/schema";
 
 type PageDtoPointHistoryRes = components["schemas"]["PageDtoPointHistoryRes"];
 type PointHistoryRes = components["schemas"]["PointHistoryRes"];
@@ -27,7 +28,13 @@ function formatDate(date: string) {
   return format(new Date(date), "yyyy년 MM월 dd일 HH:mm:ss");
 }
 
-export default function ClientPage({ body, point }) {
+export default function ClientPage({
+  body,
+  point,
+}: {
+  body: PageDtoPointHistoryRes;
+  point: number;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const data: PointHistoryRes = body.data;
@@ -237,7 +244,7 @@ export default function ClientPage({ body, point }) {
       </div>
 
       {/* 페이지 이동 버튼 */}
-      <Pagination1 totalPages={body.totalPages ?? 0} />
+      <Pagination1 totalPages={data.totalPages ?? 0} />
     </div>
   );
 }
