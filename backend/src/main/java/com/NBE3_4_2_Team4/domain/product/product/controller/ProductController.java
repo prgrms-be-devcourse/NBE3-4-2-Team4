@@ -39,7 +39,7 @@ public class ProductController {
     @Operation(summary = "전체 상품 조회 with 검색", description = "전체 상품을 키워드, 페이징 처리하여 조회합니다.")
     RsData<PageDto<GetItem>> getAllProductsByKeywordWithPaging(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "12") int pageSize,
             @RequestParam(name = "keyword_type", defaultValue = "ALL") ProductSearchKeywordType keywordType,
             @RequestParam(defaultValue = "") String keyword
             ) {
@@ -73,7 +73,7 @@ public class ProductController {
     RsData<PageDto<GetItem>> getProductsByCategoryWithPaging(
             @RequestParam(name = "category_keyword") String categoryKeyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
+            @RequestParam(defaultValue = "12") int pageSize
     ) {
 
         PageDtoWithKeyword<GetItem> products = productService.getProductsByCategoryKeyword(categoryKeyword, page, pageSize);
@@ -119,7 +119,7 @@ public class ProductController {
     RsData<PageDto<GetItem>> getProductsBySaleStateWithPaging(
             @RequestParam(name = "sale_state_keyword") String saleStateKeyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
+            @RequestParam(defaultValue = "12") int pageSize
     ) {
 
         PageDtoWithKeyword<GetItem> products = productService.getProductsBySaleStateKeyword(

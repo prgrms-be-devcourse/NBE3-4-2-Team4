@@ -29,11 +29,8 @@ export default function ProductList({
     items: itemPage.data.items,
   };
 
-  // "ONSALE" 상태인 상품만 필터링
   const filteredItems =
-    normalizedItemPage.items?.filter(
-      (item) => item.product_sale_state === "ONSALE"
-    ) || [];
+    normalizedItemPage.items || [];
 
   return (
     <>
