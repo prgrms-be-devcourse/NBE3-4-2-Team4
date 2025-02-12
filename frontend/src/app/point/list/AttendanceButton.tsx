@@ -1,33 +1,53 @@
- import createClient from "openapi-fetch";
- import { useRouter, usePathname } from 'next/navigation';
+import createClient from "openapi-fetch";
+import { useRouter, usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-    const client = createClient<paths>({
-      baseUrl: "http://localhost:8080",
-    });
+const client = createClient<paths>({
+  baseUrl: "http://localhost:8080",
+});
 
 export default function AttendanceButton() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { toast } = useToast();
 
-              const router = useRouter();
-              const pathname = usePathname();
+  const handleAttend = async (e) => {
+    const data = await client.PUT("/api/points/attendance", {
+      credentials: "include",
+    });
 
-        const handleAttend = async(e) => {
+    if (!data.response.ok) {
+      console.log(data);
+      //alert(data.error.msg);
 
-                   const data = await client.PUT("/api/points/attendance", {credentials: "include"});
+      toast({
+        title: "출석 체크 실패",
+        description: data.error.msg,
+        variant: "destructive",
+      });
 
-                   if (!data.response.ok) {
-                               console.log(data);
-                               alert(data.error.msg);
-                               return;
-                               }
-                           alert("출석 성공!");
-                           router.replace(pathname);
-                   }
+      return;
+    }
+    //alert("출석 성공!");
 
+    toast({
+      title: "출석 체크 성공",
+      description: "출석 체크를 완료했습니다.",
+    });
 
-    return <button
-              className="bg-blue-500 text-white px-4 py-2 w-[125px] rounded-md font-semibold hover:bg-blue-600 transition"
-              onClick={handleAttend}
-              >
-                출석
-              </button>;
+    router.replace(pathname);
+  };
+
+  return (
+    <Button
+      variant="default"
+      onClick={handleAttend}
+      className="flex items-center gap-2"
+    >
+      <CheckCircle />
+      출석 체크 하기
+    </Button>
+  );
 }
