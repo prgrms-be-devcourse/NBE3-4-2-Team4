@@ -66,12 +66,12 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data[1].product_sale_state").value("SOLDOUT"));
     }
 
-    @DisplayName("페이징 처리 된 전체 상품 조회 Test")
+    @DisplayName("페이징 처리 된 전체 상품 조회 with 검색 Test")
     @Test
     void getProductsWithPagingTest() throws Exception {
 
         // given
-        String url = "/api/products?page=1&pageSize=1";
+        String url = "/api/products?page=1&pageSize=1&keyword_type=ALL";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -81,7 +81,7 @@ class ProductControllerTest {
         // then
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
-                .andExpect(handler().methodName("getAllProductsWithPaging"))
+                .andExpect(handler().methodName("getAllProductsByKeywordWithPaging"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("result_code").value("200-1"))
                 .andExpect(jsonPath("msg").value("1건의 상품이 조회되었습니다."))

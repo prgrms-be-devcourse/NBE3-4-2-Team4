@@ -9,6 +9,8 @@ export default async function Page({
   searchParams: {
     page?: number;
     pageSize?: number;
+    keyword_type?: string;
+    keyword?: string;
   };
 }) {
   const cookieHeader = await cookies();
@@ -26,12 +28,19 @@ export default async function Page({
   }
 
   // 상품 리스트 조회
-  const { page = 1, pageSize = 12 } = await searchParams;
+  const {
+    page = 1,
+    pageSize = 12,
+    keyword_type = "ALL",
+    keyword = "",
+  } = await searchParams;
   const response = await client.GET("/api/products", {
     params: {
       query: {
         page,
         pageSize,
+        keyword_type: keyword_type as | "ALL" | "NAME" | undefined,
+        keyword
       },
     },
     headers: {

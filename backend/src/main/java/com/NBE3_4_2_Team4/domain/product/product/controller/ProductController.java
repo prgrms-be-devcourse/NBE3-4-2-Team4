@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.product.product.controller;
 import com.NBE3_4_2_Team4.domain.product.product.service.ProductService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
+import com.NBE3_4_2_Team4.standard.search.ProductSearchKeywordType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,15 @@ public class ProductController {
     }
 
     @GetMapping
-    @Operation(summary = "전체 상품 조회 (페이징)", description = "전체 상품을 페이징 처리하여 조회합니다.")
-    RsData<PageDto<GetItem>> getAllProductsWithPaging(
+    @Operation(summary = "전체 상품 조회 with 검색", description = "전체 상품을 키워드, 페이징 처리하여 조회합니다.")
+    RsData<PageDto<GetItem>> getAllProductsByKeywordWithPaging(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
-    ) {
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(name = "keyword_type", defaultValue = "ALL") ProductSearchKeywordType keywordType,
+            @RequestParam(defaultValue = "") String keyword
+            ) {
 
-        PageDto<GetItem> products = productService.getProducts(page, pageSize);
+        PageDto<GetItem> products = productService.getProducts(page, pageSize, keywordType, keyword);
 
         return new RsData<>(
                 "200-1",
