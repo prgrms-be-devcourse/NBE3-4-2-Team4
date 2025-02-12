@@ -88,5 +88,18 @@ public class ProductInitData {
                         .productSaleState("ONSALE")
                         .build()
         );
+
+        for(int i = 0; i < 10; i++) {
+            productService.writeProduct(
+                    ProductRequestDto.writeItem.builder()
+                            .productName("상품명 " + i)
+                            .productPrice(i * 100)
+                            .productDescription("상품 설명 " + i)
+                            .productImageUrl("https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMDZfODUg%2FMDAxNzA3MTQ2MjQyNTYw.dzcv_P_Q9declRlLANq5VfofXO-u5kOfsBrvJiAujJMg.SgqAhgPYegriKDz6-rQe7eDR9-quiNAxiUVyYdWDE2wg.JPEG.hyuni_525%2FIMG_3800.JPG")
+                            .productCategory("카페/스타벅스")
+                            .productSaleState("ONSALE")
+                            .build()
+            );
+        }
     }
 }
