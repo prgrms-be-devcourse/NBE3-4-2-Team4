@@ -73,7 +73,7 @@ export default function ClientPage({
   
       alert("삭제되었습니다."); // 삭제 완료 후 알림
   
-      window.history.back(); // 이전 페이지로 이동
+      router.replace("/question/list") // 이전 페이지로 이동
     } catch (error) {
       toast({
         title: "질문 삭제 중 오류가 발생했습니다.",

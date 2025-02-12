@@ -106,28 +106,20 @@ public class QuestionService {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        if (!question.getAuthor().equals(actor)) {
-            throw new ServiceException("403-1", "게시글 작성자만 삭제할 수 있습니다.");
-        }
+        question.checkActorCanDelete(actor);
         questionRepository.delete(question);
     }
 
     @Transactional
     public QuestionDto update(long id, String title, String content, Member actor, long point, long categoryId) {
-        Question q = questionRepository.findById(id).orElseThrow(
+        Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        if (!q.getAuthor().equals(actor)) {
-            throw new ServiceException("403-1", "게시글 작성자만 수정할 수 있습니다.");
-        }
+        question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
-        q.setTitle(title);
-        q.setContent(content);
-        q.setPoint(point);
-        q.setCategory(category);
-
-        return new QuestionDto(q);
+        question.modify(title, content, point, category);
+        return new QuestionDto(question);
     }
 
     @Transactional
