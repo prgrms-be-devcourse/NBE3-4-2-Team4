@@ -146,7 +146,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <header>
+      <header className="relative z-10">
         <div className="flex container mx-auto py-2">
           {isUserPage && (
             <>
