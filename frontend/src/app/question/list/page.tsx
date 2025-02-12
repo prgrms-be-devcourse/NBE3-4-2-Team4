@@ -1,24 +1,43 @@
+import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
-import client from "@/utils/apiClient";
 import { convertSnakeToCamel } from "@/utils/convertCase";
 
-export default async function Page({searchParams}: {searchParams: {
-  page?: string; 
-  searchKeyword?: string;
-  keywordType?: string;
-}}) {
-  const { page = 1, searchKeyword = "", keywordType = "ALL" } = await searchParams;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: {
+    page?: string;
+    searchKeyword?: string;
+    keywordType?: string;
+    categoryId?: number;
+  };
+}) {
+  const {
+    page = 1,
+    searchKeyword = "",
+    keywordType = "ALL",
+    categoryId = 0,
+  } = await searchParams;
 
   try {
     const response = await client.GET("/api/questions", {
       params: {
-        query: { 
+        query: {
           page: Number(page),
           searchKeyword,
-          keywordType: keywordType as "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT" | undefined,
+          keywordType: keywordType as
+            | "ALL"
+            | "TITLE"
+            | "CONTENT"
+            | "AUTHOR"
+            | "ANSWER_CONTENT"
+            | undefined,
+          categoryId: Number(categoryId),
         },
       },
     });
+
+    const responseCategory = await client.GET("/api/questions/categories");
 
     // response 에러 반환 시 처리
     if (!response || !response.data) {
@@ -28,7 +47,9 @@ export default async function Page({searchParams}: {searchParams: {
     const data = response.data;
     const body = convertSnakeToCamel(data);
 
-    return <ClientPage body={body} />;
+    const category = responseCategory.data ?? [];
+
+    return <ClientPage body={body} category={category} />;
   } catch (error) {
     console.error("API 요청 실패:", error);
 

@@ -51,7 +51,7 @@ public class QuestionInitData {
         Member admin = memberRepository.findByUsername(adminUsername).orElseThrow();
         Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
 
-        List<String> categories = List.of("전체", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
+        List<String> categories = List.of("연애", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
         for (String category : categories) {
             questionService.createCategory(category);
         }

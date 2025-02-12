@@ -1,23 +1,22 @@
 import { cookies } from "next/headers";
 import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default async function Page({
-                                     searchParams,
-                                   }: {
+  searchParams,
+}: {
   searchParams: {
     page?: number;
     pageSize?: number;
   };
 }) {
-  
   const cookieHeader = await cookies();
 
   // 유저 정보 조회
   const userResponse = await client.GET("/api/members/details", {
     headers: {
-      cookie: cookieHeader,
+      cookie: cookieHeader.toString(),
     },
   });
 
@@ -27,7 +26,7 @@ export default async function Page({
   }
 
   // 상품 리스트 조회
-  const { page = 1, pageSize = 10 } = await searchParams;
+  const { page = 1, pageSize = 12 } = await searchParams;
   const response = await client.GET("/api/products", {
     params: {
       query: {
@@ -42,11 +41,5 @@ export default async function Page({
 
   const itemPage = response.data!;
 
-  return (
-      <ClientPage
-          page={page}
-          pageSize={pageSize}
-          itemPage={itemPage}
-      />
-  );
+  return <ClientPage page={page} pageSize={pageSize} itemPage={itemPage} />;
 }

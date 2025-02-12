@@ -10,14 +10,22 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Crown, Lightbulb, Pencil, PencilLine } from "lucide-react";
+import {
+  Clock,
+  Coins,
+  Crown,
+  Lightbulb,
+  Pencil,
+  PencilLine,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useId } from "@/context/IdContext";
 import { useNickname } from "@/context/NicknameContext";
-import client from "@/utils/apiClient";
 import { useToast } from "@/hooks/use-toast";
+import Pagination1 from "@/lib/business/components/Pagination1";
+import client from "@/lib/backend/client";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -33,62 +41,23 @@ export default function ClientPage({
   answers: components["schemas"]["PageDtoAnswerDto"];
 }) {
   const router = useRouter();
-  const currentPage = Number(page) || 1;
   const { id } = useId();
   const { nickname } = useNickname();
   const { toast } = useToast();
 
-  // 페이지 이동 함수
-  const changePage = (newPage: number) => {
-    const queryParams = new URLSearchParams();
-    queryParams.set("page", newPage.toString());
-
-    router.push(`?${queryParams.toString()}`);
-  };
-
   const handleEdit = () => {
     router.push(`/question/${question.id}/edit`);
   };
-  
-  const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
-  
-    try {
-      const response = await client.DELETE("/api/questions/{id}", {
-        credentials: "include",
-        params: { path: { id: question.id } },
-      });
-  
-      if (response.error) {
-        toast({
-          title: response.error.msg,
-          variant: "destructive",
-        });
-        return;
-      }
-  
-      toast({
-        title: response.data.msg,
-      });
-  
-      alert("삭제되었습니다."); // 삭제 완료 후 알림
-  
-      window.history.back(); // 이전 페이지로 이동
-    } catch (error) {
-      toast({
-        title: "질문 삭제 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-    }
-  };
-  
+
   const handleRecommend = async () => {
     try {
-      const response = await client.PUT("/api/questions/{questionId}/recommend", {
-        credentials: "include",
-        params: { path: { questionId: question.id } },
-      });
-  
+      const response = await client.PUT(
+        "/api/questions/{questionId}/recommend",
+        {
+          params: { path: { questionId: question.id } },
+        }
+      );
+
       if (response.error) {
         toast({
           title: response.error.msg,
@@ -99,7 +68,7 @@ export default function ClientPage({
       toast({
         title: response.data.msg,
       });
-      window.location.reload();
+      router.refresh();
     } catch (error) {
       toast({
         title: "질문 추천 중 오류가 발생했습니다.",
@@ -110,64 +79,81 @@ export default function ClientPage({
 
   return (
     <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-4 border-b pb-2">질문 상세</h2>
+      <div className="mt-20 mb-10 text-center">
+        <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
+          지식인 게시판
+        </h2>
+        <p className="text-md text-gray-400 mt-3">
+          지식을 나누고 포인트도 얻으세요!
+          <br />
+          함께 성장하는 지식 공유 공간입니다.
+        </p>
+      </div>
 
       {/* 질문 카드 */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border border-gray-200">
-        <div className="flex justify-between">
-          {/* 제목, 내용 */}
-          <div className="flex-1">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              {question.title}
-            </h3>
-            <p className="text-gray-800 dark:text-gray-100 leading-relaxed mb-4">
-              {question.content}
-            </p>
-          </div>
-
-          {/* 작성 정보 */}
-          <div className="flex flex-col items-end text-gray-600 dark:text-gray-100 text-sm gap-2">
-            <span>작성자: {question.name}</span>
-            <span>{formatDate(question.createdAt)}</span>
-          </div>
-        </div>
-
-        {/* 카테고리 및 추천 수 */}
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
-            {question.categoryName}
-          </span>
-
-          {/* 수정, 삭제, 추천 버튼 */}
-          <div className="flex items-center gap-2">
-            {/* 수정 버튼 (작성자만 가능) */}
-            {question.name === nickname && (
-              <button className="flex items-center gap-1 bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-              onClick={handleEdit}>
-                <span>수정</span>
-              </button>
-            )}
-
-            {/* 삭제 버튼 (작성자만 가능) */}
-            {question.name === nickname && (
-              <button className="flex items-center gap-1 bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-              onClick={handleDelete}>
-                <span>삭제</span>
-              </button>
-            )}
-
-            {/* 추천 버튼 (모든 사용자 가능) */}
-            {question.name != nickname && (
-              <button
-                onClick={() => handleRecommend()}
-                className="flex items-center gap-1 bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition"
+      <div>
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className="flex items-center grow-0 shrink-0"
               >
-                <span>추천</span>
-                <span className="font-bold">{question.recommendCount}</span>
-              </button>
-            )}
-          </div>
-        </div>
+                {question.categoryName}
+              </Badge>
+              <span>{question.title}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="whitespace-pre-line">{question.content}</div>
+          </CardContent>
+          <CardFooter className="flex justify-between gap-2 sm:flex-row flex-col sm:items-center items-start">
+            <div>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="default"
+                  className="flex items-center gap-1 bg-amber-500 hover:bg-amber-500 text-white"
+                >
+                  <Coins size={16} />
+                  {question.point}
+                </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Pencil width={14} height={14} />
+                  {question.name}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-1 text-sm text-gray-400 mt-2">
+                <Clock width={14} height={14} />
+                {formatDate(question.createdAt)}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:self-auto self-end">
+              {question.name != nickname && (
+                <Button
+                  onClick={() => handleRecommend()}
+                  className="bg-sky-400 hover:bg-sky-500 text-white"
+                >
+                  <span>추천</span>
+                  <span className="font-bold">{question.recommendCount}</span>
+                </Button>
+              )}
+              {/* 수정 버튼 (작성자만 가능) */}
+              {question.name === nickname && (
+                <Button variant="outline" onClick={handleEdit}>
+                  수정
+                </Button>
+              )}
+
+              {/* 삭제 버튼 (작성자만 가능) */}
+              {question.name === nickname && (
+                <Button variant="destructive" asChild>
+                  <Link href={`/question/${question.id}/delete`}>삭제</Link>
+                </Button>
+              )}
+            </div>
+          </CardFooter>
+          <CardFooter></CardFooter>
+        </Card>
       </div>
 
       {/* 답변 리스트 */}
@@ -177,7 +163,7 @@ export default function ClientPage({
           <em className="not-italic text-xl">{question.answers?.length}개</em>의
           답변이 있습니다.
         </h3>
-        {!question.closed && id !== question.authorId && (
+        {id && !question.closed && id !== question.authorId && (
           <Button asChild>
             <Link href={`/question/${question.id}/answer/write`}>
               <PencilLine />
@@ -272,30 +258,7 @@ export default function ClientPage({
       </div>
 
       {/* 페이지 이동 버튼 */}
-      {(answers.totalPages ?? 0) > 1 && (
-        <div className="flex justify-center gap-2 my-10">
-          <Button
-            onClick={() => changePage(currentPage - 1)}
-            disabled={currentPage === 1}
-            variant={currentPage === 1 ? "secondary" : "default"}
-            className={`${currentPage === 1 ? "cursor-not-allowed" : ""}`}
-          >
-            이전
-          </Button>
-          <Button
-            onClick={() => changePage(currentPage + 1)}
-            disabled={currentPage === answers.totalPages}
-            variant={
-              currentPage === answers.totalPages ? "secondary" : "default"
-            }
-            className={`${
-              currentPage === answers.totalPages ? "cursor-not-allowed" : ""
-            }`}
-          >
-            다음
-          </Button>
-        </div>
-      )}
+      <Pagination1 totalPages={answers.totalPages ?? 0} />
 
       {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
