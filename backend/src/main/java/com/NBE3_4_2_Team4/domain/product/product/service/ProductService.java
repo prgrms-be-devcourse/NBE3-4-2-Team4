@@ -9,6 +9,7 @@ import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
 import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
+import com.NBE3_4_2_Team4.standard.search.ProductSearchKeywordType;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,11 +56,16 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageDto<GetItem> getProducts(int page, int pageSize) {
+    public PageDto<GetItem> getProducts(
+            int page,
+            int pageSize,
+            ProductSearchKeywordType keywordType,
+            String keyword
+            ) {
 
         Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = productRepository.findByKeyword(keywordType, keyword, pageable);
 
         log.info("[{}] Products are found with paging.", products.getContent().size());
 
@@ -279,6 +285,18 @@ public class ProductService {
         log.info("Product Id [{}] is deleted.", deleteProduct.getId());
     }
 
+    @Transactional(readOnly = true)
+    public List<String> findCategoriesName() {
+
+        List<ProductCategory> categories = productCategoryRepository.findAll();
+
+        Set<String> categoriesName = new HashSet<>();
+        categories.forEach(category ->
+                saveParentCategoriesName(category, categoriesName));
+
+        return new ArrayList<>(categoriesName);
+    }
+
     private String makeFullCategory(Product product) {
 
         StringBuilder sb = new StringBuilder();
@@ -310,11 +328,23 @@ public class ProductService {
             return;
         }
 
-        children.forEach(child -> {
-            saveChildCategories(child, leafCategories);
-        });
+        children.forEach(child -> saveChildCategories(child, leafCategories));
     }
 
+    private void saveParentCategoriesName(ProductCategory productCategory, Set<String> parentCategories) {
+
+        ProductCategory parent = productCategory.getParent();
+
+        // 최상위 카테고리만 Map 저장
+        if (parent == null) {
+            log.debug("[{}] is the parent category.", productCategory.getName());
+            parentCategories.add(productCategory.getName());
+            return;
+
+        }
+
+        saveParentCategoriesName(parent, parentCategories);
+    }
 
     private List<ProductCategory> splitAndSaveByFullCategory(String fullCategory) {
 
@@ -351,7 +381,7 @@ public class ProductService {
 
         // 판매 상태 파라미터 유효성 체크
         SaleState saleState = SaleState.fromString(requestSaleState.toUpperCase())
-                .orElseGet(() -> null);
+                .orElse(null);
 
         if (saleState == null) {
             log.error("[{}] is not valid sale state. we allows [ONSALE / SOLDOUT / RESERVED / COMINGSOON]",

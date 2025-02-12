@@ -19,7 +19,7 @@ import static com.NBE3_4_2_Team4.domain.product.order.dto.ProductOrderRequestDto
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
-@Tag(name = "OrderController", description = "상품 주문 API")
+@Tag(name = "포인트 상품 주문 관리", description = "상품 주문 API")
 public class ProductOrderController {
 
     private final ProductService productService;
