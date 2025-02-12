@@ -17,6 +17,8 @@ public class OAuth2RefreshToken {
     @OneToOne
     private Member member;
 
+    private String oAuth2Id;
+
     @Setter
     private String refreshToken;
 }

@@ -58,6 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 // 없으면 새로 저장
                 oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
                         .member(member)
+                        .oAuth2Id(oAuth2Id)
                         .refreshToken(refreshToken)
                         .build());
             }

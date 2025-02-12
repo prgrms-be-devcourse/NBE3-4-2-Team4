@@ -432,9 +432,9 @@ public class MemberServiceTest {
 
         when(switch (provider) {
             case NONE -> null;
-            case KAKAO -> kaKaoDisconnectService.disconnect(any());
-            case NAVER -> naverDisconnectService.disconnect(any());
-            case GOOGLE -> googleDisconnectService.disconnect(any());
+            case KAKAO -> kaKaoDisconnectService.disconnectSuccess(any());
+            case NAVER -> naverDisconnectService.disconnectSuccess(any());
+            case GOOGLE -> googleDisconnectService.disconnectSuccess(any());
         })
                 .thenReturn(true);
 
@@ -508,9 +508,9 @@ public class MemberServiceTest {
 
         when(switch (provider) {
             case NONE -> null;
-            case KAKAO -> kaKaoDisconnectService.disconnect(any());
-            case NAVER -> naverDisconnectService.disconnect(any());
-            case GOOGLE -> googleDisconnectService.disconnect(any());
+            case KAKAO -> kaKaoDisconnectService.disconnectSuccess(any());
+            case NAVER -> naverDisconnectService.disconnectSuccess(any());
+            case GOOGLE -> googleDisconnectService.disconnectSuccess(any());
         })
                 .thenReturn(false);
 

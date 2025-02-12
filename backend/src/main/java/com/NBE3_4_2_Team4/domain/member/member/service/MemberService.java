@@ -10,6 +10,7 @@ import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -69,7 +70,7 @@ public class MemberService {
             Member.Role role,
             Member.OAuth2Provider oAuth2Provider){
         if (memberRepository.existsByUsername(username)) {
-            throw new RuntimeException("member already exists");
+            throw new ServiceException("400-1", String.format("member already exist with name %s", username));
         }
         return memberRepository.save(Member.builder()
                 .role(role)
@@ -96,7 +97,7 @@ public class MemberService {
 
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member memberData = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new RuntimeException("member not found"));
+                .orElseThrow(() -> new ServiceException("404-1", String.format("no member found with id %d", member.getId())));
         String newNickname = nicknameUpdateRequestDto.newNickname();
         memberData.setNickname(newNickname);
     }
@@ -111,26 +112,26 @@ public class MemberService {
         Long memberId = member.getId();
 
         if (!memberRepository.existsById(memberId)) {
-            throw new RuntimeException("no member found with id");
+            throw new ServiceException("404-1", String.format("no member found with id %d", memberId));
         }
 
-        Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
+        Member.OAuth2Provider oAuth2Provider = member.getOAuth2Provider();
 
-        if (!oAuthProvider.equals(Member.OAuth2Provider.NONE)) {
+        if (!oAuth2Provider.equals(Member.OAuth2Provider.NONE)) {
             OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository
                     .findByMember(member)
                     .orElseThrow();
             String refreshToken = oAuth2RefreshToken.getRefreshToken();
 
-            OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuthProvider);
+            OAuth2DisconnectService oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuth2Provider);
 
-            if (oAuth2DisconnectService == null || !oAuth2DisconnectService.disconnect(refreshToken)) {
-                throw new RuntimeException("disconnect failed");
+            if (oAuth2DisconnectService == null) {
+                log.error("연동 서비스에 해당하는 DisconnectService 클래스를 찾을 수 없습니다. OAuth2Manager  OAuth2Provider : {}OAuth2Id : {}", oAuth2Provider, oAuth2RefreshToken.getOAuth2Id());
+            }else if(!oAuth2DisconnectService.disconnectSuccess(refreshToken)){
+                log.error("OAuth2 연동 해제 실패. (연동 해제 요청이 실패했습니다.) 해당 서비스에 직접 연결 해제를 시도하세요. OAuth2Provider : {}, OAuth2Id : {}", oAuth2Provider, oAuth2RefreshToken.getOAuth2Id());
             }
-
             oAuth2RefreshTokenRepository.deleteByMember(member);
         }
-
         memberQuerydsl.deleteMember(memberId);
     }
 }
