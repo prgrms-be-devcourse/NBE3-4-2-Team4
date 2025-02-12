@@ -279,6 +279,18 @@ public class ProductService {
         log.info("Product Id [{}] is deleted.", deleteProduct.getId());
     }
 
+    @Transactional
+    public List<String> findCategoriesName() {
+
+        List<ProductCategory> categories = productCategoryRepository.findAll();
+
+        Set<String> categoriesName = new HashSet<>();
+        categories.forEach(category ->
+                saveParentCategoriesName(category, categoriesName));
+
+        return new ArrayList<>(categoriesName);
+    }
+
     private String makeFullCategory(Product product) {
 
         StringBuilder sb = new StringBuilder();
@@ -315,6 +327,20 @@ public class ProductService {
         });
     }
 
+    private void saveParentCategoriesName(ProductCategory productCategory, Set<String> parentCategories) {
+
+        ProductCategory parent = productCategory.getParent();
+
+        // 최상위 카테고리만 Map 저장
+        if (parent == null) {
+            log.debug("[{}] is the parent category.", productCategory.getName());
+            parentCategories.add(productCategory.getName());
+            return;
+
+        }
+
+        saveParentCategoriesName(parent, parentCategories);
+    }
 
     private List<ProductCategory> splitAndSaveByFullCategory(String fullCategory) {
 
