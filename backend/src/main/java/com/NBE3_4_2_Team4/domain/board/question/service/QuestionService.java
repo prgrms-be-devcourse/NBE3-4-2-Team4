@@ -93,6 +93,15 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
+    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategory(category, pageRequest)
+                .map(QuestionDto::new);
+    }
+
     @Transactional(readOnly = true)
     public QuestionDto findById(long id) {
         Question question = questionRepository.findById(id).orElseThrow(

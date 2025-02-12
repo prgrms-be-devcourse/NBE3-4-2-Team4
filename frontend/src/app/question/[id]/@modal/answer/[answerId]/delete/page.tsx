@@ -28,7 +28,7 @@ export default function Page({
 
   const { id, answerId } = use(params);
 
-  const onSelectAnswer = async () => {
+  const onDeleteAnswer = async () => {
     const response = await client.DELETE("/api/answers/{id}", {
       params: {
         path: {
@@ -78,7 +78,7 @@ export default function Page({
           >
             취소
           </Button>
-          <Button variant="destructive" onClick={onSelectAnswer}>
+          <Button variant="destructive" onClick={onDeleteAnswer}>
             삭제
           </Button>
         </DialogFooter>

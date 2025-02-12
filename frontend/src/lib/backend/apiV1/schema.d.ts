@@ -1232,6 +1232,7 @@ export interface operations {
                 keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
                 page?: number;
                 pageSize?: number;
+                categoryId?: number;
             };
             header?: never;
             path?: never;

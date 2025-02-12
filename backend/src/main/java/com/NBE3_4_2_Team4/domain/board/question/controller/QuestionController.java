@@ -32,10 +32,18 @@ public class QuestionController {
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
                                              @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
                                              @RequestParam(defaultValue = "1") int page,
-                                             @RequestParam(defaultValue = "10") int pageSize) {
-        return new PageDto<>(
-                questionService.findByListed(page, pageSize, searchKeyword, keywordType)
-        );
+                                             @RequestParam(defaultValue = "10") int pageSize,
+                                             @RequestParam(defaultValue = "0") long categoryId
+                                             ) {
+        if(categoryId == 0) {
+            return new PageDto<>(
+                    questionService.findByListed(page, pageSize, searchKeyword, keywordType)
+            );
+        } else {
+            return new PageDto<>(
+                    questionService.getQuestionsByCategory(categoryId, page, pageSize)
+            );
+        }
     }
 
     @GetMapping("/recommends")
