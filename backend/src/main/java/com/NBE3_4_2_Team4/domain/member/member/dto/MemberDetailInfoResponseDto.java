@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record MemberDetailInfoResponseDto(
+        String username,
         String nickname,
         long point,
         long questionSize,

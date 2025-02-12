@@ -66,12 +66,12 @@ export default function ClientPage({
                     <tbody>
                     <tr>
                         <td className="border-b py-2 px-4 text-center">
-                            <Link href="/mypage/questions" className="text-blue-500 hover:underline">
+                            <Link href="#" className="text-blue-500 hover:underline">
                                 {memberInfo?.questionSize !== undefined ? memberInfo?.questionSize : "0"}
                             </Link>
                         </td>
                         <td className="border-b py-2 px-4 text-center">
-                            <Link href="/mypage/answers" className="text-blue-500 hover:underline">
+                            <Link href="#" className="text-blue-500 hover:underline">
                                 {memberInfo?.answerSize !== undefined ? memberInfo?.answerSize : "0"}
                             </Link>
                         </td>
@@ -80,6 +80,9 @@ export default function ClientPage({
                 </table>
             </div>
 
+            <div className="mt-4 text-center flex items-center justify-center">
+                <p className="mr-2"><strong>아이디:</strong> {memberInfo?.username}</p>
+            </div>
             <div className="mt-4 text-center flex items-center justify-center">
                 <p className="mr-2"><strong>닉네임:</strong> {memberInfo?.nickname}</p>
                 <Link href="/mypage/edit/nickname">

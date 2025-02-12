@@ -10,7 +10,7 @@ export default function ClientPage() {
     <div className="flex-1 flex justify-center items-center">관리자 홈</div>
     <ul>
         <li className="flex justify-center items-center">
-            <a href="/point/admin" className="underline">
+            <a href="/adm/point">
                 포인트 관리 페이지로 이동
               </a>
         </li>
