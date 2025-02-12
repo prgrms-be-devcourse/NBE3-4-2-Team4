@@ -41,5 +41,19 @@ export default async function Page({
 
   const itemPage = response.data!;
 
-  return <ClientPage page={page} pageSize={pageSize} itemPage={itemPage} />;
+  // 상품 키워드 조회
+  const categoriesResponse = await client.GET("/api/products/categories/keyword", {
+    headers: {
+      cookie: cookieHeader.toString(),
+    },
+  });
+
+  const categories = categoriesResponse.data!.data;
+
+  return <ClientPage
+      page={page}
+      pageSize={pageSize}
+      itemPage={itemPage}
+      categories={categories}
+  />;
 }
