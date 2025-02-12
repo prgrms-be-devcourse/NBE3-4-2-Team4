@@ -54,7 +54,11 @@ export default function ProductList({
                       alt={item.product_name}
                       width={200}
                       height={200}
+<<<<<<< HEAD
                       className="object-cover rounded-t-xl w-full"
+=======
+                      className="object-cover rounded-t-xl w-full aspect-square"
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
                     />
                   )}
                   <CardHeader className="relative">

@@ -49,8 +49,14 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const { setId } = useId();
   const { role, setRole } = useRole();
   const pathname = usePathname();
+<<<<<<< HEAD
   const isAdminPage = pathname.startsWith("/adm");
   const isUserPage = !isAdminPage;
+=======
+  const isAdminPage = pathname.startsWith("/adm") && pathname !== "/adm/login";
+  const isUserPage = !isAdminPage;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -146,7 +152,11 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
+<<<<<<< HEAD
       <header>
+=======
+      <header className="relative z-10">
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
         <div className="flex container mx-auto py-2">
           {isUserPage && (
             <>
@@ -204,7 +214,14 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
               <span className="text-sm font-medium flex items-center">
                 환영합니다,
               </span>
+<<<<<<< HEAD
               <DropdownMenu>
+=======
+              <DropdownMenu
+                open={isDropdownOpen}
+                onOpenChange={setIsDropdownOpen}
+              >
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
                 <DropdownMenuTrigger asChild>
                   <Button variant="link">{nickname} 님</Button>
                 </DropdownMenuTrigger>
@@ -214,6 +231,10 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                       variant="link"
                       className="w-full justify-start text-sm font-medium flex items-center"
                       asChild
+<<<<<<< HEAD
+=======
+                      onClick={() => setIsDropdownOpen(false)}
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
                     >
                       <Link href="/mypage">
                         <UserRound /> 마이 페이지
@@ -226,6 +247,10 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                         variant="link"
                         className="w-full justify-start"
                         asChild
+<<<<<<< HEAD
+=======
+                        onClick={() => setIsDropdownOpen(false)}
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
                       >
                         <Link href="/adm">
                           <Settings /> 관리자 홈
@@ -234,7 +259,17 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem>
+<<<<<<< HEAD
                     <Button variant="link" onClick={handleLogout}>
+=======
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                    >
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
                       <LockOpen className="mr-1" />
                       로그아웃
                     </Button>
@@ -254,13 +289,21 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       <main className="flex-1 flex flex-col">{children}</main>
       <footer className="p-2 flex justify-center items-center">
         <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
+<<<<<<< HEAD
         {role === "ADMIN" && (
+=======
+        {/* {role === "ADMIN" && (
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
           <Button variant="link" asChild>
             <Link href="/adm">
               <Settings /> 관리자 홈
             </Link>
           </Button>
+<<<<<<< HEAD
         )}
+=======
+        )} */}
+>>>>>>> 1a8956e3b1e274225386c7f9ff46b205166c84ff
       </footer>
     </NextThemesProvider>
   );
