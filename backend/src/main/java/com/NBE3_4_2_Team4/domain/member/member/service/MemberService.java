@@ -8,6 +8,9 @@ import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
+import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -30,6 +34,8 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberQuerydsl memberQuerydsl;
+    private final PointHistoryRepository pointHistoryRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
@@ -72,14 +78,29 @@ public class MemberService {
         if (memberRepository.existsByUsername(username)) {
             throw new ServiceException("400-1", String.format("member already exist with name %s", username));
         }
-        return memberRepository.save(Member.builder()
+        Member member = memberRepository.save(Member.builder()
                 .role(role)
                 .oAuth2Provider(oAuth2Provider)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
-                .point(PointConstants.INITIAL_POINT)
                 .build());
+        saveInitialPoints(member);
+        return member;
+    }
+
+    private void saveInitialPoints(Member member) {
+        try {
+            pointHistoryRepository.save(PointHistory.builder()
+                            .member(member)
+                            .amount(PointConstants.INITIAL_POINT)
+                            .pointCategory(PointCategory.SIGN_UP)
+                            .correlationId("asdsaaddasasddsa")
+                    .build());
+            member.setPoint(PointConstants.INITIAL_POINT);
+        } catch (Exception e) {
+            log.error("포인트 저장 실패: {}", e.getMessage());
+        }
     }
 
     public Member userSignUp(
@@ -130,7 +151,6 @@ public class MemberService {
             }else if(!oAuth2DisconnectService.disconnectSuccess(refreshToken)){
                 log.error("OAuth2 연동 해제 실패. (연동 해제 요청이 실패했습니다.) 해당 서비스에 직접 연결 해제를 시도하세요. OAuth2Provider : {}, OAuth2Id : {}", oAuth2Provider, oAuth2RefreshToken.getOAuth2Id());
             }
-            oAuth2RefreshTokenRepository.deleteByMember(member);
         }
         memberQuerydsl.deleteMember(memberId);
     }

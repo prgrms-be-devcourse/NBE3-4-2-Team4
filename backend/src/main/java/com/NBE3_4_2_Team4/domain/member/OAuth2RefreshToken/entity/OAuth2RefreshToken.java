@@ -14,7 +14,7 @@ public class OAuth2RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne (fetch = FetchType.EAGER)
     private Member member;
 
     private String oAuth2Id;

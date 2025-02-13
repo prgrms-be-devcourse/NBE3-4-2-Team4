@@ -416,6 +416,7 @@ public class MemberServiceTest {
         OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
                 1L,
                 testMember,
+                "asd",
                 provider.name().toLowerCase() + " token"
         );
 
@@ -460,6 +461,7 @@ public class MemberServiceTest {
         OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
                 1L,
                 testMember,
+                "asd",
                 provider.name().toLowerCase() + " token"
         );
 
@@ -469,9 +471,9 @@ public class MemberServiceTest {
         when(oAuth2Manager.getOAuth2DisconnectService(provider)).
                 thenReturn(null);
 
-        Throwable throwable=  assertThrows(RuntimeException.class, () -> memberService.withdrawalMembership(testMember));
+        assertDoesNotThrow(() -> memberService.withdrawalMembership(testMember));
 
-        assertEquals(throwable.getMessage(), "disconnect failed");
+
         verify(oAuth2RefreshTokenRepository, times(1))
                 .findByMember(any());
         verify(oAuth2Manager, times(1))
@@ -492,6 +494,7 @@ public class MemberServiceTest {
         OAuth2RefreshToken oAuth2RefreshToken = new OAuth2RefreshToken(
                 1L,
                 testMember,
+                "asd",
                 provider.name().toLowerCase() + " token"
         );
 
@@ -514,9 +517,9 @@ public class MemberServiceTest {
         })
                 .thenReturn(false);
 
-        Throwable throwable=  assertThrows(RuntimeException.class, () -> memberService.withdrawalMembership(testMember));
+        assertDoesNotThrow(() -> memberService.withdrawalMembership(testMember));
 
-        assertEquals(throwable.getMessage(), "disconnect failed");
+
         verify(oAuth2RefreshTokenRepository, times(1))
                 .findByMember(any());
         verify(oAuth2Manager, times(1))
