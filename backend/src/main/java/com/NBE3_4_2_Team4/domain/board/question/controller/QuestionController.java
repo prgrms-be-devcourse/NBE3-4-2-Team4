@@ -124,4 +124,14 @@ public class QuestionController {
     public List<QuestionCategoryDto> getCategories() {
         return questionService.getCategories();
     }
+
+    @GetMapping("/me")
+    @Operation(summary = "내 질문 조회", description = "현재 사용자의 질문 조회")
+    public PageDto<QuestionDto> getMyQuestions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Member actor = AuthManager.getMemberFromContext();
+        return new PageDto<>(questionService.findByUserListed(actor, page, pageSize));
+    }
 }

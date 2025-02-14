@@ -48,43 +48,7 @@ export default function ClientPage({
   const handleEdit = () => {
     router.push(`/question/${question.id}/edit`);
   };
-<<<<<<< HEAD
   
-  const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
-  
-    try {
-      const response = await client.DELETE("/api/questions/{id}", {
-        credentials: "include",
-        params: { path: { id: question.id } },
-      });
-  
-      if (response.error) {
-        toast({
-          title: response.error.msg,
-          variant: "destructive",
-        });
-        return;
-      }
-  
-      toast({
-        title: response.data.msg,
-      });
-  
-      alert("삭제되었습니다."); // 삭제 완료 후 알림
-  
-      router.replace("/question/list") // 이전 페이지로 이동
-    } catch (error) {
-      toast({
-        title: "질문 삭제 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-=======
-
->>>>>>> refactor-style(SCRUM-129)
   const handleRecommend = async () => {
     try {
       const response = await client.PUT(

@@ -87,6 +87,13 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
+    public Page<QuestionDto> findByUserListed(Member actor, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);
+    }
+
+    @Transactional(readOnly = true)
     public Page<QuestionDto> findByRecommends(int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
         return questionRepository.findRecommendedQuestions(pageRequest)

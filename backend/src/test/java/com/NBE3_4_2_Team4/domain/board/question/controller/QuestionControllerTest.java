@@ -406,8 +406,7 @@ public class QuestionControllerTest {
                 .andDo(print());
 
         Page<QuestionDto> questionPages = questionService
-                .getQuestionsByCategory(1, 1, 10)
-                .map(QuestionDto::new);
+                .getQuestionsByCategory(1, 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(QuestionController.class))
