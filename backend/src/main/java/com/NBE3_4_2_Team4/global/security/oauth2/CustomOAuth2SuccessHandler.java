@@ -73,10 +73,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         return lastLoginDate == null || lastLoginDate.isBefore(today);
     }
 
-    private void rewardPointForFirstLoginOfDay(HttpServletRequest req, Member member){
-        req.getSession().setAttribute("attendanceMessage",
-                String.format("출석 포인트 %dp 지급 되었습니다.", PointConstants.ATTENDANCE_POINT));
-
+    private void rewardPointForFirstLoginOfDay(Member member){
         LocalDate today = LocalDate.now();
         memberQuerydsl.updateLastLoginDate(member, today);
 
