@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Editor } from "@tinymce/tinymce-react";
 
 const answerWriteFormSchema = z.object({
   content: z
@@ -42,6 +43,39 @@ export default function ClientPage({ params }: { params: { id: string } }) {
       content: "",
     },
   });
+
+  const MyEditor = () => {
+    return (
+      <Editor
+        apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
+        initialValue=""
+        onEditorChange={(content) => {
+          form.setValue("content", content);
+        }}
+        init={{
+          height: 500,
+          menubar: false,
+          plugins: [
+            "advlist",
+            "autolink",
+            "lists",
+            "link",
+            "image",
+            "charmap",
+            "preview",
+            "anchor",
+            "searchreplace",
+            "wordcount",
+          ],
+          toolbar:
+            "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image",
+          file_picker_callback: function (callback, value, meta) {
+            // 파일 업로드 처리 로직
+          },
+        }}
+      />
+    );
+  };
 
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
@@ -99,13 +133,14 @@ export default function ClientPage({ params }: { params: { id: string } }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
+                      {/* <Textarea
                         {...field}
                         placeholder="내용을 입력해주세요"
                         autoComplete="off"
                         rows={20}
                         autoFocus
-                      ></Textarea>
+                      /> */}
+                      <MyEditor />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
