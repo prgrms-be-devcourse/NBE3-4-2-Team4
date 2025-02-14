@@ -3,7 +3,9 @@ package com.NBE3_4_2_Team4.domain.board.question.service;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionCategoryDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionCategoryService {
     private final QuestionCategoryRepository questionCategoryRepository;
+    private final QuestionRepository questionRepository;
 
     @Transactional
     public QuestionCategoryDto createCategory(Member actor, String name) {
@@ -31,6 +34,11 @@ public class QuestionCategoryService {
     public void deleteCategory(Member actor, long id) {
         QuestionCategory category = questionCategoryRepository.findById(id).orElseThrow();
         category.checkActorCanDelete(actor);
+
+        // 해당 카테고리를 사용중인 질문이 있는지 확인
+        if (questionRepository.existsByCategory(category)) {
+            throw new ServiceException("400-1", "해당 카테고리를 사용중인 질문이 있습니다.");
+        }
 
         questionCategoryRepository.deleteById(id);
     }

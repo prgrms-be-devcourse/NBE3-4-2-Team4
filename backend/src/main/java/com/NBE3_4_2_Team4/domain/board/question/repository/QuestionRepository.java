@@ -26,4 +26,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Quest
     Page<Question> findByCategory(QuestionCategory category, Pageable pageable);
 
     Page<Question> findByAuthor(Member author, Pageable pageable);
+
+    boolean existsByCategory(QuestionCategory category);
 }
