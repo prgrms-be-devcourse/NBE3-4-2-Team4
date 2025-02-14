@@ -2,6 +2,8 @@ package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionCategoryDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
@@ -37,15 +39,20 @@ public class QuestionService {
                 .build());
     }
 
-    public List<QuestionCategory> getCategories() {
-        return questionCategoryRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<QuestionCategoryDto> getCategories() {
+        return questionCategoryRepository.findAll()
+                .stream()
+                .map(QuestionCategoryDto::new)
+                .toList();
     }
 
     public long count() {
         return questionRepository.count();
     }
 
-    public Question write(String title, String content, Long categoryId, Member author, long point) {
+    @Transactional
+    public QuestionDto write(String title, String content, Long categoryId, Member author, long point) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         Question question = Question.builder()
                 .title(title)
@@ -58,8 +65,9 @@ public class QuestionService {
 
         //질문글 작성 시 포인트 차감
         pointService.deductPoints(author.getUsername(), point, PointCategory.QUESTION);
+        questionRepository.save(question);
 
-        return questionRepository.save(question);
+        return new QuestionDto(question);
     }
 
     public List<Question> findAll() {
@@ -70,53 +78,62 @@ public class QuestionService {
         return questionRepository.findFirstByOrderByIdDesc();
     }
 
-    public Page<Question> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
+    @Transactional(readOnly = true)
+    public Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-        return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest);
+        return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest)
+                .map(QuestionDto::new);
     }
 
-    public Page<Question> findByRecommends(int page, int pageSize) {
+    @Transactional(readOnly = true)
+    public Page<QuestionDto> findByRecommends(int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findRecommendedQuestions(pageRequest);
+        return questionRepository.findRecommendedQuestions(pageRequest)
+                .map(QuestionDto::new);
     }
 
-    public Page<Question> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
-        return questionRepository.findByCategory(category, pageRequest);
+        return questionRepository.findByCategory(category, pageRequest)
+                .map(QuestionDto::new);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    @Transactional(readOnly = true)
+    public QuestionDto findById(long id) {
+        Question question = questionRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
+        return new QuestionDto(question);
     }
 
+    @Transactional
     public void delete(long id, Member actor) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
-        if (!question.getAuthor().equals(actor)) {
-            throw new ServiceException("403-1", "게시글 작성자만 삭제할 수 있습니다.");
-        }
+        question.checkActorCanDelete(actor);
         questionRepository.delete(question);
     }
 
-    public void update(Question q, String title, String content, Member actor, long point, long categoryId) {
-        if (!q.getAuthor().equals(actor)) {
-            throw new ServiceException("403-1", "게시글 작성자만 수정할 수 있습니다.");
-        }
+    @Transactional
+    public QuestionDto update(long id, String title, String content, Member actor, long point, long categoryId) {
+        Question question = questionRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
+        question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
-        q.setTitle(title);
-        q.setContent(content);
-        q.setPoint(point);
-        q.setCategory(category);
+        question.modify(title, content, point, category);
+        return new QuestionDto(question);
     }
 
-    public Question select(long id, long answerId) {
-        Question question = findById(id).orElseThrow(
+    @Transactional
+    public QuestionDto select(long id, long answerId) {
+        Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         Answer answer = answerRepository.findById(answerId).get();
@@ -141,7 +158,7 @@ public class QuestionService {
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
         pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
 
-        return question;
+        return new QuestionDto(question);
     }
 
     //7일 이상 질문들 closed 처리

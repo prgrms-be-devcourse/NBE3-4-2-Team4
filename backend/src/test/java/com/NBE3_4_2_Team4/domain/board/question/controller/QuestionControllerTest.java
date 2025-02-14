@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,8 @@ public class QuestionControllerTest {
     private AnswerService answerService;
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Test
     @DisplayName("전체 게시글 조회")
@@ -69,7 +72,7 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(get("/api/questions/1"))
                 .andDo(print());
 
-        Question question = questionService.findById(1L).orElseThrow();
+        Question question = questionRepository.findById(1L).orElseThrow();
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestion"))
@@ -313,7 +316,7 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1/select/1")).andDo(print());
 
-        Question question = questionService.findById(1).get();
+        Question question = questionRepository.findById(1L).get();
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("select"))
