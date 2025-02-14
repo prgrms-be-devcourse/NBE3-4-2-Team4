@@ -11,6 +11,7 @@ import com.querydsl.core.types.Projections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
 
 @Slf4j
 @Repository
@@ -64,6 +65,12 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
 
         delete(m)
                 .where(m.id.eq(memberId))
+                .execute();
+    }
+
+    public void updateLastLoginDate(Member member, LocalDate today) {
+        update(m)
+                .set(m.lastAttendanceDate, today)
                 .execute();
     }
 }
