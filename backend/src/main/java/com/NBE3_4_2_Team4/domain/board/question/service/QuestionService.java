@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
-import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionCategoryDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
@@ -32,20 +31,6 @@ public class QuestionService {
     private final QuestionCategoryRepository questionCategoryRepository;
     private final PointService pointService;
     private final AnswerRepository answerRepository;
-
-    public QuestionCategory createCategory(String name) {
-        return questionCategoryRepository.save(QuestionCategory.builder()
-                .name(name)
-                .build());
-    }
-
-    @Transactional(readOnly = true)
-    public List<QuestionCategoryDto> getCategories() {
-        return questionCategoryRepository.findAll()
-                .stream()
-                .map(QuestionCategoryDto::new)
-                .toList();
-    }
 
     public long count() {
         return questionRepository.count();

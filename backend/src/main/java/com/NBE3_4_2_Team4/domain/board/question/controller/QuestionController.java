@@ -1,10 +1,8 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
-import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionCategoryDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -15,10 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,7 +76,7 @@ public class QuestionController {
                 reqBody.categoryId(), author, reqBody.point());
 
         return new RsData<>(
-                "200-1",
+                "201-1",
                 "%d번 게시글 생성이 완료되었습니다.".formatted(question.getId()),
                 new QuestionWriteResDto(
                         question,
@@ -98,7 +93,7 @@ public class QuestionController {
                 actor, reqBody.point(), reqBody.categoryId());
 
         return new RsData<>(
-                "200-1",
+                "200-2",
                 "%d번 게시글 수정이 완료되었습니다.".formatted(id),
                 question
         );
@@ -113,16 +108,10 @@ public class QuestionController {
         QuestionDto question = questionService.select(id, answerId);
 
         return new RsData<>(
-                "200-2",
+                "200-3",
                 "%d번 게시글의 %d번 답변이 채택되었습니다.".formatted(id, answerId),
                 question
         );
-    }
-
-    @GetMapping("/categories")
-    @Operation(summary = "카테고리 조회", description = "카테고리 목록 가져오기")
-    public List<QuestionCategoryDto> getCategories() {
-        return questionService.getCategories();
     }
 
     @GetMapping("/me")
