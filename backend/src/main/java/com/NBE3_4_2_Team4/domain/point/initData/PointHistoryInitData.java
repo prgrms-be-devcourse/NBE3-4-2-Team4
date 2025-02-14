@@ -11,6 +11,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -33,6 +34,7 @@ public class PointHistoryInitData {
     private String adminUsername;
 
     @Bean
+    @DependsOn("memberInitDataApplicationRunner")
     public ApplicationRunner pointInitDataApplicationRunner() {
         return args -> {
             self.work();
