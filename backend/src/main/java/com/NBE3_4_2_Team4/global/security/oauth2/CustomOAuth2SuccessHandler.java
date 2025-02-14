@@ -56,7 +56,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
 
         if(isFirstLoginToday(member)){
-            rewardPointForFirstLoginOfDay(req, member);
+            rewardPointForFirstLoginOfDay(member);
             targetUrl += String.format("?attendanceMessage=%s",
                     URLEncoder.encode(
                             String.format("출석 포인트 %dp 지급 되었습니다.", PointConstants.ATTENDANCE_POINT),
