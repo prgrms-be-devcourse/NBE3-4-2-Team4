@@ -196,9 +196,11 @@ export default function ClientPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="whitespace-pre-line">
-                  {question.selectedAnswer.content}
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: question.selectedAnswer.content,
+                  }}
+                />
               </CardContent>
             </Card>
           </div>
@@ -220,7 +222,11 @@ export default function ClientPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="whitespace-pre-line">{answer.content}</div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: answer.content,
+                  }}
+                />
               </CardContent>
               {!question.closed && (
                 <CardFooter className="flex justify-end gap-2">

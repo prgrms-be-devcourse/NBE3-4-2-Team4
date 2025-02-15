@@ -53,6 +53,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           form.setValue("content", content);
         }}
         init={{
+          language: "ko_KR",
           height: 500,
           menubar: false,
           plugins: [
