@@ -58,6 +58,8 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           plugins: [
             "advlist",
             "autolink",
+            "codesample",
+            "emoticons",
             "lists",
             "link",
             "image",
@@ -66,11 +68,49 @@ export default function ClientPage({ params }: { params: { id: string } }) {
             "anchor",
             "searchreplace",
             "wordcount",
+            "media",
+            "table",
           ],
           toolbar:
-            "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image",
-          file_picker_callback: function (callback, value, meta) {
-            // 파일 업로드 처리 로직
+            "undo redo | blocks | " +
+            "bold italic underline strikethrough subscript superscript | " +
+            "forecolor backcolor | " +
+            "alignleft aligncenter alignright | " +
+            "bullist numlist outdent indent | " +
+            "codesample emoticons | link image media | table",
+          file_picker_types: "file media",
+          link_picker_callback: false,
+          link_quicklink: true,
+          media_alt_source: false,
+          media_poster: false,
+          images_upload_handler: async function (blobInfo, progress) {
+            try {
+              const formData = new FormData();
+              formData.append("file", blobInfo.blob());
+              formData.append("maxWidth", "1024");
+              formData.append("maxHeight", "1024");
+              formData.append("quality", "0.8");
+
+              const response = await fetch("/api/upload/image", {
+                method: "POST",
+                body: formData,
+              });
+
+              if (!response.ok) {
+                throw new Error("Upload failed");
+              }
+
+              const { imageUrl } = await response.json();
+              return imageUrl;
+            } catch (error) {
+              console.error("Image upload failed:", error);
+              toast({
+                title: "이미지 업로드 실패",
+                description: "이미지 업로드 중 오류가 발생했습니다.",
+                variant: "destructive",
+              });
+              throw error;
+            }
           },
         }}
       />
