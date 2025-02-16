@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -59,6 +58,9 @@ public class MemberService {
         return member;
     }
 
+
+
+
     public String getLogoutUrl(Member member){
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
@@ -68,6 +70,9 @@ public class MemberService {
         }
         return oAuth2LogoutService.getLogoutUrl();
     }
+
+
+
 
     public Member signUp(
             String username,
@@ -89,6 +94,9 @@ public class MemberService {
         return member;
     }
 
+
+
+
     private void saveInitialPoints(Member member) {
         try {
             pointHistoryRepository.save(PointHistory.builder()
@@ -103,6 +111,9 @@ public class MemberService {
         }
     }
 
+
+
+
     public Member userSignUp(
             String username,
             String password,
@@ -112,9 +123,14 @@ public class MemberService {
     }
 
 
+
+
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
         return memberQuerydsl.getMemberDetailInfo(member);
     }
+
+
+
 
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member memberData = memberRepository.findById(member.getId())
@@ -123,11 +139,17 @@ public class MemberService {
         memberData.setNickname(newNickname);
     }
 
+
+
+
     public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
 
     }
+
+
+
 
     public void withdrawalMembership(Member member) {
         Long memberId = member.getId();
