@@ -31,6 +31,8 @@ public class QAnswer extends EntityPathBase<Answer> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final ListPath<com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile, com.NBE3_4_2_Team4.domain.board.genFile.entity.QAnswerGenFile> genFiles = this.<com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile, com.NBE3_4_2_Team4.domain.board.genFile.entity.QAnswerGenFile>createList("genFiles", com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile.class, com.NBE3_4_2_Team4.domain.board.genFile.entity.QAnswerGenFile.class, PathInits.DIRECT2);
+
     //inherited
     public final NumberPath<Long> id = _super.id;
 

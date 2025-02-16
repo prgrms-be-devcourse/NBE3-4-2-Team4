@@ -103,4 +103,8 @@ public class AnswerService {
 
         answerRepository.delete(answer);
     }
+
+    public void flush() {
+        answerRepository.flush();
+    }
 }

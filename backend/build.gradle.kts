@@ -50,6 +50,13 @@ dependencies {
 	annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	implementation("org.apache.tika:tika-core:3.0.0")
+
+	implementation("com.twelvemonkeys.imageio:imageio-core:3.8.1")
+	implementation("com.twelvemonkeys.imageio:imageio-jpeg:3.8.1")
+	implementation("com.twelvemonkeys.imageio:imageio-png:3.8.1")
+	implementation("com.twelvemonkeys.imageio:imageio-gif:3.8.1")
+	implementation("com.twelvemonkeys.imageio:imageio-webp:3.8.1")
 }
 
 tasks.withType<Test> {

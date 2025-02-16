@@ -24,12 +24,12 @@ public class QProductOrder extends EntityPathBase<ProductOrder> {
 
     public final com.NBE3_4_2_Team4.global.jpa.entity.QBaseEntity _super = new com.NBE3_4_2_Team4.global.jpa.entity.QBaseEntity(this);
 
+    public final com.NBE3_4_2_Team4.domain.asset.main.entity.QAssetHistory assetHistory;
+
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final DateTimePath<java.time.LocalDateTime> orderTime = createDateTime("orderTime", java.time.LocalDateTime.class);
-
-    public final com.NBE3_4_2_Team4.domain.point.entity.QPointHistory pointHistory;
 
     public final com.NBE3_4_2_Team4.domain.product.product.entity.QProduct product;
 
@@ -51,7 +51,7 @@ public class QProductOrder extends EntityPathBase<ProductOrder> {
 
     public QProductOrder(Class<? extends ProductOrder> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.pointHistory = inits.isInitialized("pointHistory") ? new com.NBE3_4_2_Team4.domain.point.entity.QPointHistory(forProperty("pointHistory"), inits.get("pointHistory")) : null;
+        this.assetHistory = inits.isInitialized("assetHistory") ? new com.NBE3_4_2_Team4.domain.asset.main.entity.QAssetHistory(forProperty("assetHistory"), inits.get("assetHistory")) : null;
         this.product = inits.isInitialized("product") ? new com.NBE3_4_2_Team4.domain.product.product.entity.QProduct(forProperty("product"), inits.get("product")) : null;
     }
 
