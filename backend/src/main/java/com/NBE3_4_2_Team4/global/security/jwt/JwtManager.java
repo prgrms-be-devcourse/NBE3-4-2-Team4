@@ -1,8 +1,8 @@
 package com.NBE3_4_2_Team4.global.security.jwt;
 
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -92,5 +92,15 @@ public class JwtManager {
         }catch (UnsupportedJwtException | MalformedJwtException e){
             throw new JwtException(e.getLocalizedMessage());
         }
+    }
+
+
+    public String generateTempToken(TempUserBeforeSignUp tempUserBeforeSignUp){
+        return Jwts.builder()
+                .claim("username", tempUserBeforeSignUp.getName())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 60 * 1000))
+                .signWith(key)
+                .compact();
     }
 }

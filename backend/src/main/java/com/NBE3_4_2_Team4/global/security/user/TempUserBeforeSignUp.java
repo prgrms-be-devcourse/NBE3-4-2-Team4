@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TempUser extends User implements OAuth2User {
+public class TempUserBeforeSignUp extends User implements OAuth2User {
     private final Map<String, Object> attributes = new HashMap<>();
 
-    public TempUser(OAuth2UserInfo oAuth2UserInfo, String providerTypeCode, String refreshToken) {
+    public TempUserBeforeSignUp(OAuth2UserInfo oAuth2UserInfo, String providerTypeCode, String refreshToken) {
         super(String.format("%s_%s", providerTypeCode, oAuth2UserInfo.getOAuth2Id()), "", new ArrayList<GrantedAuthority>());
         attributes.put("refreshToken", refreshToken);
         attributes.put("name", oAuth2UserInfo.getNickname());
@@ -32,7 +32,7 @@ public class TempUser extends User implements OAuth2User {
         return attributes.get("refreshToken").toString();
     }
 
-    public String getUsername() {
+    public String getRealName() {
         return (String) attributes.get("name");
     }
 }

@@ -6,7 +6,7 @@ import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
-import com.NBE3_4_2_Team4.global.security.user.TempUser;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -54,6 +54,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomUser(member);
         }
 
-        return new TempUser(oAuth2UserInfo, providerTypeCode, refreshToken);
+        return new TempUserBeforeSignUp(oAuth2UserInfo, providerTypeCode, refreshToken);
     }
 }

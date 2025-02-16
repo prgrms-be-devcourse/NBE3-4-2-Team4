@@ -8,7 +8,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
-import com.NBE3_4_2_Team4.global.security.user.TempUser;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.LocalDate;
 
 
@@ -39,6 +41,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final AssetHistoryRepository assetHistoryRepository;
     private final MemberQuerydsl memberQuerydsl;
@@ -98,8 +101,14 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     }
 
     private void handleNewMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth) throws IOException {
-        TempUser tempUser = (TempUser) auth.getPrincipal();
+        TempUserBeforeSignUp tempUserBeforeSignUp = (TempUserBeforeSignUp) auth.getPrincipal();
         //TempUser 에는 OAuth2UserID (회원 가입용 아이디), 이름, 리프레시 토큰 있음.
+        String oAuth2UserId = tempUserBeforeSignUp.getName();
+
+        redisTemplate.opsForValue().set(oAuth2UserId, tempUserBeforeSignUp, Duration.ofHours(2));
+
+        String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
+        httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
 
         resp.sendRedirect("/signup");
     }
