@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.answer.initData;
 
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
+import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
@@ -9,6 +10,8 @@ import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.config.AppConfig;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +54,10 @@ public class AnswerInitData {
     public void work() {
         if (answerService.count() > 0) return;
 
+        if (AppConfig.isTest()) {
+            Ut.file.rm(AppConfig.getGenFileDirPath());
+        }
+
         Question question1 = questionRepository.findById(1L).get();
         Question question3 = questionRepository.findById(3L).get();
 
@@ -78,5 +85,22 @@ public class AnswerInitData {
                     There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
                     """);
         }
+
+        String genFile1FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/237/200/300", AppConfig.getTempDirPath());
+        answer3.addGenFile(AnswerGenFile.TypeCode.attachment, genFile1FilePath);
+
+        String genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/238/200/300", AppConfig.getTempDirPath());
+        answer3.addGenFile(AnswerGenFile.TypeCode.attachment, genFile2FilePath);
+
+        answer3.deleteGenFile(AnswerGenFile.TypeCode.attachment, 2);
+
+        genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/239/500/500", AppConfig.getTempDirPath());
+        answer3.addGenFile(AnswerGenFile.TypeCode.body, genFile2FilePath);
+
+        String newGenFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/240/600/500", AppConfig.getTempDirPath());
+        answer3.modifyGenFile(AnswerGenFile.TypeCode.body, 1, newGenFile2FilePath);
+
+        String genFile3FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/241/500/500", AppConfig.getTempDirPath());
+        answer3.putGenFile(AnswerGenFile.TypeCode.attachment, 3, genFile3FilePath);
     }
 }

@@ -1,10 +1,17 @@
 server:
   port: 8080
+  tomcat:
+    max-swallow-size: ${spring.servlet.multipart.max-request-size}
+    max-http-form-post-size: ${spring.servlet.multipart.max-request-size}
 spring:
   application:
     name: NBE3-4-2-Team4
   profiles:
     active: dev
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 500MB
   web:
     resources:
       add-mappings: false
@@ -69,3 +76,5 @@ custom: #   이 둘은 실제 서비스 시 변경 or prod.yml 을 만들고 거
         password: 1234
         nickname: 테스트 유저 2
         email: member2@test.com
+  genFile:
+    dirPath: c:/temp/wikipoint_dev
