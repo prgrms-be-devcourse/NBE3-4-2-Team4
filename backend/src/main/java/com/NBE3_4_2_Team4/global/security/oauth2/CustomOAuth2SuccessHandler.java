@@ -8,6 +8,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
+import com.NBE3_4_2_Team4.global.security.user.TempUser;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -45,6 +47,35 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication auth) {
+        if (auth instanceof CustomUser){
+            handleExistingMember(req, resp, auth);
+            super.onAuthenticationSuccess(req, resp, auth);
+        }else {
+            handleNewMember(req, resp, auth);
+        }
+//        CustomUser customUser = (CustomUser) auth.getPrincipal();
+//        Member member = customUser.getMember();
+//
+//        String accessToken = jwtManager.generateAccessToken(member);
+//        String refreshToken = jwtManager.generateRefreshToken(member);
+//        httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour);
+//
+//        String targetUrl = req.getParameter("state");
+//
+//        if(isFirstLoginToday(member)){
+//            rewardPointForFirstLoginOfDay(member);
+//
+//            targetUrl += String.format("?attendanceMessage=%s",
+//                    URLEncoder.encode(
+//                            String.format("출석 포인트 %dp 지급 되었습니다.", PointConstants.ATTENDANCE_POINT),
+//                            StandardCharsets.UTF_8));
+//        }
+//
+//        setDefaultTargetUrl(targetUrl);
+//        super.onAuthenticationSuccess(req, resp, auth);
+    }
+
+    private void handleExistingMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth){
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         Member member = customUser.getMember();
 
@@ -64,7 +95,13 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         }
 
         setDefaultTargetUrl(targetUrl);
-        super.onAuthenticationSuccess(req, resp, auth);
+    }
+
+    private void handleNewMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth) throws IOException {
+        TempUser tempUser = (TempUser) auth.getPrincipal();
+        //TempUser 에는 OAuth2UserID (회원 가입용 아이디), 이름, 리프레시 토큰 있음.
+
+        resp.sendRedirect("/signup");
     }
 
     private boolean isFirstLoginToday(Member member) {

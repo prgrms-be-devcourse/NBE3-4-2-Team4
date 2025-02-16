@@ -143,12 +143,14 @@ public class MemberService {
     }
 
 
+    public Optional<Member> signIn(String username){
+        return memberRepository.findByUsername(username);
+    }
 
 
     public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
-
     }
 
 
