@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
+import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -32,7 +33,7 @@ const answerWriteFormSchema = z.object({
     .string()
     .min(1, "내용을 입력해주세요.")
     .min(4, "내용은 4자 이상이여야 합니다."),
-  attachment_0: z.instanceof(File).optional(),
+  attachment_0: z.array(z.instanceof(File)).optional(),
 });
 
 type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
@@ -78,7 +79,8 @@ export default function ClientPage({
       // 파일 업로드 처리
       if (data.attachment_0) {
         const formData = new FormData();
-        formData.append("files", data.attachment_0);
+        for (const file of [...data.attachment_0].reverse())
+          formData.append("files", file);
 
         const uploadResponse = await client.POST(
           "/api/answers/{answerId}/genFiles/{typeCode}",
@@ -89,7 +91,7 @@ export default function ClientPage({
                 typeCode: "attachment",
               },
             },
-            body: formData,
+            body: formData as any,
           }
         );
 
@@ -155,13 +157,17 @@ export default function ClientPage({
                 name="attachment_0"
                 render={({ field: { onChange, ...field } }) => (
                   <FormItem>
-                    <FormLabel>첨부파일</FormLabel>
+                    <FormLabel>
+                      첨부파일 (드래그 앤 드롭 가능, 최대 5개)
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="file"
+                        multiple
+                        accept={getUplodableInputAccept()}
                         onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          onChange(file);
+                          const files = Array.from(e.target.files || []);
+                          onChange(files);
                         }}
                         {...field}
                         value={undefined}
