@@ -1,7 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
-import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
-import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.service.OAuth2RefreshTokenService;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.service.OAuth2UserInfoService;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
@@ -22,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberService memberService;
     private final OAuth2Manager oAuth2Manager;
-    private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
+    private final OAuth2RefreshTokenService oAuth2RefreshTokenService;
 
     @Transactional
     @Override
@@ -46,22 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
         Member member = memberService.signUpOrIn(username, "", nickname, oAuth2Provider);
-
-        if (refreshToken != null && !refreshToken.isBlank()) {
-            OAuth2RefreshToken oAuth2RefreshToken = oAuth2RefreshTokenRepository.findByMember(member)
-                    .orElse(null); // 먼저 찾기만 함
-            if (oAuth2RefreshToken != null) {
-                // 이미 존재하는 경우 업데이트
-                oAuth2RefreshToken.setRefreshToken(refreshToken);
-                oAuth2RefreshTokenRepository.save(oAuth2RefreshToken); // 업데이트
-            } else {
-                // 없으면 새로 저장
-                oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
-                        .member(member)
-                        .refreshToken(refreshToken)
-                        .build());
-            }
-        }
+        oAuth2RefreshTokenService.saveOrUpdateOAuth2RefreshToken(member, refreshToken, oAuth2Id);
 
         return new CustomUser(member);
     }

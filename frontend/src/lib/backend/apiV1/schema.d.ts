@@ -216,10 +216,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 전체 상품 조회 (페이징)
-         * @description 전체 상품을 페이징 처리하여 조회합니다.
+         * 전체 상품 조회 with 검색
+         * @description 전체 상품을 키워드, 페이징 처리하여 조회합니다.
          */
-        get: operations["getAllProductsWithPaging"];
+        get: operations["getAllProductsByKeywordWithPaging"];
         put?: never;
         /**
          * 단건 상품 생성
@@ -867,7 +867,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            pointCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             endDateTime?: string;
             /** Format: date-time */
@@ -1387,12 +1387,12 @@ export interface operations {
             };
         };
     };
-    getAllProductsWithPaging: {
+    getAllProductsByKeywordWithPaging: {
         parameters: {
             query?: {
                 page?: number;
                 pageSize?: number;
-                keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
+                keyword_type?: "ALL" | "NAME" | "CATEGORY";
                 keyword?: string;
             };
             header?: never;

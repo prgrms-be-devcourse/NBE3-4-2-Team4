@@ -66,7 +66,8 @@ public class Member {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private Long point;
+    @Builder.Default
+    private Long point = 0L;
 
     @OneToMany(mappedBy = "author")
     private List<Question> questions = new ArrayList<>();
