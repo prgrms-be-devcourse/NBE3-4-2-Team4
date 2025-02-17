@@ -1,9 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
-import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
@@ -13,6 +10,7 @@ import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -53,6 +51,13 @@ public class MemberController {
                         "400-2",
                         e.getMessage()
                 ));
+    }
+
+    @PostMapping("/api/members")
+    public RsData<Empty> signup(
+            @CookieValue(name = "tempToken") String tempToken,
+            @RequestBody @Valid SignupRequestDto signupRequestDto
+    ){
     }
 
     @PostMapping("/api/admin/login")
@@ -168,14 +173,13 @@ public class MemberController {
 
 
 
-
+    @PatchMapping("/api/members/nickname")
     @Operation(summary = "update member nickname", description = "회원의 닉네임을 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 닉네임 변경 성공"),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
     })
-    @PatchMapping("/api/members/nickname")
     public RsData<Empty> updateMembersNickname(
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member member = AuthManager.getNonNullMember();
