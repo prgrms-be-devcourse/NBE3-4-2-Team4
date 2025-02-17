@@ -62,6 +62,10 @@ public class MemberService {
 
 
 
+    public boolean nicknameExists(String nickname) {
+        return memberRepository.existsByUsername(nickname);
+    }
+
 
     public String getLogoutUrl(Member member){
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();

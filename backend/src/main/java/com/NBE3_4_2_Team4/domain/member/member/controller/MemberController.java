@@ -53,6 +53,13 @@ public class MemberController {
                 ));
     }
 
+    @GetMapping("/api/members")
+    public RsData<Boolean> nicknameCheck(
+            @RequestParam(name = "nickname") String nickname
+    ){
+        return new RsData<>("200-1", "", memberService.nicknameExists(nickname));
+    }
+
     @PostMapping("/api/members")
     public RsData<Empty> signup(
             @CookieValue(name = "tempToken") String tempToken,
