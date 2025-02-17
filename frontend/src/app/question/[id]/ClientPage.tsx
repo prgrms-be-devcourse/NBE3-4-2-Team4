@@ -17,6 +17,7 @@ import {
   Lightbulb,
   Pencil,
   PencilLine,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -26,8 +27,18 @@ import { useNickname } from "@/context/NicknameContext";
 import { useToast } from "@/hooks/use-toast";
 import Pagination1 from "@/lib/business/components/Pagination1";
 import client from "@/lib/backend/client";
+import Image from "next/image";
+import { AttachmentFiles } from "@/lib/business/components/AttachmentFiles";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
+
+type GenFile = {
+  id: number;
+  fileName: string;
+  originalFileName: string;
+  typeCode: "body" | "attachment";
+  fileDateDir: string;
+};
 
 export default function ClientPage({
   question,
@@ -228,6 +239,9 @@ export default function ClientPage({
                   }}
                 />
               </CardContent>
+              <CardFooter className="flex justify-end">
+                <AttachmentFiles answerId={answer.id} />
+              </CardFooter>
               {!question.closed && (
                 <CardFooter className="flex justify-end gap-2">
                   {id === question.authorId && (

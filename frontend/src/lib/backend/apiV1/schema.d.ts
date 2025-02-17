@@ -861,26 +861,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/categories/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * 카테고리 삭제
-         * @description 카테고리 삭제하기
-         */
-        delete: operations["deleteCategory"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/answers/{answerId}/genFiles": {
         parameters: {
             query?: never;
@@ -915,7 +895,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/members": {
+    "/api/questions/categories/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -926,10 +906,10 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * withdrawal membership
-         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
+         * 카테고리 삭제
+         * @description 카테고리 삭제하기
          */
-        delete: operations["withdrawalMembership"];
+        delete: operations["deleteCategory"];
         options?: never;
         head?: never;
         patch?: never;
