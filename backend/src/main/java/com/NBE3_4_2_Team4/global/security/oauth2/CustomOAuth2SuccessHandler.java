@@ -47,7 +47,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication auth) {
-        if (auth instanceof CustomUser){
+        if (auth.getPrincipal() instanceof CustomUser){
             handleExistingMember(req, resp, auth);
             super.onAuthenticationSuccess(req, resp, auth);
         }else {
