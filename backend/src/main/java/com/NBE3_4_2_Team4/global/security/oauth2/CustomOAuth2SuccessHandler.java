@@ -51,7 +51,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             handleExistingMember(req, resp, auth);
             super.onAuthenticationSuccess(req, resp, auth);
         }else {
-            log.error("it's new member!");
             handleNewMember(req, resp, auth);
         }
 //        CustomUser customUser = (CustomUser) auth.getPrincipal();
@@ -104,7 +103,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
         httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
-        log.error("handling new member!");
 
         resp.sendRedirect("http://localhost:3000/signup");
     }

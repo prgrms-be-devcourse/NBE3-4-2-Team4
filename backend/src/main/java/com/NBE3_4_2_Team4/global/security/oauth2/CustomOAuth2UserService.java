@@ -59,11 +59,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomUser(member);
         }
 
-        Object o = redisTemplate.opsForValue().get(oAuth2Id);
-        log.warn("value : {}", o);
-
-        log.warn("oauth2UserInfo : {}", oAuth2UserInfo);
-
         TempUserBeforeSignUp tempUserBeforeSignUp =  redisTemplate.hasKey(oAuth2Id) ?
                 objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class):
                 new TempUserBeforeSignUp(oAuth2UserInfo, providerTypeCode, refreshToken);
