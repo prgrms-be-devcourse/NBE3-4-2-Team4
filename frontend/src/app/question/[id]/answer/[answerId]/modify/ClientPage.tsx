@@ -14,8 +14,10 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { components } from "@/lib/backend/apiV1/schema";
@@ -30,6 +32,7 @@ const answerWriteFormSchema = z.object({
     .string()
     .min(1, "내용을 입력해주세요.")
     .min(4, "내용은 4자 이상이여야 합니다."),
+  attachment_0: z.instanceof(File).optional(),
 });
 
 type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
@@ -72,9 +75,38 @@ export default function ClientPage({
         return;
       }
 
+      // 파일 업로드 처리
+      if (data.attachment_0) {
+        const formData = new FormData();
+        formData.append("files", data.attachment_0);
+
+        const uploadResponse = await client.POST(
+          "/api/answers/{answerId}/genFiles/{typeCode}",
+          {
+            params: {
+              path: {
+                answerId: answer.id,
+                typeCode: "attachment",
+              },
+            },
+            body: formData,
+          }
+        );
+
+        if (uploadResponse.error) {
+          toast({
+            title: uploadResponse.error.msg,
+            variant: "destructive",
+          });
+
+          return;
+        }
+      }
+
       toast({
         title: response.data.msg,
       });
+
       router.replace(`/question/${id}`);
     } catch (error) {
       toast({
@@ -112,6 +144,28 @@ export default function ClientPage({
                         rows={20}
                         autoFocus
                       ></Textarea>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attachment_0"
+                render={({ field: { onChange, ...field } }) => (
+                  <FormItem>
+                    <FormLabel>첨부파일</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          onChange(file);
+                        }}
+                        {...field}
+                        value={undefined}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
