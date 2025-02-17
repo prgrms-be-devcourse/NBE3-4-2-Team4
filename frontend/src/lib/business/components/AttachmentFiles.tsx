@@ -8,6 +8,7 @@ import Image from "next/image";
 import { components } from "@/lib/backend/apiV1/schema";
 import { useEffect, useState } from "react";
 import imageLoader from "@/utils/imageLoader";
+import { getFileSize } from "@/utils/fileSize";
 
 type GenFile = components["schemas"]["AnswerGenFileDto"];
 
@@ -38,25 +39,29 @@ export const AttachmentFiles = ({ answerId }: { answerId: number }) => {
   }, [answerId, toast]);
 
   return (
-    <div className="-mx-4 flex justify-end">
+    <div className="flex flex-wrap gap-2 p-2">
       {files
         .filter((file) => file.type_code === "attachment")
         .map((file) => (
-          <Button key={file.id} variant="link" asChild>
+          <Button
+            key={file.id}
+            variant="outline"
+            size="sm"
+            className="h-8 px-3"
+            asChild
+          >
             <a
-              href={`http://localhost:8080/answer/genFile/download/${answerId}/${file.file_name}`}
-              className="flex items-center gap-2"
+              href={file.download_url}
+              className="flex items-center gap-1.5"
+              title={file.original_file_name}
             >
-              {/* <Image
-                src={`http://localhost:8080/gen/answerGenFile/${file.type_code}/${file.file_date_dir}/${file.file_name}`}
-                alt={file.original_file_name}
-                loader={imageLoader}
-                width={16}
-                height={16}
-                className="align-self h-[16px] w-[16px]"
-              /> */}
-              <Download />
-              <span>{file.original_file_name}</span>
+              <Download className="h-3.5 w-3.5" />
+              <span className="max-w-[100px] truncate">
+                {file.original_file_name}
+              </span>
+              <span className="text-xs text-gray-500">
+                ({getFileSize(file.file_size)})
+              </span>
             </a>
           </Button>
         ))}
