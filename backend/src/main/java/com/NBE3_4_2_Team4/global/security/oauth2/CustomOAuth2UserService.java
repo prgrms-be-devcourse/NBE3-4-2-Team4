@@ -7,8 +7,10 @@ import com.NBE3_4_2_Team4.global.security.user.CustomUser;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -16,6 +18,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Slf4j
@@ -25,6 +28,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberService memberService;
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenService oAuth2RefreshTokenService;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     @Override
@@ -54,6 +59,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomUser(member);
         }
 
-        return new TempUserBeforeSignUp(oAuth2UserInfo, providerTypeCode, refreshToken);
+        Object o = redisTemplate.opsForValue().get(oAuth2Id);
+        log.warn("value : {}", o);
+
+        log.warn("oauth2UserInfo : {}", oAuth2UserInfo);
+
+        TempUserBeforeSignUp tempUserBeforeSignUp =  redisTemplate.hasKey(oAuth2Id) ?
+                objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class):
+                new TempUserBeforeSignUp(oAuth2UserInfo, providerTypeCode, refreshToken);
+
+
+        redisTemplate.opsForValue().set(oAuth2Id, tempUserBeforeSignUp, Duration.ofHours(2));
+
+        return tempUserBeforeSignUp;
     }
 }

@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.LocalDate;
 
 
@@ -41,7 +39,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     private final AssetHistoryRepository assetHistoryRepository;
     private final MemberQuerydsl memberQuerydsl;
@@ -54,6 +51,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             handleExistingMember(req, resp, auth);
             super.onAuthenticationSuccess(req, resp, auth);
         }else {
+            log.error("it's new member!");
             handleNewMember(req, resp, auth);
         }
 //        CustomUser customUser = (CustomUser) auth.getPrincipal();
@@ -103,14 +101,12 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private void handleNewMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth) throws IOException {
         TempUserBeforeSignUp tempUserBeforeSignUp = (TempUserBeforeSignUp) auth.getPrincipal();
         //TempUser 에는 OAuth2UserID (회원 가입용 아이디), 이름, 리프레시 토큰 있음.
-        String oAuth2UserId = tempUserBeforeSignUp.getName();
-
-        redisTemplate.opsForValue().set(oAuth2UserId, tempUserBeforeSignUp, Duration.ofHours(2));
 
         String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
         httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
+        log.error("handling new member!");
 
-        resp.sendRedirect("/signup");
+        resp.sendRedirect("http://localhost:3000/signup");
     }
 
     private boolean isFirstLoginToday(Member member) {
