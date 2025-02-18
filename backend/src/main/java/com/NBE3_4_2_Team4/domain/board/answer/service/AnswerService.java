@@ -4,7 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -20,11 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AnswerService {
     private final AnswerRepository answerRepository;
-    private final QuestionService questionService;
+    private final QuestionRepository questionRepository;
 
     @Transactional
     public AnswerDto write(long questionId, String content) {
-        Question question = questionService.findById(questionId).orElseThrow(
+        Question question = questionRepository.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
         );
 
@@ -73,7 +73,7 @@ public class AnswerService {
 
     @Transactional(readOnly = true)
     public Page<AnswerDto> items(long questionId, int page, int pageSize) {
-        Question question = questionService.findById(questionId).orElseThrow(
+        Question question = questionRepository.findById(questionId).orElseThrow(
                 () -> new ServiceException("404-1", "해당 질문글이 존재하지 않습니다.")
         );
 
