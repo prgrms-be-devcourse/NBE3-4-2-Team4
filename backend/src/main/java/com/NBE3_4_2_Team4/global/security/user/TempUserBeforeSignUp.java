@@ -27,7 +27,7 @@ public class TempUserBeforeSignUp extends User implements OAuth2User {
         super(String.format("%s_%s", providerTypeCode, oAuth2UserInfo.getOAuth2Id()), "", new ArrayList<GrantedAuthority>());
         attributes.put("providerTypeCode", providerTypeCode);
         attributes.put("refreshToken", refreshToken);
-        attributes.put("name", oAuth2UserInfo.getNickname());
+        attributes.put("realName", oAuth2UserInfo.getRealName());
         attributes.put("oAuth2Id", oAuth2UserInfo.getOAuth2Id());
     }
 
@@ -46,7 +46,7 @@ public class TempUserBeforeSignUp extends User implements OAuth2User {
     }
 
     public String getRealName() {
-        return (String) attributes.get("name");
+        return (String) attributes.get("realName");
     }
 
     public String getProviderTypeCode() {
