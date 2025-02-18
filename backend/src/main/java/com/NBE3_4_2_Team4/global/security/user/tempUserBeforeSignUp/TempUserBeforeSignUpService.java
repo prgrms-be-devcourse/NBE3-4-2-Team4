@@ -22,7 +22,7 @@ public class TempUserBeforeSignUpService {
         String oAuth2Id = oAuth2UserInfo.getOAuth2Id();
 
         TempUserBeforeSignUp tempUserBeforeSignUp =  redisTemplate.hasKey(oAuth2Id) ?
-                objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class):
+                getTempUserFromRedis(oAuth2Id) :
                 new TempUserBeforeSignUp(oAuth2UserInfo, providerTypeCode, refreshToken);
 
         redisTemplate.opsForValue().set(oAuth2Id, tempUserBeforeSignUp, Duration.ofHours(2));
@@ -30,7 +30,7 @@ public class TempUserBeforeSignUpService {
         return tempUserBeforeSignUp;
     }
 
-    public TempUserBeforeSignUp getTempUserFromRedis(String key) {
+    private TempUserBeforeSignUp getTempUserFromRedis(String key) {
         return objectMapper.convertValue(redisTemplate.opsForValue().get(key), TempUserBeforeSignUp.class);
     }
 
