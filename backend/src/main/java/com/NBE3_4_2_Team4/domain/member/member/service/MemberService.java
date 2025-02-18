@@ -114,7 +114,7 @@ public class MemberService {
     }
 
 
-    public void signUp(String tempToken, SignupRequestDto signupRequestDto){
+    public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
         Map<String, Object> claims = jwtManager.getClaims(tempToken);
         String oAuth2Id = (String) claims.get("oAuth2Id");
         TempUserBeforeSignUp tempUserBeforeSignUp =
@@ -139,6 +139,8 @@ public class MemberService {
                 .realName(realName)
                 .build());
         saveInitialPoints(member);
+
+        return member;
     }
 
 

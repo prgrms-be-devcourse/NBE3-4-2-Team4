@@ -6,11 +6,15 @@ import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2Refr
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.GoogleDisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.KaKaoDisconnectService;
@@ -19,7 +23,11 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.DefaultLogou
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.GoogleLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.KakaoLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,16 +37,17 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 @Transactional
 public class MemberServiceTest {
@@ -61,6 +70,9 @@ public class MemberServiceTest {
     private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     @Mock
+    private PointHistoryRepository pointHistoryRepository;
+
+    @Mock
     private DefaultLogoutService defaultLogoutService;
 
     @Mock
@@ -81,6 +93,14 @@ public class MemberServiceTest {
     @Mock
     private GoogleDisconnectService googleDisconnectService;
 
+    @Mock
+    private JwtManager jwtManager;
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
+    @Mock
+    private ObjectMapper objectMapper;
+    @Mock
+    private ValueOperations<String, Object> valueOperations;
     private final String username = "test username";
     private final String password = "test password";
     private final String nickname = "test nickname";
@@ -320,6 +340,52 @@ public class MemberServiceTest {
         verify(memberRepository, times(1))
                 .save(any());
     }
+
+    @Test
+    void signUp_Should_SaveMemberAndAssignInitialPoints() {
+        // Given
+        String tempToken = "mockJwtToken";
+        String oAuth2Id = "mockOAuth2Id";
+        SignupRequestDto signupRequestDto = new SignupRequestDto("testNick", "testEmail@example.com");
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("oAuth2Id", oAuth2Id);
+
+        log.error("claims: {}", claims);
+
+        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
+        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");
+
+        Member mockMember = Member.builder()
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.KAKAO)
+                .username("testUser")
+                .password("")
+                .nickname("testNick")
+                .emailAddress("testEmail@example.com")
+                .realName("Test Real Name")
+                .build();
+
+        when(jwtManager.getClaims(tempToken)).thenReturn(claims);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);  // ✅ opsForValue() Mocking
+        when(valueOperations.get(oAuth2Id)).thenReturn(tempUserBeforeSignUp);
+        when(objectMapper.convertValue(tempUserBeforeSignUp, TempUserBeforeSignUp.class)).thenReturn(tempUserBeforeSignUp);
+        when(passwordEncoder.encode("")).thenReturn("encodedPassword");
+        when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
+
+        // When
+        Member savedMember = memberService.signUp(tempToken, signupRequestDto);
+
+        // Then
+        verify(memberRepository, times(1)).save(any(Member.class));
+        verify(pointHistoryRepository, times(1)).save(any(PointHistory.class));
+        assertNotNull(savedMember);
+        assertEquals("testUser", savedMember.getUsername());
+        assertEquals("testNick", savedMember.getNickname());
+        assertEquals("testEmail@example.com", savedMember.getEmailAddress());
+        assertEquals(Member.Role.USER, savedMember.getRole());
+    }
+
 
     @Test
     void updateNicknameTest1(){
