@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,7 +36,7 @@ public class PointConcurrencyTest {
     @BeforeEach
     void setup() {
         member1 = Member.builder()
-                .point(300L)
+                .point(new Point(300L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m1")
@@ -44,7 +44,7 @@ public class PointConcurrencyTest {
                 .build();
 
         member2 = Member.builder()
-                .point(0L)
+                .point(new Point(0L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m2")
@@ -76,8 +76,8 @@ public class PointConcurrencyTest {
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
         Member updatedMember2 = memberRepository.findById(member2Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        assertEquals(200L, updatedMember1.getPoint());
-        assertEquals(100L, updatedMember2.getPoint());
+        assertEquals(200L, updatedMember1.getPoint().getAmount());
+        assertEquals(100L, updatedMember2.getPoint().getAmount());
     }
 
 }

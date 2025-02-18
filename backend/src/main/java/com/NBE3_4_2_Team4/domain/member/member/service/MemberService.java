@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
@@ -105,7 +106,7 @@ public class MemberService {
                             .pointCategory(PointCategory.SIGN_UP)
                             .correlationId("asdsaaddasasddsa")
                     .build());
-            member.setPoint(PointConstants.INITIAL_POINT);
+            member.setPoint(new Point(PointConstants.INITIAL_POINT));
         } catch (Exception e) {
             log.error("포인트 저장 실패: {}", e.getMessage());
         }

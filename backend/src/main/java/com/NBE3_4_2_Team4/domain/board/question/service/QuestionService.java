@@ -49,7 +49,7 @@ public class QuestionService {
                 .build();
 
         //질문글 작성 시 포인트 차감
-        pointService.deductPoints(author.getUsername(), point, PointCategory.QUESTION);
+        pointService.deduct(author.getUsername(), point, PointCategory.QUESTION);
         questionRepository.save(question);
 
         return new QuestionDto(question);
@@ -148,7 +148,7 @@ public class QuestionService {
         question.setClosed(true);
 
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
-        pointService.accumulatePoints(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
+        pointService.accumulate(answer.getAuthor().getUsername(), question.getPoint(), PointCategory.ANSWER);
 
         return new QuestionDto(question);
     }
@@ -165,7 +165,7 @@ public class QuestionService {
 
             if(question.getAnswers().size() == 0) {
                 //답변자가 없는 경우 질문자에게 포인트 반환
-                pointService.accumulatePoints(question.getAuthor().getUsername(), question.getPoint(), PointCategory.REFUND);
+                pointService.accumulate(question.getAuthor().getUsername(), question.getPoint(), PointCategory.REFUND);
 
                 continue;
             }
@@ -179,7 +179,7 @@ public class QuestionService {
                 answer.setSelectedAt();
 
                 //분배된 포인트 지급
-                pointService.accumulatePoints(answer.getAuthor().getUsername(), selectedPoint, PointCategory.EXPIRED_QUESTION);
+                pointService.accumulate(answer.getAuthor().getUsername(), selectedPoint, PointCategory.EXPIRED_QUESTION);
             }
         }
 
@@ -214,7 +214,7 @@ public class QuestionService {
             if (accumulatedCount < 3 && currentRank <= 3) {
                 int pointToAward = points[currentRank - 1]; // 순위에 맞는 포인트(공동 순위 고려)
                 if (author != null) {
-                    pointService.accumulatePoints(author.getUsername(), pointToAward, PointCategory.RANKING);
+                    pointService.accumulate(author.getUsername(), pointToAward, PointCategory.RANKING);
                 }
                 // 포인트 지급 후 랭킹 포인트 지급 여부 true로 변경
                 question.setRankReceived(true);

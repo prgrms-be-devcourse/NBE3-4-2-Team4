@@ -26,7 +26,7 @@ public class PointAdminController {
     @PutMapping("/accumulate")
     public RsData<Empty> accumulateForMember(@RequestBody @Validated PointTransferReq reqDto) {
 
-        pointService.accumulatePoints(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
+        pointService.accumulate(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
 
         return new RsData<>(
                 "200-1",
@@ -39,7 +39,7 @@ public class PointAdminController {
     @PutMapping("/deduct")
     public RsData<Empty> deductFromMember(@RequestBody @Validated PointTransferReq reqDto) {
 
-        pointService.deductPoints(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
+        pointService.deduct(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
         return new RsData<>(
                 "200-1",
                 "차감 성공",

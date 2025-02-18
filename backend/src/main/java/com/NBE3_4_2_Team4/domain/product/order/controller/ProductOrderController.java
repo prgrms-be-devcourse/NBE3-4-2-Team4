@@ -34,7 +34,7 @@ public class ProductOrderController {
     ) {
 
         // 해당하는 유저의 포인트를 상품 가격만큼 착감
-        Long pointHistoryId = pointService.deductPoints(
+        Long pointHistoryId = pointService.deduct(
                 request.getUsername(),
                 request.getAmount(),
                 PointCategory.PURCHASE

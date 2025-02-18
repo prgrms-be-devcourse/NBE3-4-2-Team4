@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
 
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
@@ -10,7 +11,6 @@ import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class PointServiceTest {
     @BeforeEach
     void setup() {
         member1 = Member.builder()
-                .point(300L)
+                .point(new Point(300L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m1")
@@ -57,7 +57,7 @@ public class PointServiceTest {
                 .build();
 
         member2 = Member.builder()
-                .point(0L)
+                .point(new Point(0L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m2")
@@ -84,28 +84,28 @@ public class PointServiceTest {
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
         Member updatedMember2 = memberRepository.findById(member2Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        assertEquals(150L, updatedMember1.getPoint());
-        assertEquals(150L, updatedMember2.getPoint());
+        assertEquals(150L, updatedMember1.getPoint().getAmount());
+        assertEquals(150L, updatedMember2.getPoint().getAmount());
     }
 
     @Test
     @DisplayName("accumulation test")
     void t2() {
-        pointService.accumulatePoints(member1.getUsername(), 150L, PointCategory.ANSWER);
+        pointService.accumulate(member1.getUsername(), 150L, PointCategory.ANSWER);
 
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        assertEquals(450, updatedMember1.getPoint());
+        assertEquals(450, updatedMember1.getPoint().getAmount());
     }
 
     @Test
     @DisplayName("deduction test")
     void t3() {
-        pointService.deductPoints(member1.getUsername(), 150L, PointCategory.ANSWER);
+        pointService.deduct(member1.getUsername(), 150L, PointCategory.ANSWER);
 
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        assertEquals(150, updatedMember1.getPoint());
+        assertEquals(150, updatedMember1.getPoint().getAmount());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class PointServiceTest {
     void t6() {
         pointService.attend(member1Id);
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
-        assertEquals(310, updatedMember1.getPoint());
+        assertEquals(310, updatedMember1.getPoint().getAmount());
         assertEquals(LocalDate.now(), updatedMember1.getLastAttendanceDate());
     }
 
