@@ -119,8 +119,26 @@ public class MemberService {
         String oAuth2Id = (String) claims.get("oAuth2Id");
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class);
+        /*음 그니까.. 지금..
+        username (아이디) 이랑  realName 이랑..provider 가 토큰에 tempUser 에 들어있고.
+        nickname 이랑 이메일은 signupRequestDto 에 들어있고..
+        */
+        String username = tempUserBeforeSignUp.getUsername();
+        String realName = tempUserBeforeSignUp.getRealName();
+        String provider = tempUserBeforeSignUp.getProviderTypeCode();
+        String nickname = signupRequestDto.nickname();
+        String emailAddress = signupRequestDto.email();
 
-
+        Member member = memberRepository.save(Member.builder()
+                        .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(provider))
+                .username(username)
+                .password(passwordEncoder.encode(""))
+                .nickname(nickname)
+                .emailAddress(emailAddress)
+                .realName(realName)
+                .build());
+        saveInitialPoints(member);
     }
 
 
