@@ -59,8 +59,6 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    private String phoneNumber;
-
     private String realName;
 
     private String emailAddress;
