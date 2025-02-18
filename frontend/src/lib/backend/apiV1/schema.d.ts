@@ -208,6 +208,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리 조회
+         * @description 카테고리 목록 가져오기
+         */
+        get: operations["getCategories"];
+        put?: never;
+        /**
+         * 카테고리 추가
+         * @description 카테고리 추가하기
+         */
+        post: operations["createCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -368,7 +392,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/categories": {
+    "/api/questions/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -376,10 +400,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 카테고리 조회
-         * @description 카테고리 목록 가져오기
+         * 내 질문 조회
+         * @description 현재 사용자의 질문 조회
          */
-        get: operations["getCategories"];
+        get: operations["getMyQuestions"];
         put?: never;
         post?: never;
         delete?: never;
@@ -622,6 +646,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 카테고리 삭제
+         * @description 카테고리 삭제하기
+         */
+        delete: operations["deleteCategory"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/members": {
         parameters: {
             query?: never;
@@ -752,6 +796,19 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
+        QuestionCategoryReqDto: {
+            name: string;
+        };
+        QuestionCategoryDto: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+        };
+        RsDataQuestionCategoryDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["QuestionCategoryDto"];
+        };
         writeItem: {
             productName: string;
             /** Format: int32 */
@@ -817,11 +874,6 @@ export interface components {
             totalItems?: number;
             hasMore?: boolean;
             items?: components["schemas"]["AnswerDto"][];
-        };
-        QuestionCategoryDto: {
-            /** Format: int64 */
-            id?: number;
-            name?: string;
         };
         PageDtoGetItem: {
             /** Format: int32 */
@@ -1387,6 +1439,68 @@ export interface operations {
             };
         };
     };
+    getCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    createCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionCategoryReqDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionCategoryDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getAllProductsByKeywordWithPaging: {
         parameters: {
             query?: {
@@ -1811,9 +1925,12 @@ export interface operations {
             };
         };
     };
-    getCategories: {
+    getMyQuestions: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1826,7 +1943,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
                 };
             };
             /** @description Bad Request */
@@ -2214,6 +2331,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["PageDtoAnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deleteCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */

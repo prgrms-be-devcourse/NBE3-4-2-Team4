@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData;
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
@@ -25,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @DependsOn("questionInitData")
 public class AnswerInitData {
     private final AnswerService answerService;
-    private final QuestionService questionService;
     private final QuestionInitData questionInitData;
     private final MemberRepository memberRepository;
+    private final QuestionRepository questionRepository;
     private final MemberInitData memberInitData;
 
     @Value("${custom.initData.member.member1.username}")
@@ -50,8 +51,8 @@ public class AnswerInitData {
     public void work() {
         if (answerService.count() > 0) return;
 
-        Question question1 = questionService.findById(1).get();
-        Question question2 = questionService.findById(2).get();
+        Question question1 = questionRepository.findById(1L).get();
+        Question question2 = questionRepository.findById(2L).get();
 
         Member author = memberRepository.findByUsername(member1Username).get();
 
