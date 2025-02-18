@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.global.security.user;
+package com.NBE3_4_2_Team4.global.security.user.customUser;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import lombok.Getter;

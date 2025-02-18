@@ -24,7 +24,7 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.GoogleLogout
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.KakaoLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
-import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

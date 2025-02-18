@@ -3,7 +3,7 @@ package com.NBE3_4_2_Team4.global.security.oauth2.disconectService.scheduler;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
-import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

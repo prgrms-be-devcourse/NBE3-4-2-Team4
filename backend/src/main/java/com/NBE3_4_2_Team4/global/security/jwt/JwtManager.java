@@ -2,7 +2,7 @@ package com.NBE3_4_2_Team4.global.security.jwt;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;

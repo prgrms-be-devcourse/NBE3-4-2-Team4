@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.global.security.user;
+package com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp;
 
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.fasterxml.jackson.annotation.JsonCreator;

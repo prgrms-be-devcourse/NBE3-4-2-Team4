@@ -21,7 +21,7 @@ import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
-import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
