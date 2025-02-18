@@ -61,7 +61,13 @@ public class Member {
 
     private String phoneNumber;
 
+    private String realName;
+
+    private String emailAddress;
+
+    @Column(nullable = false, unique = true)
     private String nickname;
+
 
     @CreatedDate
     @Setter(AccessLevel.NONE)

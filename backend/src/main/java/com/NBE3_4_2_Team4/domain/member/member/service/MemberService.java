@@ -8,6 +8,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -16,16 +17,22 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -40,6 +47,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
+
+
+    private final JwtManager jwtManager;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
+
 
     @Transactional(readOnly = true)
     public long count(){
@@ -101,6 +114,14 @@ public class MemberService {
     }
 
 
+    public void signUp(String tempToken, SignupRequestDto signupRequestDto){
+        Map<String, Object> claims = jwtManager.getClaims(tempToken);
+        String oAuth2Id = (String) claims.get("oAuth2Id");
+        TempUserBeforeSignUp tempUserBeforeSignUp =
+                objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class);
+
+
+    }
 
 
     private void saveInitialPoints(Member member) {
