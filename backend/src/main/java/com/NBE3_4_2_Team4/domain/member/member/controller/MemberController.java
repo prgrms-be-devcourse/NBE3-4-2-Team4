@@ -59,8 +59,9 @@ public class MemberController {
     public RsData<Boolean> nicknameCheck(
             @RequestParam(name = "nickname") String nickname
     ){
-        return new RsData<>("200-1", "", memberService.nicknameExists(nickname));
+        return new RsData<>("200-1", "", memberService.duplicateNickname(nickname));
     }
+
 
     @PostMapping("/api/members")
     public RsData<Empty> signup(
@@ -70,6 +71,8 @@ public class MemberController {
         memberService.signUp(tempToken, signupRequestDto);
         return new RsData<>("201-1", "sign up complete");
     }
+
+
 
     @PostMapping("/api/admin/login")
     @Operation(summary = "login with admin role", description = "관리자 회원의 로그인 요청을 처리합니다")

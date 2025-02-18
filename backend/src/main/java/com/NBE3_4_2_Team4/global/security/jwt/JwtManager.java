@@ -97,7 +97,7 @@ public class JwtManager {
 
     public String generateTempToken(TempUserBeforeSignUp tempUserBeforeSignUp){
         return Jwts.builder()
-                .claim("oAuth2Id", tempUserBeforeSignUp.getName())
+                .claim("oAuth2Id", tempUserBeforeSignUp.getOAuth2Id())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 60 * 1000))
                 .signWith(key)

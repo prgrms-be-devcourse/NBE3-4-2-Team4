@@ -24,7 +24,6 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutServi
 import com.NBE3_4_2_Team4.global.security.user.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -75,8 +74,8 @@ public class MemberService {
 
 
 
-    public boolean nicknameExists(String nickname) {
-        return memberRepository.existsByUsername(nickname);
+    public boolean duplicateNickname(String nickname) {
+        return !memberRepository.existsByUsername(nickname);
     }
 
 
@@ -117,12 +116,11 @@ public class MemberService {
     public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
         Map<String, Object> claims = jwtManager.getClaims(tempToken);
         String oAuth2Id = (String) claims.get("oAuth2Id");
+
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 objectMapper.convertValue(redisTemplate.opsForValue().get(oAuth2Id), TempUserBeforeSignUp.class);
-        /*음 그니까.. 지금..
-        username (아이디) 이랑  realName 이랑..provider 가 토큰에 tempUser 에 들어있고.
-        nickname 이랑 이메일은 signupRequestDto 에 들어있고..
-        */
+
+
         String username = tempUserBeforeSignUp.getUsername();
         String realName = tempUserBeforeSignUp.getRealName();
         String provider = tempUserBeforeSignUp.getProviderTypeCode();
@@ -139,6 +137,8 @@ public class MemberService {
                 .realName(realName)
                 .build());
         saveInitialPoints(member);
+
+        redisTemplate.delete(oAuth2Id);
 
         return member;
     }

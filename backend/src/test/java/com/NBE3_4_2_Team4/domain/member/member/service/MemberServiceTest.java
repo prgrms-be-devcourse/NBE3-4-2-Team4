@@ -351,8 +351,6 @@ public class MemberServiceTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put("oAuth2Id", oAuth2Id);
 
-        log.error("claims: {}", claims);
-
         OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
         TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");
 
@@ -367,16 +365,14 @@ public class MemberServiceTest {
                 .build();
 
         when(jwtManager.getClaims(tempToken)).thenReturn(claims);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);  // ✅ opsForValue() Mocking
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(oAuth2Id)).thenReturn(tempUserBeforeSignUp);
         when(objectMapper.convertValue(tempUserBeforeSignUp, TempUserBeforeSignUp.class)).thenReturn(tempUserBeforeSignUp);
         when(passwordEncoder.encode("")).thenReturn("encodedPassword");
         when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
 
-        // When
         Member savedMember = memberService.signUp(tempToken, signupRequestDto);
 
-        // Then
         verify(memberRepository, times(1)).save(any(Member.class));
         verify(pointHistoryRepository, times(1)).save(any(PointHistory.class));
         assertNotNull(savedMember);
