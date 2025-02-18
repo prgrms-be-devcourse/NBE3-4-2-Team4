@@ -50,7 +50,7 @@ public class QuestionDto {
         this.answers = question.getAnswers() == null ? new ArrayList<>() :question.getAnswers()
                 .stream()
                 .map(AnswerDto::new)
-                .toList();;
+                .toList();
         this.selectedAnswer = question.getSelectedAnswer() != null
                 ? new AnswerDto(question.getSelectedAnswer())
                 : null;

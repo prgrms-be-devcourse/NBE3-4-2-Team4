@@ -85,6 +85,7 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
+    @Transactional(readOnly = true)
     public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
