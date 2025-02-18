@@ -1,9 +1,7 @@
 package com.NBE3_4_2_Team4.domain.point.initData;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.domain.point.service.PointHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +11,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+@Order(5)
 @Configuration
 @RequiredArgsConstructor
 public class PointHistoryInitData {
@@ -33,6 +34,7 @@ public class PointHistoryInitData {
     private String adminUsername;
 
     @Bean
+    @DependsOn("memberInitDataApplicationRunner")
     public ApplicationRunner pointInitDataApplicationRunner() {
         return args -> {
             self.work();

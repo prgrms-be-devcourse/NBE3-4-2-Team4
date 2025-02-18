@@ -33,7 +33,7 @@ public class NaverDisconnectService implements OAuth2DisconnectService {
     }
 
     @Override
-    public boolean disconnect(String refreshToken) {
+    public boolean disconnectSuccess(String refreshToken) {
         String accessToken = naverTokenService.getFreshAccessToken(refreshToken);
 
         if (accessToken == null) {

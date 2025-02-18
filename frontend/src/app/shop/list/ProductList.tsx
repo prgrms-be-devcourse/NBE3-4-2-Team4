@@ -29,11 +29,8 @@ export default function ProductList({
     items: itemPage.data.items,
   };
 
-  // "ONSALE" 상태인 상품만 필터링
   const filteredItems =
-    normalizedItemPage.items?.filter(
-      (item) => item.product_sale_state === "ONSALE"
-    ) || [];
+    normalizedItemPage.items || [];
 
   return (
     <>
@@ -54,7 +51,7 @@ export default function ProductList({
                       alt={item.product_name}
                       width={200}
                       height={200}
-                      className="object-cover rounded-t-xl w-full aspect-square"
+                      className="object-cover rounded-t-xl w-full"
                     />
                   )}
                   <CardHeader className="relative">
