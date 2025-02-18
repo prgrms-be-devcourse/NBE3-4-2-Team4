@@ -26,7 +26,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useToast} from "@/hooks/use-toast";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -52,6 +53,22 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const isAdminPage = pathname.startsWith("/adm") && pathname !== "/adm/login";
   const isUserPage = !isAdminPage;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const searchParams = useSearchParams();
+  const attendanceMessage = searchParams.get("attendanceMessage");
+  const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (attendanceMessage) {
+      toast({
+        title:decodeURIComponent(attendanceMessage),
+        variant: "destructive",
+      });
+      // alert()
+    }
+    router.push("/"); // 파라미터 제거된 URL로 이동
+  }, [attendanceMessage]);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
