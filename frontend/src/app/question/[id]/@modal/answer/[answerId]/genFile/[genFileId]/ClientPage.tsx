@@ -47,6 +47,7 @@ export default function ClientPage({
               alt={genFile.original_file_name}
               width={100}
               height={100}
+              quality={100}
               className="max-w-[80dvh] max-w-[80dvh] w-full"
             />
           )}

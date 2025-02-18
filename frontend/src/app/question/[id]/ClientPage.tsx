@@ -62,7 +62,7 @@ export default function ClientPage({
   const handleEdit = () => {
     router.push(`/question/${question.id}/edit`);
   };
-  
+
   const handleRecommend = async () => {
     try {
       const response = await client.PUT(
@@ -216,6 +216,12 @@ export default function ClientPage({
                   }}
                 />
               </CardContent>
+              <CardFooter className="flex justify-end">
+                <AnswerAttachmentFiles
+                  questionId={question.id}
+                  answerId={question.selectedAnswer.id}
+                />
+              </CardFooter>
             </Card>
           </div>
         )}
