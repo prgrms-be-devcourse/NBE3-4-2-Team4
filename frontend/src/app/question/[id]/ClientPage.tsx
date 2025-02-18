@@ -28,7 +28,10 @@ import { useToast } from "@/hooks/use-toast";
 import Pagination1 from "@/lib/business/components/Pagination1";
 import client from "@/lib/backend/client";
 import Image from "next/image";
-import { AttachmentFiles } from "@/lib/business/components/AttachmentFiles";
+import {
+  AnswerAttachmentFiles,
+  AttachmentFiles,
+} from "@/lib/business/components/AnswerAttachmentFiles";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -240,7 +243,10 @@ export default function ClientPage({
                 />
               </CardContent>
               <CardFooter className="flex justify-end">
-                <AttachmentFiles answerId={answer.id} />
+                <AnswerAttachmentFiles
+                  questionId={question.id}
+                  answerId={answer.id}
+                />
               </CardFooter>
               {!question.closed && (
                 <CardFooter className="flex justify-end gap-2">
