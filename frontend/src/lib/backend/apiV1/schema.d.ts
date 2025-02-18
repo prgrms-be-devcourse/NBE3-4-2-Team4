@@ -216,10 +216,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 전체 상품 조회 (페이징)
-         * @description 전체 상품을 페이징 처리하여 조회합니다.
+         * 전체 상품 조회 with 검색
+         * @description 전체 상품을 키워드, 페이징 처리하여 조회합니다.
          */
-        get: operations["getAllProductsWithPaging"];
+        get: operations["getAllProductsByKeywordWithPaging"];
         put?: never;
         /**
          * 단건 상품 생성
@@ -428,26 +428,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/products/category/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 카테고리별 상품 조회
-         * @description 카테고리별 상품을 조회합니다.
-         */
-        get: operations["getProductsByCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/products/categories": {
         parameters: {
             query?: never;
@@ -480,6 +460,26 @@ export interface paths {
          * @description 전체 상품 카테고리의 키워드를 조회합니다.
          */
         get: operations["getCategories_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/categories/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리별 상품 조회
+         * @description 카테고리별 상품을 조회합니다.
+         */
+        get: operations["getProductsByCategory"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1387,13 +1387,15 @@ export interface operations {
             };
         };
     };
-    getAllProductsWithPaging: {
+    getAllProductsByKeywordWithPaging: {
         parameters: {
             query?: {
                 page?: number;
-                pageSize?: number;
-                keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
-                keyword?: string;
+                page_size?: number;
+                search_keyword_type?: "ALL" | "NAME" | "CATEGORY";
+                search_keyword?: string;
+                category_keyword?: string;
+                sale_state_keyword?: string;
             };
             header?: never;
             path?: never;
@@ -1845,7 +1847,7 @@ export interface operations {
             query: {
                 sale_state_keyword: string;
                 page?: number;
-                pageSize?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -1904,43 +1906,12 @@ export interface operations {
             };
         };
     };
-    getProductsByCategory: {
-        parameters: {
-            query: {
-                category_keyword: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItemsByKeyword"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getProductsByCategoryWithPaging: {
         parameters: {
             query: {
                 category_keyword: string;
                 page?: number;
-                pageSize?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -1984,6 +1955,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListString"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getProductsByCategory: {
+        parameters: {
+            query: {
+                category_keyword: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItemsByKeyword"];
                 };
             };
             /** @description Bad Request */

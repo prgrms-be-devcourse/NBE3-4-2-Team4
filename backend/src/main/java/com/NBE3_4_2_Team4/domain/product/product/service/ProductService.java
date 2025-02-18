@@ -59,13 +59,23 @@ public class ProductService {
     public PageDto<GetItem> getProducts(
             int page,
             int pageSize,
-            ProductSearchKeywordType keywordType,
-            String keyword
+            ProductSearchKeywordType searchKeywordType,
+            String searchKeyword,
+            String categoryKeyword,
+            String saleStateKeyword
             ) {
 
         Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
+                .orElse(SaleState.ALL);
 
-        Page<Product> products = productRepository.findByKeyword(keywordType, keyword, pageable);
+        Page<Product> products = productRepository.findByKeyword(
+                searchKeywordType,
+                searchKeyword,
+                categoryKeyword,
+                saleState,
+                pageable
+        );
 
         log.info("[{}] Products are found with paging.", products.getContent().size());
 

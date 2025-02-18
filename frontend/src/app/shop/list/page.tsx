@@ -1,55 +1,46 @@
-import { cookies } from "next/headers";
 import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
 
 export default async function Page({
-  searchParams,
-}: {
+                                     searchParams,
+                                   }: {
   searchParams: {
     page?: number;
     pageSize?: number;
-    keyword_type?: string;
-    keyword?: string;
+    searchKeywordType?: string;
+    searchKeyword?: string;
+    categoryKeyword?: string;
+    saleStateKeyword?: string;
   };
 }) {
-  const cookieHeader = await cookies();
-
-  // 상품 리스트 조회
   const {
     page = 1,
     pageSize = 12,
-    keyword_type = "ALL",
-    keyword = "",
+    searchKeywordType = "ALL",
+    searchKeyword = "",
+    categoryKeyword = "",
+    saleStateKeyword = "ONSALE",
   } = await searchParams;
-  const response = await client.GET("/api/products", {
-    params: {
-      query: {
-        page,
-        pageSize,
-        keyword_type: keyword_type as | "ALL" | "NAME" | undefined,
-        keyword
+
+  // 상품 리스트와 카테고리 데이터를 병렬로 조회
+  const [productsResponse, categoriesResponse] = await Promise.all([
+    client.GET("/api/products", {
+      params: {
+        query: {
+          page,
+          page_size: pageSize,
+          search_keyword_type: searchKeywordType as "ALL" | "NAME" | "CATEGORY" | undefined,
+          search_keyword: searchKeyword,
+          category_keyword: categoryKeyword,
+          sale_state: saleStateKeyword,
+        },
       },
-    },
-    headers: {
-      cookie: cookieHeader.toString(),
-    },
-  });
+    }),
+    client.GET("/api/products/categories/keyword"),
+  ]);
 
-  const itemPage = response.data!;
-
-  // 상품 키워드 조회
-  const categoriesResponse = await client.GET("/api/products/categories/keyword", {
-    headers: {
-      cookie: cookieHeader.toString(),
-    },
-  });
-
+  const itemPage = productsResponse.data!;
   const categories = categoriesResponse.data!.data;
 
-  return <ClientPage
-      page={page}
-      pageSize={pageSize}
-      itemPage={itemPage}
-      categories={categories}
-  />;
+  return <ClientPage itemPage={itemPage} categories={categories} />;
 }
