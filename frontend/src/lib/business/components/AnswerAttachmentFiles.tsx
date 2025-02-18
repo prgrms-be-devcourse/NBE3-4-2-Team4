@@ -61,11 +61,11 @@ export const AnswerAttachmentFiles = ({
             file.file_ext_type_code === "audio" ||
             file.file_ext_type_code === "video" ? (
               <Link
-                href={`/question/${questionId}/answer/${answerId}/genFilePreview/${file.id}`}
+                href={`/question/${questionId}/answer/${answerId}/genFile/${file.id}`}
                 className="flex items-center gap-1.5"
               >
                 <Eye className="h-3.5 w-3.5" />
-                <span className="max-w-[100px] truncate">
+                <span className="max-w-[100px] truncate text-xs">
                   {file.original_file_name}
                 </span>
               </Link>
@@ -76,7 +76,7 @@ export const AnswerAttachmentFiles = ({
                 title={file.original_file_name}
               >
                 <Download className="h-3.5 w-3.5" />
-                <span className="max-w-[100px] truncate">
+                <span className="max-w-[100px] truncate text-xs">
                   {file.original_file_name}
                 </span>
                 <span className="text-xs text-gray-500">
