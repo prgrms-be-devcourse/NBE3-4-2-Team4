@@ -145,7 +145,7 @@ public class CustomJwtFilterTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print());
     }
 
@@ -310,7 +310,7 @@ public class CustomJwtFilterTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(cookie().exists("accessToken"))
                 .andDo(print());
 
