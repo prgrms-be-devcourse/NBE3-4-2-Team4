@@ -13,6 +13,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,17 +24,29 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Editor } from "@tinymce/tinymce-react";
+import { Input } from "@/components/ui/input";
+import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
+import React from "react";
 
 const answerWriteFormSchema = z.object({
   content: z
     .string()
     .min(1, "내용을 입력해주세요.")
     .min(4, "내용은 4자 이상이여야 합니다."),
+  attachment_0: z.array(z.instanceof(File)).optional(),
 });
 
 type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
 
+interface EnhancedFile extends File {
+  uploadedUrl?: string;
+}
+
 export default function ClientPage({ params }: { params: { id: string } }) {
+  const [uploadedImages, setUploadedImages] = React.useState<EnhancedFile[]>(
+    []
+  );
+
   const { id } = params;
   const router = useRouter();
   const { toast } = useToast();
@@ -44,13 +57,26 @@ export default function ClientPage({ params }: { params: { id: string } }) {
     },
   });
 
-  const MyEditor = () => {
+  const MyEditor = React.useMemo(() => {
     return (
       <Editor
         apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-        initialValue=""
-        onEditorChange={(content) => {
+        initialValue={form.getValues("content")}
+        onEditorChange={(content, editor) => {
           form.setValue("content", content);
+
+          // 현재 에디터에 있는 이미지들의 src 목록을 가져옴
+          const currentImages = editor.dom.select("img").map((img) => img.src);
+
+          // uploadedImages에서 현재 에디터에 없는 이미지들 제거
+          setUploadedImages((prev) =>
+            prev.filter((file) => {
+              const objectUrl = URL.createObjectURL(file);
+              const isInEditor = currentImages.some((src) => src === objectUrl);
+              URL.revokeObjectURL(objectUrl);
+              return isInEditor;
+            })
+          );
         }}
         init={{
           language: "ko_KR",
@@ -86,28 +112,18 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           media_poster: false,
           images_upload_handler: async function (blobInfo, progress) {
             try {
-              const formData = new FormData();
-              formData.append("file", blobInfo.blob());
-              formData.append("maxWidth", "1024");
-              formData.append("maxHeight", "1024");
-              formData.append("quality", "0.8");
-
-              const response = await fetch("/api/upload/image", {
-                method: "POST",
-                body: formData,
-              });
-
-              if (!response.ok) {
-                throw new Error("Upload failed");
-              }
-
-              const { imageUrl } = await response.json();
-              return imageUrl;
+              const imageFile = new File(
+                [blobInfo.blob()],
+                blobInfo.filename(),
+                { type: blobInfo.blob().type }
+              );
+              setUploadedImages((prev) => [...prev, imageFile]);
+              return URL.createObjectURL(imageFile);
             } catch (error) {
               console.error("Image upload failed:", error);
               toast({
-                title: "이미지 업로드 실패",
-                description: "이미지 업로드 중 오류가 발생했습니다.",
+                title: "이미지 처리 실패",
+                description: "이미지 처리 중 오류가 발생했습니다.",
                 variant: "destructive",
               });
               throw error;
@@ -116,7 +132,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
         }}
       />
     );
-  };
+  }, []);
 
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
@@ -136,10 +152,40 @@ export default function ClientPage({ params }: { params: { id: string } }) {
 
       if (response.error) {
         toast({
-          title: response.error.msg,
+          title: "Error",
+          description: response.error.msg,
           variant: "destructive",
         });
         return;
+      }
+
+      // 파일 업로드 처리
+      if (data.attachment_0) {
+        const formData = new FormData();
+        for (const file of [...data.attachment_0].reverse())
+          formData.append("files", file);
+
+        const uploadResponse = await client.POST(
+          "/api/answers/{answerId}/genFiles/{typeCode}",
+          {
+            params: {
+              path: {
+                answerId: response.data.data.id,
+                typeCode: "attachment",
+              },
+            },
+            body: formData as any,
+          }
+        );
+
+        if (uploadResponse.error) {
+          toast({
+            title: uploadResponse.error.msg,
+            variant: "destructive",
+          });
+
+          return;
+        }
       }
 
       toast({
@@ -147,8 +193,10 @@ export default function ClientPage({ params }: { params: { id: string } }) {
       });
       router.replace(`/question/${id}`);
     } catch (error) {
+      console.error(error);
       toast({
-        title: "답변 등록 중 오류가 발생했습니다",
+        title: "Error",
+        description: "답변 등록 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     }
@@ -173,15 +221,32 @@ export default function ClientPage({ params }: { params: { id: string } }) {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
+                    <FormControl>{MyEditor}</FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attachment_0"
+                render={({ field: { onChange, ...field } }) => (
+                  <FormItem className="mt-5">
+                    <FormLabel>
+                      첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
+                    </FormLabel>
                     <FormControl>
-                      {/* <Textarea
+                      <Input
+                        type="file"
+                        multiple
+                        accept={getUplodableInputAccept()}
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          onChange(files);
+                        }}
                         {...field}
-                        placeholder="내용을 입력해주세요"
-                        autoComplete="off"
-                        rows={20}
-                        autoFocus
-                      /> */}
-                      <MyEditor />
+                        value={undefined}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
