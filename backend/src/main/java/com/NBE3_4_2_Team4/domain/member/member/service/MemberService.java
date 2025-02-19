@@ -136,6 +136,17 @@ public class MemberService {
                 .emailAddress(emailAddress)
                 .realName(realName)
                 .build());
+
+        // OAuth2 용 리프레시 토큰 저장 (추후 회원 탈퇴 시 연동 해제용)
+        String oAuth2Id = tempUserBeforeSignUp.getOAuth2Id();
+        String refreshToken = tempUserBeforeSignUp.getRefreshToken();
+
+        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
+                .oAuth2Id(oAuth2Id)
+                .member(member)
+                .refreshToken(refreshToken)
+                .build());
+
         saveInitialPoints(member);
 
         redisTemplate.delete(oAuth2Id);
