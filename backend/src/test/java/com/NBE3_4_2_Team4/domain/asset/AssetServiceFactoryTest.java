@@ -28,8 +28,10 @@ public class AssetServiceFactoryTest {
     void t1() {
         int expectedSize = assetServices.size();
         int actualSize = assetServiceFactory.getSize();
+        String className = assetServiceFactory.getService("Point").getClass().getSuperclass().getSimpleName();
 
         assertEquals(expectedSize, actualSize, "AssetServiceFactory의 서비스 개수가 일치해야 함");
+        assertEquals(className, "PointService");
     }
 }
 
