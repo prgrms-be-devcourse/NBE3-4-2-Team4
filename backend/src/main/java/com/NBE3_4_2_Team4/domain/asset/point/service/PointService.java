@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.point.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -61,8 +62,8 @@ public class PointService implements AssetService {
 
         //기록 생성
         String correlationId = UUID.randomUUID().toString();
-        assetHistoryService.createHistory(sender, recipient, amount * -1, assetCategory, correlationId);
-        assetHistoryService.createHistory(recipient, sender, amount, assetCategory, correlationId);
+        assetHistoryService.createHistory(sender, recipient, amount * -1, assetCategory, AssetType.POINT, correlationId);
+        assetHistoryService.createHistory(recipient, sender, amount, assetCategory, AssetType.POINT, correlationId);
     }
 
     //포인트 차감 & 기록없음
@@ -84,7 +85,7 @@ public class PointService implements AssetService {
     @Override
     public Long deduct(String from, long amount, AssetCategory assetCategory) {
         Member member = deductWithoutHistory(from, amount);
-        return assetHistoryService.createHistory(member, null, amount * -1, assetCategory, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount * -1, assetCategory, AssetType.POINT, UUID.randomUUID().toString());
     }
 
     //포인트 적립, 기록없음
@@ -106,7 +107,7 @@ public class PointService implements AssetService {
     @Override
     public Long accumulate(String to, long amount, AssetCategory assetCategory) {
         Member member = accumulateWithoutHistory(to, amount);
-        return assetHistoryService.createHistory(member, null, amount, assetCategory, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount, assetCategory, AssetType.POINT, UUID.randomUUID().toString());
     }
 
     @Transactional

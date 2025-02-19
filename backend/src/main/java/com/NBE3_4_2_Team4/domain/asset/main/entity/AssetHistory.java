@@ -41,4 +41,8 @@ public class AssetHistory {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssetCategory assetCategory;
+
+    //Cash or Point
+    @Column(nullable = false)
+    private AssetType assetType;
 }

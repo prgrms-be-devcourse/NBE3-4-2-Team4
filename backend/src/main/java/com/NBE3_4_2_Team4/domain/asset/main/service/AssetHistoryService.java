@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.asset.main.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryReq;
@@ -20,9 +21,10 @@ public class AssetHistoryService {
     private final AssetHistoryRepository assetHistoryRepository;
 
     @Transactional
-    public Long createHistory(Member member, Member counterMember, long amount, AssetCategory assetCategory, String correlationId) {
+    public Long createHistory(Member member, Member counterMember, long amount, AssetCategory assetCategory, AssetType assetType, String correlationId) {
         AssetHistory assetHistory = AssetHistory.builder()
                 .assetCategory(assetCategory)
+                .assetType(assetType)
                 .amount(amount)
                 .correlationId(correlationId)
                 .member(member)

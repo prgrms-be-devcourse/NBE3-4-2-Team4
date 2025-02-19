@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -104,6 +105,7 @@ public class MemberService {
                             .member(member)
                             .amount(PointConstants.INITIAL_POINT)
                             .assetCategory(AssetCategory.SIGN_UP)
+                            .assetType(AssetType.POINT)
                             .correlationId("asdsaaddasasddsa")
                     .build());
             member.setPoint(new Point(PointConstants.INITIAL_POINT));
