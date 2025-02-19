@@ -59,6 +59,14 @@ public class MemberController {
         return new RsData<>("200-1", "", memberService.duplicateNickname(nickname));
     }
 
+    @GetMapping("/api/auth/temp-token")
+    public RsData<Boolean> tempTokenCheck(
+            @CookieValue(name = "tempToken", required = false) String tempToken
+    ){
+        boolean tempTokenExists = tempToken != null && !tempToken.isBlank();
+        return new RsData<>("200-1", "tempToken exists?", tempTokenExists);
+    }
+
 
     @PostMapping("/api/members")
     public RsData<Empty> signup(
