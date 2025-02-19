@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { paths } from "@/lib/backend/apiV1/schema";
-import { useState } from "react";
+import {useState} from "react";
 import imageLoader from "@/utils/imageLoader";
 import client from "@/lib/backend/client";
 import { useToast } from "@/hooks/use-toast";
@@ -31,7 +30,6 @@ export default function ClientPage({ product, cookieString }) {
 
       // 401 응답이면 로그인 페이지로 리디렉션
       if (userResponse.response.status === 401) {
-        //alert("로그인이 필요합니다.");
         toast({
           title: "로그인이 필요합니다.",
           variant: "destructive",
@@ -50,7 +48,6 @@ export default function ClientPage({ product, cookieString }) {
 
       // 포인트 확인: 부족하면 알림 후 중단
       if (point < product.product_price) {
-        //alert("상품을 구매할 포인트가 부족합니다.");
         toast({
           title: "상품을 구매할 포인트가 부족합니다.",
           variant: "destructive",
@@ -74,7 +71,6 @@ export default function ClientPage({ product, cookieString }) {
       });
 
       if (pointDeductResponse.error || !pointDeductResponse.data) {
-        //throw new Error(`포인트 차감 실패: ${pointDeductResponse.status}`);
         toast({
           title: "포인트 차감 실패",
           description: pointDeductResponse.error.msg,
@@ -101,13 +97,11 @@ export default function ClientPage({ product, cookieString }) {
         error.message.includes("404") ||
         error.response?.status === 404
       ) {
-        //alert("구매 요청에 실패하였습니다.");
         toast({
           title: "구매 요청에 실패하였습니다.",
           variant: "destructive",
         });
       } else {
-        //alert("알 수 없는 오류가 발생했습니다.");
         toast({
           title: "알 수 없는 오류가 발생했습니다.",
           variant: "destructive",

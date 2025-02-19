@@ -66,6 +66,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<Product> products = queryFactory
                 .selectFrom(product)
                 .where(builder)
+                .orderBy(product.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

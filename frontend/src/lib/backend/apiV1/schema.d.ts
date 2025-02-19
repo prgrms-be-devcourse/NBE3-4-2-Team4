@@ -408,6 +408,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/states/keyword": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 판매 상태 키워드 조회
+         * @description 판매 상태 키워드를 조회합니다.
+         */
+        get: operations["getSaleStates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/states/all": {
         parameters: {
             query?: never;
@@ -840,6 +860,11 @@ export interface components {
             msg: string;
             data: components["schemas"]["PageDtoGetItem"];
         };
+        RsDataListString: {
+            resultCode: string;
+            msg: string;
+            data: string[];
+        };
         GetItemsByKeyword: {
             keyword?: string;
             products?: components["schemas"]["GetItem"][];
@@ -848,11 +873,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItemsByKeyword"];
-        };
-        RsDataListString: {
-            resultCode: string;
-            msg: string;
-            data: string[];
         };
         RsDataListGetItem: {
             resultCode: string;
@@ -1862,6 +1882,35 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getSaleStates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListString"];
                 };
             };
             /** @description Bad Request */

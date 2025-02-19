@@ -141,6 +141,20 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/states/keyword")
+    @Operation(summary = "판매 상태 키워드 조회", description = "판매 상태 키워드를 조회합니다.")
+    RsData<List<String>> getSaleStates(
+    ) {
+
+        List<String> saleStateNames = productService.findSaleStateNames();
+
+        return new RsData<>(
+                "200-1",
+                "%d건의 상품 판매 상태 키워드가 조회되었습니다.".formatted(saleStateNames.size()),
+                saleStateNames
+        );
+    }
+
     @GetMapping("/{product_id}")
     @Operation(summary = "단건 상품 조회", description = "단건 상품을 조회합니다.")
     RsData<GetItem> getProduct(

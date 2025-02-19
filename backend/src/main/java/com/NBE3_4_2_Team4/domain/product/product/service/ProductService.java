@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.*;
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
@@ -305,6 +306,17 @@ public class ProductService {
                 saveParentCategoriesName(category, categoriesName));
 
         return new ArrayList<>(categoriesName);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findSaleStateNames() {
+
+        List<ProductSaleState> saleStates = productSaleStateRepository.findAll();
+
+        return saleStates.stream()
+                .map(saleState ->
+                        saleState.getName().name())
+                .toList();
     }
 
     private String makeFullCategory(Product product) {
