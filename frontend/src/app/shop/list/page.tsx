@@ -19,7 +19,7 @@ export default async function Page({
     searchKeywordType = "ALL",
     searchKeyword = "",
     categoryKeyword = "",
-    saleStateKeyword = "ONSALE",
+    saleStateKeyword = "ALL",
   } = await searchParams;
 
   // 상품 리스트와 카테고리 데이터를 병렬로 조회

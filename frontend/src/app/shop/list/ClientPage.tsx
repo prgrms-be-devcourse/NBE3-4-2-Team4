@@ -43,7 +43,6 @@ export default function ClientPage({
     const fetchProducts = async () => {
       try {
         const queryParams = new URLSearchParams(searchParams.toString());
-        queryParams.set("sale_state_keyword", "ONSALE");
 
         // 카테고리 필터
         if (queryParams.get("category_keyword") || categoryValue !== "전체") {
@@ -88,7 +87,6 @@ export default function ClientPage({
     // 검색 시 페이지를 초기화
     params.set("page", "1");
     params.set("page_size", "12");
-    params.set("sale_state_keyword", "ONSALE");
 
     if (searchKeywordType && searchKeywordType !== "ALL") {
       params.set("search_keyword_type", searchKeywordType);
@@ -110,7 +108,6 @@ export default function ClientPage({
         const params = new URLSearchParams(searchParams.toString());
         params.set("page", "1");
         params.set("page_size", "12");
-        params.set("sale_state_keyword", "ONSALE");
         if (value !== "전체") {
           params.set("category_keyword", value);
         } else {

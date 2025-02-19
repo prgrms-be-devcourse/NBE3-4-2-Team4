@@ -60,7 +60,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
 
         // 판매 상태에 따라 조건 추가
-        builder.and(product.saleState.name.in(filterSaleStates(saleState)));
+        if (saleState != SaleState.ALL) {
+            builder.and(product.saleState.name.eq(saleState));
+        }
 
         // 페이징 쿼리 생성
         List<Product> products = queryFactory
@@ -78,31 +80,5 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(builder);
 
         return PageableExecutionUtils.getPage(products, pageable, countQuery::fetchOne);
-    }
-
-    private List<SaleState> filterSaleStates(SaleState saleState) {
-
-        List<SaleState> saleStates = new ArrayList<>();
-
-        if (saleState == SaleState.ONSALE) {
-            // 판매중
-            saleStates.add(SaleState.ONSALE);
-
-        } else if (saleState == SaleState.SOLDOUT) {
-            // 품절
-            saleStates.add(SaleState.SOLDOUT);
-
-        } else if (saleState == SaleState.COMINGSOON) {
-            // 출시 예정
-            saleStates.add(SaleState.COMINGSOON);
-
-        } else {
-            // 모두
-            saleStates.add(SaleState.ONSALE);
-            saleStates.add(SaleState.SOLDOUT);
-            saleStates.add(SaleState.COMINGSOON);
-        }
-
-        return saleStates;
     }
 }

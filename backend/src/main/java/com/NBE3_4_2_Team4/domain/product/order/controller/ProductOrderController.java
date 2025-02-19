@@ -44,7 +44,7 @@ public class ProductOrderController {
         productService.updateProduct(
                 productId,
                 ProductRequestDto.updateItem.builder()
-                        .productSaleState(SaleState.SOLDOUT.name())
+                        .productSaleState(SaleState.UNAVAILABLE.name())
                         .build()
         );
 
