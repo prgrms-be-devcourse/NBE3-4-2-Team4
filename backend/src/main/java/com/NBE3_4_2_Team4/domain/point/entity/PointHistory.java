@@ -31,8 +31,7 @@ public class PointHistory {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @ManyToOne
     private Member member;
 
     @ManyToOne

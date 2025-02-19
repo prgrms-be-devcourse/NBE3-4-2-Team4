@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PointCategory {
+    SIGN_UP("회원가입"),
     TRANSFER("송금"),
     PURCHASE("상품구매"),
     QUESTION("질문등록"),

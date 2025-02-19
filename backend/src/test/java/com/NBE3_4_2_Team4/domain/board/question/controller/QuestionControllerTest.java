@@ -4,7 +4,10 @@ import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,8 @@ public class QuestionControllerTest {
     private AnswerService answerService;
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Test
     @DisplayName("전체 게시글 조회")
@@ -69,7 +74,7 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(get("/api/questions/1"))
                 .andDo(print());
 
-        Question question = questionService.findById(1L).orElseThrow();
+        Question question = questionRepository.findById(1L).orElseThrow();
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestion"))
@@ -313,7 +318,7 @@ public class QuestionControllerTest {
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1/select/1")).andDo(print());
 
-        Question question = questionService.findById(1).get();
+        Question question = questionRepository.findById(1L).get();
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("select"))
@@ -403,8 +408,7 @@ public class QuestionControllerTest {
                 .andDo(print());
 
         Page<QuestionDto> questionPages = questionService
-                .getQuestionsByCategory(1, 1, 10)
-                .map(QuestionDto::new);
+                .getQuestionsByCategory(1, 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(QuestionController.class))
@@ -417,6 +421,43 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.has_more").value(questionPages.hasNext()));
 
         List<QuestionDto> questions = questionPages.getContent();
+
+        for(int i = 0; i < questions.size(); i++) {
+            QuestionDto question = questions.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(question.getId()))
+                    .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].modified_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(question.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(question.getContent()))
+                    .andExpect(jsonPath("$.items[%d].name".formatted(i)).value(question.getName()))
+                    .andExpect(jsonPath("$.items[%d].recommend_count".formatted(i)).value(question.getRecommendCount()))
+                    .andExpect(jsonPath("$.items[%d].closed".formatted(i)).value(question.isClosed()))
+                    .andExpect(jsonPath("$.items[%d].point".formatted(i)).value(question.getPoint()))
+                    .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
+        }
+    }
+
+    @Test
+    @DisplayName("현재 사용자가 작성한 질문 조회")
+    @WithUserDetails("test@test.com")
+    void t16() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions/me"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getMyQuestions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_items").value(11))
+                .andExpect(jsonPath("$.has_more").value(true))
+                .andExpect(jsonPath("$.items.length()").value(10));
+
+        Member user = AuthManager.getMemberFromContext();
+        List<QuestionDto> questions = questionService.findByUserListed(user, 1, 10).getContent();
 
         for(int i = 0; i < questions.size(); i++) {
             QuestionDto question = questions.get(i);

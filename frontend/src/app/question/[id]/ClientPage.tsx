@@ -48,7 +48,7 @@ export default function ClientPage({
   const handleEdit = () => {
     router.push(`/question/${question.id}/edit`);
   };
-
+  
   const handleRecommend = async () => {
     try {
       const response = await client.PUT(
