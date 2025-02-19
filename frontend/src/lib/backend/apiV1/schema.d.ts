@@ -208,30 +208,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 카테고리 조회
-         * @description 카테고리 목록 가져오기
-         */
-        get: operations["getCategories"];
-        put?: never;
-        /**
-         * 카테고리 추가
-         * @description 카테고리 추가하기
-         */
-        post: operations["createCategory"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -251,6 +227,26 @@ export interface paths {
          */
         post: operations["writeProduct"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["nicknameCheck"];
+        put?: never;
+        post: operations["signup"];
+        /**
+         * withdrawal membership
+         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
+         */
+        delete: operations["withdrawalMembership"];
         options?: never;
         head?: never;
         patch?: never;
@@ -392,7 +388,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/me": {
+    "/api/questions/categories": {
         parameters: {
             query?: never;
             header?: never;
@@ -400,10 +396,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 내 질문 조회
-         * @description 현재 사용자의 질문 조회
+         * 카테고리 조회
+         * @description 카테고리 목록 가져오기
          */
-        get: operations["getMyQuestions"];
+        get: operations["getCategories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -666,46 +662,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/questions/categories/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * 카테고리 삭제
-         * @description 카테고리 삭제하기
-         */
-        delete: operations["deleteCategory"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/members": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * withdrawal membership
-         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
-         */
-        delete: operations["withdrawalMembership"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -816,19 +772,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
-        QuestionCategoryReqDto: {
-            name: string;
-        };
-        QuestionCategoryDto: {
-            /** Format: int64 */
-            id?: number;
-            name?: string;
-        };
-        RsDataQuestionCategoryDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["QuestionCategoryDto"];
-        };
         writeItem: {
             productName: string;
             /** Format: int32 */
@@ -837,6 +780,10 @@ export interface components {
             productImageUrl: string;
             productCategory: string;
             productSaleState: string;
+        };
+        SignupRequestDto: {
+            email: string;
+            nickname: string;
         };
         RsDataString: {
             resultCode: string;
@@ -894,6 +841,11 @@ export interface components {
             totalItems?: number;
             hasMore?: boolean;
             items?: components["schemas"]["AnswerDto"][];
+        };
+        QuestionCategoryDto: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
         };
         PageDtoGetItem: {
             /** Format: int32 */
@@ -969,6 +921,11 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["PageDtoPointHistoryRes"];
+        };
+        RsDataBoolean: {
+            resultCode: string;
+            msg: string;
+            data: boolean;
         };
         RsDataObject: {
             resultCode: string;
@@ -1459,68 +1416,6 @@ export interface operations {
             };
         };
     };
-    getCategories: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    createCategory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["QuestionCategoryReqDto"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataQuestionCategoryDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getAllProductsByKeywordWithPaging: {
         parameters: {
             query?: {
@@ -1581,6 +1476,119 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    nicknameCheck: {
+        parameters: {
+            query: {
+                nickname: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie: {
+                tempToken: string;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignupRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    withdrawalMembership: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 회원 탈퇴 성공 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1947,12 +1955,9 @@ export interface operations {
             };
         };
     };
-    getMyQuestions: {
+    getCategories: {
         parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1965,7 +1970,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["QuestionCategoryDto"][];
                 };
             };
             /** @description Bad Request */
@@ -2386,84 +2391,6 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    deleteCategory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    withdrawalMembership: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 회원 탈퇴 성공 */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
