@@ -94,6 +94,12 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.items[0].product_price").value(PRODUCT_PRICES[dataSize -1]))
                 .andExpect(jsonPath("$.data.items[0].product_description").value(PRODUCT_DESCRIPTIONS[dataSize - 1]))
                 .andExpect(jsonPath("$.data.items[0].product_category").value(PRODUCT_CATEGORIES[dataSize - 1]));
+
+//                .andExpect(jsonPath("$.data.items[0].product_id").value(15))
+//                .andExpect(jsonPath("$.data.items[0].product_name").value("양념치킨+콜라1.25L"))
+//                .andExpect(jsonPath("$.data.items[0].product_price").value(24000))
+//                .andExpect(jsonPath("$.data.items[0].product_description").value("BBQ 양념치킨 + 콜라 1.25L 입니다."))
+//                .andExpect(jsonPath("$.data.items[0].product_category").value("카페/테이크아웃커피"));
     }
 
     @DisplayName("카테고리별 상품 조회 Test")
