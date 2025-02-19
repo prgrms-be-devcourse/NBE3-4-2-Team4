@@ -53,26 +53,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         }else {
             handleNewMember(req, resp, auth);
         }
-//        CustomUser customUser = (CustomUser) auth.getPrincipal();
-//        Member member = customUser.getMember();
-//
-//        String accessToken = jwtManager.generateAccessToken(member);
-//        String refreshToken = jwtManager.generateRefreshToken(member);
-//        httpManager.setJWTCookie(resp, accessToken, accessTokenValidMinute, refreshToken, refreshTokenValidHour);
-//
-//        String targetUrl = req.getParameter("state");
-//
-//        if(isFirstLoginToday(member)){
-//            rewardPointForFirstLoginOfDay(member);
-//
-//            targetUrl += String.format("?attendanceMessage=%s",
-//                    URLEncoder.encode(
-//                            String.format("출석 포인트 %dp 지급 되었습니다.", PointConstants.ATTENDANCE_POINT),
-//                            StandardCharsets.UTF_8));
-//        }
-//
-//        setDefaultTargetUrl(targetUrl);
-//        super.onAuthenticationSuccess(req, resp, auth);
     }
 
     private void handleExistingMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth){
