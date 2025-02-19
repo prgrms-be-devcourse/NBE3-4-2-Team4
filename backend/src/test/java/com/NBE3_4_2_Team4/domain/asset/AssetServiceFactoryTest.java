@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset;
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

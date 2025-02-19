@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.factory;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetService;
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.point.dto;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.point.validation.annotation.ValidPointHistoryReq;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @ValidPointHistoryReq
 @Getter
 @Setter
-public class PointHistoryReq {
+public class AssetHistoryReq {
     @NotNull
     @Min(1)
     private Integer page=1;

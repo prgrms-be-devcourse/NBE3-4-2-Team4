@@ -1,6 +1,5 @@
-package com.NBE3_4_2_Team4.domain.asset;
+package com.NBE3_4_2_Team4.domain.asset.main.entity;
 
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.Getter;
 
 @Getter

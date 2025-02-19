@@ -1,11 +1,11 @@
 package com.NBE3_4_2_Team4.domain.asset.point.controller;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryRes;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryRes;
 import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointHistoryService;
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
@@ -24,7 +24,7 @@ import static com.NBE3_4_2_Team4.global.security.AuthManager.*;
 @Tag(name = "PointController", description = "API 포인트 컨트롤러")
 public class PointController {
     private final PointService pointService;
-    private final PointHistoryService pointHistoryService;
+    private final AssetHistoryService assetHistoryService;
     private final static int POINT_HISTORY_SIZE = 10;
 
     @PutMapping("/attendance")
@@ -55,9 +55,9 @@ public class PointController {
 
     @GetMapping("/all")
     @Operation(summary="포인트 기록 조회(필터 없는버전)")
-    public RsData<PageDto<PointHistoryRes>> getPointHistoriesWithDateAndCategory(@RequestParam(defaultValue = "1") int page) {
+    public RsData<PageDto<AssetHistoryRes>> getPointHistoriesWithDateAndCategory(@RequestParam(defaultValue = "1") int page) {
         Member member = getNonNullMember();
-        PageDto<PointHistoryRes> points = pointHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
+        PageDto<AssetHistoryRes> points = assetHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
 
         return new RsData<>(
                 "200-1",
@@ -68,10 +68,10 @@ public class PointController {
 
     @GetMapping()
     @Operation(summary="포인트 기록 조회(날짜 & 카테고리 필터포함)")
-    public RsData<PageDto<PointHistoryRes>> getPointHistories(@Valid @ModelAttribute PointHistoryReq pointHistoryReq) {
+    public RsData<PageDto<AssetHistoryRes>> getPointHistories(@Valid @ModelAttribute AssetHistoryReq assetHistoryReq) {
         Member member = getNonNullMember();
-        PageDto<PointHistoryRes> points =
-                pointHistoryService.getHistoryPageWithFilter(member, POINT_HISTORY_SIZE, pointHistoryReq);
+        PageDto<AssetHistoryRes> points =
+                assetHistoryService.getHistoryPageWithFilter(member, POINT_HISTORY_SIZE, assetHistoryReq);
 
         return new RsData<>(
                 "200-1",

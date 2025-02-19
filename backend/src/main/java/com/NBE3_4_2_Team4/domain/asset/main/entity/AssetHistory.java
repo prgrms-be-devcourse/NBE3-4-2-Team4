@@ -1,6 +1,5 @@
-package com.NBE3_4_2_Team4.domain.asset.point.entity;
+package com.NBE3_4_2_Team4.domain.asset.main.entity;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class PointHistory {
+public class AssetHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

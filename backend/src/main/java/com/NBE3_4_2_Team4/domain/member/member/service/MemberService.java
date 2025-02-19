@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -10,8 +10,8 @@ import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -34,7 +34,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberQuerydsl memberQuerydsl;
-    private final PointHistoryRepository pointHistoryRepository;
+    private final AssetHistoryRepository assetHistoryRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final OAuth2Manager oAuth2Manager;
@@ -100,7 +100,7 @@ public class MemberService {
 
     private void saveInitialPoints(Member member) {
         try {
-            pointHistoryRepository.save(PointHistory.builder()
+            assetHistoryRepository.save(AssetHistory.builder()
                             .member(member)
                             .amount(PointConstants.INITIAL_POINT)
                             .assetCategory(AssetCategory.SIGN_UP)

@@ -2197,7 +2197,7 @@ export interface operations {
     getPointHistories: {
         parameters: {
             query: {
-                pointHistoryReq: components["schemas"]["PointHistoryReq"];
+                assetHistoryReq: components["schemas"]["PointHistoryReq"];
             };
             header?: never;
             path?: never;

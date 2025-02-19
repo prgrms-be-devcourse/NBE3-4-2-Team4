@@ -1,11 +1,10 @@
 package com.NBE3_4_2_Team4.domain.asset.point.service;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.standard.util.test.ConcurrencyTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,7 @@ public class PointConcurrencyTest {
     private PointService pointService;
 
     @Autowired
-    private PointHistoryRepository pointHistoryRepository;
+    private AssetHistoryRepository assetHistoryRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -61,7 +60,7 @@ public class PointConcurrencyTest {
 
     @AfterEach
     void cleanUp() {
-        pointHistoryRepository.deleteAll();
+        assetHistoryRepository.deleteAll();
         memberRepository.deleteById(member1Id);
         memberRepository.deleteById(member2Id);
     }

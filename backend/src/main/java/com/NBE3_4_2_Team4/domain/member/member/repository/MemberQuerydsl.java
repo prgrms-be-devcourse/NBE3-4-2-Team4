@@ -6,7 +6,7 @@ import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.QOAuth2Refresh
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.entity.QMember;
-import com.NBE3_4_2_Team4.domain.asset.point.entity.QPointHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.QAssetHistory;
 import com.querydsl.core.types.Projections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -23,7 +23,7 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
     private final QMember m = QMember.member;
     private final QQuestion q = QQuestion.question;
     private final QAnswer a = QAnswer.answer;
-    private final QPointHistory p = QPointHistory.pointHistory;
+    private final QAssetHistory ast = QAssetHistory.assetHistory;
     private final QOAuth2RefreshToken t = QOAuth2RefreshToken.oAuth2RefreshToken;
 
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member) {
@@ -54,9 +54,9 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                 .where(a.author.id.eq(memberId))
                 .execute();
 
-        update(p)
-                .setNull(p.member.id)
-                .where(p.member.id.eq(memberId))
+        update(ast)
+                .setNull(ast.member.id)
+                .where(ast.member.id.eq(memberId))
                 .execute();
 
         delete(t)

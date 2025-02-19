@@ -1,10 +1,10 @@
-package com.NBE3_4_2_Team4.domain.asset.point.repository;
+package com.NBE3_4_2_Team4.domain.asset.main.repository;
 
 
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,21 +16,21 @@ import java.time.LocalDateTime;
 
 
 @Repository
-public interface PointHistoryRepository extends JpaRepository<PointHistory, Long> {
-    Page<PointHistory> findByMember(Member member, Pageable pageable);
+public interface AssetHistoryRepository extends JpaRepository<AssetHistory, Long> {
+    Page<AssetHistory> findByMember(Member member, Pageable pageable);
 
     @Query("""
-    SELECT p FROM PointHistory p
-    WHERE (:assetCategory IS NULL OR p.assetCategory = :assetCategory)
+    SELECT a FROM AssetHistory a
+    WHERE (:assetCategory IS NULL OR a.assetCategory = :assetCategory)
     AND (
         (:startDateTime IS NULL OR :endDateTime IS NULL) OR
-        (p.createdAt BETWEEN :startDateTime AND :endDateTime)
+        (a.createdAt BETWEEN :startDateTime AND :endDateTime)
     )
-    AND (p.member.id = :memberId)
+    AND (a.member.id = :memberId)
     """)
-    Page<PointHistory> findByFilters(
+    Page<AssetHistory> findByFilters(
             @Param("memberId") Long memberId,
-            @Param("pointCategory") AssetCategory assetCategory,
+            @Param("assetCategory") AssetCategory assetCategory,
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime,
             Pageable pageable

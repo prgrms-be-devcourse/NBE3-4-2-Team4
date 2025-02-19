@@ -1,10 +1,10 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
-import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
@@ -38,7 +38,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
 
-    private final PointHistoryRepository pointHistoryRepository;
+    private final AssetHistoryRepository assetHistoryRepository;
     private final MemberQuerydsl memberQuerydsl;
 
     @SneakyThrows
@@ -77,7 +77,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         LocalDate today = LocalDate.now();
         memberQuerydsl.updateLastLoginDate(member, today);
 
-        pointHistoryRepository.save(PointHistory.builder()
+        assetHistoryRepository.save(AssetHistory.builder()
                 .member(member)
                 .amount(PointConstants.ATTENDANCE_POINT)
                 .assetCategory(AssetCategory.ATTENDANCE)

@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.cash.entity;
 
-import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
