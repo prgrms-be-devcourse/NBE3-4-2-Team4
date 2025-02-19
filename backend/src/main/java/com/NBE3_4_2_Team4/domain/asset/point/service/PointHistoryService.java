@@ -1,11 +1,11 @@
-package com.NBE3_4_2_Team4.domain.point.service;
+package com.NBE3_4_2_Team4.domain.asset.point.service;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryRes;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,9 +20,9 @@ public class PointHistoryService {
     private final PointHistoryRepository pointHistoryRepository;
 
     @Transactional
-    public Long createHistory(Member member, Member counterMember, long amount, PointCategory pointCategory, String correlationId) {
+    public Long createHistory(Member member, Member counterMember, long amount, AssetCategory assetCategory, String correlationId) {
         PointHistory pointHistory = PointHistory.builder()
-                .pointCategory(pointCategory)
+                .assetCategory(assetCategory)
                 .amount(amount)
                 .correlationId(correlationId)
                 .member(member)
@@ -47,7 +47,7 @@ public class PointHistoryService {
         return new PageDto<PointHistoryRes>(pointHistoryRepository
                 .findByFilters(
                         member.getId(),
-                        pointHistoryReq.getPointCategory(),
+                        pointHistoryReq.getAssetCategory(),
                         pointHistoryReq.getStartDateTime(),
                         pointHistoryReq.getEndDateTime(),
                         pageable)

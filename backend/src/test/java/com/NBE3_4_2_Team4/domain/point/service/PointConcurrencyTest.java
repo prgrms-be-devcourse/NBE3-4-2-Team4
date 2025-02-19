@@ -1,10 +1,11 @@
 package com.NBE3_4_2_Team4.domain.point.service;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.standard.util.test.ConcurrencyTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +70,7 @@ public class PointConcurrencyTest {
     @DisplayName("동시성 테스트")
     void t1() {
         ConcurrencyTestUtil.execute(10, () -> {
-            pointService.transfer(member1.getUsername(), member2.getUsername(), 10, PointCategory.TRANSFER);
+            pointService.transfer(member1.getUsername(), member2.getUsername(), 10, AssetCategory.TRANSFER);
             return null;
         });
 

@@ -1,10 +1,10 @@
-package com.NBE3_4_2_Team4.domain.point.service;
+package com.NBE3_4_2_Team4.domain.asset.point.service;
 
-
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.AssetStrategy;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
@@ -13,16 +13,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PointService {
+public class PointService implements AssetStrategy {
     private final MemberRepository memberRepository;
     private final PointHistoryService pointHistoryService;
 
+    //기록없이 포인트를 전송하는 메소드
     @Transactional
+    @Override
     public Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
         Point.validateAmount(amount);
         if (fromUsername.equals(toUsername)) throw new PointClientException("자기 자신에게 송금할 수 없습니다");
@@ -45,9 +48,11 @@ public class PointService {
         return Pair.of(sender, recipient);
     }
 
-    //포인트를 전송 로직
+    //포인트를 전송 + 기록
     @Transactional
-    public void transfer(String fromUsername, String toUsername, long amount, PointCategory pointCategory) {
+    @Override
+    public void transfer(String fromUsername, String toUsername, long amount, AssetCategory assetCategory) {
+
         Pair<Member, Member> memberPair = transferWithoutHistory(fromUsername, toUsername, amount);
 
         Member sender = memberPair.getLeft();
@@ -55,11 +60,13 @@ public class PointService {
 
         //기록 생성
         String correlationId = UUID.randomUUID().toString();
-        pointHistoryService.createHistory(sender, recipient, amount * -1, pointCategory, correlationId);
-        pointHistoryService.createHistory(recipient, sender, amount, pointCategory, correlationId);
+        pointHistoryService.createHistory(sender, recipient, amount * -1, assetCategory, correlationId);
+        pointHistoryService.createHistory(recipient, sender, amount, assetCategory, correlationId);
     }
 
+    //포인트 차감 & 기록없음
     @Transactional
+    @Override
     public Member deductWithoutHistory(String from, long amount) {
         Point.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(from)
@@ -71,14 +78,17 @@ public class PointService {
         return member;
     }
 
-    //포인트 차감 로직
+    //포인트 차감 + 기록
     @Transactional
-    public Long deduct(String from, long amount, PointCategory pointCategory) {
+    @Override
+    public Long deduct(String from, long amount, AssetCategory assetCategory) {
         Member member = deductWithoutHistory(from, amount);
-        return pointHistoryService.createHistory(member, null, amount * -1, pointCategory, UUID.randomUUID().toString());
+        return pointHistoryService.createHistory(member, null, amount * -1, assetCategory, UUID.randomUUID().toString());
     }
 
+    //포인트 적립, 기록없음
     @Transactional
+    @Override
     public Member accumulateWithoutHistory(String to, long amount) {
         Point.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(to)
@@ -90,11 +100,12 @@ public class PointService {
         return member;
     }
 
-    //포인트 적립
+    //포인트 적립 + 기록
     @Transactional
-    public Long accumulate(String to, long amount, PointCategory pointCategory) {
+    @Override
+    public Long accumulate(String to, long amount, AssetCategory assetCategory) {
         Member member = accumulateWithoutHistory(to, amount);
-        return pointHistoryService.createHistory(member, null, amount, pointCategory, UUID.randomUUID().toString());
+        return pointHistoryService.createHistory(member, null, amount, assetCategory, UUID.randomUUID().toString());
     }
 
     @Transactional
@@ -113,6 +124,6 @@ public class PointService {
             throw new PointClientException("출석실패: 이미 출석했습니다");
         }
         member.setLastAttendanceDate(today);
-        accumulate(member.getUsername(), PointConstants.ATTENDANCE_POINT, PointCategory.ATTENDANCE);
+        accumulate(member.getUsername(), PointConstants.ATTENDANCE_POINT, AssetCategory.ATTENDANCE);
     }
 }

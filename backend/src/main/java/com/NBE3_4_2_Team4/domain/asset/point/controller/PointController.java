@@ -1,12 +1,12 @@
-package com.NBE3_4_2_Team4.domain.point.controller;
+package com.NBE3_4_2_Team4.domain.asset.point.controller;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryRes;
-import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.service.PointHistoryService;
-import com.NBE3_4_2_Team4.domain.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryRes;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointHistoryService;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
@@ -14,8 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.NBE3_4_2_Team4.global.security.AuthManager.*;
@@ -46,7 +44,7 @@ public class PointController {
     @Operation(summary="포인트 송금 기능")
     public RsData<Empty> transfer(@Valid @RequestBody PointTransferReq reqDto) {
         Member member = getNonNullMember();
-        pointService.transfer(member.getUsername(), reqDto.getUsername(), reqDto.getAmount(), PointCategory.TRANSFER);
+        pointService.transfer(member.getUsername(), reqDto.getUsername(), reqDto.getAmount(), AssetCategory.TRANSFER);
 
         return new RsData<>(
                 "200-1",

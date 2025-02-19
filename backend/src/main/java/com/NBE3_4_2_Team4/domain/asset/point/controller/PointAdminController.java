@@ -1,8 +1,8 @@
-package com.NBE3_4_2_Team4.domain.point.controller;
+package com.NBE3_4_2_Team4.domain.asset.point.controller;
 
-import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,7 @@ public class PointAdminController {
     @PutMapping("/accumulate")
     public RsData<Empty> accumulateForMember(@RequestBody @Validated PointTransferReq reqDto) {
 
-        pointService.accumulate(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
+        pointService.accumulate(reqDto.getUsername(), reqDto.getAmount(), AssetCategory.ADMIN);
 
         return new RsData<>(
                 "200-1",
@@ -39,7 +39,7 @@ public class PointAdminController {
     @PutMapping("/deduct")
     public RsData<Empty> deductFromMember(@RequestBody @Validated PointTransferReq reqDto) {
 
-        pointService.deduct(reqDto.getUsername(), reqDto.getAmount(), PointCategory.ADMIN);
+        pointService.deduct(reqDto.getUsername(), reqDto.getAmount(), AssetCategory.ADMIN);
         return new RsData<>(
                 "200-1",
                 "차감 성공",

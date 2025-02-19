@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.domain.point.dto;
+package com.NBE3_4_2_Team4.domain.asset.point.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

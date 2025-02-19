@@ -6,7 +6,7 @@ import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.QOAuth2Refresh
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.entity.QMember;
-import com.NBE3_4_2_Team4.domain.point.entity.QPointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.QPointHistory;
 import com.querydsl.core.types.Projections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;

@@ -1,5 +1,6 @@
-package com.NBE3_4_2_Team4.domain.point.entity;
+package com.NBE3_4_2_Team4.domain.asset.cash.entity;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,17 +16,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class PointHistory {
-
+public class CashHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private Long amount;
-
-    @Column(nullable = false)
-    private String correlationId;  // 연관 그룹 ID
 
     @CreatedDate
     @Column(updatable = false)
@@ -40,5 +37,5 @@ public class PointHistory {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PointCategory pointCategory;
+    private AssetCategory assetCategory;
 }

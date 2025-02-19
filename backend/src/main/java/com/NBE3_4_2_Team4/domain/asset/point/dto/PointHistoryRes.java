@@ -1,8 +1,7 @@
-package com.NBE3_4_2_Team4.domain.point.dto;
+package com.NBE3_4_2_Team4.domain.asset.point.dto;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,7 +24,7 @@ public class PointHistoryRes {
                 .amount(pointHistory.getAmount())
                 .createdAt(pointHistory.getCreatedAt())
                 .counterAccountUsername(counterMemberUsername)
-                .pointCategory(pointHistory.getPointCategory().getDisplayName())
+                .pointCategory(pointHistory.getAssetCategory().getDisplayName())
                 .build();
     }
 }

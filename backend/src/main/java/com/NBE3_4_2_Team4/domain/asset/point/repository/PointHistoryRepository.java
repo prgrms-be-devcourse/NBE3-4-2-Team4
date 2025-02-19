@@ -1,10 +1,10 @@
-package com.NBE3_4_2_Team4.domain.point.repository;
+package com.NBE3_4_2_Team4.domain.asset.point.repository;
 
 
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,7 +21,7 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 
     @Query("""
     SELECT p FROM PointHistory p
-    WHERE (:pointCategory IS NULL OR p.pointCategory = :pointCategory)
+    WHERE (:assetCategory IS NULL OR p.assetCategory = :assetCategory)
     AND (
         (:startDateTime IS NULL OR :endDateTime IS NULL) OR
         (p.createdAt BETWEEN :startDateTime AND :endDateTime)
@@ -30,7 +30,7 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
     """)
     Page<PointHistory> findByFilters(
             @Param("memberId") Long memberId,
-            @Param("pointCategory") PointCategory pointCategory,
+            @Param("pointCategory") AssetCategory assetCategory,
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime,
             Pageable pageable

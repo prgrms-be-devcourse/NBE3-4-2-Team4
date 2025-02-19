@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.product.order.entity;
 
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;

@@ -2,8 +2,8 @@ package com.NBE3_4_2_Team4.domain.product.order.service;
 
 import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder;
 import com.NBE3_4_2_Team4.domain.product.order.repository.ProductOrderRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;

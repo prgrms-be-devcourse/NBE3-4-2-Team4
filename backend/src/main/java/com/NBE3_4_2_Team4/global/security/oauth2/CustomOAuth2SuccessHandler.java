@@ -1,10 +1,10 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.user.CustomUser;
@@ -80,7 +80,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         pointHistoryRepository.save(PointHistory.builder()
                 .member(member)
                 .amount(PointConstants.ATTENDANCE_POINT)
-                .pointCategory(PointCategory.ATTENDANCE)
+                .assetCategory(AssetCategory.ATTENDANCE)
                 .correlationId("asdasdasdaff")
                 .build());
     }

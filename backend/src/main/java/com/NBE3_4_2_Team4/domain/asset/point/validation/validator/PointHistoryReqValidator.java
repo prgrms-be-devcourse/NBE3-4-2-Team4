@@ -1,7 +1,7 @@
-package com.NBE3_4_2_Team4.domain.point.validation.validator;
+package com.NBE3_4_2_Team4.domain.asset.point.validation.validator;
 
-import com.NBE3_4_2_Team4.domain.point.dto.PointHistoryReq;
-import com.NBE3_4_2_Team4.domain.point.validation.annotation.ValidPointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.point.validation.annotation.ValidPointHistoryReq;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

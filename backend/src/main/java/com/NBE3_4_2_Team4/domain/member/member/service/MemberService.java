@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
+import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -9,9 +10,8 @@ import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -103,7 +103,7 @@ public class MemberService {
             pointHistoryRepository.save(PointHistory.builder()
                             .member(member)
                             .amount(PointConstants.INITIAL_POINT)
-                            .pointCategory(PointCategory.SIGN_UP)
+                            .assetCategory(AssetCategory.SIGN_UP)
                             .correlationId("asdsaaddasasddsa")
                     .build());
             member.setPoint(new Point(PointConstants.INITIAL_POINT));
