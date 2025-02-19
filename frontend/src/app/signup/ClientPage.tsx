@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ClientPage() {
     const [email, setEmail] = useState("");
@@ -8,6 +9,33 @@ export default function ClientPage() {
     const [isAvailable, setIsAvailable] = useState<null | boolean>(null);
     const [error, setError] = useState("");
     const [signUpMessage, setSignUpMessage] = useState("");
+    const router = useRouter();
+
+    useEffect(() => {
+        const checkTempToken = async () => {
+            try {
+                const response = await fetch("http://localhost:8080/auth/temp-token", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.data == false){
+                        router.push("/");
+                    }
+
+                } else {
+                    console.error("서버 오류:", response.body);
+                }
+            } catch (error) {
+                console.error("서버 오류:", error);
+                router.push("/");
+            }
+        };
+
+        checkTempToken();
+    }, []);
 
     // 닉네임 중복 확인
     const checkNicknameAvailability = async () => {
