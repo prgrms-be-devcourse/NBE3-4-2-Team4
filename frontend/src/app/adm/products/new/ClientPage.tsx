@@ -25,7 +25,6 @@ import { useToast } from "@/hooks/use-toast";
 const saleStates = [
   { value: "ONSALE", label: "판매 중" },
   { value: "SOLDOUT", label: "품절" },
-  { value: "RESERVED", label: "예약 중" },
   { value: "COMINGSOON", label: "곧 출시 예정" },
 ];
 
@@ -71,7 +70,6 @@ export default function ClientPage() {
 
       if (response.error) {
         console.error("상품 등록 실패:", response.error);
-        //alert(response.error.msg || "상품 등록 실패");
         toast({
           title: "상품 등록 실패",
           description: response.error.msg || "상품 등록 실패",
@@ -79,15 +77,12 @@ export default function ClientPage() {
         });
         return;
       }
-
-      //alert("상품이 성공적으로 등록되었습니다!");
       toast({
         title: "상품이 성공적으로 등록되었습니다!",
       });
       router.push("/adm/products/list");
     } catch (error) {
       console.error("상품 등록 중 오류 발생:", error);
-      //alert("상품 등록 중 오류가 발생했습니다.");
       toast({
         title: "상품 등록 중 오류가 발생했습니다.",
         variant: "destructive",
@@ -199,19 +194,6 @@ export default function ClientPage() {
                   ))}
                 </SelectContent>
               </Select>
-              {/* <select
-                id="product_sale_state"
-                name="product_sale_state"
-                value={formData.product_sale_state}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
-              >
-                {saleStates.map((state) => (
-                  <option key={state.value} value={state.value}>
-                    {state.label}
-                  </option>
-                ))}
-              </select> */}
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center">

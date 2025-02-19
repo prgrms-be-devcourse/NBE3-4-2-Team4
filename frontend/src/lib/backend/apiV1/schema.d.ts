@@ -432,6 +432,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/states/keyword": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 판매 상태 키워드 조회
+         * @description 판매 상태 키워드를 조회합니다.
+         */
+        get: operations["getSaleStates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/states/all": {
         parameters: {
             query?: never;
@@ -444,26 +464,6 @@ export interface paths {
          * @description 판매 상태별 상품을 조회합니다.
          */
         get: operations["getProductsBySaleState"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/products/category/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 카테고리별 상품 조회
-         * @description 카테고리별 상품을 조회합니다.
-         */
-        get: operations["getProductsByCategory"];
         put?: never;
         post?: never;
         delete?: never;
@@ -504,6 +504,26 @@ export interface paths {
          * @description 전체 상품 카테고리의 키워드를 조회합니다.
          */
         get: operations["getCategories_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/categories/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리별 상품 조회
+         * @description 카테고리별 상품을 조회합니다.
+         */
+        get: operations["getProductsByCategory"];
         put?: never;
         post?: never;
         delete?: never;
@@ -892,6 +912,11 @@ export interface components {
             msg: string;
             data: components["schemas"]["PageDtoGetItem"];
         };
+        RsDataListString: {
+            resultCode: string;
+            msg: string;
+            data: string[];
+        };
         GetItemsByKeyword: {
             keyword?: string;
             products?: components["schemas"]["GetItem"][];
@@ -900,11 +925,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItemsByKeyword"];
-        };
-        RsDataListString: {
-            resultCode: string;
-            msg: string;
-            data: string[];
         };
         RsDataListGetItem: {
             resultCode: string;
@@ -1505,9 +1525,11 @@ export interface operations {
         parameters: {
             query?: {
                 page?: number;
-                pageSize?: number;
-                keyword_type?: "ALL" | "NAME" | "CATEGORY";
-                keyword?: string;
+                page_size?: number;
+                search_keyword_type?: "ALL" | "NAME" | "CATEGORY";
+                search_keyword?: string;
+                category_keyword?: string;
+                sale_state_keyword?: string;
             };
             header?: never;
             path?: never;
@@ -1962,7 +1984,7 @@ export interface operations {
             query: {
                 sale_state_keyword: string;
                 page?: number;
-                pageSize?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -1977,6 +1999,35 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getSaleStates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListString"];
                 };
             };
             /** @description Bad Request */
@@ -2021,43 +2072,12 @@ export interface operations {
             };
         };
     };
-    getProductsByCategory: {
-        parameters: {
-            query: {
-                category_keyword: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItemsByKeyword"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getProductsByCategoryWithPaging: {
         parameters: {
             query: {
                 category_keyword: string;
                 page?: number;
-                pageSize?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -2101,6 +2121,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListString"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getProductsByCategory: {
+        parameters: {
+            query: {
+                category_keyword: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItemsByKeyword"];
                 };
             };
             /** @description Bad Request */

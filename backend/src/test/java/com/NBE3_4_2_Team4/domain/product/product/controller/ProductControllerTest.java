@@ -67,7 +67,7 @@ class ProductControllerTest {
     void getProductsByKeywordWithPagingTest() throws Exception {
 
         // given
-        String url = "/api/products?page=1&pageSize=1&keyword_type=ALL";
+        String url = "/api/products?page=1&page_size=1&search_keyword_type=ALL";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -98,7 +98,7 @@ class ProductControllerTest {
     void getProductsByCategoryTest() throws Exception {
 
         // given
-        String url = "/api/products/category/all?category_keyword=상품권";
+        String url = "/api/products/categories/all?category_keyword=상품권";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -135,7 +135,7 @@ class ProductControllerTest {
     void getProductsByCategoryWithPagingTest() throws Exception {
 
         // given
-        String url = "/api/products/categories?category_keyword=상품권&page=1&pageSize=1";
+        String url = "/api/products/categories?category_keyword=상품권&page=1&page_size=1";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -191,7 +191,7 @@ class ProductControllerTest {
     void getProductsBySaleStateWithPagingTest() throws Exception {
 
         // given
-        String url = "/api/products/states?sale_state_keyword=ONSALE&page=1&pageSize=1";
+        String url = "/api/products/states?sale_state_keyword=ONSALE&page=1&page_size=1";
 
         // when
         ResultActions resultActions = mockMvc.perform(

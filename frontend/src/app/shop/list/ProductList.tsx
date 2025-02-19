@@ -3,23 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { components } from "@/lib/backend/apiV1/schema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gift, Lock } from "lucide-react";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import PaginationType1Responsive from "@/lib/business/components/PaginationType1Responsive";
 import imageLoader from "@/utils/imageLoader";
 import { Badge } from "@/components/ui/badge";
+import {useSearchParams} from "next/navigation";
 
 interface ProductListProps {
-  page: number;
-  pageSize: number;
   itemPage: any;
 }
 
-export default function ProductList({
-  page,
-  pageSize,
-  itemPage,
-}: ProductListProps) {
+export default function ProductList({itemPage}: ProductListProps) {
+
+  const searchParams = useSearchParams();
+
+  // 조회 파라미터에서 page 파라미터를 삭제하는 함수
+  const filteredSearchParams = () => {
+    const queryParams = new URLSearchParams(searchParams.toString());
+    queryParams.delete("page");
+    return queryParams.toString();
+  };
+
   const normalizedItemPage: components["schemas"]["PageDtoGetItem"] = {
     currentPageNumber: itemPage.data.current_page_number,
     pageSize: itemPage.data.page_size,
@@ -70,10 +74,6 @@ export default function ProductList({
                         {item.product_price.toLocaleString()} 원
                       </p>
 
-                      {/* 비공개 상품에 대한 잠금 아이콘 */}
-                      {!item.product_category && (
-                        <Lock className="w-6 h-6 text-muted" />
-                      )}
                     </div>
                   </CardHeader>
                 </Card>
@@ -84,7 +84,7 @@ export default function ProductList({
       )}
       <PaginationType1Responsive
         className="my-6"
-        baseQueryString={`pageSize=${pageSize}`}
+        baseQueryString={filteredSearchParams()}
         totalPages={normalizedItemPage.totalPages}
         currentPageNumber={normalizedItemPage.currentPageNumber}
       />
