@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.domain.point.service;
+package com.NBE3_4_2_Team4.domain.asset.point.service;
 
 import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;

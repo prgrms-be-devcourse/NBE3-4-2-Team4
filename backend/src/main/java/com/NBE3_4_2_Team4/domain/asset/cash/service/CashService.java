@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.cash.service;
 
 import com.NBE3_4_2_Team4.domain.asset.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.AssetStrategy;
+import com.NBE3_4_2_Team4.domain.asset.AssetService;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointHistoryService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CashService implements AssetStrategy {
+public class CashService implements AssetService {
     private final MemberRepository memberRepository;
     private final PointHistoryService pointHistoryService;
 
