@@ -25,7 +25,7 @@ public class GoogleDisconnectService implements OAuth2DisconnectService {
     }
 
     @Override
-    public boolean disconnect(String refreshToken) {
+    public boolean disconnectSuccess(String refreshToken) {
         String googleDisconnectUrl = "https://oauth2.googleapis.com/revoke";
 
         String accessToken = googleTokenService.getFreshAccessToken(refreshToken);

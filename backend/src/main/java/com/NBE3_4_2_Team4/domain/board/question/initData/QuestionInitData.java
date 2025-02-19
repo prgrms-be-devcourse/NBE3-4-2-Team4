@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.initData;
 
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionCategoryService;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -25,6 +26,7 @@ public class QuestionInitData {
     private final MemberRepository memberRepository;
     private final MemberInitData memberInitData;
     private final RecommendService recommendService;
+    private final QuestionCategoryService questionCategoryService;
 
     @Value("${custom.initData.member.admin.username}")
     private String adminUsername;
@@ -53,7 +55,7 @@ public class QuestionInitData {
 
         List<String> categories = List.of("연애", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
         for (String category : categories) {
-            questionService.createCategory(category);
+            questionCategoryService.createCategory(admin, category);
         }
 
         for (int i = 1; i <= 20; i++) {
