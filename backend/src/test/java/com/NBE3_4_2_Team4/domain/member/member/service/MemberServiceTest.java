@@ -25,6 +25,7 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.KakaoLogoutS
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -349,7 +350,7 @@ public class MemberServiceTest {
         SignupRequestDto signupRequestDto = new SignupRequestDto("testNick", "testEmail@example.com");
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("oAuth2Id", oAuth2Id);
+        claims.put(AuthConstants.OAUTH2_ID, oAuth2Id);
 
         OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
         TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");

@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp;
 
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,13 +37,13 @@ public class TempUserBeforeSignUpService {
 
     public TempUserBeforeSignUp getTempUserFromRedisWithJwt(String tempToken){
         Map<String, Object> claims = jwtManager.getClaims(tempToken);
-        String oAuth2Id = (String) claims.get("oAuth2Id");
+        String oAuth2Id = (String) claims.get(AuthConstants.OAUTH2_ID);
         return getTempUserFromRedis(oAuth2Id);
     }
 
     public void deleteTempUserFromRedis(String tempToken){
         Map<String, Object> claims = jwtManager.getClaims(tempToken);
-        String oAuth2Id = (String) claims.get("oAuth2Id");
+        String oAuth2Id = (String) claims.get(AuthConstants.OAUTH2_ID);
         redisTemplate.delete(oAuth2Id);
     };
 }

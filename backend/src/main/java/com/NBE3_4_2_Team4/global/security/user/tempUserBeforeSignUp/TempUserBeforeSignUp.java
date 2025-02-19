@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp;
 
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +29,7 @@ public class TempUserBeforeSignUp extends User implements OAuth2User {
         attributes.put("providerTypeCode", providerTypeCode);
         attributes.put("refreshToken", refreshToken);
         attributes.put("realName", oAuth2UserInfo.getRealName());
-        attributes.put("oAuth2Id", oAuth2UserInfo.getOAuth2Id());
+        attributes.put(AuthConstants.OAUTH2_ID, oAuth2UserInfo.getOAuth2Id());
     }
 
     @Override
@@ -54,6 +55,6 @@ public class TempUserBeforeSignUp extends User implements OAuth2User {
     }
 
     public String getOAuth2Id(){
-        return (String) attributes.get("oAuth2Id");
+        return (String) attributes.get(AuthConstants.OAUTH2_ID);
     }
 }
