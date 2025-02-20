@@ -40,6 +40,7 @@ type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
 
 interface EnhancedFile extends File {
   uploadedUrl?: string;
+  blobId?: string;
 }
 
 export default function ClientPage({ params }: { params: { id: string } }) {
@@ -114,34 +115,41 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           media_poster: false,
           images_upload_handler: async function (blobInfo, progress) {
             try {
-              // 1. blobInfo에서 받은 이미지를 File 객체로 변환
-              const imageFile = new File(
-                [blobInfo.blob()],
-                blobInfo.filename(),
-                { type: blobInfo.blob().type }
-              ) as EnhancedFile;
+              const currentBlob = blobInfo.blob();
+              const blobId = blobInfo.id();
 
-              // 2. 해당 파일의 임시 URL 생성 (브라우저 메모리에 저장)
-              const objectUrl = URL.createObjectURL(imageFile);
-              imageFile.uploadedUrl = objectUrl;
+              // File 객체 생성 시 직접 Blob을 사용하고 lastModified 추가
+              const imageFile = new File([currentBlob], blobInfo.filename(), {
+                type: currentBlob.type,
+                lastModified: new Date().getTime(),
+              }) as EnhancedFile;
 
-              // 3. 업로드될 이미지 목록에 추가
-              setUploadedImages((prev) => {
-                const newImages = [...prev, imageFile];
+              // 이미지 처리를 Promise로 래핑
+              const objectUrl = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  const url = URL.createObjectURL(imageFile);
+                  imageFile.uploadedUrl = url;
+                  imageFile.blobId = blobId;
 
-                return newImages;
+                  setUploadedImages((prev) => {
+                    // blobId를 이용해 중복 확인
+                    const isDuplicate = prev.some(
+                      (file) => file.blobId === blobId
+                    );
+                    if (isDuplicate) return prev;
+
+                    return [...prev, imageFile];
+                  });
+
+                  resolve(url);
+                };
+                reader.readAsDataURL(currentBlob);
               });
 
-              // 4. 에디터에 표시할 임시 URL 반환
               return objectUrl;
             } catch (error) {
               console.error("Image upload failed:", error);
-
-              toast({
-                title: "이미지 처리 실패",
-                description: "이미지 처리 중 오류가 발생했습니다.",
-                variant: "destructive",
-              });
               throw error;
             }
           },

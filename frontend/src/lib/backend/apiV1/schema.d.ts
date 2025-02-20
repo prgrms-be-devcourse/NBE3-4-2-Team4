@@ -682,22 +682,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/members/check-temp-token": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["tempTokenCheck"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/logout/complete": {
         parameters: {
             query?: never;
@@ -710,6 +694,22 @@ export interface paths {
          * @description 로그아웃 요청이 성공적으로 실행되었을 때 도착합니다. Cookie 에 담긴 JWT 를 파기하고 프론트의 메인 페이지로 이동합니다.
          */
         get: operations["logoutComplete"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/temp-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["tempTokenCheck"];
         put?: never;
         post?: never;
         delete?: never;
@@ -787,26 +787,6 @@ export interface paths {
          * @description 카테고리 삭제하기
          */
         delete: operations["deleteCategory"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/members": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * withdrawal membership
-         * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
-         */
-        delete: operations["withdrawalMembership"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1073,7 +1053,7 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"][];
         };
-        PointHistoryReq: {
+        AssetHistoryReq: {
             /** Format: int32 */
             page: number;
             /** Format: date */
@@ -1081,13 +1061,21 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            pointCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             endDateTime?: string;
             /** Format: date-time */
             startDateTime?: string;
         };
-        PageDtoPointHistoryRes: {
+        AssetHistoryRes: {
+            /** Format: int64 */
+            amount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            counterAccountUsername?: string;
+            assetCategory?: string;
+        };
+        PageDtoAssetHistoryRes: {
             /** Format: int32 */
             currentPageNumber?: number;
             /** Format: int32 */
@@ -1097,20 +1085,12 @@ export interface components {
             /** Format: int64 */
             totalItems?: number;
             hasMore?: boolean;
-            items?: components["schemas"]["PointHistoryRes"][];
+            items?: components["schemas"]["AssetHistoryRes"][];
         };
-        PointHistoryRes: {
-            /** Format: int64 */
-            amount?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            counterAccountUsername?: string;
-            pointCategory?: string;
-        };
-        RsDataPageDtoPointHistoryRes: {
+        RsDataPageDtoAssetHistoryRes: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["PageDtoPointHistoryRes"];
+            data: components["schemas"]["PageDtoAssetHistoryRes"];
         };
         RsDataBoolean: {
             resultCode: string;
@@ -1125,12 +1105,15 @@ export interface components {
         MemberDetailInfoResponseDto: {
             username?: string;
             nickname?: string;
-            /** Format: int64 */
-            point?: number;
+            point?: components["schemas"]["Point"];
             /** Format: int64 */
             questionSize?: number;
             /** Format: int64 */
             answerSize?: number;
+        };
+        Point: {
+            /** Format: int64 */
+            amount?: number;
         };
         RsDataMemberDetailInfoResponseDto: {
             resultCode: string;
@@ -2598,7 +2581,7 @@ export interface operations {
     getPointHistories: {
         parameters: {
             query: {
-                assetHistoryReq: components["schemas"]["PointHistoryReq"];
+                assetHistoryReq: components["schemas"]["AssetHistoryReq"];
             };
             header?: never;
             path?: never;
@@ -2612,7 +2595,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoPointHistoryRes"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */
@@ -2643,7 +2626,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoPointHistoryRes"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */
@@ -2733,37 +2716,6 @@ export interface operations {
             };
         };
     };
-    tempTokenCheck: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: {
-                tempToken?: string;
-            };
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     logoutComplete: {
         parameters: {
             query?: never;
@@ -2782,6 +2734,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    tempTokenCheck: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                tempToken?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
                 };
             };
             /** @description Bad Request */
