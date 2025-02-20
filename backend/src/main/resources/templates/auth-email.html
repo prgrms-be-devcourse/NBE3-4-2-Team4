@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이메일 인증</title>
+</head>
+<body>
+<h1>이메일 인증 요청</h1>
+<p>아래 버튼을 눌러 이메일 인증을 완료하세요.</p>
+<!-- 인증을 위한 POST 방식 양식 -->
+<form action="/auth/verify" method="post">
+    <input type="hidden" name="authCode" th:value="${authCode}" />
+    <input type="hidden" name="memberId" th:value="${memberId}" />
+
+    <button type="submit" style="display:inline-block;padding:10px 20px;background:#007bff;color:white;text-decoration:none;border-radius:5px;">
+        이메일 인증하기
+    </button>
+</form>
+
+</body>
+</html>

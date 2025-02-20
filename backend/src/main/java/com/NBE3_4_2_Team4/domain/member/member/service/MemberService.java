@@ -144,7 +144,7 @@ public class MemberService {
 
     @Async
     public void sendAuthenticationEmailAsync(String email, Long memberId, String authCode) {
-        mailService.sendEmail(email, "인증 완료해주세용", String.format("버튼 눌러서 인증하시면 사이트 이용 가능합니당. your id : %d, auth code : %s", memberId, authCode));
+        mailService.sendAuthenticationMail(email, memberId, authCode);
     }
 
 
