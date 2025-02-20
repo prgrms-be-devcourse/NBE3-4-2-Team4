@@ -1,8 +1,8 @@
 package com.NBE3_4_2_Team4.domain.product.order.controller;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.product.order.service.ProductOrderService;
-import com.NBE3_4_2_Team4.domain.point.entity.PointCategory;
-import com.NBE3_4_2_Team4.domain.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto;
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto;
 import com.NBE3_4_2_Team4.domain.product.product.service.ProductService;
@@ -34,10 +34,10 @@ public class ProductOrderController {
     ) {
 
         // 해당하는 유저의 포인트를 상품 가격만큼 착감
-        Long pointHistoryId = pointService.deductPoints(
+        Long pointHistoryId = pointService.deduct(
                 request.getUsername(),
                 request.getAmount(),
-                PointCategory.PURCHASE
+                AssetCategory.PURCHASE
         );
 
         // 상품 상태 변경

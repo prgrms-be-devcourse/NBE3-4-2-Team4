@@ -2,7 +2,7 @@ package com.NBE3_4_2_Team4.global.security.filter;
 
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.point.dto.PointTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;

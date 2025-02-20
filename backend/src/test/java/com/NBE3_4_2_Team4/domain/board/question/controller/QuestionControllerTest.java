@@ -313,7 +313,7 @@ public class QuestionControllerTest {
     @WithUserDetails("admin@test.com")
     void t14() throws Exception {
         Answer answer = answerService.findById(1);
-        long answerPoint = answer.getAuthor().getPoint();
+        long answerPoint = answer.getAuthor().getPoint().getAmount();
 
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1/select/1")).andDo(print());

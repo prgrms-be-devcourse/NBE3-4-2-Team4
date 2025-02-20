@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.product.order.entity;
 
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -26,5 +26,5 @@ public class ProductOrder extends BaseEntity {
     private Product product;            // 상품
 
     @OneToOne
-    private PointHistory pointHistory;  // 포인트 히스토리
+    private AssetHistory assetHistory;  // 포인트 히스토리
 }

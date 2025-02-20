@@ -78,7 +78,7 @@ export default function ClientPage({
           <CardTitle className="flex justify-between items-center gap-2">
             {memberInfo?.username}
             <p className="flex items-center gap-2 text-amber-500">
-              <Coins size={16} /> {memberInfo?.point}
+              <Coins size={16} /> {memberInfo?.point.amount}
             </p>
           </CardTitle>
         </CardHeader>

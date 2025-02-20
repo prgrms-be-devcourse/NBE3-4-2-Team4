@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.member.member.service;
 
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -97,7 +98,7 @@ public class MemberServiceTest {
                 .username(username)
                 .password(password)
                 .nickname(nickname)
-                .point(PointConstants.INITIAL_POINT)
+                .point(new Point(PointConstants.INITIAL_POINT))
                 .questions(new ArrayList<>())
                 .answers(new ArrayList<>())
                 .build();
@@ -261,7 +262,7 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
@@ -287,7 +288,7 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
@@ -312,7 +313,7 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(Member.Role.ADMIN, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
