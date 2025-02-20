@@ -17,6 +17,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.global.mail.MailService;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -25,6 +26,7 @@ import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBefo
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ public class MemberService {
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     private final TempUserBeforeSignUpService tempUserBeforeSignUpService;
+    private final MailService mailService;
 
 
 
@@ -143,7 +146,13 @@ public class MemberService {
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
 
+        sendAuthenticationEmailAsync(emailAddress);
         return member;
+    }
+
+    @Async
+    public void sendAuthenticationEmailAsync(String email) {
+        mailService.sendEmail(email, "인증 완료해주세용", "버튼 눌러서 인증하시면 사이트 이용 가능합니당");
     }
 
 
