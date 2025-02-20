@@ -1,7 +1,9 @@
-package com.NBE3_4_2_Team4.global.mail;
+package com.NBE3_4_2_Team4.global.mail.service;
 
 
+import com.NBE3_4_2_Team4.global.mail.state.MailState;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,7 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-    public void sendEmail(String to, String subject, String body) {
+    public MailState sendEmail(String to, String subject, String body){
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -30,12 +32,16 @@ public class MailService {
             helper.setText(body, true);  // true -> HTML 형식 지원
 
             mailSender.send(message);
+            return MailState.SUCCESS;
+        }catch (AddressException e){
+            return MailState.INVALID_EMAIL_ADDRESS;
         } catch (MessagingException e) {
             log.error("Error sending email to {}, msg : {}", to, e.getMessage());
+            return MailState.SERVER_ERROR;
         }
     }
 
-    private String makeThymeleafMail(String templateName, Map<String, String> variables) {
+    private String makeThymeleafMailContent(String templateName, Map<String, String> variables) {
         Context context = new Context();
         for (Map.Entry<String, String> entry : variables.entrySet()) {
             context.setVariable(entry.getKey(), entry.getValue());
@@ -43,12 +49,12 @@ public class MailService {
         return templateEngine.process(templateName, context);
     }
 
-    public void sendAuthenticationMail(String email, Long memberId, String authCode) {
+    public MailState sendAuthenticationMail(String email, Long memberId, String authCode){
         Map<String, String> variables = Map.of(
                 "memberId", memberId.toString(),
                 "authCode", authCode
         );
-        String body = makeThymeleafMail("auth-email", variables);
-        sendEmail(email, "인증 완료해주세용", body);
+        String body = makeThymeleafMailContent("auth-email", variables);
+        return sendEmail(email, "인증 완료해주세용", body);
     }
 }

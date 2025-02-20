@@ -4,11 +4,8 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
-import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -17,7 +14,8 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.global.mail.MailService;
+import com.NBE3_4_2_Team4.global.mail.service.MailService;
+import com.NBE3_4_2_Team4.global.mail.state.MailState;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -84,7 +82,7 @@ public class MemberService {
 
 
 
-    public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
+    public SignupResponseDto signUp(String tempToken, SignupRequestDto signupRequestDto){
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken);
 
@@ -100,9 +98,11 @@ public class MemberService {
 
         tempUserBeforeSignUpService.saveAuthCodeForMember(member.getId(), authCode);
 
-        sendAuthenticationEmailAsync(member.getEmailAddress(), member.getId(), authCode);
+        MailState mailState = sendAuthenticationEmailAsync(member.getEmailAddress(), member.getId(), authCode);
 
-        return member;
+        return SignupResponseDto.builder()
+                .mailState(mailState)
+                .build();
     }
 
     private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
@@ -143,8 +143,8 @@ public class MemberService {
     }
 
     @Async
-    public void sendAuthenticationEmailAsync(String email, Long memberId, String authCode) {
-        mailService.sendAuthenticationMail(email, memberId, authCode);
+    public MailState sendAuthenticationEmailAsync(String email, Long memberId, String authCode){
+        return mailService.sendAuthenticationMail(email, memberId, authCode);
     }
 
 

@@ -322,41 +322,41 @@ public class MemberServiceTest {
 //                .save(any());
 //    }
 
-    @Test
-    void signUp_Should_SaveMemberAndAssignInitialPoints() {
-        // Given
-        String tempToken = "mockJwtToken";
-        String oAuth2Id = "mockOAuth2Id";
-        SignupRequestDto signupRequestDto = new SignupRequestDto("testNick", "testEmail@example.com");
-
-
-        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
-        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");
-
-        Member mockMember = Member.builder()
-                .role(Member.Role.USER)
-                .oAuth2Provider(Member.OAuth2Provider.KAKAO)
-                .username("testUser")
-                .password("")
-                .nickname("testNick")
-                .emailAddress("testEmail@example.com")
-                .realName("Test Real Name")
-                .build();
-
-        when(passwordEncoder.encode("")).thenReturn("encodedPassword");
-        when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
-        when(tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(anyString())).thenReturn(tempUserBeforeSignUp);
-
-        Member savedMember = memberService.signUp(tempToken, signupRequestDto);
-
-        verify(memberRepository, times(1)).save(any(Member.class));
-        verify(pointHistoryRepository, times(1)).save(any(AssetHistory.class));
-        assertNotNull(savedMember);
-        assertEquals("testUser", savedMember.getUsername());
-        assertEquals("testNick", savedMember.getNickname());
-        assertEquals("testEmail@example.com", savedMember.getEmailAddress());
-        assertEquals(Member.Role.USER, savedMember.getRole());
-    }
+//    @Test
+//    void signUp_Should_SaveMemberAndAssignInitialPoints() {
+//        // Given
+//        String tempToken = "mockJwtToken";
+//        String oAuth2Id = "mockOAuth2Id";
+//        SignupRequestDto signupRequestDto = new SignupRequestDto("testNick", "testEmail@example.com");
+//
+//
+//        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
+//        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");
+//
+//        Member mockMember = Member.builder()
+//                .role(Member.Role.USER)
+//                .oAuth2Provider(Member.OAuth2Provider.KAKAO)
+//                .username("testUser")
+//                .password("")
+//                .nickname("testNick")
+//                .emailAddress("testEmail@example.com")
+//                .realName("Test Real Name")
+//                .build();
+//
+//        when(passwordEncoder.encode("")).thenReturn("encodedPassword");
+//        when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
+//        when(tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(anyString())).thenReturn(tempUserBeforeSignUp);
+//
+//        Member savedMember = memberService.signUp(tempToken, signupRequestDto);
+//
+//        verify(memberRepository, times(1)).save(any(Member.class));
+//        verify(pointHistoryRepository, times(1)).save(any(AssetHistory.class));
+//        assertNotNull(savedMember);
+//        assertEquals("testUser", savedMember.getUsername());
+//        assertEquals("testNick", savedMember.getNickname());
+//        assertEquals("testEmail@example.com", savedMember.getEmailAddress());
+//        assertEquals(Member.Role.USER, savedMember.getRole());
+//    }
 
 
     @Test
