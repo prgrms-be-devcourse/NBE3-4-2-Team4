@@ -1,7 +1,14 @@
 package com.NBE3_4_2_Team4.domain.member.member.initData;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+//import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Order(0)
@@ -18,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Configuration
 @RequiredArgsConstructor
 public class MemberInitData {
-    private final MemberService memberService;
-
+//    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AssetHistoryRepository assetHistoryRepository;
     @Value("${custom.initData.member.admin.username}")
     private String adminUsername;
 
@@ -61,13 +71,52 @@ public class MemberInitData {
         };
     }
 
+    private void saveSignUpPoint(Member member) {
+        assetHistoryRepository.save(AssetHistory.builder()
+                .member(member)
+                .amount(PointConstants.INITIAL_POINT)
+                .assetCategory(AssetCategory.SIGN_UP)
+                .assetType(AssetType.POINT)
+                .correlationId("asdsaaddasasddsa")
+                .build());
+        member.setPoint(new Point(PointConstants.INITIAL_POINT));
+    }
+
     @Transactional
     public void work() {
-        if (memberService.count() > 0) return;
+        if (memberRepository.count() > 0) return;
         Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.NONE;
 
-        memberService.signUp(adminUsername, adminPassword, adminNickname, Member.Role.ADMIN, oAuth2Provider);
-        memberService.signUp(member1Username, member1Password, member1Nickname, Member.Role.USER, oAuth2Provider);
-        memberService.signUp(member2Username, member2Password, member2Nickname, Member.Role.USER, oAuth2Provider);
+        Member admin = memberRepository.save(Member.builder()
+                .username(adminUsername)
+                .password(passwordEncoder.encode(adminPassword))
+                .nickname(adminNickname)
+                .role(Member.Role.ADMIN)
+                .oAuth2Provider(oAuth2Provider)
+                .build());
+        saveSignUpPoint(admin);
+
+        Member member1 = memberRepository.save(Member.builder()
+                .username(member1Username)
+                .password(passwordEncoder.encode(member1Password))
+                .nickname(member1Nickname)
+                .role(Member.Role.USER)
+                .oAuth2Provider(oAuth2Provider)
+                .build());
+        saveSignUpPoint(member1);
+
+        Member member2 = memberRepository.save(Member.builder()
+                .username(member2Username)
+                .password(passwordEncoder.encode(member2Password))
+                .nickname(member2Nickname)
+                .role(Member.Role.USER)
+                .oAuth2Provider(oAuth2Provider)
+                .build());
+        saveSignUpPoint(member2);
+
+
+//        memberService.signUp(adminUsername, adminPassword, adminNickname, Member.Role.ADMIN, oAuth2Provider);
+//        memberService.signUp(member1Username, member1Password, member1Nickname, Member.Role.USER, oAuth2Provider);
+//        memberService.signUp(member2Username, member2Password, member2Nickname, Member.Role.USER, oAuth2Provider);
     }
 }

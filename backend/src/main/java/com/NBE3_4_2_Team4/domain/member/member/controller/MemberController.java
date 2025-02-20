@@ -56,7 +56,7 @@ public class MemberController {
     public RsData<Boolean> nicknameCheck(
             @RequestParam(name = "nickname") String nickname
     ){
-        return new RsData<>("200-1", "", memberService.duplicateNickname(nickname));
+        return new RsData<>("200-1", "", memberService.isNicknameDuplicate(nickname));
     }
 
     @GetMapping("/api/auth/temp-token")

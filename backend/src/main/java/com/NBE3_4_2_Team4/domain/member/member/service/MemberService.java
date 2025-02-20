@@ -50,12 +50,6 @@ public class MemberService {
     private final MailService mailService;
 
 
-
-    @Transactional(readOnly = true)
-    public long count(){
-        return memberRepository.count();
-    }
-
     public Member adminLogin(AdminLoginRequestDto adminLoginRequestDto) {
         String adminUsername = adminLoginRequestDto.adminUsername();
         Member member = memberRepository.findByUsername(adminUsername)
@@ -72,7 +66,7 @@ public class MemberService {
 
 
 
-    public boolean duplicateNickname(String nickname) {
+    public boolean isNicknameDuplicate(String nickname) {
         return !memberRepository.existsByUsername(nickname);
     }
 
@@ -89,74 +83,46 @@ public class MemberService {
 
 
 
-
-    public Member signUp(
-            String username,
-            String password,
-            String nickname,
-            Member.Role role,
-            Member.OAuth2Provider oAuth2Provider){
-        if (memberRepository.existsByUsername(username)) {
-            throw new ServiceException("400-1", String.format("member already exist with name %s", username));
-        }
-        Member member = memberRepository.save(Member.builder()
-                .role(role)
-                .oAuth2Provider(oAuth2Provider)
-                .username(username)
-                .password(passwordEncoder.encode(password))
-                .nickname(nickname)
-                .build());
-        saveInitialPoints(member);
-        return member;
-    }
-
-
     public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken);
 
+        Member member = saveMember(tempUserBeforeSignUp, signupRequestDto);
 
-        String username = tempUserBeforeSignUp.getUsername();
-        String realName = tempUserBeforeSignUp.getRealName();
-        String provider = tempUserBeforeSignUp.getProviderTypeCode();
-        String nickname = signupRequestDto.nickname();
-        String emailAddress = signupRequestDto.email();
+        saveOAuth2RefreshToken(member, tempUserBeforeSignUp);
 
-        Member member = memberRepository.save(Member.builder()
-                        .role(Member.Role.USER)
-                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(provider))
-                .username(username)
-                .password(passwordEncoder.encode(""))
-                .nickname(nickname)
-                .emailAddress(emailAddress)
-                .realName(realName)
-                .build());
-
-        // OAuth2 용 리프레시 토큰 저장 (추후 회원 탈퇴 시 연동 해제용)
-        String oAuth2Id = tempUserBeforeSignUp.getOAuth2Id();
-        String refreshToken = tempUserBeforeSignUp.getRefreshToken();
-
-        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
-                .oAuth2Id(oAuth2Id)
-                .member(member)
-                .refreshToken(refreshToken)
-                .build());
-
-        saveInitialPoints(member);
+        saveSignupPoints(member);
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
 
-        sendAuthenticationEmailAsync(emailAddress);
+        sendAuthenticationEmailAsync(member.getEmailAddress());
+
         return member;
     }
 
-    @Async
-    public void sendAuthenticationEmailAsync(String email) {
-        mailService.sendEmail(email, "인증 완료해주세용", "버튼 눌러서 인증하시면 사이트 이용 가능합니당");
+    private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
+        return memberRepository.save(Member.builder()
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()))
+                .username(tempUser.getUsername())
+                .password(passwordEncoder.encode(""))
+                .nickname(signupRequestDto.nickname())
+                .emailAddress(signupRequestDto.email())
+                .realName(tempUser.getRealName())
+                .build());
     }
 
 
-    private void saveInitialPoints(Member member) {
+    private void saveOAuth2RefreshToken(Member member, TempUserBeforeSignUp tempUser) {
+        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
+                .oAuth2Id(tempUser.getOAuth2Id())
+                .member(member)
+                .refreshToken(tempUser.getRefreshToken())
+                .build());
+    }
+
+
+    private void saveSignupPoints(Member member) {
         try {
             assetHistoryRepository.save(AssetHistory.builder()
                             .member(member)
@@ -171,25 +137,15 @@ public class MemberService {
         }
     }
 
-
-
-
-    public Member userSignUp(
-            String username,
-            String password,
-            String nickname,
-            Member.OAuth2Provider oAuth2Provider){
-        return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
+    @Async
+    public void sendAuthenticationEmailAsync(String email) {
+        mailService.sendEmail(email, "인증 완료해주세용", "버튼 눌러서 인증하시면 사이트 이용 가능합니당");
     }
-
-
 
 
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
         return memberQuerydsl.getMemberDetailInfo(member);
     }
-
-
 
 
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
@@ -200,17 +156,9 @@ public class MemberService {
     }
 
 
-    public Optional<Member> signIn(String username){
+    public Optional<Member> findByUsername(String username){
         return memberRepository.findByUsername(username);
     }
-
-
-    public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
-        Optional<Member> member = memberRepository.findByUsername(username);
-        return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
-    }
-
-
 
 
     public void withdrawalMembership(Member member) {

@@ -116,17 +116,6 @@ public class MemberServiceTest {
                 .build();
     }
 
-    @Test
-    @DisplayName("총 멤버 수 카운팅 테스트")
-    void countTest() {
-        Random random = new Random();
-        long randomCount = Math.abs(random.nextLong());
-        when(memberRepository.count()).thenReturn(randomCount);
-
-        long count = memberService.count();
-        assertEquals(count, randomCount);
-        verify(memberRepository, times(1)).count();
-    }
 
     @Test
     void adminLoginTest1(){
@@ -242,96 +231,96 @@ public class MemberServiceTest {
                 .getOAuth2LogoutService(provider);
     }
 
-    @Test
-    void signUpTest1(){
-        when(memberRepository.existsByUsername(username))
-                .thenReturn(true);
-
-        assertThrows(RuntimeException.class, () ->
-                memberService.signUp(username, password, nickname, role, oAuth2Provider));
-
-        verify(memberRepository,times(1))
-                .existsByUsername(username);
-        verify(passwordEncoder,times(0))
-                .encode(any());
-        verify(memberRepository, times(0))
-                .save(any());
-    }
-
-    @Test
-    void signUpTest2(){
-        when(memberRepository.existsByUsername(username))
-                .thenReturn(false);
-
-        when(memberRepository.save(any()))
-                .thenReturn(member);
-
-        Member newMember =
-                memberService.signUp(username, password, nickname, role, oAuth2Provider);
-
-        assertEquals(username, newMember.getUsername());
-        assertEquals(password, newMember.getPassword());
-        assertEquals(nickname, newMember.getNickname());
-        assertEquals(role, newMember.getRole());
-        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
-
-        verify(memberRepository,times(1))
-                .existsByUsername(username);
-        verify(passwordEncoder,times(1))
-                .encode(any());
-        verify(memberRepository, times(1))
-                .save(any());
-    }
-
-    @Test
-    void signUpTest3(){
-        when(memberRepository.existsByUsername(username))
-                .thenReturn(false);
-
-        when(memberRepository.save(any()))
-                .thenReturn(member);
-
-        Member newMember = memberService
-                .userSignUp(username, password, nickname, oAuth2Provider);
-
-        assertEquals(username, newMember.getUsername());
-        assertEquals(password, newMember.getPassword());
-        assertEquals(nickname, newMember.getNickname());
-        assertEquals(role, newMember.getRole());
-        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
-
-        verify(memberRepository,times(1))
-                .existsByUsername(username);
-        verify(memberRepository, times(1))
-                .save(any());
-    }
-
-    @Test
-    void signUpTest4(){
-        when(memberRepository.existsByUsername(username))
-                .thenReturn(false);
-
-        member.setRole(Member.Role.ADMIN);
-        when(memberRepository.save(any()))
-                .thenReturn(member);
-
-        Member newMember = memberService
-                .signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
-
-        assertEquals(username, newMember.getUsername());
-        assertEquals(password, newMember.getPassword());
-        assertEquals(nickname, newMember.getNickname());
-        assertEquals(Member.Role.ADMIN, newMember.getRole());
-        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
-
-        verify(memberRepository,times(1))
-                .existsByUsername(username);
-        verify(memberRepository, times(1))
-                .save(any());
-    }
+//    @Test
+//    void signUpTest1(){
+//        when(memberRepository.existsByUsername(username))
+//                .thenReturn(true);
+//
+//        assertThrows(RuntimeException.class, () ->
+//                memberService.signUp(username, password, nickname, role, oAuth2Provider));
+//
+//        verify(memberRepository,times(1))
+//                .existsByUsername(username);
+//        verify(passwordEncoder,times(0))
+//                .encode(any());
+//        verify(memberRepository, times(0))
+//                .save(any());
+//    }
+//
+//    @Test
+//    void signUpTest2(){
+//        when(memberRepository.existsByUsername(username))
+//                .thenReturn(false);
+//
+//        when(memberRepository.save(any()))
+//                .thenReturn(member);
+//
+//        Member newMember =
+//                memberService.signUp(username, password, nickname, role, oAuth2Provider);
+//
+//        assertEquals(username, newMember.getUsername());
+//        assertEquals(password, newMember.getPassword());
+//        assertEquals(nickname, newMember.getNickname());
+//        assertEquals(role, newMember.getRole());
+//        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
+//        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
+//
+//        verify(memberRepository,times(1))
+//                .existsByUsername(username);
+//        verify(passwordEncoder,times(1))
+//                .encode(any());
+//        verify(memberRepository, times(1))
+//                .save(any());
+//    }
+//
+//    @Test
+//    void signUpTest3(){
+//        when(memberRepository.existsByUsername(username))
+//                .thenReturn(false);
+//
+//        when(memberRepository.save(any()))
+//                .thenReturn(member);
+//
+//        Member newMember = memberService
+//                .userSignUp(username, password, nickname, oAuth2Provider);
+//
+//        assertEquals(username, newMember.getUsername());
+//        assertEquals(password, newMember.getPassword());
+//        assertEquals(nickname, newMember.getNickname());
+//        assertEquals(role, newMember.getRole());
+//        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
+//        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
+//
+//        verify(memberRepository,times(1))
+//                .existsByUsername(username);
+//        verify(memberRepository, times(1))
+//                .save(any());
+//    }
+//
+//    @Test
+//    void signUpTest4(){
+//        when(memberRepository.existsByUsername(username))
+//                .thenReturn(false);
+//
+//        member.setRole(Member.Role.ADMIN);
+//        when(memberRepository.save(any()))
+//                .thenReturn(member);
+//
+//        Member newMember = memberService
+//                .signUp(username, password, nickname, Member.Role.ADMIN, oAuth2Provider);
+//
+//        assertEquals(username, newMember.getUsername());
+//        assertEquals(password, newMember.getPassword());
+//        assertEquals(nickname, newMember.getNickname());
+//        assertEquals(Member.Role.ADMIN, newMember.getRole());
+//        assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
+//        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
+//
+//        verify(memberRepository,times(1))
+//                .existsByUsername(username);
+//        verify(memberRepository, times(1))
+//                .save(any());
+//    }
 
     @Test
     void signUp_Should_SaveMemberAndAssignInitialPoints() {
@@ -392,42 +381,42 @@ public class MemberServiceTest {
         assertEquals("new nickname", member.getNickname());
     }
 
-    @Test
-    void signUpOrInTest1(){
-        when(memberRepository.findByUsername(username))
-                .thenReturn(Optional.of(member));
-
-        Member signInMember =
-                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
-
-        assertEquals(member, signInMember);
-        assertEquals(username, signInMember.getUsername());
-        assertEquals(password, signInMember.getPassword());
-        assertEquals(nickname, signInMember.getNickname());
-        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
-
-        verify(memberRepository, times(0)).save(any());
-    }
-
-    @Test
-    void signUpOrInTest2(){
-        when(memberRepository.findByUsername(username))
-                .thenReturn(Optional.empty());
-
-        when(memberRepository.save(any()))
-                .thenReturn(member);
-
-        Member signInMember =
-                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
-
-        assertEquals(member, signInMember);
-        assertEquals(username, signInMember.getUsername());
-        assertEquals(password, signInMember.getPassword());
-        assertEquals(nickname, signInMember.getNickname());
-        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
-
-        verify(memberRepository, times(1)).save(any());
-    }
+//    @Test
+//    void signUpOrInTest1(){
+//        when(memberRepository.findByUsername(username))
+//                .thenReturn(Optional.of(member));
+//
+//        Member signInMember =
+//                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
+//
+//        assertEquals(member, signInMember);
+//        assertEquals(username, signInMember.getUsername());
+//        assertEquals(password, signInMember.getPassword());
+//        assertEquals(nickname, signInMember.getNickname());
+//        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
+//
+//        verify(memberRepository, times(0)).save(any());
+//    }
+//
+//    @Test
+//    void signUpOrInTest2(){
+//        when(memberRepository.findByUsername(username))
+//                .thenReturn(Optional.empty());
+//
+//        when(memberRepository.save(any()))
+//                .thenReturn(member);
+//
+//        Member signInMember =
+//                memberService.signUpOrIn(username, password, nickname, oAuth2Provider);
+//
+//        assertEquals(member, signInMember);
+//        assertEquals(username, signInMember.getUsername());
+//        assertEquals(password, signInMember.getPassword());
+//        assertEquals(nickname, signInMember.getNickname());
+//        assertEquals(oAuth2Provider, signInMember.getOAuth2Provider());
+//
+//        verify(memberRepository, times(1)).save(any());
+//    }
 
     @Test
     void withdrawTest1(){
