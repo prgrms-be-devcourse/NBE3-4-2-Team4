@@ -29,8 +29,6 @@ export const AnswerAttachmentFiles = ({
         params: { path: { answerId } },
       });
 
-      console.log("API 응답:", response.data);
-
       if (response.error) {
         toast({
           title: response.error.msg,
