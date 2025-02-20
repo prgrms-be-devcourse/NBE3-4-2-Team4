@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -95,7 +96,11 @@ public class MemberService {
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
 
-        sendAuthenticationEmailAsync(member.getEmailAddress());
+        String authCode = UUID.randomUUID().toString();
+
+        tempUserBeforeSignUpService.saveAuthCodeForMember(member.getId(), authCode);
+
+        sendAuthenticationEmailAsync(member.getEmailAddress(), member.getId(), authCode);
 
         return member;
     }
@@ -138,8 +143,8 @@ public class MemberService {
     }
 
     @Async
-    public void sendAuthenticationEmailAsync(String email) {
-        mailService.sendEmail(email, "인증 완료해주세용", "버튼 눌러서 인증하시면 사이트 이용 가능합니당");
+    public void sendAuthenticationEmailAsync(String email, Long memberId, String authCode) {
+        mailService.sendEmail(email, "인증 완료해주세용", String.format("버튼 눌러서 인증하시면 사이트 이용 가능합니당. your id : %d, auth code : %s", memberId, authCode));
     }
 
 

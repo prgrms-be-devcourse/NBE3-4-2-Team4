@@ -45,5 +45,10 @@ public class TempUserBeforeSignUpService {
         Map<String, Object> claims = jwtManager.getClaims(tempToken);
         String oAuth2Id = (String) claims.get(AuthConstants.OAUTH2_ID);
         redisTemplate.delete(oAuth2Id);
-    };
+    }
+
+    public void saveAuthCodeForMember(Long memberId, String authCode) {
+        String memberIdString = String.valueOf(memberId);
+        redisTemplate.opsForValue().set(memberIdString, authCode, Duration.ofMinutes(10)); // 10분 후 만료
+    }
 }
