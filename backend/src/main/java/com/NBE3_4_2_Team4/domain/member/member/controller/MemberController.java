@@ -1,9 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.controller;
 
-import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberThumbnailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
@@ -54,6 +51,33 @@ public class MemberController {
                         e.getMessage()
                 ));
     }
+
+    @GetMapping("/api/members")
+    public RsData<Boolean> nicknameCheck(
+            @RequestParam(name = "nickname") String nickname
+    ){
+        return new RsData<>("200-1", "", memberService.duplicateNickname(nickname));
+    }
+
+    @GetMapping("/api/auth/temp-token")
+    public RsData<Boolean> tempTokenCheck(
+            @CookieValue(name = "tempToken", required = false) String tempToken
+    ){
+        boolean tempTokenExists = tempToken != null && !tempToken.isBlank();
+        return new RsData<>("200-1", "tempToken exists?", tempTokenExists);
+    }
+
+
+    @PostMapping("/api/members")
+    public RsData<Empty> signup(
+            @CookieValue(name = "tempToken") String tempToken,
+            @RequestBody @Valid SignupRequestDto signupRequestDto
+    ){
+        memberService.signUp(tempToken, signupRequestDto);
+        return new RsData<>("201-1", "sign up complete");
+    }
+
+
 
     @PostMapping("/api/admin/login")
     @Operation(summary = "login with admin role", description = "관리자 회원의 로그인 요청을 처리합니다")
@@ -168,14 +192,13 @@ public class MemberController {
 
 
 
-
+    @PatchMapping("/api/members/nickname")
     @Operation(summary = "update member nickname", description = "회원의 닉네임을 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 닉네임 변경 성공"),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)")
     })
-    @PatchMapping("/api/members/nickname")
     public RsData<Empty> updateMembersNickname(
             @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto){
         Member member = AuthManager.getNonNullMember();

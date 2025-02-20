@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 public class OAuth2UserInfo {
     private String oAuth2Id;
-    private String nickname;
+    private String realName;
 }

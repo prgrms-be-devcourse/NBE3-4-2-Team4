@@ -7,7 +7,8 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
-import com.NBE3_4_2_Team4.global.security.user.CustomUser;
+import com.NBE3_4_2_Team4.global.security.user.customUser.CustomUser;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -45,6 +47,15 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication auth) {
+        if (auth.getPrincipal() instanceof CustomUser){
+            handleExistingMember(req, resp, auth);
+            super.onAuthenticationSuccess(req, resp, auth);
+        }else {
+            handleNewMember(req, resp, auth);
+        }
+    }
+
+    private void handleExistingMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth){
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         Member member = customUser.getMember();
 
@@ -64,7 +75,16 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         }
 
         setDefaultTargetUrl(targetUrl);
-        super.onAuthenticationSuccess(req, resp, auth);
+    }
+
+    private void handleNewMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth) throws IOException {
+        TempUserBeforeSignUp tempUserBeforeSignUp = (TempUserBeforeSignUp) auth.getPrincipal();
+        //TempUser 에는 OAuth2UserID (회원 가입용 아이디), 이름, 리프레시 토큰 있음.
+
+        String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
+        httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
+
+        resp.sendRedirect("http://localhost:3000/signup");
     }
 
     private boolean isFirstLoginToday(Member member) {

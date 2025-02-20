@@ -5,7 +5,6 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -49,6 +48,7 @@ public class CashServiceTest {
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m1")
+                .nickname("n1")
                 .password("1234")
                 .build();
 
@@ -58,6 +58,7 @@ public class CashServiceTest {
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m2")
+                .nickname("n2")
                 .password("1234")
                 .build();
 

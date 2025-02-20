@@ -40,6 +40,7 @@ public class PointConcurrencyTest {
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m1")
+                .nickname("n1")
                 .password("1234")
                 .build();
 
@@ -48,6 +49,7 @@ public class PointConcurrencyTest {
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
                 .username("m2")
+                .nickname("n2")
                 .password("1234")
                 .build();
 

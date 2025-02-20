@@ -8,6 +8,7 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -19,6 +20,8 @@ import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUpService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +44,10 @@ public class MemberService {
     private final OAuth2Manager oAuth2Manager;
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
+    private final TempUserBeforeSignUpService tempUserBeforeSignUpService;
+
+
+
     @Transactional(readOnly = true)
     public long count(){
         return memberRepository.count();
@@ -61,6 +68,10 @@ public class MemberService {
     }
 
 
+
+    public boolean duplicateNickname(String nickname) {
+        return !memberRepository.existsByUsername(nickname);
+    }
 
 
     public String getLogoutUrl(Member member){
@@ -97,6 +108,43 @@ public class MemberService {
     }
 
 
+    public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
+        TempUserBeforeSignUp tempUserBeforeSignUp =
+                tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken);
+
+
+        String username = tempUserBeforeSignUp.getUsername();
+        String realName = tempUserBeforeSignUp.getRealName();
+        String provider = tempUserBeforeSignUp.getProviderTypeCode();
+        String nickname = signupRequestDto.nickname();
+        String emailAddress = signupRequestDto.email();
+
+        Member member = memberRepository.save(Member.builder()
+                        .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(provider))
+                .username(username)
+                .password(passwordEncoder.encode(""))
+                .nickname(nickname)
+                .emailAddress(emailAddress)
+                .realName(realName)
+                .build());
+
+        // OAuth2 용 리프레시 토큰 저장 (추후 회원 탈퇴 시 연동 해제용)
+        String oAuth2Id = tempUserBeforeSignUp.getOAuth2Id();
+        String refreshToken = tempUserBeforeSignUp.getRefreshToken();
+
+        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
+                .oAuth2Id(oAuth2Id)
+                .member(member)
+                .refreshToken(refreshToken)
+                .build());
+
+        saveInitialPoints(member);
+
+        tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
+
+        return member;
+    }
 
 
     private void saveInitialPoints(Member member) {
@@ -143,12 +191,14 @@ public class MemberService {
     }
 
 
+    public Optional<Member> signIn(String username){
+        return memberRepository.findByUsername(username);
+    }
 
 
     public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
-
     }
 
 

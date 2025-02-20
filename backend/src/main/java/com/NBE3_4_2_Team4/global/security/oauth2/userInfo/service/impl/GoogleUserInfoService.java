@@ -20,7 +20,7 @@ public class GoogleUserInfoService implements OAuth2UserInfoService {
     public OAuth2UserInfo getOAuth2UserInfo(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String oAuth2Id = attributes.get("sub").toString();
-        String nickname = attributes.get("family_name").toString() + attributes.get("given_name").toString();
-        return new OAuth2UserInfo(oAuth2Id, nickname);
+        String realName = attributes.get("family_name").toString() + attributes.get("given_name").toString();
+        return new OAuth2UserInfo(oAuth2Id, realName);
     }
 }
