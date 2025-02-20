@@ -75,7 +75,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     queryParams.set("page", "1"); // 검색 시 1페이지부터 시작
 
     if (searchKeyword) queryParams.set("searchKeyword", searchKeyword);
-    //if (keywordType) queryParams.set("keywordType", keywordType);
     if (keywordType) queryParams.set("keywordType", keywordType);
 
     setCategoryValue("전체");
@@ -105,8 +104,15 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     router.push("/question/write");
   };
 
-  const showRanking = () => {
-    router.push("/question/rank");
+  const myQuestion = () => {
+    if (!id) {
+      toast({
+        title: "로그인 후 이용해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+    router.push("/question/me");
   };
 
   return (
@@ -148,6 +154,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
               </SelectContent>
             </Select>
           </div>
+          <Button onClick={myQuestion}>내 글 보기</Button>
         </div>
         <div className="flex gap-2">
           {/* 검색 입력창 */}
