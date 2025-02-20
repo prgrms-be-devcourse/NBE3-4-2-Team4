@@ -125,11 +125,11 @@ public class MemberService {
     private void saveSignupPoints(Member member) {
         try {
             assetHistoryRepository.save(AssetHistory.builder()
-                            .member(member)
-                            .amount(PointConstants.INITIAL_POINT)
-                            .assetCategory(AssetCategory.SIGN_UP)
-                            .assetType(AssetType.POINT)
-                            .correlationId("asdsaaddasasddsa")
+                    .member(member)
+                    .amount(PointConstants.INITIAL_POINT)
+                    .assetCategory(AssetCategory.SIGN_UP)
+                    .assetType(AssetType.POINT)
+                    .correlationId("asdsaaddasasddsa")
                     .build());
             member.setPoint(new Point(PointConstants.INITIAL_POINT));
         } catch (Exception e) {
