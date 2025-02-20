@@ -75,8 +75,8 @@ class ProductControllerTest {
                 get(url)
         ).andDo(print());
 
-        int dataSize = PRODUCT_NAMES.length;
-
+        int dataSize = PRODUCT_LIST.size();
+        ProductRequestDto.writeItem expectedProduct = PRODUCT_LIST.get(dataSize - 1);
         // then
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
@@ -90,10 +90,10 @@ class ProductControllerTest {
                 // 데이터 정합성 체크
                 .andExpect(jsonPath("$.data.items").isArray())
                 .andExpect(jsonPath("$.data.items[0].product_id").value(dataSize))
-                .andExpect(jsonPath("$.data.items[0].product_name").value(PRODUCT_NAMES[dataSize - 1]))
-                .andExpect(jsonPath("$.data.items[0].product_price").value(PRODUCT_PRICES[dataSize -1]))
-                .andExpect(jsonPath("$.data.items[0].product_description").value(PRODUCT_DESCRIPTIONS[dataSize - 1]))
-                .andExpect(jsonPath("$.data.items[0].product_category").value(PRODUCT_CATEGORIES[dataSize - 1]));
+                .andExpect(jsonPath("$.data.items[0].product_name").value(expectedProduct.getProductName()))
+                .andExpect(jsonPath("$.data.items[0].product_price").value(expectedProduct.getProductPrice()))
+                .andExpect(jsonPath("$.data.items[0].product_description").value(expectedProduct.getProductDescription()))
+                .andExpect(jsonPath("$.data.items[0].product_category").value(expectedProduct.getProductCategory()));
 
 //                .andExpect(jsonPath("$.data.items[0].product_id").value(15))
 //                .andExpect(jsonPath("$.data.items[0].product_name").value("양념치킨+콜라1.25L"))

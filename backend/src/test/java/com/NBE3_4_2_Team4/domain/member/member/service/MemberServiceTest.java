@@ -1,6 +1,8 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
@@ -10,8 +12,6 @@ import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
@@ -25,7 +25,6 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutS
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
 import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
 import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUpService;
-import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +67,7 @@ public class MemberServiceTest {
     private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     @Mock
-    private PointHistoryRepository pointHistoryRepository;
+    private AssetHistoryRepository pointHistoryRepository;
 
     @Mock
     private DefaultLogoutService defaultLogoutService;
@@ -362,7 +361,7 @@ public class MemberServiceTest {
         Member savedMember = memberService.signUp(tempToken, signupRequestDto);
 
         verify(memberRepository, times(1)).save(any(Member.class));
-        verify(pointHistoryRepository, times(1)).save(any(PointHistory.class));
+        verify(pointHistoryRepository, times(1)).save(any(AssetHistory.class));
         assertNotNull(savedMember);
         assertEquals("testUser", savedMember.getUsername());
         assertEquals("testNick", savedMember.getNickname());

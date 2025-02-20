@@ -341,7 +341,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.closed").value(true))
                 .andExpect(jsonPath("$.data.point").value(question.getPoint()));
 
-        assertThat(answer.getAuthor().getPoint()).isEqualTo(answerPoint + question.getPoint());
+        assertThat(answer.getAuthor().getPoint().getAmount()).isEqualTo(answerPoint + question.getPoint());
     }
 
     @Test
