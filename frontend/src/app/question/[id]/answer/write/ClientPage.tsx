@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Editor } from "@tinymce/tinymce-react";
+import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
 import { Input } from "@/components/ui/input";
 import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
 import React from "react";
@@ -59,24 +59,26 @@ export default function ClientPage({ params }: { params: { id: string } }) {
 
   const MyEditor = React.useMemo(() => {
     return (
-      <Editor
+      <TinyMCEEditor
         apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
         initialValue={form.getValues("content")}
         onEditorChange={(content, editor) => {
           form.setValue("content", content);
 
-          // 현재 에디터에 있는 이미지들의 src 목록을 가져옴
-          const currentImages = editor.dom.select("img").map((img) => img.src);
+          // 현재 에디터 이미지들 중 임시 이미지만 추출(이게 없으면 에디터에 올렸다가 지운 이미지까지 업로드 됨)
+          const currentImages = editor.dom
+            .select("img")
+            .map((img) => img.src)
+            .filter((src) => src.startsWith("blob:"));
 
-          // uploadedImages에서 현재 에디터에 없는 이미지들 제거
-          setUploadedImages((prev) =>
-            prev.filter((file) => {
-              const objectUrl = URL.createObjectURL(file);
-              const isInEditor = currentImages.some((src) => src === objectUrl);
-              URL.revokeObjectURL(objectUrl);
-              return isInEditor;
-            })
-          );
+          // 업로드할 이미지들 중 현재 에디터에 있는 이미지들만 필터링
+          setUploadedImages((prev) => {
+            const updated = prev.filter((file) => {
+              return currentImages.includes(file.uploadedUrl || "");
+            });
+
+            return updated;
+          });
         }}
         init={{
           language: "ko_KR",
@@ -112,15 +114,29 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           media_poster: false,
           images_upload_handler: async function (blobInfo, progress) {
             try {
+              // 1. blobInfo에서 받은 이미지를 File 객체로 변환
               const imageFile = new File(
                 [blobInfo.blob()],
                 blobInfo.filename(),
                 { type: blobInfo.blob().type }
-              );
-              setUploadedImages((prev) => [...prev, imageFile]);
-              return URL.createObjectURL(imageFile);
+              ) as EnhancedFile;
+
+              // 2. 해당 파일의 임시 URL 생성 (브라우저 메모리에 저장)
+              const objectUrl = URL.createObjectURL(imageFile);
+              imageFile.uploadedUrl = objectUrl;
+
+              // 3. 업로드될 이미지 목록에 추가
+              setUploadedImages((prev) => {
+                const newImages = [...prev, imageFile];
+
+                return newImages;
+              });
+
+              // 4. 에디터에 표시할 임시 URL 반환
+              return objectUrl;
             } catch (error) {
               console.error("Image upload failed:", error);
+
               toast({
                 title: "이미지 처리 실패",
                 description: "이미지 처리 중 오류가 발생했습니다.",
@@ -134,19 +150,48 @@ export default function ClientPage({ params }: { params: { id: string } }) {
     );
   }, []);
 
+  const uploadFiles = async (
+    files: File[],
+    answerId: number,
+    typeCode: "body" | "attachment"
+  ) => {
+    const formData = new FormData();
+    const filesToUpload =
+      typeCode === "attachment" ? [...files].reverse() : files;
+
+    for (const file of filesToUpload) {
+      formData.append("files", file);
+    }
+
+    const uploadResponse = await client.POST(
+      "/api/answers/{answerId}/genFiles/{typeCode}",
+      {
+        params: {
+          path: {
+            answerId,
+            typeCode,
+          },
+        },
+        body: formData as any,
+      }
+    );
+
+    if (uploadResponse.error) {
+      toast({
+        title: uploadResponse.error.msg,
+        variant: "destructive",
+      });
+      throw uploadResponse.error;
+    }
+  };
+
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
       const response = await client.POST(
         "/api/questions/{questionId}/answers",
         {
-          body: {
-            content: data.content,
-          },
-          params: {
-            path: {
-              questionId: Number(id),
-            },
-          },
+          body: { content: data.content },
+          params: { path: { questionId: Number(id) } },
         }
       );
 
@@ -159,41 +204,23 @@ export default function ClientPage({ params }: { params: { id: string } }) {
         return;
       }
 
-      // 파일 업로드 처리
-      if (data.attachment_0) {
-        const formData = new FormData();
-        for (const file of [...data.attachment_0].reverse())
-          formData.append("files", file);
+      const answerId = response.data.data.id;
 
-        const uploadResponse = await client.POST(
-          "/api/answers/{answerId}/genFiles/{typeCode}",
-          {
-            params: {
-              path: {
-                answerId: response.data.data.id,
-                typeCode: "attachment",
-              },
-            },
-            body: formData as any,
-          }
-        );
-
-        if (uploadResponse.error) {
-          toast({
-            title: uploadResponse.error.msg,
-            variant: "destructive",
-          });
-
-          return;
-        }
+      // 에디터 이미지와 첨부파일 각각 업로드
+      if (uploadedImages && uploadedImages.length > 0) {
+        await uploadFiles(uploadedImages, answerId, "body");
       }
 
-      toast({
-        title: response.data.msg,
-      });
+      if (data.attachment_0 && data.attachment_0.length > 0) {
+        await uploadFiles(data.attachment_0, answerId, "attachment");
+      }
+
+      toast({ title: response.data.msg });
+
       router.replace(`/question/${id}`);
     } catch (error) {
-      console.error(error);
+      console.error("Submit error:", error);
+
       toast({
         title: "Error",
         description: "답변 등록 중 오류가 발생했습니다.",
@@ -203,69 +230,67 @@ export default function ClientPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="container mx-auto px-4 mt-20">
+    <div className="container mx-auto px-4">
+      <div className="mt-20 mb-10 text-center">
+        <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
+          답변 등록
+        </h2>
+      </div>
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4 w-full"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h2 className="text-2xl font-bold">답변 등록</h2>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>{MyEditor}</FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>{MyEditor}</FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="attachment_0"
-                render={({ field: { onChange, ...field } }) => (
-                  <FormItem className="mt-5">
-                    <FormLabel>
-                      첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        multiple
-                        accept={getUplodableInputAccept()}
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          onChange(files);
-                        }}
-                        {...field}
-                        value={undefined}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2 items-center">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => router.back()}
-              >
-                취소
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "저장 중..." : "답변 등록"}
-              </Button>
-            </CardFooter>
-          </Card>
+          <FormField
+            control={form.control}
+            name="attachment_0"
+            render={({ field: { onChange, ...field } }) => (
+              <FormItem className="my-4">
+                <FormLabel>
+                  첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    multiple
+                    accept={getUplodableInputAccept()}
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      onChange(files);
+                    }}
+                    {...field}
+                    value={undefined}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="mt-6 flex justify-start gap-2">
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "저장 중..." : "답변 등록"}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => router.back()}
+            >
+              취소
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

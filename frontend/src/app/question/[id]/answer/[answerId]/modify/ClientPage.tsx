@@ -28,6 +28,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
+import React from "react";
 
 const answerWriteFormSchema = z.object({
   content: z
@@ -39,6 +41,10 @@ const answerWriteFormSchema = z.object({
 
 type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
 
+interface EnhancedFile extends File {
+  uploadedUrl?: string;
+}
+
 export default function ClientPage({
   params,
   answer,
@@ -49,12 +55,143 @@ export default function ClientPage({
   const { id, answerId } = params;
   const router = useRouter();
   const { toast } = useToast();
+  const [uploadedImages, setUploadedImages] = React.useState<EnhancedFile[]>(
+    []
+  );
   const form = useForm<AnswerWriteFormInputs>({
     resolver: zodResolver(answerWriteFormSchema),
     defaultValues: {
       content: answer.content,
     },
   });
+
+  const MyEditor = React.useMemo(() => {
+    return (
+      <TinyMCEEditor
+        apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
+        initialValue={form.getValues("content")}
+        onEditorChange={(content, editor) => {
+          form.setValue("content", content);
+
+          // 현재 에디터 이미지들 중 임시 이미지만 추출(이게 없으면 에디터에 올렸다가 지운 이미지까지 업로드 됨)
+          const currentImages = editor.dom
+            .select("img")
+            .map((img) => img.src)
+            .filter((src) => src.startsWith("blob:"));
+
+          // 업로드할 이미지들 중 현재 에디터에 있는 이미지들만 필터링
+          setUploadedImages((prev) => {
+            const updated = prev.filter((file) => {
+              return currentImages.includes(file.uploadedUrl || "");
+            });
+
+            return updated;
+          });
+        }}
+        init={{
+          language: "ko_KR",
+          height: 500,
+          menubar: false,
+          plugins: [
+            "advlist",
+            "autolink",
+            "codesample",
+            "emoticons",
+            "lists",
+            "link",
+            "image",
+            "charmap",
+            "preview",
+            "anchor",
+            "searchreplace",
+            "wordcount",
+            "media",
+            "table",
+          ],
+          toolbar:
+            "undo redo | blocks | " +
+            "bold italic underline strikethrough subscript superscript | " +
+            "forecolor backcolor | " +
+            "alignleft aligncenter alignright | " +
+            "bullist numlist outdent indent | " +
+            "codesample emoticons | link image media | table",
+          file_picker_types: "file media",
+          link_picker_callback: false,
+          link_quicklink: true,
+          media_alt_source: false,
+          media_poster: false,
+          images_upload_handler: async function (blobInfo, progress) {
+            try {
+              // 1. blobInfo에서 받은 이미지를 File 객체로 변환
+              const imageFile = new File(
+                [blobInfo.blob()],
+                blobInfo.filename(),
+                { type: blobInfo.blob().type }
+              ) as EnhancedFile;
+
+              // 2. 해당 파일의 임시 URL 생성 (브라우저 메모리에 저장)
+              const objectUrl = URL.createObjectURL(imageFile);
+              imageFile.uploadedUrl = objectUrl;
+
+              // 3. 업로드될 이미지 목록에 추가
+              setUploadedImages((prev) => {
+                const newImages = [...prev, imageFile];
+
+                return newImages;
+              });
+
+              // 4. 에디터에 표시할 임시 URL 반환
+              return objectUrl;
+            } catch (error) {
+              console.error("Image upload failed:", error);
+
+              toast({
+                title: "이미지 처리 실패",
+                description: "이미지 처리 중 오류가 발생했습니다.",
+                variant: "destructive",
+              });
+              throw error;
+            }
+          },
+        }}
+      />
+    );
+  }, []);
+
+  const uploadFiles = async (
+    files: File[],
+    answerId: number,
+    typeCode: "body" | "attachment"
+  ) => {
+    const formData = new FormData();
+    const filesToUpload =
+      typeCode === "attachment" ? [...files].reverse() : files;
+
+    for (const file of filesToUpload) {
+      formData.append("files", file);
+    }
+
+    const uploadResponse = await client.POST(
+      "/api/answers/{answerId}/genFiles/{typeCode}",
+      {
+        params: {
+          path: {
+            answerId,
+            typeCode,
+          },
+        },
+        body: formData as any,
+      }
+    );
+
+    if (uploadResponse.error) {
+      toast({
+        title: uploadResponse.error.msg,
+        variant: "destructive",
+      });
+      throw uploadResponse.error;
+    }
+  };
 
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
@@ -77,35 +214,14 @@ export default function ClientPage({
         return;
       }
 
-      // 파일 업로드 처리
-      if (data.attachment_0) {
-        const formData = new FormData();
-        for (const file of [...data.attachment_0].reverse())
-          formData.append("files", file);
-
-        const uploadResponse = await client.POST(
-          "/api/answers/{answerId}/genFiles/{typeCode}",
-          {
-            params: {
-              path: {
-                answerId: answer.id,
-                typeCode: "attachment",
-              },
-            },
-            body: formData as any,
-          }
-        );
-
-        if (uploadResponse.error) {
-          toast({
-            title: uploadResponse.error.msg,
-            variant: "destructive",
-          });
-
-          return;
-        }
+      // 에디터 이미지와 첨부파일 각각 업로드
+      if (uploadedImages && uploadedImages.length > 0) {
+        await uploadFiles(uploadedImages, Number(answerId), "body");
       }
 
+      if (data.attachment_0 && data.attachment_0.length > 0) {
+        await uploadFiles(data.attachment_0, Number(answerId), "attachment");
+      }
       toast({
         title: response.data.msg,
       });
@@ -120,89 +236,77 @@ export default function ClientPage({
   };
 
   return (
-    <div className="container mx-auto px-4 mt-20">
+    <div className="container mx-auto px-4">
+      <div className="mt-20 mb-10 text-center">
+        <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
+          답변 등록
+        </h2>
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4 w-full"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">답변 수정</h2>
-                <Badge variant="secondary">{answer.authorName}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>{MyEditor}</FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex gap-2 items-end my-4">
+            <div className="flex-1">
               <FormField
                 control={form.control}
-                name="content"
-                render={({ field }) => (
+                name="attachment_0"
+                render={({ field: { onChange, ...field } }) => (
                   <FormItem>
+                    <FormLabel>
+                      첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
+                    </FormLabel>
                     <FormControl>
-                      <Textarea
+                      <Input
+                        type="file"
+                        multiple
+                        accept={getUplodableInputAccept()}
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          onChange(files);
+                        }}
                         {...field}
-                        placeholder="내용을 입력해주세요"
-                        autoComplete="off"
-                        rows={20}
-                        autoFocus
-                      ></Textarea>
+                        value={undefined}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <div className="flex gap-2 items-end">
-                <div className="flex-1">
-                  <FormField
-                    control={form.control}
-                    name="attachment_0"
-                    render={({ field: { onChange, ...field } }) => (
-                      <FormItem className="mt-5">
-                        <FormLabel>
-                          첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            multiple
-                            accept={getUplodableInputAccept()}
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              onChange(files);
-                            }}
-                            {...field}
-                            value={undefined}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button variant="outline" asChild>
-                  <Link
-                    href={`/question/${answer.questionId}/answer/${answer.id}/genFile/listForEdit`}
-                  >
-                    기존 첨부파일 변경/삭제
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2 items-center">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => router.back()}
+            </div>
+            <Button variant="outline" asChild>
+              <Link
+                href={`/question/${answer.questionId}/answer/${answer.id}/genFile/listForEdit`}
               >
-                취소
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "저장 중..." : "답변 수정"}
-              </Button>
-            </CardFooter>
-          </Card>
+                기존 첨부파일 변경/삭제
+              </Link>
+            </Button>
+          </div>
+
+          <div className="mt-6 flex justify-start gap-2">
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "저장 중..." : "답변 수정"}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => router.back()}
+            >
+              취소
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
