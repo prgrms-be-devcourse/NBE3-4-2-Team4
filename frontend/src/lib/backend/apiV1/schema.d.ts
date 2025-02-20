@@ -915,26 +915,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/members": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * 카테고리 삭제
-         * @description 카테고리 삭제하기
-         */
-        delete: operations["deleteCategory"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
