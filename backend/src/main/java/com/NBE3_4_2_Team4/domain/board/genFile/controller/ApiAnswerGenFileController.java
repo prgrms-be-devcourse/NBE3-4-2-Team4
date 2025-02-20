@@ -47,15 +47,25 @@ public class ApiAnswerGenFileController {
         answer.checkActorCanMakeNewGenFile(actor);
 
         List<AnswerGenFile> answerGenFiles = new ArrayList<>();
+        List<String> newSrcs = new ArrayList<>();
 
         for (MultipartFile file : files) {
             if (file.isEmpty()) continue;
             String filePath = Ut.file.toFile(file, AppConfig.getTempDirPath());
-            answerGenFiles.add(
-                    answer.addGenFile(
-                            typeCode,
-                            filePath
-                    ));
+            AnswerGenFile answerGenFile = answer.addGenFile(
+                    typeCode,
+                    filePath
+            );
+
+            answerGenFiles.add(answerGenFile);
+
+            if(typeCode == AnswerGenFile.TypeCode.body) {
+                newSrcs.add(answerGenFile.getPublicUrl());
+            }
+        }
+
+        if(typeCode == AnswerGenFile.TypeCode.body && !newSrcs.isEmpty()) {
+            answer.modify(Ut.editorImg.updateImgSrc(answer.getContent(), newSrcs));
         }
 
         answerService.flush();

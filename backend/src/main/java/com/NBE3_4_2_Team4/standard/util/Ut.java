@@ -22,6 +22,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Ut {
     public static class str {
@@ -393,6 +395,37 @@ public class Ut {
 //                    )
             ;
             return PageRequest.of(pageNumber - 1, sizeNumber, Sort.by(Sort.Order.desc(sort)));
+        }
+    }
+
+    public static class editorImg {
+        public static String updateImgSrc(String html, List<String> newSrcs) {
+            // 정규식으로 <img> 태그의 src 값을 추출
+            Pattern pattern = Pattern.compile("<img[^>]*src=['\"](blob:[^'\"]+)['\"][^>]*>");
+            Matcher matcher = pattern.matcher(html);
+
+            List<String> srcList = new ArrayList<>();
+
+            // src 값을 srcList에 저장
+            while (matcher.find()) {
+                srcList.add(matcher.group(1));  // src 값만 저장
+            }
+
+            // 새로운 html
+            StringBuilder updatedHtml = new StringBuilder(html);
+
+            for (int i = 0; i < srcList.size(); i++) {
+                // 찾은 src 값을 새로운 src 값으로 교체
+                String oldSrc = srcList.get(i);
+                String newSrc = newSrcs.get(i);
+                int startIdx = updatedHtml.indexOf(oldSrc);
+
+                if (startIdx != -1) {
+                    updatedHtml.replace(startIdx, startIdx + oldSrc.length(), newSrc);
+                }
+            }
+
+            return updatedHtml.toString();
         }
     }
 }
