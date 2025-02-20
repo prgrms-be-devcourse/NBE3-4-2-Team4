@@ -120,7 +120,6 @@ public class QuestionController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
-        Member actor = AuthManager.getMemberFromContext();
-        return new PageDto<>(questionService.findByUserListed(actor, page, pageSize));
+        return new PageDto<>(questionService.findByUserListed(page, pageSize));
     }
 }

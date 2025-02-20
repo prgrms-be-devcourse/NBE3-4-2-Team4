@@ -59,11 +59,11 @@ export default function ClientPage({ categories }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    if (categories.length > 0) {
+    if (categories.length > 0 && categoryId === 0) {
       setCategoryId(categories[0].id!!); // 첫 번째 카테고리를 기본값으로 설정
       setSelectedOption(categories[0].name);
     }
-  }, [categories]);
+  }, [categories, categoryId]);
 
   const toggleDropdown = () => {
     // 카테고리 드롭다운

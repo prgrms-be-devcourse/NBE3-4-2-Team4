@@ -72,7 +72,8 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<QuestionDto> findByUserListed(Member actor, int page, int pageSize) {
+    public Page<QuestionDto> findByUserListed(int page, int pageSize) {
+        Member actor = AuthManager.getNonNullMember();
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);

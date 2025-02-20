@@ -5,9 +5,8 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/utils/dateUtils";
 import { useId } from "@/context/IdContext";
-import { MessageCircle, ThumbsUp, Banknote, Coins, Star } from "lucide-react";
+import { MessageCircle, ThumbsUp, Coins } from "lucide-react";
 import Link from "next/link";
-import { Label } from "@/components/ui/label";
 import {
   SelectTrigger,
   Select,
@@ -42,7 +41,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
   );
 
   const options = ["전체", "제목", "내용", "작성자", "답변 내용"];
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
   const optionMapping: { [key: string]: string } = {
@@ -57,17 +55,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
   const { toast } = useToast();
 
   const [categoryValue, setCategoryValue] = useState("전체");
-
-  const toggleDropdown = () => {
-    // 검색 조건 드롭다운
-    setIsOpen(!isOpen);
-  };
-
-  const selectOption = (option: string) => {
-    setSelectedOption(option);
-    setKeywordType(optionMapping[option]);
-    setIsOpen(false); // 선택 후 드롭다운 닫기
-  };
 
   // 검색 실행 함수
   const handleSearch = () => {
@@ -127,14 +114,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
           함께 성장하는 지식 공유 공간입니다.
         </p>
       </div>
-      {/* <div className="flex items-center justify-between mb-2">
-        <button
-          className="border-2 border-cyan-500 bg-cyan-500 text-white px-2 font-bold rounded-md hover:bg-cyan-600"
-          onClick={showRanking}
-        >
-          인기글 보기
-        </button> 
-      </div> */}
 
       <div className="flex mb-4 md:flex-row flex-col gap-2 md:items-center items-start justify-between">
         <div className="flex gap-2">
@@ -154,32 +133,12 @@ export default function ClientPage({ body, category }: ClientPageProps) {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={myQuestion}>내 글 보기</Button>
+          {id && (
+              <Button onClick={myQuestion}>내 글 보기</Button>
+          )}
         </div>
         <div className="flex gap-2">
           {/* 검색 입력창 */}
-          {/* <div className="relative">
-            <button
-              className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
-              onClick={toggleDropdown}
-            >
-              {selectedOption ? selectedOption : "선택하세요"}
-              <span className="ml-2">&#9662;</span>
-            </button>
-            {isOpen && (
-              <ul className="absolute bg-white border rounded shadow w-full mt-2">
-                {options.map((option, index) => (
-                  <li
-                    key={index}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => selectOption(option)}
-                  >
-                    {option}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div> */}
           <div>
             <Select
               value={selectedOption}

@@ -456,8 +456,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.has_more").value(true))
                 .andExpect(jsonPath("$.items.length()").value(10));
 
-        Member user = AuthManager.getMemberFromContext();
-        List<QuestionDto> questions = questionService.findByUserListed(user, 1, 10).getContent();
+        List<QuestionDto> questions = questionService.findByUserListed(1, 10).getContent();
 
         for(int i = 0; i < questions.size(); i++) {
             QuestionDto question = questions.get(i);
