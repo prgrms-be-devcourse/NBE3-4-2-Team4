@@ -1,9 +1,7 @@
 package com.NBE3_4_2_Team4.global.mail.service;
 
 
-import com.NBE3_4_2_Team4.global.mail.state.MailState;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
