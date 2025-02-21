@@ -3,6 +3,8 @@ package com.NBE3_4_2_Team4.domain.member.member.entity;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -57,17 +59,25 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    private String phoneNumber;
+    private String realName;
 
+    private String emailAddress;
+
+    @Column(nullable = false, unique = true)
     private String nickname;
+
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Embedded
     @Builder.Default
-    private Long point = 0L;
+    private Point point = new Point();
+
+    @Embedded
+    @Builder.Default
+    private Cash cash = new Cash();
 
     @OneToMany(mappedBy = "author")
     private List<Question> questions = new ArrayList<>();

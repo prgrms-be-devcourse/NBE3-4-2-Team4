@@ -32,15 +32,16 @@ export default async function Page({
                                  page?: string;
                                  startDate?: string;
                                  endDate?: string;
-                                 pointCategory?: string;
+                                 assetCategory?: string;
                                };
                              }) {
 
                                  try {
 
     const { page = 1, startDate, endDate, pointCategory } = await searchParams;
-            const stringCookies = cookies().toString();
-            console.log(stringCookies, " cookie")
+//             const stringCookies = await cookies().toString();
+//             console.log(stringCookies, " cookie")
+        const cookieHeader = await cookies();
         const response = await client.GET("/api/points", {
           params: {
             query: {
@@ -51,7 +52,7 @@ export default async function Page({
             },
           },
           headers: {
-            cookie: stringCookies,
+            cookie: cookieHeader.toString(),
           },
         });
 
@@ -60,12 +61,13 @@ export default async function Page({
         }
 
          const userResponse = await client.GET("/api/members/details", {
-                  headers: {
-                    cookie: stringCookies,
-                  },
+          headers: {
+            cookie: cookieHeader.toString(),
+          },
+//                     credentials: "include",
                 });
         console.log(userResponse);
-        const point = userResponse.data.data.point;
+        const point = userResponse.data.data.point.amount;
         console.log(point);
         const data = response.data;
         const body = convertSnakeToCamel(data);
@@ -77,7 +79,7 @@ export default async function Page({
                                                  if (error.message === "401") {
                                                          return redirect("/login");
                                                      }
-            //console.error("API 요청 실패:", error);
+            console.error("API 요청 실패:", error);
             //console.log("서버에서 보낸 에러 JSON:", response.error.data);
 
             return (

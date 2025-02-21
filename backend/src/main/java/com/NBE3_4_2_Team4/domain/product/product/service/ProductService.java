@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.*;
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
@@ -59,13 +60,23 @@ public class ProductService {
     public PageDto<GetItem> getProducts(
             int page,
             int pageSize,
-            ProductSearchKeywordType keywordType,
-            String keyword
+            ProductSearchKeywordType searchKeywordType,
+            String searchKeyword,
+            String categoryKeyword,
+            String saleStateKeyword
             ) {
 
         Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
+                .orElse(SaleState.ALL);
 
-        Page<Product> products = productRepository.findByKeyword(keywordType, keyword, pageable);
+        Page<Product> products = productRepository.findByKeyword(
+                searchKeywordType,
+                searchKeyword,
+                categoryKeyword,
+                saleState,
+                pageable
+        );
 
         log.info("[{}] Products are found with paging.", products.getContent().size());
 
@@ -295,6 +306,17 @@ public class ProductService {
                 saveParentCategoriesName(category, categoriesName));
 
         return new ArrayList<>(categoriesName);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findSaleStateNames() {
+
+        List<ProductSaleState> saleStates = productSaleStateRepository.findAll();
+
+        return saleStates.stream()
+                .map(saleState ->
+                        saleState.getName().name())
+                .toList();
     }
 
     private String makeFullCategory(Product product) {

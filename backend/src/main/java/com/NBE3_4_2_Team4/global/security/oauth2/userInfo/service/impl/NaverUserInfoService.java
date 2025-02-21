@@ -20,7 +20,7 @@ public class NaverUserInfoService implements OAuth2UserInfoService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         Map<String, String> attributeProperties = (Map<String, String>) attributes.get("response");
         String oAuth2Id = attributeProperties.get("id");
-        String nickName = attributeProperties.get("nickname");
-        return new OAuth2UserInfo(oAuth2Id, nickName);
+        String realName = attributeProperties.get("nickname");
+        return new OAuth2UserInfo(oAuth2Id, realName);
     }
 }

@@ -29,7 +29,8 @@ interface PaginationResult {
 }
 
 function createPageButtonUrl(baseQueryString: string) {
-    return (pageNumber: number) => `?page=${pageNumber}&${baseQueryString}`;
+    return (pageNumber: number) =>
+        baseQueryString ? `?page=${pageNumber}&${baseQueryString}` : `?page=${pageNumber}`;
 }
 
 function calculatePrevEllipsisNumber(

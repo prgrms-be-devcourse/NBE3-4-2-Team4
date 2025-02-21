@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -26,7 +25,6 @@ import {
 const saleStates = [
   { value: "ONSALE", label: "판매 중" },
   { value: "SOLDOUT", label: "품절" },
-  { value: "RESERVED", label: "예약 중" },
   { value: "COMINGSOON", label: "곧 출시 예정" },
 ];
 
@@ -86,14 +84,12 @@ export default function ClientPage({ product }: { product?: any }) {
         throw new Error("상품 수정 실패");
       }
 
-      //alert("상품이 성공적으로 수정되었습니다!");
       toast({
         title: "상품이 성공적으로 수정되었습니다!",
       });
       router.push("/adm/products/list");
     } catch (error) {
       console.error("상품 수정 중 오류 발생:", error);
-      //alert("상품 수정 중 오류가 발생했습니다.");
       toast({
         title: "상품 수정 중 오류가 발생했습니다.",
         variant: "destructive",
@@ -205,19 +201,6 @@ export default function ClientPage({ product }: { product?: any }) {
                   ))}
                 </SelectContent>
               </Select>
-              {/* <select
-                id="product_sale_state"
-                name="product_sale_state"
-                value={formData.product_sale_state}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
-              >
-                {saleStates.map((state) => (
-                  <option key={state.value} value={state.value}>
-                    {state.label}
-                  </option>
-                ))}
-              </select> */}
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center">

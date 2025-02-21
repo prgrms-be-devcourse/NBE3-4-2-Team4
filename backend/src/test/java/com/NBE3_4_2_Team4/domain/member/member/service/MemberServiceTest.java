@@ -1,10 +1,14 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -18,7 +22,11 @@ import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.DefaultLogou
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.GoogleLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.KakaoLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.NaverLogoutService;
+import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUp;
+import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBeforeSignUpService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,13 +39,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 @Transactional
 public class MemberServiceTest {
@@ -60,6 +67,9 @@ public class MemberServiceTest {
     private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     @Mock
+    private AssetHistoryRepository pointHistoryRepository;
+
+    @Mock
     private DefaultLogoutService defaultLogoutService;
 
     @Mock
@@ -80,6 +90,9 @@ public class MemberServiceTest {
     @Mock
     private GoogleDisconnectService googleDisconnectService;
 
+    @Mock
+    private TempUserBeforeSignUpService tempUserBeforeSignUpService;
+
     private final String username = "test username";
     private final String password = "test password";
     private final String nickname = "test nickname";
@@ -97,7 +110,7 @@ public class MemberServiceTest {
                 .username(username)
                 .password(password)
                 .nickname(nickname)
-                .point(PointConstants.INITIAL_POINT)
+                .point(new Point(PointConstants.INITIAL_POINT))
                 .questions(new ArrayList<>())
                 .answers(new ArrayList<>())
                 .build();
@@ -261,7 +274,7 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
@@ -287,7 +300,7 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(role, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
@@ -312,13 +325,50 @@ public class MemberServiceTest {
         assertEquals(nickname, newMember.getNickname());
         assertEquals(Member.Role.ADMIN, newMember.getRole());
         assertEquals(oAuth2Provider, newMember.getOAuth2Provider());
-        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint());
+        assertEquals(PointConstants.INITIAL_POINT, newMember.getPoint().getAmount());
 
         verify(memberRepository,times(1))
                 .existsByUsername(username);
         verify(memberRepository, times(1))
                 .save(any());
     }
+
+    @Test
+    void signUp_Should_SaveMemberAndAssignInitialPoints() {
+        // Given
+        String tempToken = "mockJwtToken";
+        String oAuth2Id = "mockOAuth2Id";
+        SignupRequestDto signupRequestDto = new SignupRequestDto("testNick", "testEmail@example.com");
+
+
+        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2Id, "nickname");
+        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKAO", "");
+
+        Member mockMember = Member.builder()
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.KAKAO)
+                .username("testUser")
+                .password("")
+                .nickname("testNick")
+                .emailAddress("testEmail@example.com")
+                .realName("Test Real Name")
+                .build();
+
+        when(passwordEncoder.encode("")).thenReturn("encodedPassword");
+        when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
+        when(tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(anyString())).thenReturn(tempUserBeforeSignUp);
+
+        Member savedMember = memberService.signUp(tempToken, signupRequestDto);
+
+        verify(memberRepository, times(1)).save(any(Member.class));
+        verify(pointHistoryRepository, times(1)).save(any(AssetHistory.class));
+        assertNotNull(savedMember);
+        assertEquals("testUser", savedMember.getUsername());
+        assertEquals("testNick", savedMember.getNickname());
+        assertEquals("testEmail@example.com", savedMember.getEmailAddress());
+        assertEquals(Member.Role.USER, savedMember.getRole());
+    }
+
 
     @Test
     void updateNicknameTest1(){

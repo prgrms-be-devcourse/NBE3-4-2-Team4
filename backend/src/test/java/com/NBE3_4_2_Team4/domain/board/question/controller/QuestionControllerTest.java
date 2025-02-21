@@ -108,8 +108,8 @@ public class QuestionControllerTest {
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("write"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-1"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.result_code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("21번 게시글 생성이 완료되었습니다."))
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
@@ -156,7 +156,7 @@ public class QuestionControllerTest {
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("update"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-1"))
+                .andExpect(jsonPath("$.result_code").value("200-2"))
                 .andExpect(jsonPath("$.msg").value("1번 게시글 수정이 완료되었습니다."));
     }
 
@@ -313,7 +313,7 @@ public class QuestionControllerTest {
     @WithUserDetails("admin@test.com")
     void t14() throws Exception {
         Answer answer = answerService.findById(1);
-        long answerPoint = answer.getAuthor().getPoint();
+        long answerPoint = answer.getAuthor().getPoint().getAmount();
 
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1/select/1")).andDo(print());
@@ -323,7 +323,7 @@ public class QuestionControllerTest {
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("select"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-2"))
+                .andExpect(jsonPath("$.result_code").value("200-3"))
                 .andExpect(jsonPath("$.msg").value("1번 게시글의 1번 답변이 채택되었습니다."))
                 .andExpect(jsonPath("$.data.id").value(question.getId()))
                 .andExpect(jsonPath("$.data.title").value(question.getTitle()))
@@ -341,7 +341,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.closed").value(true))
                 .andExpect(jsonPath("$.data.point").value(question.getPoint()));
 
-        assertThat(answer.getAuthor().getPoint()).isEqualTo(answerPoint + question.getPoint());
+        assertThat(answer.getAuthor().getPoint().getAmount()).isEqualTo(answerPoint + question.getPoint());
     }
 
     @Test

@@ -50,4 +50,9 @@ public class HttpManager {
         deleteCookie(resp, "accessToken");
         deleteCookie(resp, "refreshToken");
     }
+
+
+    public void setTempTokenForSignUpCookie(HttpServletResponse resp, String tempToken, int minute){
+        this.setCookie(resp, "tempToken", tempToken, minute);
+    }
 }
