@@ -27,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,7 +47,6 @@ public class MemberService {
 
     private final TempUserBeforeSignUpService tempUserBeforeSignUpService;
     private final MailService mailService;
-
 
     public Member adminLogin(AdminLoginRequestDto adminLoginRequestDto) {
         String adminUsername = adminLoginRequestDto.adminUsername();
@@ -95,9 +96,14 @@ public class MemberService {
         String authCode = UUID.randomUUID().toString();
 
         tempUserBeforeSignUpService.saveAuthCodeForMember(member.getId(), authCode);
+
+        mailService.sendAuthenticationMail(member.getEmailAddress(), member.getId(), authCode);
     }
 
     private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
+        if (memberRepository.existsByUsername(tempUser.getUsername())) {
+            throw new ServiceException("409-1", String.format("already exists with username %s", tempUser.getUsername()));
+        }
         return memberRepository.save(Member.builder()
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()))
@@ -134,9 +140,6 @@ public class MemberService {
         }
     }
 
-    public void sendAuthenticationEmail(String email, Long memberId, String authCode){
-        mailService.sendAuthenticationMail(email, memberId, authCode);
-    }
 
 
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
