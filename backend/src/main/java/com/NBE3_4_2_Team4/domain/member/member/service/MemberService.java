@@ -15,7 +15,6 @@ import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.mail.service.MailService;
-import com.NBE3_4_2_Team4.global.mail.state.MailState;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -24,7 +23,6 @@ import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBefo
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +80,7 @@ public class MemberService {
 
 
 
-    public SignupResponseDto signUp(String tempToken, SignupRequestDto signupRequestDto){
+    public void signUp(String tempToken, SignupRequestDto signupRequestDto){
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken);
 
@@ -97,12 +95,6 @@ public class MemberService {
         String authCode = UUID.randomUUID().toString();
 
         tempUserBeforeSignUpService.saveAuthCodeForMember(member.getId(), authCode);
-
-        MailState mailState = sendAuthenticationEmailAsync(member.getEmailAddress(), member.getId(), authCode);
-
-        return SignupResponseDto.builder()
-                .mailState(mailState)
-                .build();
     }
 
     private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
@@ -142,9 +134,8 @@ public class MemberService {
         }
     }
 
-    @Async
-    public MailState sendAuthenticationEmailAsync(String email, Long memberId, String authCode){
-        return mailService.sendAuthenticationMail(email, memberId, authCode);
+    public void sendAuthenticationEmail(String email, Long memberId, String authCode){
+        mailService.sendAuthenticationMail(email, memberId, authCode);
     }
 
 

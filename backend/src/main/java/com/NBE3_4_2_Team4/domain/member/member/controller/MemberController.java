@@ -69,12 +69,12 @@ public class MemberController {
 
 
     @PostMapping("/api/members")
-    public RsData<SignupResponseDto> signup(
+    public RsData<Empty> signup(
             @CookieValue(name = "tempToken") String tempToken,
             @RequestBody @Valid SignupRequestDto signupRequestDto
     ){
-        SignupResponseDto signupResponseDto = memberService.signUp(tempToken, signupRequestDto);
-        return new RsData<>("201-1", "sign up complete", signupResponseDto);
+        memberService.signUp(tempToken, signupRequestDto);
+        return new RsData<>("201-1", "sign up complete");
     }
 
 

@@ -22,7 +22,7 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-    public MailState sendEmail(String to, String subject, String body){
+    public void sendEmail(String to, String subject, String body){
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -32,12 +32,8 @@ public class MailService {
             helper.setText(body, true);  // true -> HTML 형식 지원
 
             mailSender.send(message);
-            return MailState.SUCCESS;
-        }catch (AddressException e){
-            return MailState.INVALID_EMAIL_ADDRESS;
         } catch (MessagingException e) {
             log.error("Error sending email to {}, msg : {}", to, e.getMessage());
-            return MailState.SERVER_ERROR;
         }
     }
 
@@ -49,12 +45,12 @@ public class MailService {
         return templateEngine.process(templateName, context);
     }
 
-    public MailState sendAuthenticationMail(String email, Long memberId, String authCode){
+    public void sendAuthenticationMail(String email, Long memberId, String authCode){
         Map<String, String> variables = Map.of(
                 "memberId", memberId.toString(),
                 "authCode", authCode
         );
         String body = makeThymeleafMailContent("auth-email", variables);
-        return sendEmail(email, "인증 완료해주세용", body);
+        sendEmail(email, "인증 완료해주세용", body);
     }
 }
