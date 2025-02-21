@@ -63,6 +63,9 @@ public class Member {
 
     private String emailAddress;
 
+    @Builder.Default
+    private boolean emailVerified = false;
+
     @Column(nullable = false, unique = true)
     private String nickname;
 
