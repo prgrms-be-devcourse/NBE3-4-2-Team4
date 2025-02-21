@@ -81,14 +81,20 @@ public class MemberController {
 
 
     @PostMapping("/api/members/verify-email")
-    public RsData<Boolean> verifyEmail(
+    public ResponseEntity<RsData<Empty>> verifyEmail(
             @RequestParam("memberId") long memberId,
             @RequestParam("authCode") String authCode
     ){
         boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
-        return new RsData<>("200-1", "verify email complete", isEmailVerified);
+        String location = String.format("%s/verify-email?result=%s", frontDomain, isEmailVerified);
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", location)
+                .body(new RsData<>(
+                        "302-1",
+                        String.format("logout complete. redirecting to %s ", location)
+                ));
     }
-
 
     @PostMapping("/api/admin/login")
     @Operation(summary = "login with admin role", description = "관리자 회원의 로그인 요청을 처리합니다")
