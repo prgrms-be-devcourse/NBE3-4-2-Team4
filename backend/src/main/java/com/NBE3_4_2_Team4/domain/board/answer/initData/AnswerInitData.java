@@ -1,12 +1,11 @@
 package com.NBE3_4_2_Team4.domain.board.answer.initData;
 
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
-import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
-import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -87,20 +86,20 @@ public class AnswerInitData {
         }
 
         String genFile1FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/237/200/300", AppConfig.getTempDirPath());
-        answer3.addGenFile(AnswerGenFile.TypeCode.attachment, genFile1FilePath);
+        answer3.addGenFile(GenFile.TypeCode.attachment, genFile1FilePath);
 
         String genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/238/200/300", AppConfig.getTempDirPath());
-        answer3.addGenFile(AnswerGenFile.TypeCode.attachment, genFile2FilePath);
+        answer3.addGenFile(GenFile.TypeCode.attachment, genFile2FilePath);
 
-        answer3.deleteGenFile(AnswerGenFile.TypeCode.attachment, 2);
+        answer3.deleteGenFile(GenFile.TypeCode.attachment, 2);
 
         genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/239/500/500", AppConfig.getTempDirPath());
-        answer3.addGenFile(AnswerGenFile.TypeCode.body, genFile2FilePath);
+        answer3.addGenFile(GenFile.TypeCode.body, genFile2FilePath);
 
         String newGenFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/240/600/500", AppConfig.getTempDirPath());
-        answer3.modifyGenFile(AnswerGenFile.TypeCode.body, 1, newGenFile2FilePath);
+        answer3.modifyGenFile(GenFile.TypeCode.body, 1, newGenFile2FilePath);
 
         String genFile3FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/241/500/500", AppConfig.getTempDirPath());
-        answer3.putGenFile(AnswerGenFile.TypeCode.attachment, 3, genFile3FilePath);
+        answer3.putGenFile(GenFile.TypeCode.attachment, 3, genFile3FilePath);
     }
 }
