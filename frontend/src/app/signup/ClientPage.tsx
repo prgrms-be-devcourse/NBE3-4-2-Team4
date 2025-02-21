@@ -14,7 +14,7 @@ export default function ClientPage() {
     useEffect(() => {
         const checkTempToken = async () => {
             try {
-                const response = await fetch("http://localhost:8080/auth/temp-token", {
+                const response = await fetch("http://localhost:8080/api/auth/temp-token", {
                     method: "GET",
                     credentials: "include",
                 });
@@ -78,6 +78,7 @@ export default function ClientPage() {
 
             if (response.ok) {
                 setSignUpMessage("회원가입 성공!");
+                router.push("/");
             } else {
                 setSignUpMessage("회원가입 실패. 다시 시도해주세요.");
             }
