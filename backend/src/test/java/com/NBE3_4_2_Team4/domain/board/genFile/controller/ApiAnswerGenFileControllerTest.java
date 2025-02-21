@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.genFile.controller;
 
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
@@ -58,7 +59,7 @@ public class ApiAnswerGenFileControllerTest {
             resultActions
                     .andExpect(jsonPath("$[%d].id".formatted(i)).value(answerGenFile.getId()))
                     .andExpect(jsonPath("$[%d].created_at".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].answer_id".formatted(i)).value(answerGenFile.getAnswer().getId()))
+                    .andExpect(jsonPath("$[%d].parent_id".formatted(i)).value(answerGenFile.getParent().getId()))
                     .andExpect(jsonPath("$[%d].type_code".formatted(i)).value(answerGenFile.getTypeCode().name()))
                     .andExpect(jsonPath("$[%d].file_ext_type_code".formatted(i)).value(answerGenFile.getFileExtTypeCode()))
                     .andExpect(jsonPath("$[%d].file_ext_type2_code".formatted(i)).value(answerGenFile.getFileExtType2Code()))
@@ -81,7 +82,7 @@ public class ApiAnswerGenFileControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        multipart("/api/answers/3/genFiles/" + AnswerGenFile.TypeCode.attachment)
+                        multipart("/api/answers/3/genFiles/" + GenFile.TypeCode.attachment)
                                 .file(new MockMultipartFile("files", "500.jpg", "jpg", new FileInputStream(newFilePath)))
                 )
                 .andDo(print());
@@ -94,8 +95,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.msg").value("1개의 파일이 생성되었습니다."))
                 .andExpect(jsonPath("$.data[0].id").isNumber())
                 .andExpect(jsonPath("$.data[0].created_at").isString())
-                .andExpect(jsonPath("$.data[0].answer_id").value(3))
-                .andExpect(jsonPath("$.data[0].type_code").value(AnswerGenFile.TypeCode.attachment.name()))
+                .andExpect(jsonPath("$.data[0].parent_id").value(3))
+                .andExpect(jsonPath("$.data[0].type_code").value(GenFile.TypeCode.attachment.name()))
                 .andExpect(jsonPath("$.data[0].file_ext_type_code").value("img"))
                 .andExpect(jsonPath("$.data[0].file_ext_type2_code").value("jpg"))
                 .andExpect(jsonPath("$.data[0].file_size").isNumber())
@@ -130,7 +131,7 @@ public class ApiAnswerGenFileControllerTest {
         resultActions
                 .andExpect(jsonPath("$.id").value(answerGenFile.getId()))
                 .andExpect(jsonPath("$.created_at").value(Matchers.startsWith(answerGenFile.getCreatedAt().toString().substring(0, 20))))
-                .andExpect(jsonPath("$.answer_id").value(answerGenFile.getAnswer().getId()))
+                .andExpect(jsonPath("$.parent_id").value(answerGenFile.getParent().getId()))
                 .andExpect(jsonPath("$.type_code").value(answerGenFile.getTypeCode().name()))
                 .andExpect(jsonPath("$.file_ext_type_code").value(answerGenFile.getFileExtTypeCode()))
                 .andExpect(jsonPath("$.file_ext_type2_code").value(answerGenFile.getFileExtType2Code()))
@@ -167,8 +168,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.msg").value("2개의 파일이 생성되었습니다."))
                 .andExpect(jsonPath("$.data[0].id").isNumber())
                 .andExpect(jsonPath("$.data[0].created_at").isString())
-                .andExpect(jsonPath("$.data[0].answer_id").value(3))
-                .andExpect(jsonPath("$.data[0].type_code").value(AnswerGenFile.TypeCode.attachment.name()))
+                .andExpect(jsonPath("$.data[0].parent_id").value(3))
+                .andExpect(jsonPath("$.data[0].type_code").value(GenFile.TypeCode.attachment.name()))
                 .andExpect(jsonPath("$.data[0].file_ext_type_code").value("img"))
                 .andExpect(jsonPath("$.data[0].file_ext_type2_code").value("jpg"))
                 .andExpect(jsonPath("$.data[0].file_size").isNumber())
@@ -181,8 +182,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.data[0].file_name").isString())
                 .andExpect(jsonPath("$.data[0].id").isNumber())
                 .andExpect(jsonPath("$.data[1].created_at").isString())
-                .andExpect(jsonPath("$.data[1].answer_id").value(3))
-                .andExpect(jsonPath("$.data[1].type_code").value(AnswerGenFile.TypeCode.attachment.name()))
+                .andExpect(jsonPath("$.data[1].parent_id").value(3))
+                .andExpect(jsonPath("$.data[1].type_code").value(GenFile.TypeCode.attachment.name()))
                 .andExpect(jsonPath("$.data[1].file_ext_type_code").value("img"))
                 .andExpect(jsonPath("$.data[1].file_ext_type2_code").value("jpg"))
                 .andExpect(jsonPath("$.data[1].file_size").isNumber())
@@ -263,7 +264,7 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.msg").value("1번 파일이 수정되었습니다."))
                 .andExpect(jsonPath("$.data.id").value(answerGenFile.getId()))
                 .andExpect(jsonPath("$.data.created_at").isString())
-                .andExpect(jsonPath("$.data.answer_id").value(3))
+                .andExpect(jsonPath("$.data.parent_id").value(3))
                 .andExpect(jsonPath("$.data.type_code").value(answerGenFile.getTypeCode().name()))
                 .andExpect(jsonPath("$.data.file_ext_type_code").value("img"))
                 .andExpect(jsonPath("$.data.file_ext_type2_code").value("jpg"))

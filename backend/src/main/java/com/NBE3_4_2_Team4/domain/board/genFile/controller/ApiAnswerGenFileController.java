@@ -1,9 +1,10 @@
 package com.NBE3_4_2_Team4.domain.board.genFile.controller;
 
 
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
-import com.NBE3_4_2_Team4.domain.board.genFile.dto.AnswerGenFileDto;
+import com.NBE3_4_2_Team4.domain.base.genFile.dto.GenFileDto;
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.config.AppConfig;
@@ -36,9 +37,9 @@ public class ApiAnswerGenFileController {
     @PostMapping(value = "/{typeCode}", consumes = MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "다건등록")
     @Transactional
-    public RsData<List<AnswerGenFileDto>> makeNewItems(
+    public RsData<List<GenFileDto<AnswerGenFile>>> makeNewItems(
             @PathVariable long answerId,
-            @PathVariable AnswerGenFile.TypeCode typeCode,
+            @PathVariable GenFile.TypeCode typeCode,
             @NonNull @RequestPart("files") MultipartFile[] files
     ) {
         Member actor = AuthManager.getNonNullMember();
@@ -59,12 +60,12 @@ public class ApiAnswerGenFileController {
 
             answerGenFiles.add(answerGenFile);
 
-            if(typeCode == AnswerGenFile.TypeCode.body) {
+            if(typeCode == GenFile.TypeCode.body) {
                 newSrcs.add(answerGenFile.getPublicUrl());
             }
         }
 
-        if(typeCode == AnswerGenFile.TypeCode.body && !newSrcs.isEmpty()) {
+        if(typeCode == GenFile.TypeCode.body && !newSrcs.isEmpty()) {
             answer.modify(Ut.editorImg.updateImgSrc(answer.getContent(), newSrcs));
         }
 
@@ -73,14 +74,14 @@ public class ApiAnswerGenFileController {
         return new RsData<>(
                 "201-1",
                 "%d개의 파일이 생성되었습니다.".formatted(answerGenFiles.size()),
-                answerGenFiles.stream().map(AnswerGenFileDto::new).toList()
+                answerGenFiles.stream().map(GenFileDto::new).toList()
         );
     }
 
     @GetMapping
     @Transactional(readOnly = true)
     @Operation(summary = "다건조회")
-    public List<AnswerGenFileDto> items(
+    public List<GenFileDto<AnswerGenFile>> items(
             @PathVariable long answerId
     ) {
         Answer answer = answerService.findById(answerId);
@@ -88,14 +89,14 @@ public class ApiAnswerGenFileController {
         return answer
                 .getGenFiles()
                 .stream()
-                .map(AnswerGenFileDto::new)
+                .map(GenFileDto::new)
                 .toList();
     }
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     @Operation(summary = "단건조회")
-    public AnswerGenFileDto item(
+    public GenFileDto item(
             @PathVariable long answerId,
             @PathVariable long id
     ) {
@@ -103,7 +104,7 @@ public class ApiAnswerGenFileController {
 
         AnswerGenFile answerGenFile = answer.getGenFileById(id);
 
-        return new AnswerGenFileDto(answerGenFile);
+        return new GenFileDto(answerGenFile);
     }
 
     @DeleteMapping("/{id}")
@@ -128,7 +129,7 @@ public class ApiAnswerGenFileController {
     @PutMapping(value = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
     @Transactional
     @Operation(summary = "수정")
-    public RsData<AnswerGenFileDto> modify(
+    public RsData<GenFileDto> modify(
             @PathVariable long answerId,
             @PathVariable long id,
             @NonNull @RequestPart("file") MultipartFile file
@@ -144,7 +145,7 @@ public class ApiAnswerGenFileController {
         return new RsData<>(
                 "200-1",
                 "%d번 파일이 수정되었습니다.".formatted(id),
-                new AnswerGenFileDto(answerGenFile)
+                new GenFileDto(answerGenFile)
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.answer.entity;
 
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile;
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -15,7 +16,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -37,7 +41,7 @@ public class Answer extends BaseTime {
 
     private LocalDateTime selectedAt;
 
-    @OneToMany(mappedBy = "answer", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @Builder.Default
     private List<AnswerGenFile> genFiles = new ArrayList<>();
 
@@ -68,7 +72,7 @@ public class Answer extends BaseTime {
         this.author = author;
     }
 
-    private AnswerGenFile processGenFile(AnswerGenFile oldAnswerGenFile, AnswerGenFile.TypeCode typeCode, int fileNo, String filePath) {
+    private AnswerGenFile processGenFile(AnswerGenFile oldAnswerGenFile, GenFile.TypeCode typeCode, int fileNo, String filePath) {
         boolean isModify = oldAnswerGenFile != null;
         String originalFileName = Ut.file.getOriginalFileName(filePath);
         String fileExt = Ut.file.getFileExt(filePath);
@@ -85,7 +89,7 @@ public class Answer extends BaseTime {
 
         AnswerGenFile genFile = isModify ? oldAnswerGenFile : AnswerGenFile
                 .builder()
-                .answer(this)
+                .parent(this)
                 .typeCode(typeCode)
                 .fileNo(fileNo)
                 .build();
@@ -110,15 +114,15 @@ public class Answer extends BaseTime {
         return genFile;
     }
 
-    public AnswerGenFile addGenFile(AnswerGenFile.TypeCode typeCode, String filePath) {
+    public AnswerGenFile addGenFile(GenFile.TypeCode typeCode, String filePath) {
         return addGenFile(typeCode, 0, filePath);
     }
 
-    private AnswerGenFile addGenFile(AnswerGenFile.TypeCode typeCode, int fileNo, String filePath) {
+    private AnswerGenFile addGenFile(GenFile.TypeCode typeCode, int fileNo, String filePath) {
         return processGenFile(null, typeCode, fileNo, filePath);
     }
 
-    private int getNextGenFileNo(AnswerGenFile.TypeCode typeCode) {
+    private int getNextGenFileNo(GenFile.TypeCode typeCode) {
         return genFiles.stream()
                 .filter(genFile -> genFile.getTypeCode().equals(typeCode))
                 .mapToInt(AnswerGenFile::getFileNo)
@@ -135,14 +139,14 @@ public class Answer extends BaseTime {
                 );
     }
 
-    public Optional<AnswerGenFile> getGenFileByTypeCodeAndFileNo(AnswerGenFile.TypeCode typeCode, int fileNo) {
+    public Optional<AnswerGenFile> getGenFileByTypeCodeAndFileNo(GenFile.TypeCode typeCode, int fileNo) {
         return genFiles.stream()
                 .filter(genFile -> genFile.getTypeCode().equals(typeCode))
                 .filter(genFile -> genFile.getFileNo() == fileNo)
                 .findFirst();
     }
 
-    public void deleteGenFile(AnswerGenFile.TypeCode typeCode, int fileNo) {
+    public void deleteGenFile(GenFile.TypeCode typeCode, int fileNo) {
         getGenFileByTypeCodeAndFileNo(typeCode, fileNo)
                 .ifPresent(this::deleteGenFile);
     }
@@ -156,14 +160,14 @@ public class Answer extends BaseTime {
         processGenFile(postGenFile, postGenFile.getTypeCode(), postGenFile.getFileNo(), filePath);
     }
 
-    public void modifyGenFile(AnswerGenFile.TypeCode typeCode, int fileNo, String filePath) {
+    public void modifyGenFile(GenFile.TypeCode typeCode, int fileNo, String filePath) {
         getGenFileByTypeCodeAndFileNo(
                 typeCode,
                 fileNo
         ).ifPresent(postGenFile -> modifyGenFile(postGenFile, filePath));
     }
 
-    public void putGenFile(AnswerGenFile.TypeCode typeCode, int fileNo, String filePath) {
+    public void putGenFile(GenFile.TypeCode typeCode, int fileNo, String filePath) {
         Optional<AnswerGenFile> opAnswerGenFile = getGenFileByTypeCodeAndFileNo(
                 typeCode,
                 fileNo

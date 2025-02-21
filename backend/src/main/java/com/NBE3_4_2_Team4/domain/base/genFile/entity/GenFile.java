@@ -1,12 +1,10 @@
 package com.NBE3_4_2_Team4.domain.base.genFile.entity;
 
 import com.NBE3_4_2_Team4.global.config.AppConfig;
+import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +24,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public abstract class GenFile {
+public abstract class GenFile<T extends BaseEntity> {
+    public enum TypeCode {
+        attachment,
+        body
+    }
+
     @Id
     @GeneratedValue(strategy = IDENTITY) // AUTO_INCREMENT
     @Setter(AccessLevel.PROTECTED)
@@ -37,6 +40,12 @@ public abstract class GenFile {
     @Setter(AccessLevel.PRIVATE)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    protected T parent;
+
+    @Enumerated(EnumType.STRING)
+    private TypeCode typeCode;
 
     private int fileNo;
     private String originalFileName;
@@ -80,6 +89,14 @@ public abstract class GenFile {
         return this.getModelName().replace("GenFile", "");
     }
 
+    private String getTypeCodeAsStr() {
+        return typeCode.name();
+    }
+
+    private long getOwnerModelId() {
+        return parent.getId();
+    }
+
     public String getDownloadUrl() {
         return AppConfig.getSiteBackUrl() + "/" + getOwnerModelName() + "/genFile/download/" + getOwnerModelId() + "/" + fileName;
     }
@@ -87,7 +104,4 @@ public abstract class GenFile {
     public String getPublicUrl() {
         return AppConfig.getSiteBackUrl() + "/gen/" + getModelName() + "/" + getTypeCodeAsStr() + "/" + fileDateDir + "/" + fileName;
     }
-
-    abstract protected long getOwnerModelId();
-    abstract protected String getTypeCodeAsStr();
 }
