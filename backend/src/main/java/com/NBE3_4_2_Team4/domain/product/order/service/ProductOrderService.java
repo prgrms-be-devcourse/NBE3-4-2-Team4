@@ -2,8 +2,8 @@ package com.NBE3_4_2_Team4.domain.product.order.service;
 
 import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder;
 import com.NBE3_4_2_Team4.domain.product.order.repository.ProductOrderRepository;
-import com.NBE3_4_2_Team4.domain.point.entity.PointHistory;
-import com.NBE3_4_2_Team4.domain.point.repository.PointHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
 import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class ProductOrderService {
 
     private final ProductOrderRepository productOrderRepository;
-    private final PointHistoryRepository pointHistoryRepository;
+    private final AssetHistoryRepository assetHistoryRepository;
     private final ProductRepository productRepository;
 
     @Transactional
@@ -29,14 +29,14 @@ public class ProductOrderService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ServiceException("404-1", "해당 상품이 존재하지 않습니다."));
 
-        PointHistory pointHistory = pointHistoryRepository.findById(pointHistoryId)
+        AssetHistory assetHistory = assetHistoryRepository.findById(pointHistoryId)
                 .orElseThrow(() -> new ServiceException("404-1", "해당 포인트 내역이 존재하지 않습니다."));
 
         ProductOrder saved = productOrderRepository.save(
                 ProductOrder.builder()
                         .orderTime(LocalDateTime.now())
                         .product(product)
-                        .pointHistory(pointHistory)
+                        .assetHistory(assetHistory)
                         .build()
         );
 

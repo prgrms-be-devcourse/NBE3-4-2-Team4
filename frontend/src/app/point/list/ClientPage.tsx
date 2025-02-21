@@ -215,7 +215,7 @@ export default function ClientPage({
                 <div>
                   <div className="flex items-center gap-5">
                     <div className="text-lg font-bold">
-                      {item.pointCategory}
+                      {item.assetCategory}
                     </div>
                     {item.counterAccountUsername && (
                       <Badge variant="outline">

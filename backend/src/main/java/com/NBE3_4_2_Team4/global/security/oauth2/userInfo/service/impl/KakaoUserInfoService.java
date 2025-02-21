@@ -21,7 +21,7 @@ public class KakaoUserInfoService implements OAuth2UserInfoService {
         String oAuth2Id = oAuth2User.getName();
         Map<String, Object> attributes =oAuth2User.getAttributes();
         Map<String, String> attributeProperties  = (Map<String, String>) attributes.get("properties");
-        String nickname = attributeProperties.get("nickname");
-        return new OAuth2UserInfo(oAuth2Id, nickname);
+        String realName = attributeProperties.get("nickname");
+        return new OAuth2UserInfo(oAuth2Id, realName);
     }
 }

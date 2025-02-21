@@ -67,8 +67,8 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
       // alert()
+      router.push("/"); // 파라미터 제거된 URL로 이동
     }
-    router.push("/"); // 파라미터 제거된 URL로 이동
   }, [attendanceMessage]);
 
   useEffect(() => {
