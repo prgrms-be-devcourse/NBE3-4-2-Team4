@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.initData;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionCategoryService;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.board.recommend.service.RecommendService;
@@ -60,7 +61,8 @@ public class QuestionInitData {
 
         for (int i = 1; i <= 20; i++) {
             Member author = (i >= 10) ? testUser : admin;
-            questionService.write("title" + i, "content" + i, (long)i % 2 + 1, author, i);
+            questionService.write("title" + i, "content" + i,
+                    (long)i % 2 + 1, author, i, i % 2 == 0 ? AssetType.POINT : AssetType.CASH);
         }
 
         recommendService.recommend(1L, testUser);

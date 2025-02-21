@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
@@ -37,19 +38,21 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionDto write(String title, String content, Long categoryId, Member author, long point) {
+    public QuestionDto write(String title, String content, Long categoryId,
+                             Member author, long amount, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         Question question = Question.builder()
                 .title(title)
                 .content(content)
                 .author(author)
                 .category(category)
-                .point(point)
+                .assetType(assetType)
+                .amount(amount)
                 .rankReceived(false)
                 .build();
 
         //질문글 작성 시 포인트 차감
-        pointService.deduct(author.getUsername(), point, AssetCategory.QUESTION.QUESTION);
+        pointService.deduct(author.getUsername(), amount, AssetCategory.QUESTION.QUESTION);
         questionRepository.save(question);
 
         return new QuestionDto(question);
@@ -150,7 +153,7 @@ public class QuestionService {
         question.setClosed(true);
 
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
-        pointService.accumulate(answer.getAuthor().getUsername(), question.getPoint(), AssetCategory.ANSWER);
+        pointService.accumulate(answer.getAuthor().getUsername(), question.getAmount(), AssetCategory.ANSWER);
 
         return new QuestionDto(question);
     }
@@ -167,13 +170,13 @@ public class QuestionService {
 
             if(question.getAnswers().size() == 0) {
                 //답변자가 없는 경우 질문자에게 포인트 반환
-                pointService.accumulate(question.getAuthor().getUsername(), question.getPoint(), AssetCategory.REFUND);
+                pointService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
 
                 continue;
             }
 
-            long selectedPoint = question.getPoint() != 0 && question.getPoint() / question.getAnswers().size() > 1
-                    ? question.getPoint() / question.getAnswers().size()
+            long selectedPoint = question.getAmount() != 0 && question.getAmount() / question.getAnswers().size() > 1
+                    ? question.getAmount() / question.getAnswers().size()
                     : 1; //최소 1포인트는 받을 수 있도록
 
             for(Answer answer : question.getAnswers()) {

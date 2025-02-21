@@ -73,7 +73,7 @@ public class QuestionController {
     public RsData<QuestionWriteResDto> write(@RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member author = AuthManager.getMemberFromContext();
         QuestionDto question = questionService.write(reqBody.title(), reqBody.content(),
-                reqBody.categoryId(), author, reqBody.point());
+                reqBody.categoryId(), author, reqBody.amount(), reqBody.assetType());
 
         return new RsData<>(
                 "201-1",
@@ -90,7 +90,7 @@ public class QuestionController {
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member actor = AuthManager.getMemberFromContext();
         QuestionDto question = questionService.update(id, reqBody.title(), reqBody.content(),
-                actor, reqBody.point(), reqBody.categoryId());
+                actor, reqBody.amount(), reqBody.categoryId());
 
         return new RsData<>(
                 "200-2",
