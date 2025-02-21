@@ -115,7 +115,7 @@ export default function ClientPage({
                   className="flex items-center gap-1 bg-amber-500 hover:bg-amber-500 text-white"
                 >
                   <Coins size={16} />
-                  {question.point}
+                  {question.amount}
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Pencil width={14} height={14} />

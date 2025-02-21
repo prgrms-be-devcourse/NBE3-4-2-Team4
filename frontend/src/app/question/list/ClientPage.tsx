@@ -55,6 +55,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
   const { toast } = useToast();
 
   const [categoryValue, setCategoryValue] = useState("전체");
+  const [assetValue, setAssetValue] = useState("전체");
 
   // 검색 실행 함수
   const handleSearch = () => {
@@ -79,6 +80,10 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     router.push(`?${queryParams.toString()}`);
     setCategoryValue(value);
   };
+
+  const handleAssetSearch = (value: string) => {
+
+  }
 
   const createQuestion = () => {
     if (!id) {
@@ -134,9 +139,21 @@ export default function ClientPage({ body, category }: ClientPageProps) {
             </Select>
           </div>
           {id && (
-              <Button onClick={myQuestion}>내 글 보기</Button>
+            <Button onClick={myQuestion}>내 글 보기</Button>
           )}
+          
+          {/* 포인트/캐시 구분 */}
+          <Select onValueChange={handleAssetSearch} value={assetValue}>
+            <SelectTrigger className="md:w-[100px] w-[100px]">
+              <SelectValue placeholder="포인트/캐시" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="POINT">포인트</SelectItem>
+              <SelectItem value="CASH">캐시</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
         <div className="flex gap-2">
           {/* 검색 입력창 */}
           <div>
@@ -201,7 +218,8 @@ export default function ClientPage({ body, category }: ClientPageProps) {
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-amber-500">
                         <Coins size={16} />
-                        {item.point}
+                        {item.amount}
+                        {item.assetType}
                       </div>
                       {(item.recommendCount ?? 0) > 0 && (
                         <span className="flex items-center gap-1 text-sky-400 font-medium">

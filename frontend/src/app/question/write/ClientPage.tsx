@@ -41,7 +41,8 @@ const questionFormSchema = z.object({
     .string()
     .min(1, "내용을 입력해주세요.")
     .min(4, "내용은 4자 이상이여야 합니다."),
-  point: z.number().min(1, "포인트는 1 이상이여야 합니다."),
+  amount: z.number().min(1, "포인트/캐시는 1 이상이여야 합니다."),
+  assetType: z.enum(["포인트", "캐시"]),
 });
 
 type QuestionFormInputs = z.infer<typeof questionFormSchema>;
@@ -50,8 +51,6 @@ export default function ClientPage({ categories }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(categories[0].name);
 
-  //   const [title, setTitle] = useState("");
-  //   const [content, setContent] = useState("");
   const [points, setPoints] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number | null>(null);
 
@@ -80,31 +79,24 @@ export default function ClientPage({ categories }: Props) {
     defaultValues: {
       title: "",
       content: "",
-      point: 0,
+      amount: 0,
+      assetType: "포인트",
     },
   });
 
   const onSubmit = async (data: QuestionFormInputs) => {
-    //e.preventDefault();
-
-    // const submitData = {
-    //   title: title,
-    //   content: content,
-    //   categoryId: categoryId!!,
-    //   point: points,
-    // };
 
     try {
       const response = await client.POST("/api/questions", {
         headers: {
           "Content-Type": "application/json",
         },
-        //body: submitData,
         body: {
           title: data.title,
           content: data.content,
           categoryId: categoryId!!,
-          point: data.point,
+          amount: data.amount,
+          assetType: data.assetType,
         },
       });
 
@@ -156,14 +148,6 @@ export default function ClientPage({ categories }: Props) {
               </FormItem>
             )}
           />
-          {/* <label className="block text-lg font-semibold mb-2">제목</label>
-          <input
-            type="text"
-            className="w-full p-2 border rounded-md mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-            placeholder="제목을 입력하세요"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          /> */}
 
           {/* 내용 입력 */}
           <div className="my-4">
@@ -186,13 +170,6 @@ export default function ClientPage({ categories }: Props) {
               )}
             />
           </div>
-          {/* <label className="block text-lg font-semibold mb-2">내용</label>
-          <textarea
-            className="w-full p-2 border rounded-md h-40 resize-none mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-            placeholder="내용을 입력하세요"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          /> */}
 
           <div className="flex gap-2">
             {/* 카테고리 설정 */}
@@ -223,66 +200,59 @@ export default function ClientPage({ categories }: Props) {
                   ))}
                 </SelectContent>
               </Select>
-              {/* <div className="relative">
-                <button
-                  type="button"
-                  className="px-4 py-2 border rounded-md flex items-center justify-between w-40"
-                  onClick={toggleDropdown}
-                >
-                  {selectedOption ? selectedOption : "선택하세요"}
-                  <span className="ml-2">&#9662;</span>
-                </button>
-                {isOpen && (
-                  <ul className="absolute bg-white border rounded shadow w-full mt-2">
-                    {categories.map((category, index) => (
-                      <li
-                        key={index}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          selectOption(category.name!!);
-                          setCategoryId(category.id!!);
-                        }}
-                      >
-                        {category.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div> */}
             </div>
 
-            {/* 포인트 설정 */}
+            {/* 포인트/캐시 설정 */}
+            <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
-              name="point"
+              name="assetType"
               render={({ field }) => (
                 <FormItem>
-                  <Label>포인트</Label>
+                  <div className="flex gap-3">
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="radio"
+                        {...field}
+                        value="포인트"
+                        checked={field.value === "포인트"}
+                        onChange={() => field.onChange("포인트")}
+                      />
+                      <Label>포인트</Label>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="radio"
+                        {...field}
+                        value="캐시"
+                        checked={field.value === "캐시"}
+                        onChange={() => field.onChange("캐시")}
+                      />
+                      <Label>캐시</Label>
+                    </div>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
                   <FormControl>
                     <Input
                       {...field}
                       type="number"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       autoComplete="off"
-                      className="w-[100px]"
+                      className="w-[120px]"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* <div>
-              <label className="block text-lg font-semibold mb-2">포인트</label>
-              <input
-                type="number"
-                min={0}
-                step={10}
-                className="border rounded px-4 py-2 w-40"
-                placeholder="포인트 입력"
-                value={points}
-                onChange={(e) => setPoints(Number(e.target.value))}
-              />
-            </div> */}
+            </div>
           </div>
 
           {/* 작성 버튼 */}

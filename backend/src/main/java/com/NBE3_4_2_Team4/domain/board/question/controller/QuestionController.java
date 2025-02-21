@@ -26,6 +26,7 @@ public class QuestionController {
     @Operation(summary = "질문 글 조회 with 검색", description = "지식인 질문을 검색어, 페이지, 페이지 크기를 기준으로 조회")
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
                                              @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
+//                                             @RequestParam(defaultValue = "ALL") AssetType assetType,
                                              @RequestParam(defaultValue = "1") int page,
                                              @RequestParam(defaultValue = "10") int pageSize,
                                              @RequestParam(defaultValue = "0") long categoryId

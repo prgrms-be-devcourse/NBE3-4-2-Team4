@@ -782,6 +782,8 @@ export interface components {
             closed: boolean;
             /** Format: int64 */
             amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트";
             /** Format: int64 */
             authorId: number;
         };

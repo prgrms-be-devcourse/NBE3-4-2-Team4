@@ -52,7 +52,7 @@ public class QuestionService {
                 .build();
 
         //질문글 작성 시 포인트 차감
-        pointService.deduct(author.getUsername(), amount, AssetCategory.QUESTION.QUESTION);
+        pointService.deduct(author.getUsername(), amount, AssetCategory.QUESTION);
         questionRepository.save(question);
 
         return new QuestionDto(question);

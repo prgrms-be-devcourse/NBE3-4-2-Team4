@@ -62,7 +62,7 @@ public class QuestionInitData {
         for (int i = 1; i <= 20; i++) {
             Member author = (i >= 10) ? testUser : admin;
             questionService.write("title" + i, "content" + i,
-                    (long)i % 2 + 1, author, i, i % 2 == 0 ? AssetType.POINT : AssetType.CASH);
+                    (long)i % 2 + 1, author, i, i % 4 == 0 ? AssetType.CASH : AssetType.POINT);
         }
 
         recommendService.recommend(1L, testUser);

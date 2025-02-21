@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.dto;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import lombok.Getter;
@@ -36,6 +37,8 @@ public class QuestionDto {
     @NonNull
     private final long amount;
     @NonNull
+    private final AssetType assetType;
+    @NonNull
     private final long authorId;
 
     public QuestionDto(Question question) {
@@ -56,6 +59,7 @@ public class QuestionDto {
                 : null;
         this.closed = question.isClosed();
         this.amount = question.getAmount();
+        this.assetType = question.getAssetType();
         this.authorId = question.getAuthor().getId();
     }
 }
