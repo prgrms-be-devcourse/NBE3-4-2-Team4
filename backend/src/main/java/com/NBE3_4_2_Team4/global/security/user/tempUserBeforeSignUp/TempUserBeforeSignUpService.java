@@ -51,4 +51,10 @@ public class TempUserBeforeSignUpService {
         String memberIdString = String.valueOf(memberId);
         redisTemplate.opsForValue().set(memberIdString, authCode, Duration.ofMinutes(10)); // 10분 후 만료
     }
+
+    public boolean isEmailVerified(Long memberId, String authCode) {
+        String memberIdString = String.valueOf(memberId);
+        String authCodeString = (String) redisTemplate.opsForValue().get(memberIdString);
+        return authCodeString.equals(authCode);
+    }
 }

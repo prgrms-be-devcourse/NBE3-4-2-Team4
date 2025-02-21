@@ -8,7 +8,7 @@
 <h1>이메일 인증 요청</h1>
 <p>아래 버튼을 눌러 이메일 인증을 완료하세요.</p>
 <!-- 인증을 위한 POST 방식 양식 -->
-<form action="/auth/verify" method="post">
+<form action="http://localhost:8080/api/members/verify-email" method="post">
     <input type="hidden" name="authCode" th:value="${authCode}" />
     <input type="hidden" name="memberId" th:value="${memberId}" />
 

@@ -139,6 +139,14 @@ public class MemberService {
     }
 
 
+    public boolean verifyEmail(Long memberId, String authCode) {
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        boolean isEmailVerified = tempUserBeforeSignUpService
+                .isEmailVerified(memberId, authCode);
+        member.setEmailVerified(isEmailVerified);
+        return isEmailVerified;
+    }
+
 
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
         return memberQuerydsl.getMemberDetailInfo(member);

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -65,7 +64,7 @@ public class SecurityConfig{
                             oauth2Login.tokenEndpoint(tokenEndpointConfig ->
                                     tokenEndpointConfig.accessTokenResponseClient(accessTokenResponseClient));
                         })
-                .cors(Customizer.withDefaults());
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
 
@@ -83,14 +82,20 @@ public class SecurityConfig{
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");  // 허용할 origin
-        configuration.addAllowedMethod("*");  // 허용할 HTTP 메서드
-        configuration.addAllowedHeader("*");  // 허용할 HTTP 헤더
-        configuration.setAllowCredentials(true);  // 자격 증명 허용
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정
+
+        CorsConfiguration emailVerifyingConfiguration = new CorsConfiguration();
+        emailVerifyingConfiguration.addAllowedOrigin("*");
+        emailVerifyingConfiguration.addAllowedMethod("POST");
+        emailVerifyingConfiguration.addAllowedHeader("*");
+        source.registerCorsConfiguration("/api/members/verify-email", emailVerifyingConfiguration);
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }

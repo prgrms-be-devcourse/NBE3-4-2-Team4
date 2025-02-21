@@ -42,8 +42,7 @@ public class TempUserBeforeSignUp extends User implements OAuth2User {
         return getUsername();
     }
 
-    public String getRefreshToken() {
-        return attributes.get("refreshToken").toString();
+    public String getRefreshToken() {return (String)attributes.get("refreshToken");
     }
 
     public String getRealName() {

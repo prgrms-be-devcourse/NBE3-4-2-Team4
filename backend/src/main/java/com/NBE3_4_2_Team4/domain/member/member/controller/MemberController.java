@@ -71,12 +71,23 @@ public class MemberController {
     @PostMapping("/api/members")
     public RsData<Empty> signup(
             @CookieValue(name = "tempToken") String tempToken,
-            @RequestBody @Valid SignupRequestDto signupRequestDto
+            @RequestBody @Valid SignupRequestDto signupRequestDto,
+            HttpServletResponse resp
     ){
         memberService.signUp(tempToken, signupRequestDto);
+        httpManager.deleteCookie(resp,"tempToken");
         return new RsData<>("201-1", "sign up complete");
     }
 
+
+    @PostMapping("/api/members/verify-email")
+    public RsData<Boolean> verifyEmail(
+            @RequestParam("memberId") long memberId,
+            @RequestParam("authCode") String authCode
+    ){
+        boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
+        return new RsData<>("200-1", "verify email complete", isEmailVerified);
+    }
 
 
     @PostMapping("/api/admin/login")
