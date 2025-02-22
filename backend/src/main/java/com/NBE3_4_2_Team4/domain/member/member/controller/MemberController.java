@@ -91,8 +91,8 @@ public class MemberController {
             @RequestParam("memberId") long memberId,
             @RequestParam("authCode") String authCode
     ){
-        boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
-        String location = String.format("%s/verify-email?result=%s", frontDomain, isEmailVerified);
+        memberService.verifyEmail(memberId, authCode);
+        String location = String.format("%s/verify-email", frontDomain);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header("Location", location)
