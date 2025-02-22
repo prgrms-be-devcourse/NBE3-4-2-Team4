@@ -52,6 +52,12 @@ public class MemberController {
                 ));
     }
 
+    @PostMapping("/api/test")
+    public ResponseEntity<Void> test(){
+        return ResponseEntity.ok().build();
+    }
+
+
     @GetMapping("/api/members")
     public RsData<Boolean> nicknameCheck(
             @RequestParam(name = "nickname") String nickname

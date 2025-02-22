@@ -50,6 +50,7 @@ public class JwtManager {
                 .claim("nickname", member.getNickname())
                 .claim("role", member.getRole().name())
                 .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                .claim("emailVerified", member.isEmailVerified())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                 .signWith(key)

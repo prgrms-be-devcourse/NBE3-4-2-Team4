@@ -49,6 +49,8 @@ public class SecurityConfig{
                     needAuthenticated(req, "/api/answers/**");
                     needAuthenticated(req, "/api/products/**");
                     needAuthenticated(req, "/api/points/**");
+
+                    needEmailVerified(req, "/api/test");
                     req.anyRequest().permitAll();
                 })
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
