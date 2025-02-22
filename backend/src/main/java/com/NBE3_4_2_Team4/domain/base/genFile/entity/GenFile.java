@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,11 +19,10 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public abstract class GenFile<T extends BaseEntity> {
+public class GenFile<T extends BaseEntity> {
     public enum TypeCode {
         attachment,
         body
@@ -56,6 +54,12 @@ public abstract class GenFile<T extends BaseEntity> {
     private String fileExtType2Code;
     private String fileName;
     private int fileSize;
+
+    public GenFile(T parent, GenFile.TypeCode typeCode, int fileNo) {
+        this.parent = parent;
+        this.typeCode = typeCode;
+        this.fileNo = fileNo;
+    }
 
     public String getModelName() {
         String simpleName = this.getClass().getSimpleName();
