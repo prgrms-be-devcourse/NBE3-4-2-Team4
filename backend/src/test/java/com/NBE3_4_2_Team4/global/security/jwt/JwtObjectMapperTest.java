@@ -29,6 +29,7 @@ public class JwtObjectMapperTest {
         claims.put("nickname", "testNick");
         claims.put("role", "USER");
         claims.put("OAuth2Provider", "NONE");
+        claims.put("emailVerified", true);
     }
 
     @AfterEach
@@ -50,6 +51,7 @@ public class JwtObjectMapperTest {
         assertEquals("testNick", member.getNickname());
         assertEquals(Member.Role.USER, member.getRole());
         assertEquals(Member.OAuth2Provider.NONE, member.getOAuth2Provider());
+        assertTrue(member.isEmailVerified());
     }
 
     @Test
