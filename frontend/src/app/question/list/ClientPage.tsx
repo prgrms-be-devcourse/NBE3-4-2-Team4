@@ -114,17 +114,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     router.push("/question/write");
   };
 
-  const myQuestion = () => {
-    if (!id) {
-      toast({
-        title: "로그인 후 이용해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
-    router.push("/question/me");
-  };
-
   return (
     <div className="container mx-auto px-4">
       <div className="mt-20 mb-10 text-center">
@@ -156,9 +145,6 @@ export default function ClientPage({ body, category }: ClientPageProps) {
               </SelectContent>
             </Select>
           </div>
-          {id && (
-            <Button onClick={myQuestion}>내 글 보기</Button>
-          )}
 
           {/* 포인트/캐시 구분 */}
           <Select onValueChange={handleAssetSearch} value={assetValue}>
