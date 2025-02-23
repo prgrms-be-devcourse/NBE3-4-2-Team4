@@ -12,10 +12,15 @@ export default function Pagination2({ totalPages }: PaginationProps) {
   const searchParams = useSearchParams();
 
   const currentPage = Number(searchParams.get("page")) || 1;
+  const categoryId = searchParams.get("categoryId");
+  const assetType = searchParams.get("assetType");
 
   // 페이지 이동 함수
   const changePage = (newPage: number) => {
     const queryParams = new URLSearchParams();
+
+    if (categoryId) queryParams.set("categoryId", categoryId);
+    if (assetType) queryParams.set("assetType", assetType);
     queryParams.set("page", newPage.toString());
 
     router.push(`?${queryParams.toString()}`);

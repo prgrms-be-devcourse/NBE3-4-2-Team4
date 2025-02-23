@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.repository;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -24,6 +25,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Quest
     List<Question> findByCreatedAtBeforeAndClosed(LocalDateTime expirationDate, boolean closed);
 
     Page<Question> findByCategory(QuestionCategory category, Pageable pageable);
+
+    Page<Question> findByAssetType(AssetType assetType, Pageable pageable);
+
+    Page<Question> findByCategoryAndAssetType(QuestionCategory category, AssetType assetType, Pageable pageable);
 
     Page<Question> findByAuthor(Member author, Pageable pageable);
 

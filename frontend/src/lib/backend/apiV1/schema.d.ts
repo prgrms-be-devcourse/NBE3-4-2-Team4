@@ -745,7 +745,7 @@ export interface components {
             /** Format: int64 */
             amount: number;
             /** @enum {string} */
-            assetType: "캐시" | "포인트";
+            assetType: "캐시" | "포인트" | "전체";
         };
         AnswerDto: {
             /** Format: int64 */
@@ -783,7 +783,7 @@ export interface components {
             /** Format: int64 */
             amount: number;
             /** @enum {string} */
-            assetType: "캐시" | "포인트";
+            assetType: "캐시" | "포인트" | "전체";
             /** Format: int64 */
             authorId: number;
         };
@@ -965,9 +965,9 @@ export interface components {
             /** @enum {string} */
             assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
@@ -1359,6 +1359,7 @@ export interface operations {
             query?: {
                 searchKeyword?: string;
                 keywordType?: "ALL" | "TITLE" | "CONTENT" | "AUTHOR" | "ANSWER_CONTENT";
+                assetType?: string;
                 page?: number;
                 pageSize?: number;
                 categoryId?: number;

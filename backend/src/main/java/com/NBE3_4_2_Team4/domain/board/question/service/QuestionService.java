@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,10 +68,55 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
+    public Page<QuestionDto> getQuestions(int page, int pageSize, String searchKeyword, long categoryId,
+                                          QuestionSearchKeywordType keywordType, String asset) {
+        AssetType assetType = AssetType.fromValue(asset);
+
+        if (categoryId == 0 && asset.equals("ALL")) {
+            return findByListed(page, pageSize, searchKeyword, keywordType);
+        }
+        // 카테고리 ID만 설정된 경우
+        if (categoryId != 0 && assetType == AssetType.ALL) {
+            return getQuestionsByCategory(categoryId, page, pageSize);
+        }
+        // assetType 만 설정된 경우
+        if (categoryId == 0 && assetType != AssetType.ALL) {
+            return getQuestionsByAssetType(assetType, page, pageSize);
+        }
+
+        // 둘 다 설정된 경우
+        return getQuestionsByCategoryAndAssetType(categoryId, page, pageSize, assetType);
+    }
+
+    private Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest)
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategoryAndAssetType(category, assetType, pageRequest)
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategory(category, pageRequest)
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByAssetType(AssetType assetType, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        return questionRepository.findByAssetType(assetType, pageRequest)
                 .map(QuestionDto::new);
     }
 
@@ -86,16 +132,6 @@ public class QuestionService {
     public Page<QuestionDto> findByRecommends(int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
         return questionRepository.findRecommendedQuestions(pageRequest)
-                .map(QuestionDto::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
-        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
-
-        return questionRepository.findByCategory(category, pageRequest)
                 .map(QuestionDto::new);
     }
 

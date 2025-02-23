@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
@@ -25,21 +26,15 @@ public class QuestionController {
     @GetMapping
     @Operation(summary = "질문 글 조회 with 검색", description = "지식인 질문을 검색어, 페이지, 페이지 크기를 기준으로 조회")
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
-                                             @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
-//                                             @RequestParam(defaultValue = "ALL") AssetType assetType,
+                                             @RequestParam(defaultValue = "ALL") QuestionSearchKeywordType keywordType,
+                                             @RequestParam(defaultValue = "ALL") String assetType,
                                              @RequestParam(defaultValue = "1") int page,
                                              @RequestParam(defaultValue = "10") int pageSize,
                                              @RequestParam(defaultValue = "0") long categoryId
                                              ) {
-        if(categoryId == 0) {
-            return new PageDto<>(
-                    questionService.findByListed(page, pageSize, searchKeyword, keywordType)
-            );
-        } else {
-            return new PageDto<>(
-                    questionService.getQuestionsByCategory(categoryId, page, pageSize)
-            );
-        }
+        return new PageDto<>(
+                questionService.getQuestions(page, pageSize, searchKeyword, categoryId, keywordType, assetType)
+        );
     }
 
     @GetMapping("/recommends")

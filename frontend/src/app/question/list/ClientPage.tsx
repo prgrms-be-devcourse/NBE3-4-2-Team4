@@ -5,7 +5,7 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/utils/dateUtils";
 import { useId } from "@/context/IdContext";
-import { MessageCircle, ThumbsUp, Coins } from "lucide-react";
+import { MessageCircle, ThumbsUp, Coins, CircleDollarSign } from "lucide-react";
 import Link from "next/link";
 import {
   SelectTrigger,
@@ -55,7 +55,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
   const { toast } = useToast();
 
   const [categoryValue, setCategoryValue] = useState("전체");
-  const [assetValue, setAssetValue] = useState("전체");
+  const [assetValue, setAssetValue] = useState("ALL");
 
   // 검색 실행 함수
   const handleSearch = () => {
@@ -77,12 +77,30 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     } else {
       queryParams.set("categoryId", "0");
     }
+    // assetType 값도 추가하여 동시에 반영
+    if (assetValue !== "전체") {
+      queryParams.set("assetType", assetValue);
+    }
+
     router.push(`?${queryParams.toString()}`);
     setCategoryValue(value);
   };
 
   const handleAssetSearch = (value: string) => {
+    const queryParams = new URLSearchParams();
+    queryParams.set("page", "1");
+    if (value !== "전체") {
+      queryParams.set("assetType", value);
+    } else {
+      queryParams.set("assetType", "ALL");
+    }
 
+    if (categoryValue !== "전체") {
+      queryParams.set("categoryId", categoryValue);
+    }
+
+    router.push(`?${queryParams.toString()}`);
+    setAssetValue(value);
   }
 
   const createQuestion = () => {
@@ -125,7 +143,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
           <Button onClick={createQuestion}>글쓰기</Button>
           <div>
             <Select onValueChange={handleCategorySearch} value={categoryValue}>
-              <SelectTrigger className="md:w-[180px] w-[100px]" id="category">
+              <SelectTrigger className="md:w-[130px] w-[100px]" id="category">
                 <SelectValue placeholder="카테고리로 검색" />
               </SelectTrigger>
               <SelectContent>
@@ -141,13 +159,14 @@ export default function ClientPage({ body, category }: ClientPageProps) {
           {id && (
             <Button onClick={myQuestion}>내 글 보기</Button>
           )}
-          
+
           {/* 포인트/캐시 구분 */}
           <Select onValueChange={handleAssetSearch} value={assetValue}>
-            <SelectTrigger className="md:w-[100px] w-[100px]">
+            <SelectTrigger className="md:w-[130px] w-[100px]">
               <SelectValue placeholder="포인트/캐시" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="ALL">전체</SelectItem>
               <SelectItem value="POINT">포인트</SelectItem>
               <SelectItem value="CASH">캐시</SelectItem>
             </SelectContent>
@@ -216,10 +235,10 @@ export default function ClientPage({ body, category }: ClientPageProps) {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 text-amber-500">
-                        <Coins size={16} />
+                      <div className={`flex items-center gap-1 
+                      ${item.assetType === "포인트" ? "text-amber-500" : "text-purple-400"}`}>
+                        {item.assetType === "포인트" ? <Coins size={16} /> : <CircleDollarSign size={16} />}
                         {item.amount}
-                        {item.assetType}
                       </div>
                       {(item.recommendCount ?? 0) > 0 && (
                         <span className="flex items-center gap-1 text-sky-400 font-medium">
