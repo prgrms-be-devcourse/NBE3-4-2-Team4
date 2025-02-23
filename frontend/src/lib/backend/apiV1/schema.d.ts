@@ -129,25 +129,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/answers/{answerId}/genFiles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 단건조회 */
-        get: operations["item"];
-        /** 수정 */
-        put: operations["modify"];
-        post?: never;
-        /** 삭제 */
-        delete: operations["delete_1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/points/deduct": {
         parameters: {
             query?: never;
@@ -315,23 +296,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/answers/{answerId}/genFiles/{typeCode}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 다건등록 */
-        post: operations["makeNewItems"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/login": {
         parameters: {
             query?: never;
@@ -411,21 +375,21 @@ export interface paths {
          * 답변 단건 조회
          * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
          */
-        get: operations["item_1"];
+        get: operations["item"];
         put?: never;
         post?: never;
         /**
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_2"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         /**
          * 답변 수정
          * @description 답변를 수정합니다.
          */
-        patch: operations["modify_1"];
+        patch: operations["modify"];
         trace?: never;
     };
     "/api/questions/recommends": {
@@ -738,24 +702,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/answers/{answerId}/genFiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 다건조회 */
-        get: operations["items_2"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/answer/genFile/download/{answerId}/{fileName}": {
+    "/answer/genFile/download/{parentId}/{fileName}": {
         parameters: {
             query?: never;
             header?: never;
@@ -884,33 +831,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"];
         };
-        AnswerGenFileDto: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            answerId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-        };
-        RsDataAnswerGenFileDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["AnswerGenFileDto"];
-        };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
             /** Format: int64 */
@@ -959,11 +879,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
-        };
-        RsDataListAnswerGenFileDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["AnswerGenFileDto"][];
         };
         AdminLoginRequestDto: {
             adminUsername: string;
@@ -1373,109 +1288,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    item: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                answerId: number;
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["AnswerGenFileDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    modify: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                answerId: number;
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    file: string;
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerGenFileDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    delete_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                answerId: number;
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */
@@ -1974,44 +1786,6 @@ export interface operations {
             };
         };
     };
-    makeNewItems: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                answerId: number;
-                typeCode: "attachment" | "body";
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    files: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataListAnswerGenFileDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     adminLogin: {
         parameters: {
             query?: never;
@@ -2202,7 +1976,7 @@ export interface operations {
             };
         };
     };
-    item_1: {
+    item: {
         parameters: {
             query?: never;
             header?: never;
@@ -2233,7 +2007,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -2264,7 +2038,7 @@ export interface operations {
             };
         };
     };
-    modify_1: {
+    modify: {
         parameters: {
             query?: never;
             header?: never;
@@ -2810,43 +2584,12 @@ export interface operations {
             };
         };
     };
-    items_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                answerId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["AnswerGenFileDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     download: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                answerId: number;
+                parentId: number;
                 fileName: string;
             };
             cookie?: never;

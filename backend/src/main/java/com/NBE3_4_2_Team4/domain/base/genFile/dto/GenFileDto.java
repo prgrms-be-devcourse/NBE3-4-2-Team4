@@ -36,6 +36,8 @@ public class GenFileDto<T extends GenFile> {
     private String downloadUrl;
     @NonNull
     private String publicUrl;
+    @NonNull
+    private String fileType;
 
     public GenFileDto(T genFile) {
         this.id = genFile.getId();
@@ -52,5 +54,6 @@ public class GenFileDto<T extends GenFile> {
         this.originalFileName = genFile.getOriginalFileName();
         this.downloadUrl = genFile.getDownloadUrl();
         this.publicUrl = genFile.getPublicUrl();
+        this.fileType = genFile.getModelName().substring(0, genFile.getModelName().indexOf("GenFile"));
     }
 }

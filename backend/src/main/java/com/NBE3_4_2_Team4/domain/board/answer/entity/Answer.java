@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class Answer extends GenFileParent<AnswerGenFile> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -57,6 +59,7 @@ public class Answer extends GenFileParent<AnswerGenFile> {
             throw new ServiceException("403-2", "작성자만 답변을 삭제할 수 있습니다.");
     }
 
+    @Override
     public void modify(String content) {
         this.content = content;
     }

@@ -70,7 +70,8 @@ public class ApiAnswerGenFileControllerTest {
                     .andExpect(jsonPath("$[%d].original_file_name".formatted(i)).value(answerGenFile.getOriginalFileName()))
                     .andExpect(jsonPath("$[%d].download_url".formatted(i)).value(answerGenFile.getDownloadUrl()))
                     .andExpect(jsonPath("$[%d].public_url".formatted(i)).value(answerGenFile.getPublicUrl()))
-                    .andExpect(jsonPath("$[%d].file_name".formatted(i)).value(answerGenFile.getFileName()));
+                    .andExpect(jsonPath("$[%d].file_name".formatted(i)).value(answerGenFile.getFileName()))
+                    .andExpect(jsonPath("$[%d].file_type".formatted(i)).value("answer"));
         }
     }
 
@@ -106,7 +107,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.data[0].original_file_name").value("500.jpg"))
                 .andExpect(jsonPath("$.data[0].download_url").isString())
                 .andExpect(jsonPath("$.data[0].public_url").isString())
-                .andExpect(jsonPath("$.data[0].file_name").isString());
+                .andExpect(jsonPath("$.data[0].file_name").isString())
+                .andExpect(jsonPath("$.data[0].file_type").value("answer"));
 
         Ut.file.rm(newFilePath);
     }
@@ -142,7 +144,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.original_file_name").value(answerGenFile.getOriginalFileName()))
                 .andExpect(jsonPath("$.download_url").value(answerGenFile.getDownloadUrl()))
                 .andExpect(jsonPath("$.public_url").value(answerGenFile.getPublicUrl()))
-                .andExpect(jsonPath("$.file_name").value(answerGenFile.getFileName()));
+                .andExpect(jsonPath("$.file_name").value(answerGenFile.getFileName()))
+                .andExpect(jsonPath("$.file_type").value("answer"));
     }
 
     @Test
@@ -180,6 +183,7 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.data[0].download_url").isString())
                 .andExpect(jsonPath("$.data[0].public_url").isString())
                 .andExpect(jsonPath("$.data[0].file_name").isString())
+                .andExpect(jsonPath("$.data[0].file_type").value("answer"))
                 .andExpect(jsonPath("$.data[0].id").isNumber())
                 .andExpect(jsonPath("$.data[1].created_at").isString())
                 .andExpect(jsonPath("$.data[1].parent_id").value(3))
@@ -193,7 +197,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.data[1].original_file_name").value("500.jpg"))
                 .andExpect(jsonPath("$.data[1].download_url").isString())
                 .andExpect(jsonPath("$.data[1].public_url").isString())
-                .andExpect(jsonPath("$.data[1].file_name").isString());
+                .andExpect(jsonPath("$.data[1].file_name").isString())
+                .andExpect(jsonPath("$.data[1].file_type").value("answer"));
 
         Ut.file.rm(newFilePath1);
         Ut.file.rm(newFilePath2);
@@ -275,7 +280,8 @@ public class ApiAnswerGenFileControllerTest {
                 .andExpect(jsonPath("$.data.original_file_name").value("400.jpg"))
                 .andExpect(jsonPath("$.data.download_url").isString())
                 .andExpect(jsonPath("$.data.public_url").isString())
-                .andExpect(jsonPath("$.data.file_name").isString());
+                .andExpect(jsonPath("$.data.file_name").isString())
+                .andExpect(jsonPath("$.data.file_type").value("answer"));
 
         Ut.file.mv(copyFilePath, originFilePath);
     }
