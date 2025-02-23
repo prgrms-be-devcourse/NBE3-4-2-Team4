@@ -151,7 +151,10 @@ public abstract class GenFileParent<T extends GenFile> extends BaseTime {
         }
     }
 
-    protected abstract void checkActorCanMakeNewGenFile(Member actor);
+    public abstract void checkActorCanMakeNewGenFile(Member actor);
 
     protected abstract RsData<Empty> getCheckActorCanMakeNewGenFileRs(Member actor);
+
+    public abstract void modify(String content);
+    public abstract String getContent();
 }

@@ -11,4 +11,4 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AnswerGenFile extends GenFile<Answer> { }
+public class AnswerGenFile extends GenFile<Answer> {}
