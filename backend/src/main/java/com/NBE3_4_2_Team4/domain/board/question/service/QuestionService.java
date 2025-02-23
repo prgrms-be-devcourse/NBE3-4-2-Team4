@@ -153,14 +153,17 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionDto update(long id, String title, String content, Member actor, long point, long categoryId) {
+    public QuestionDto update(long id, String title, String content, Member actor, long amount, long categoryId) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
-        question.modify(title, content, point, category);
+        if (amount < question.getAmount()) {
+            throw new ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.");
+        }
+        question.modify(title, content, amount, category);
         return new QuestionDto(question);
     }
 

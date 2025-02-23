@@ -25,7 +25,7 @@ public enum AssetType {
     @JsonCreator
     public static AssetType fromValue(String value) {
         for (AssetType assetType : values()) {
-            if (assetType.name().equalsIgnoreCase(value)) {
+            if (assetType.name().equalsIgnoreCase(value) || assetType.getDisplayName().equalsIgnoreCase(value)) {
                 return assetType;
             }
         }

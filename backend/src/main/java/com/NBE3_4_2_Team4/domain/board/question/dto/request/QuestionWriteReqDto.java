@@ -16,6 +16,6 @@ public record QuestionWriteReqDto(
         Long categoryId,
         @NotNull @Min(1)
         long amount,
-        @NotNull
+        @NotNull @JsonProperty("assetType")
         AssetType assetType
 ) {}

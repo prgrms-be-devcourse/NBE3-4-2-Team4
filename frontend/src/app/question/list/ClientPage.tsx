@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { number } from "zod";
 import Pagination2 from "@/lib/business/components/Pagination2";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -66,6 +65,7 @@ export default function ClientPage({ body, category }: ClientPageProps) {
     if (keywordType) queryParams.set("keywordType", keywordType);
 
     setCategoryValue("전체");
+    setAssetValue("ALL");
     router.push(`?${queryParams.toString()}`);
   };
 
