@@ -137,6 +137,12 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
+    public Question findQuestionById(long id) {
+        return questionRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
+    }
+
     @Transactional
     public void delete(long id, Member actor) {
         Question question = questionRepository.findById(id).orElseThrow(

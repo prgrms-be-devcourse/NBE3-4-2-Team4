@@ -1,8 +1,8 @@
 package com.NBE3_4_2_Team4.domain.board.genFile.controller;
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
-import com.NBE3_4_2_Team4.domain.board.genFile.entity.AnswerGenFile;
+import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import org.junit.jupiter.api.DisplayName;
@@ -25,9 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-public class AnswerGenFileControllerTest {
+public class QuestionGenFileControllerTest {
     @Autowired
-    private AnswerService answerService;
+    private QuestionService questionService;
     @Autowired
     private MemberService memberService;
     @Autowired
@@ -36,10 +36,10 @@ public class AnswerGenFileControllerTest {
     @Test
     @DisplayName("다운로드 테스트")
     void t1() throws Exception {
-        Answer answer3 = answerService.findById(3);
-        AnswerGenFile answerGenFile = answer3.getGenFiles().getFirst();
+        Question question1 = questionService.findQuestionById(1);
+        QuestionGenFile questionGenFile = question1.getGenFiles().getFirst();
 
-        String downloadUrl = Ut.url.removeDomain(answerGenFile.getDownloadUrl());
+        String downloadUrl = Ut.url.removeDomain(questionGenFile.getDownloadUrl());
 
         ResultActions resultActions = mvc
                 .perform(
@@ -48,10 +48,10 @@ public class AnswerGenFileControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(handler().handlerType(AnswerGenFileController.class))
+                .andExpect(handler().handlerType(QuestionGenFileController.class))
                 .andExpect(handler().methodName("download"))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + answerGenFile.getOriginalFileName() + "\""))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + questionGenFile.getOriginalFileName() + "\""))
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG));
     }
 }

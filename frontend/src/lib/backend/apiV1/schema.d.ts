@@ -24,6 +24,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/{parentId}/genFiles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 단건조회 */
+        get: operations["item"];
+        /** 수정 */
+        put: operations["modify"];
+        post?: never;
+        /** 삭제 */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{id}": {
         parameters: {
             query?: never;
@@ -46,7 +65,7 @@ export interface paths {
          * 질문 삭제
          * @description 질문 id에 해당하는 글 삭제, 작성자만 삭제 가능
          */
-        delete: operations["delete"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -124,6 +143,25 @@ export interface paths {
         put: operations["confirm"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/answers/{parentId}/genFiles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 단건조회 */
+        get: operations["item_1"];
+        /** 수정 */
+        put: operations["modify_1"];
+        post?: never;
+        /** 삭제 */
+        delete: operations["delete_2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -298,6 +336,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/{parentId}/genFiles/{typeCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 다건등록 */
+        post: operations["makeNewItems"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/me": {
         parameters: {
             query?: never;
@@ -454,6 +509,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/answers/{parentId}/genFiles/{typeCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 다건등록 */
+        post: operations["makeNewItems_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/login": {
         parameters: {
             query?: never;
@@ -533,21 +605,55 @@ export interface paths {
          * 답변 단건 조회
          * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
          */
-        get: operations["item"];
+        get: operations["item_2"];
         put?: never;
         post?: never;
         /**
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_1"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         /**
          * 답변 수정
          * @description 답변를 수정합니다.
          */
-        patch: operations["modify"];
+        patch: operations["modify_2"];
+        trace?: never;
+    };
+    "/question/genFile/download/{parentId}/{fileName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 파일 다운로드 */
+        get: operations["download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/questions/{parentId}/genFiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 다건조회 */
+        get: operations["items_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/questions/recommends": {
@@ -835,7 +941,24 @@ export interface paths {
          * 답변 전체 다건 조회
          * @description 모든 답변을 가져옵니다.
          */
-        get: operations["items_1"];
+        get: operations["items_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/answers/{parentId}/genFiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 다건조회 */
+        get: operations["items_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -852,7 +975,7 @@ export interface paths {
             cookie?: never;
         };
         /** 파일 다운로드 */
-        get: operations["download"];
+        get: operations["download_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -895,6 +1018,34 @@ export interface components {
             resultCode: string;
             msg: string;
             data: Record<string, never>;
+        };
+        GenFileDto: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int64 */
+            fileSize: number;
+            /** Format: int64 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataGenFileDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDto"];
         };
         QuestionWriteReqDto: {
             title: string;
@@ -1029,6 +1180,34 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
+        GenFileDtoQuestionGenFile: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int64 */
+            fileSize: number;
+            /** Format: int64 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataListGenFileDtoQuestionGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoQuestionGenFile"][];
+        };
         MyQuestionReqDto: {
             username: string;
         };
@@ -1074,6 +1253,34 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
+        };
+        GenFileDtoAnswerGenFile: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int64 */
+            fileSize: number;
+            /** Format: int64 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataListGenFileDtoAnswerGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoAnswerGenFile"][];
         };
         AdminLoginRequestDto: {
             adminUsername: string;
@@ -1263,6 +1470,109 @@ export interface operations {
             };
         };
     };
+    item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getQuestion: {
         parameters: {
             query?: never;
@@ -1329,7 +1639,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1501,6 +1811,109 @@ export interface operations {
                 "application/json": components["schemas"]["AssetTransferReq"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    item_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modify_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    delete_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -1806,6 +2219,44 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    makeNewItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                typeCode: "attachment" | "body";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGenFileDtoQuestionGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -2218,6 +2669,44 @@ export interface operations {
             };
         };
     };
+    makeNewItems_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                typeCode: "attachment" | "body";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGenFileDtoAnswerGenFile"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     adminLogin: {
         parameters: {
             query?: never;
@@ -2408,7 +2897,7 @@ export interface operations {
             };
         };
     };
-    item: {
+    item_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2439,7 +2928,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -2470,7 +2959,7 @@ export interface operations {
             };
         };
     };
-    modify: {
+    modify_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2492,6 +2981,69 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataAnswerDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                fileName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    items_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoQuestionGenFile"][];
                 };
             };
             /** @description Bad Request */
@@ -2952,7 +3504,7 @@ export interface operations {
             };
         };
     };
-    items_1: {
+    items_2: {
         parameters: {
             query?: {
                 page?: number;
@@ -2984,7 +3536,38 @@ export interface operations {
             };
         };
     };
-    download: {
+    items_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoAnswerGenFile"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    download_1: {
         parameters: {
             query?: never;
             header?: never;

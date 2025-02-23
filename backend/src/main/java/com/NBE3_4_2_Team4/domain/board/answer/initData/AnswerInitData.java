@@ -91,15 +91,7 @@ public class AnswerInitData {
         String genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/238/200/300", AppConfig.getTempDirPath());
         answer3.addGenFile(GenFile.TypeCode.attachment, genFile2FilePath);
 
-        answer3.deleteGenFile(GenFile.TypeCode.attachment, 2);
-
         genFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/239/500/500", AppConfig.getTempDirPath());
         answer3.addGenFile(GenFile.TypeCode.body, genFile2FilePath);
-
-        String newGenFile2FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/240/600/500", AppConfig.getTempDirPath());
-        answer3.modifyGenFile(GenFile.TypeCode.body, 1, newGenFile2FilePath);
-
-        String genFile3FilePath = Ut.file.downloadByHttp("https://picsum.photos/id/241/500/500", AppConfig.getTempDirPath());
-        answer3.putGenFile(GenFile.TypeCode.attachment, 3, genFile3FilePath);
     }
 }

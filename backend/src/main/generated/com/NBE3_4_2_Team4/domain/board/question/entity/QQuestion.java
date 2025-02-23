@@ -22,7 +22,7 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public static final QQuestion question = new QQuestion("question");
 
-    public final com.NBE3_4_2_Team4.global.jpa.entity.QBaseTime _super = new com.NBE3_4_2_Team4.global.jpa.entity.QBaseTime(this);
+    public final com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFileParent _super = new com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFileParent(this);
 
     public final NumberPath<Long> amount = createNumber("amount", Long.class);
 
@@ -42,6 +42,9 @@ public class QQuestion extends EntityPathBase<Question> {
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
+    public final ListPath<com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile<?>, com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFile> genFiles = _super.genFiles;
+
+    //inherited
     public final NumberPath<Long> id = _super.id;
 
     //inherited
@@ -54,6 +57,8 @@ public class QQuestion extends EntityPathBase<Question> {
     public final com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer selectedAnswer;
 
     public final StringPath title = createString("title");
+
+    public final SimplePath<Class<com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile>> type = createSimple("type", Class.class);
 
     public QQuestion(String variable) {
         this(Question.class, forVariable(variable), INITS);
