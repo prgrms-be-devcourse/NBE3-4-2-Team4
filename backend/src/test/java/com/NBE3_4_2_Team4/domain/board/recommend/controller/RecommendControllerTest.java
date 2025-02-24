@@ -27,11 +27,11 @@ public class RecommendControllerTest {
     private MockMvc mvc;
 
     @Test
-    @DisplayName("2번 질문 추천")
+    @DisplayName("3번 질문 추천")
     @WithUserDetails("test@test.com")
     void t1() throws Exception {
         ResultActions resultActions = mvc.perform(
-                put("/api/questions/2/recommend")
+                put("/api/questions/3/recommend")
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 

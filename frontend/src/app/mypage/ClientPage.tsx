@@ -78,8 +78,18 @@ export default function ClientPage({
           <CardTitle className="flex justify-between items-center gap-2">
             {memberInfo?.username}
             <p className="flex items-center gap-2 text-amber-500">
-              <Coins size={16} /> {memberInfo?.point.amount}
+              <Coins size={16} /> {memberInfo?.point?.amount}
             </p>
+            <Button variant="outline" asChild>
+              <Link href="/mypage/posts"
+                onClick={() => {
+                  if (memberInfo?.username) {
+                    localStorage.setItem('username', memberInfo.username);
+                  }
+                }}>
+                내글 보기
+              </Link>
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
