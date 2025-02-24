@@ -968,9 +968,9 @@ export interface components {
             /** @enum {string} */
             assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */

@@ -4,10 +4,13 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -52,6 +55,8 @@ public class QuestionControllerTest {
     private String cashRequestJson;
     private String pointRequestJson;
     private String editRequestJson;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -502,7 +507,15 @@ public class QuestionControllerTest {
     @DisplayName("현재 사용자가 작성한 질문 조회")
     @WithUserDetails("test@test.com")
     void t16() throws Exception {
-        ResultActions resultActions = mvc.perform(get("/api/questions/me"))
+        String username = AuthManager.getMemberFromContext().getUsername();
+        MyQuestionReqDto request = new MyQuestionReqDto(username);
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        ResultActions resultActions = mvc.perform(
+                post("/api/questions/me")
+                        .content(requestJson)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                )
                 .andDo(print());
 
         resultActions
@@ -515,7 +528,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.has_more").value(false))
                 .andExpect(jsonPath("$.items.length()").value(7));
 
-        List<QuestionDto> questions = questionService.findByUserListed(1, 10).getContent();
+        List<QuestionDto> questions = questionService.findByUserListed(1, 10, username).getContent();
 
         for(int i = 0; i < questions.size(); i++) {
             QuestionDto question = questions.get(i);

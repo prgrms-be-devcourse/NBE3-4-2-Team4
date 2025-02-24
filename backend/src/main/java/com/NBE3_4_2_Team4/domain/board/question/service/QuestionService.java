@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
@@ -10,7 +11,6 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,55 +84,48 @@ public class QuestionService {
         if (categoryId == 0 && assetType != AssetType.ALL) {
             return getQuestionsByAssetType(assetType, page, pageSize);
         }
-
         // 둘 다 설정된 경우
         return getQuestionsByCategoryAndAssetType(categoryId, page, pageSize, assetType);
     }
 
-    private Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+    private PageRequest createPageRequest(int page, int pageSize) {
+        return PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+    }
 
-        return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest)
+    private Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
+        return questionRepository.findByKw(searchKeywordType, searchKeyword, createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
-        return questionRepository.findByCategoryAndAssetType(category, assetType, pageRequest)
+        return questionRepository.findByCategoryAndAssetType(category, assetType, createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
-        return questionRepository.findByCategory(category, pageRequest)
+        return questionRepository.findByCategory(category, createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByAssetType(AssetType assetType, int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
-        return questionRepository.findByAssetType(assetType, pageRequest)
+       return questionRepository.findByAssetType(assetType, createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     @Transactional(readOnly = true)
     public Page<QuestionDto> findByUserListed(int page, int pageSize, String username) {
         Member actor = memberRepository.findByUsername(username).get();
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-        return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);
+        return questionRepository.findByAuthor(actor, createPageRequest(page, pageSize)).map(QuestionDto::new);
     }
 
     @Transactional(readOnly = true)
     public Page<QuestionDto> findByRecommends(int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findRecommendedQuestions(pageRequest)
+        return questionRepository.findRecommendedQuestions(createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
