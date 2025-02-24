@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.global.security.jwt;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -8,13 +9,13 @@ import java.util.Map;
 @Component
 public class JwtObjectMapper {
     public Member getMemberByJwtClaims(Map<String, Object> claims) {
-        Integer id = (Integer) claims.get("id");
-        String username = (String) claims.get("username");
-        String nickname = (String) claims.get("nickname");
-        String roleName = (String) claims.get("role");
-        String OAuth2ProviderName = (String) claims.get("OAuth2Provider");
-        String emailAddress = (String) claims.get("emailAddress");
-        Boolean emailVerified = (Boolean) claims.get("emailVerified");
+        Integer id = (Integer) claims.get(AuthConstants.ID);
+        String username = (String) claims.get(AuthConstants.USERNAME);
+        String nickname = (String) claims.get(AuthConstants.NICKNAME);
+        String roleName = (String) claims.get(AuthConstants.ROLE);
+        String OAuth2ProviderName = (String) claims.get(AuthConstants.OAUTH2_PROVIDER);
+        String emailAddress = (String) claims.get(AuthConstants.EMAIL_ADDRESS);
+        Boolean emailVerified = (Boolean) claims.get(AuthConstants.EMAIL_VERIFIED);
 
         if (id == null
                 || isNullOrBlank(nickname)

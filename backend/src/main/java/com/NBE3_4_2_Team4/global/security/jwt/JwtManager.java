@@ -45,13 +45,13 @@ public class JwtManager {
 
     public String generateAccessToken(Member member) {
         return Jwts.builder()
-                .claim("id", member.getId())
-                .claim("username", member.getUsername())
-                .claim("nickname", member.getNickname())
-                .claim("role", member.getRole().name())
-                .claim("OAuth2Provider", member.getOAuth2Provider().name())
-                .claim("emailAddress", member.getEmailAddress())
-                .claim("emailVerified", member.isEmailVerified())
+                .claim(AuthConstants.ID, member.getId())
+                .claim(AuthConstants.USERNAME, member.getUsername())
+                .claim(AuthConstants.NICKNAME, member.getNickname())
+                .claim(AuthConstants.ROLE, member.getRole().name())
+                .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                 .signWith(key)
@@ -60,7 +60,7 @@ public class JwtManager {
 
     public String generateRefreshToken(Member member) {
         return Jwts.builder()
-                .claim("id", member.getId())
+                .claim(AuthConstants.ID, member.getId())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + (long) refreshTokenValidHour * 60 * 60 * 1000))
                 .signWith(key)
@@ -74,7 +74,7 @@ public class JwtManager {
                 .parseSignedClaims(refreshToken)
                 .getPayload();
 
-        Long id = ((Integer) claims.get("id")).longValue();
+        Long id = ((Integer) claims.get(AuthConstants.ID)).longValue();
         Member member = memberRepository.findById(id)
                 .orElseThrow();
 
