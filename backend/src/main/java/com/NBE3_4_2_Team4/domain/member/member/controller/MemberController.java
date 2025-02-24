@@ -175,6 +175,7 @@ public class MemberController {
     public RsData<MemberDetailInfoResponseDto> getMemberDetailInfo(){
         Member member = AuthManager.getNonNullMember();
         MemberDetailInfoResponseDto responseDto = memberService.getMemberDetailInfo(member);
+        log.error("detail info : {}", responseDto);
         return new RsData<>("200-1", "member found", responseDto);
     }
 

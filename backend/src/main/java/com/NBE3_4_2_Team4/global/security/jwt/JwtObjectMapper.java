@@ -13,13 +13,19 @@ public class JwtObjectMapper {
         String nickname = (String) claims.get("nickname");
         String roleName = (String) claims.get("role");
         String OAuth2ProviderName = (String) claims.get("OAuth2Provider");
+        String emailAddress = (String) claims.get("emailAddress");
         Boolean emailVerified = (Boolean) claims.get("emailVerified");
 
-        if (id == null || isNullOrBlank(nickname)|| isNullOrBlank(roleName) || isNullOrBlank(OAuth2ProviderName) || emailVerified == null) {
+        if (id == null
+                || isNullOrBlank(nickname)
+                || isNullOrBlank(roleName)
+                || isNullOrBlank(OAuth2ProviderName)
+                || isNullOrBlank(emailAddress)
+                || emailVerified == null) {
             throw new RuntimeException("Invalid claims");
         }
 
-        return new Member(Long.valueOf(id), username, nickname, roleName, OAuth2ProviderName, emailVerified);
+        return new Member(Long.valueOf(id), username, nickname, roleName, OAuth2ProviderName, emailAddress, emailVerified);
     }
 
     private boolean isNullOrBlank(String string) {

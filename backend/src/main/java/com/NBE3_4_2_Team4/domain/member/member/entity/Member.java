@@ -92,13 +92,14 @@ public class Member {
 
     private LocalDate lastAttendanceDate;
 
-    public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName, boolean emailVerified){
+    public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName, String emailAddress,  boolean emailVerified){
         this.id = id;
         this.username = username;
         this.password = "";
         this.nickname = nickname;
         this.role = Role.getRoleByName(roleName);
         this.oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(oAuth2ProviderName);
+        this.emailAddress = emailAddress;
         this.emailVerified = emailVerified;
     }
 
