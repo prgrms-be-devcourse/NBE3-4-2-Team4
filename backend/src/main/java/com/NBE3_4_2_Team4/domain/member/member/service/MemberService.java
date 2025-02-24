@@ -122,7 +122,7 @@ public class MemberService {
         if (memberRepository.existsByUsername(tempUser.getUsername())) {
             throw new ServiceException("409-1", String.format("already exists with username %s", tempUser.getUsername()));
         }
-        return memberRepository.save(Member.builder()
+        return memberRepository.saveAndFlush(Member.builder()
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()))
                 .username(tempUser.getUsername())

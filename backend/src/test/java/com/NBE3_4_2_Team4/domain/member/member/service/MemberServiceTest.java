@@ -429,4 +429,35 @@ public class MemberServiceTest {
 
         assertTrue(memberService.isNicknameDuplicate(member.getUsername()));
     }
+
+    @Test
+    void signUpTest1(){
+        String tempToken = "tempToken";
+
+        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo("oAuth2Id", "realName");
+        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKKO", "refreshToken");
+
+        when(tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken))
+                .thenReturn(tempUserBeforeSignUp);
+
+
+        SignupRequestDto signupRequestDto = SignupRequestDto.builder()
+                .email("test@test.com")
+                .nickname(nickname)
+                .build();
+
+        when(memberRepository.saveAndFlush(any())).thenReturn(member);
+        when(memberRepository.existsById(1L)).thenReturn(true);
+
+        assertDoesNotThrow(() -> memberService.signUp(tempToken, signupRequestDto));
+
+        verify(tempUserBeforeSignUpService, times(1)).getTempUserFromRedisWithJwt(tempToken);
+        verify(tempUserBeforeSignUpService, times(1)).deleteTempUserFromRedis(tempToken);
+        verify(tempUserBeforeSignUpService, times(1)).saveAuthCodeForMember(eq(1L), any());
+
+        verify(memberRepository, times(1)).saveAndFlush(any());
+        verify(memberRepository, times(1)).existsById(1L);
+
+        verify(mailService,times(1)).sendAuthenticationMail(any(),any(),any());
+    }
 }
