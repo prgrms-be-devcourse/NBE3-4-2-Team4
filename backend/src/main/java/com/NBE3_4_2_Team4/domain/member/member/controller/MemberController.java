@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.member.member.controller;
 import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.global.exceptions.EmailAlreadyVerifiedException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -28,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -52,6 +52,20 @@ public class MemberController {
                         e.getMessage()
                 ));
     }
+
+    @ExceptionHandler(EmailAlreadyVerifiedException.class)
+    public ResponseEntity<RsData<Empty>> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException e) {
+        String location = String.format("%s/verify-email/%s", frontDomain, "already-verified");
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", location)
+                .body(new RsData<>(
+                        "302-1",
+                        String.format("already verified email. redirecting to %s ", location)
+                ));
+    }
+
 
     @PostMapping("/api/test")
     public ResponseEntity<Void> test(){
