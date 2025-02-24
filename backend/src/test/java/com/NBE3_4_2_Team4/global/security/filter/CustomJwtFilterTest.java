@@ -319,8 +319,19 @@ public class CustomJwtFilterTest {
     }
 
     @Test
-    @DisplayName("이메일 인증 필터링 테스트 - 이메일이 인증되지 않았을 경우 403")
+    @DisplayName("이메일 인증 필터링 테스트 - 헤더에 사용자의 JWT 없는 경우 (로그인 되어 있지 않은 경우) 401")
     void testFilterWithEmailVerified1() throws Exception {
+
+        mockMvc.perform(post("/api/test")
+                        .with(csrf())
+                )
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("이메일 인증 필터링 테스트 - 이메일이 인증되지 않았을 경우 403")
+    void testFilterWithEmailVerified2() throws Exception {
         String accessToken = jwtManager.generateAccessToken(member);
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
 
@@ -335,7 +346,7 @@ public class CustomJwtFilterTest {
 
     @Test
     @DisplayName("이메일 인증 필터링 테스트 - 이메일이 인증된 경우 200")
-    void testFilterWithEmailVerified2() throws Exception {
+    void testFilterWithEmailVerified3() throws Exception {
         member.setEmailVerified(true);
         String accessToken = jwtManager.generateAccessToken(member);
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
