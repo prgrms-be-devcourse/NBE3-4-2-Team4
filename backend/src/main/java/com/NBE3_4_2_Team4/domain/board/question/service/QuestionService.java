@@ -11,6 +11,7 @@ import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepos
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
@@ -33,6 +34,7 @@ public class QuestionService {
     private final QuestionCategoryRepository questionCategoryRepository;
     private final PointService pointService;
     private final AnswerRepository answerRepository;
+    private final MemberRepository memberRepository;
 
     public long count() {
         return questionRepository.count();
@@ -104,7 +106,7 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
-    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+    private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
@@ -121,8 +123,8 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<QuestionDto> findByUserListed(int page, int pageSize) {
-        Member actor = AuthManager.getMemberFromContext();
+    public Page<QuestionDto> findByUserListed(int page, int pageSize, String username) {
+        Member actor = memberRepository.findByUsername(username).get();
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);

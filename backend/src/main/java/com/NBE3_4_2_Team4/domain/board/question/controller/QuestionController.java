@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
@@ -110,12 +110,13 @@ public class QuestionController {
         );
     }
 
-    @GetMapping("/me")
+    @PostMapping("/me")
     @Operation(summary = "내 질문 조회", description = "현재 사용자의 질문 조회")
     public PageDto<QuestionDto> getMyQuestions(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
-    ) {
-        return new PageDto<>(questionService.findByUserListed(page, pageSize));
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestBody @Valid MyQuestionReqDto reqBody
+            ) {
+        return new PageDto<>(questionService.findByUserListed(page, pageSize, reqBody.username()));
     }
 }

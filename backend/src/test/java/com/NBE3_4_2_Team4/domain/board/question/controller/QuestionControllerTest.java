@@ -8,6 +8,7 @@ import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -465,8 +466,8 @@ public class QuestionControllerTest {
                 .perform(get("/api/questions?categoryId=1"))
                 .andDo(print());
 
-        Page<QuestionDto> questionPages = questionService
-                .getQuestionsByCategory(1, 1, 10);
+        Page<QuestionDto> questionPages = questionService.getQuestions( 1, 10, "",
+                1L, QuestionSearchKeywordType.ALL, "ALL");
 
         resultActions
                 .andExpect(handler().handlerType(QuestionController.class))

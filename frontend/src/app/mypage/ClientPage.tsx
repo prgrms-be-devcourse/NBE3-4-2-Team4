@@ -81,7 +81,14 @@ export default function ClientPage({
               <Coins size={16} /> {memberInfo?.point?.amount}
             </p>
             <Button variant="outline" asChild>
-              <Link href="/mypage/posts">내글 보기</Link>
+              <Link href="/mypage/posts"
+                onClick={() => {
+                  if (memberInfo?.username) {
+                    localStorage.setItem('username', memberInfo.username);
+                  }
+                }}>
+                내글 보기
+              </Link>
             </Button>
           </CardTitle>
         </CardHeader>

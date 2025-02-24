@@ -208,6 +208,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questions/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 내 질문 조회
+         * @description 현재 사용자의 질문 조회
+         */
+        post: operations["getMyQuestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/categories": {
         parameters: {
             query?: never;
@@ -404,26 +424,6 @@ export interface paths {
          * @description 추천 수 기준으로 내림차순 정렬
          */
         get: operations["getRecommended"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/questions/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 내 질문 조회
-         * @description 현재 사용자의 질문 조회
-         */
-        get: operations["getMyQuestions"];
         put?: never;
         post?: never;
         delete?: never;
@@ -836,6 +836,21 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
+        MyQuestionReqDto: {
+            username: string;
+        };
+        PageDtoQuestionDto: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["QuestionDto"][];
+        };
         QuestionCategoryReqDto: {
             name: string;
         };
@@ -894,18 +909,6 @@ export interface components {
         };
         NicknameUpdateRequestDto: {
             newNickname: string;
-        };
-        PageDtoQuestionDto: {
-            /** Format: int32 */
-            currentPageNumber?: number;
-            /** Format: int32 */
-            pageSize?: number;
-            /** Format: int64 */
-            totalPages?: number;
-            /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["QuestionDto"][];
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
@@ -1492,6 +1495,42 @@ export interface operations {
             };
         };
     };
+    getMyQuestions: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyQuestionReqDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getCategories: {
         parameters: {
             query?: never;
@@ -2062,38 +2101,6 @@ export interface operations {
         };
     };
     getRecommended: {
-        parameters: {
-            query?: {
-                page?: number;
-                pageSize?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getMyQuestions: {
         parameters: {
             query?: {
                 page?: number;

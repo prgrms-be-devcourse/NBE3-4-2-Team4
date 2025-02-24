@@ -1,42 +1,48 @@
+"use client";
 import client from "@/lib/backend/client";
+import { useState, useEffect } from "react";
+import type { components } from "@/lib/backend/apiV1/schema";
 import ClientPage from "./ClientPage";
 import { convertSnakeToCamel } from "@/utils/convertCase";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: {
-    page?: string;
-  };
-}) {
-  const {
-    page = 1,
-  } = await searchParams;
+type PageDtoQuestionDto = components["schemas"]["PageDtoQuestionDto"];
 
-  try {
-    const response = await client.GET("/api/questions", {
-      params: {
-        query: {
-          page: Number(page),
-        },
-      },
-    });
+export default function Page() {
+  const [user, setUser] = useState<string | null>(null);
+  const [body, setBody] = useState<PageDtoQuestionDto | null>(null);
 
-    if (!response || !response.data) {
-      throw new Error("API 응답이 유효하지 않습니다.");
+  // 페이지가 로드될 때 user 정보를 가져옴
+  useEffect(() => {
+    const storedUser = localStorage.getItem("username");
+    if (storedUser) {
+      setUser(storedUser);
+    } else {
+      console.error("User 정보가 없습니다.");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return; // user 정보가 없으면 요청하지 않음
+
+    const fetchPosts = async () => {
+      try {
+        const response = await client.POST("/api/questions/me", {
+          body: {
+            username: user
+          }
+        })
+
+        if (!response || !response.data) {
+          throw new Error("API 응답이 유효하지 않습니다.");
+        }
+        setBody(convertSnakeToCamel(response.data!!));
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    const data = response.data;
-    const body = convertSnakeToCamel(data);
+    fetchPosts();
+  }, [user]);
 
-    return <ClientPage body={body} />;
-  } catch (error) {
-    console.error("API 요청 실패:", error);
-
-    return (
-      <div className="flex justify-center items-center h-96">
-        데이터를 불러오는 중 오류가 발생했습니다.
-      </div>
-    );
-  }
+  return <ClientPage body={body} />;
 }
