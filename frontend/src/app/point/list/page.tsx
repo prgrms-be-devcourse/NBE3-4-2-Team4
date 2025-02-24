@@ -38,17 +38,32 @@ export default async function Page({
 
                                  try {
 
-    const { page = 1, startDate, endDate, pointCategory } = await searchParams;
+    const { page = 1, startDate, endDate, assetCategory, assetType } = await searchParams;
 //             const stringCookies = await cookies().toString();
 //             console.log(stringCookies, " cookie")
         const cookieHeader = await cookies();
-        const response = await client.GET("/api/points", {
+//         const response = await client.GET("/api/points", {
+//           params: {
+//             query: {
+//               page: Number(page),
+//               startDate,
+//               endDate,
+//               pointCategory
+//             },
+//           },
+//           headers: {
+//             cookie: cookieHeader.toString(),
+//           },
+//         });
+
+        const response = await client.GET("/api/asset", {
           params: {
             query: {
               page: Number(page),
               startDate,
               endDate,
-              pointCategory
+              assetCategory,
+              assetType
             },
           },
           headers: {
@@ -68,11 +83,12 @@ export default async function Page({
                 });
         console.log(userResponse);
         const point = userResponse.data.data.point.amount;
+        const cash = userResponse.data.data.cash.amount;
         console.log(point);
         const data = response.data;
         const body = convertSnakeToCamel(data);
         console.log(data);
-        return <ClientPage body={body} point={point}/>;
+        return <ClientPage body={body} point={point} cash={cash}/>;
     } catch (error) {
 
 

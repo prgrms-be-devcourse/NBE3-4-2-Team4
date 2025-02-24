@@ -13,7 +13,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins } from "lucide-react";
+import { Coins, Wallet } from "lucide-react";
 type MemberDetailInfoResponseDto =
   components["schemas"]["MemberDetailInfoResponseDto"];
 
@@ -76,10 +76,15 @@ export default function ClientPage({
       <Card className="w-[400px] max-w-full">
         <CardHeader>
           <CardTitle className="flex justify-between items-center gap-2">
-            {memberInfo?.username}
-            <p className="flex items-center gap-2 text-amber-500">
-              <Coins size={16} /> {memberInfo?.point?.amount}
-            </p>
+                  {memberInfo?.username}
+                  <div className="flex gap-3">
+                        <p className="flex items-center gap-2 text-amber-500">
+                          <Coins size={16} /> {memberInfo?.point.amount}
+                        </p>
+                        <p className="flex items-center gap-2 text-amber-500">
+                           <Wallet size={16} /> {memberInfo?.cash.amount}
+                        </p>
+                        </div>
             <Button variant="outline" asChild>
               <Link href="/mypage/posts"
                 onClick={() => {
