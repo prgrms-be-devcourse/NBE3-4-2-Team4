@@ -23,7 +23,7 @@ export default function ClientPage({
   genFiles,
 }: {
   answer: components["schemas"]["AnswerDto"];
-  genFiles: components["schemas"]["AnswerGenFileDto"][];
+  genFiles: components["schemas"]["GenFileDto"][];
 }) {
   const router = useRouter();
 
@@ -82,7 +82,7 @@ export default function ClientPage({
               <div className="flex flex-wrap">
                 <Button variant="link" className="justify-start" asChild>
                   <Link
-                    href={`/question/${answer.questionId}/answer/${answer.id}/genFile/${genFile.id}/preview`}
+                    href={`/question/${answer.questionId}/answer/${answer.id}/genFile/${genFile.id}`}
                   >
                     <Eye />
                     <span>미리보기</span>

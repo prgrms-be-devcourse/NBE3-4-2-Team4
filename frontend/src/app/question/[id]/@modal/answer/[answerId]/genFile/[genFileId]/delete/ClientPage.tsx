@@ -30,11 +30,11 @@ export default function ClientPage({
 
   const onDelete = async () => {
     const response = await client.DELETE(
-      "/api/answers/{answerId}/genFiles/{id}",
+      "/api/answers/{parentId}/genFiles/{id}",
       {
         params: {
           path: {
-            answerId: parseInt(answerId),
+            parentId: parseInt(answerId),
             id: parseInt(genFileId),
           },
         },

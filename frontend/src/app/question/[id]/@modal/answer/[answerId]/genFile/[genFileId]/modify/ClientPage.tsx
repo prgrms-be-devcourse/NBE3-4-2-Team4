@@ -48,7 +48,7 @@ export default function ClientPage({
 }: {
   id: string;
   answerId: string;
-  genFile: components["schemas"]["AnswerGenFileDto"];
+  genFile: components["schemas"]["GenFileDto"];
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -61,10 +61,10 @@ export default function ClientPage({
     const formData = new FormData();
     formData.append("file", data.file);
 
-    const response = await client.PUT("/api/answers/{answerId}/genFiles/{id}", {
+    const response = await client.PUT("/api/answers/{parentId}/genFiles/{id}", {
       params: {
         path: {
-          answerId: parseInt(answerId),
+          parentId: parseInt(answerId),
           id: genFile.id,
         },
       },

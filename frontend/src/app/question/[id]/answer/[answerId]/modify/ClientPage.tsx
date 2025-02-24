@@ -1,14 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
@@ -168,7 +159,7 @@ export default function ClientPage({
 
   const uploadFiles = async (
     files: File[],
-    answerId: number,
+    parentId: number,
     typeCode: "body" | "attachment"
   ) => {
     const formData = new FormData();
@@ -180,11 +171,11 @@ export default function ClientPage({
     }
 
     const uploadResponse = await client.POST(
-      "/api/answers/{answerId}/genFiles/{typeCode}",
+      "/api/answers/{parentId}/genFiles/{typeCode}",
       {
         params: {
           path: {
-            answerId,
+            parentId,
             typeCode,
           },
         },

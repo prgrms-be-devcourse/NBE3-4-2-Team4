@@ -10,11 +10,11 @@ export default async function Page({
   const { answerId, genFileId } = await params;
 
   const genFileResponse = await client.GET(
-    "/api/answers/{answerId}/genFiles/{id}",
+    "/api/answers/{parentId}/genFiles/{id}",
     {
       params: {
         path: {
-          answerId: Number(answerId),
+          parentId: Number(answerId),
           id: Number(genFileId),
         },
       },

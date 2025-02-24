@@ -39,9 +39,9 @@ export default async function Page({
   const answer = convertSnakeToCamel(answerResponse.data);
 
   const genFilesResponse = await client.GET(
-    "/api/answers/{answerId}/genFiles",
+    "/api/answers/{parentId}/genFiles",
     {
-      params: { path: { answerId: answer.id } },
+      params: { path: { parentId: answer.id } },
       headers: {
         cookie: (await cookies()).toString(),
       },

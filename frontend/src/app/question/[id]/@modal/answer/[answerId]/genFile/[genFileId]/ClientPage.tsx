@@ -17,15 +17,17 @@ import {
 import { Download } from "lucide-react";
 import { getFileSize } from "@/utils/fileSize";
 import imageLoader from "@/utils/imageLoader";
+import { convertSnakeToCamel } from "@/utils/convertCase";
 
 export default function ClientPage({
   id,
   genFile,
 }: {
   id: string;
-  genFile: components["schemas"]["AnswerGenFileDto"];
+  genFile: components["schemas"]["GenFileDto"];
 }) {
   const router = useRouter();
+  genFile = convertSnakeToCamel(genFile);
 
   return (
     <Dialog
@@ -37,33 +39,33 @@ export default function ClientPage({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>파일 미리보기</DialogTitle>
-          <DialogDescription>{genFile.original_file_name}</DialogDescription>
+          <DialogDescription>{genFile.originalFileName}</DialogDescription>
         </DialogHeader>
         <div className="flex justify-center">
-          {genFile.file_ext_type_code == "img" && (
+          {genFile.fileExtTypeCode == "img" && (
             <Image
               loader={imageLoader}
-              src={genFile.public_url}
-              alt={genFile.original_file_name}
+              src={genFile.publicUrl}
+              alt={genFile.originalFileName}
               width={100}
               height={100}
               quality={100}
               className="max-w-[80dvh] max-w-[80dvh] w-full"
             />
           )}
-          {genFile.file_ext_type_code == "audio" && (
-            <audio src={genFile.public_url} controls />
+          {genFile.fileExtTypeCode == "audio" && (
+            <audio src={genFile.publicUrl} controls />
           )}
-          {genFile.file_ext_type_code == "video" && (
-            <video src={genFile.public_url} controls />
+          {genFile.fileExtTypeCode == "video" && (
+            <video src={genFile.publicUrl} controls />
           )}
         </div>
         <DialogFooter className="gap-2">
           <Button variant="link" asChild className="justify-start">
-            <a href={genFile.download_url} className="flex items-center gap-2">
+            <a href={genFile.downloadUrl} className="flex items-center gap-2">
               <Download />
               <span>
-                {genFile.originalFileName}({getFileSize(genFile.file_size)})
+                {genFile.originalFileName}({getFileSize(genFile.fileSize)})
                 다운로드
               </span>
             </a>

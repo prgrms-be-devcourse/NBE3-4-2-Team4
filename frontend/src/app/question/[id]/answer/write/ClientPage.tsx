@@ -2,13 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -16,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import client from "@/lib/backend/client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -160,7 +152,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
 
   const uploadFiles = async (
     files: File[],
-    answerId: number,
+    parentId: number,
     typeCode: "body" | "attachment"
   ) => {
     const formData = new FormData();
@@ -172,11 +164,11 @@ export default function ClientPage({ params }: { params: { id: string } }) {
     }
 
     const uploadResponse = await client.POST(
-      "/api/answers/{answerId}/genFiles/{typeCode}",
+      "/api/answers/{parentId}/genFiles/{typeCode}",
       {
         params: {
           path: {
-            answerId,
+            parentId,
             typeCode,
           },
         },
