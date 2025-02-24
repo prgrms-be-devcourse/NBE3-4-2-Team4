@@ -14,6 +14,7 @@ import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
+import com.NBE3_4_2_Team4.global.mail.service.MailService;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.GoogleDisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.KaKaoDisconnectService;
@@ -67,7 +68,7 @@ public class MemberServiceTest {
     private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     @Mock
-    private AssetHistoryRepository pointHistoryRepository;
+    private AssetHistoryRepository assetHistoryRepository;
 
     @Mock
     private DefaultLogoutService defaultLogoutService;
@@ -92,6 +93,9 @@ public class MemberServiceTest {
 
     @Mock
     private TempUserBeforeSignUpService tempUserBeforeSignUpService;
+
+    @Mock
+    private MailService mailService;
 
     private final String username = "test username";
     private final String password = "test password";
@@ -410,5 +414,19 @@ public class MemberServiceTest {
                 .getOAuth2DisconnectService(any());
         verify(memberRepository, times(0))
                 .deleteById(any());
+    }
+
+    @Test
+    void isNicknameDuplicateTest1(){
+        when(memberRepository.existsByUsername(member.getUsername())).thenReturn(true);
+
+        assertFalse(memberService.isNicknameDuplicate(member.getUsername()));
+    }
+
+    @Test
+    void isNicknameDuplicateTest2(){
+        when(memberRepository.existsByUsername(member.getUsername())).thenReturn(false);
+
+        assertTrue(memberService.isNicknameDuplicate(member.getUsername()));
     }
 }
