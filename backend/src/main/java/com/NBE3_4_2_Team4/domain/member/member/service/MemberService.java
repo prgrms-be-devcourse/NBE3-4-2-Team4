@@ -11,6 +11,7 @@ import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
+import com.NBE3_4_2_Team4.global.exceptions.EmailAlreadyVerifiedException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -163,6 +164,10 @@ public class MemberService {
         checkIfMemberExists(memberId);
 
         Member member = memberRepository.findById(memberId).orElseThrow();
+
+        if (member.isEmailVerified()){
+            throw new EmailAlreadyVerifiedException();
+        }
 
         boolean isEmailVerified = tempUserBeforeSignUpService
                 .isEmailVerified(memberId, authCode);
