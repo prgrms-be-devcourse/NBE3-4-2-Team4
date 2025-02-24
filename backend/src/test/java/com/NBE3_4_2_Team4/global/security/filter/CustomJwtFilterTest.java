@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
@@ -117,7 +118,7 @@ public class CustomJwtFilterTest {
     @Test
     @DisplayName("필터 걸려있는 url - api/questions 에 대한 post 테스트 - 헤더에 JWT 없는 경우 (인증 실패)")
     public void testCustomJwtFilter2() throws Exception {
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100, AssetType.POINT);
         String body = objectMapper.writeValueAsString(reqBody);
 
         mockMvc.perform(post("/api/questions")
@@ -134,7 +135,7 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateAccessToken(member);
         Cookie accessToken = new Cookie("accessToken", jwtToken);
 
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100, AssetType.POINT);
         String body = objectMapper.writeValueAsString(reqBody);
 
 
@@ -246,7 +247,7 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateAccessToken(member);
         Cookie accessToken = new Cookie("accessToken", jwtToken);
 
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100, AssetType.POINT);
         String body = objectMapper.writeValueAsString(reqBody);
 
 
@@ -299,7 +300,7 @@ public class CustomJwtFilterTest {
         ).when(jwtManager).getFreshAccessToken(eq(refreshToken));
 
 
-        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100);
+        QuestionWriteReqDto reqBody = new QuestionWriteReqDto("test title", "test content", 1L, 100, AssetType.POINT);
         String body = objectMapper.writeValueAsString(reqBody);
 
 

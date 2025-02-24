@@ -1,14 +1,16 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,27 @@ public class QuestionControllerTest {
     private MockMvc mvc;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private String cashRequestJson;
+    private String pointRequestJson;
+    private String editRequestJson;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // 질문 작성 (CASH)
+        QuestionWriteReqDto cashRequest = new QuestionWriteReqDto("title22", "content22", 1L, 100, AssetType.CASH);
+        cashRequestJson = objectMapper.writeValueAsString(cashRequest);
+
+        // 질문 작성 (POINT)
+        QuestionWriteReqDto pointRequest = new QuestionWriteReqDto("title21", "content21", 2L, 100, AssetType.POINT);
+        pointRequestJson = objectMapper.writeValueAsString(pointRequest);
+
+        // 질문 수정
+        QuestionWriteReqDto editRequest = new QuestionWriteReqDto("title1 수정", "content1 수정", 1L, 100, AssetType.POINT);
+        editRequestJson = objectMapper.writeValueAsString(editRequest);
+    }
 
     @Test
     @DisplayName("전체 게시글 조회")
@@ -53,7 +76,7 @@ public class QuestionControllerTest {
 
     @Test
     @DisplayName("다건 조회 with paging")
-    void t2() throws Exception {
+    void t2_1() throws Exception {
         ResultActions resultActions = mvc.perform(get("/api/questions?page=3&pageSize=7"))
                 .andDo(print());
 
@@ -66,6 +89,40 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.total_items").value(20))
                 .andExpect(jsonPath("$.has_more").value(false))
                 .andExpect(jsonPath("$.items.length()").value(6));
+    }
+
+    @Test
+    @DisplayName("다건 조회 with paging, 포인트 질문만")
+    void t2_2() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions?page=3&pageSize=7&assetType=POINT"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(3))
+                .andExpect(jsonPath("$.page_size").value(7))
+                .andExpect(jsonPath("$.total_items").value(15))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(1));
+    }
+
+    @Test
+    @DisplayName("다건 조회 with paging, 캐시 질문만")
+    void t2_3() throws Exception {
+        ResultActions resultActions = mvc.perform(get("/api/questions?page=1&pageSize=10&assetType=CASH"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getQuestions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_items").value(5))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(5));
     }
 
     @Test
@@ -88,19 +145,12 @@ public class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 작성")
+    @DisplayName("질문 작성(포인트)")
     @WithUserDetails("admin@test.com")
-    void t4() throws Exception {
+    void t4_1() throws Exception {
         ResultActions resultActions = mvc.perform(
                 post("/api/questions")
-                        .content("""
-                                {
-                                    "title": "title21",
-                                    "content": "content21",
-                                    "categoryId": 1,
-                                    "point" : 100
-                                }
-                                """)
+                        .content(pointRequestJson)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
@@ -114,10 +164,39 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.id").value(21L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
-                .andExpect(jsonPath("$.data.item.category_name").value("연애"))
+                .andExpect(jsonPath("$.data.item.category_name").value("건강"))
+                .andExpect(jsonPath("$.data.item.asset_type").value("포인트"))
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.data.item.point").value(100))
+                .andExpect(jsonPath("$.data.item.amount").value(100))
+                .andExpect(jsonPath("$.data.total_count").value(21L));
+    }
+
+    @Test
+    @DisplayName("질문 작성(캐시)")
+    @WithUserDetails("admin@test.com")
+    void t4_2() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                post("/api/questions")
+                        .content(cashRequestJson)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        Question question = questionService.findLatest().get();
+
+        resultActions.andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.result_code").value("201-1"))
+                .andExpect(jsonPath("$.msg").value("22번 게시글 생성이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.item.id").value(22L))
+                .andExpect(jsonPath("$.data.item.title").value("title22"))
+                .andExpect(jsonPath("$.data.item.content").value("content22"))
+                .andExpect(jsonPath("$.data.item.category_name").value("연애"))
+                .andExpect(jsonPath("$.data.item.asset_type").value("캐시"))
+                .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.item.amount").value(100))
                 .andExpect(jsonPath("$.data.total_count").value(21L));
     }
 
@@ -142,14 +221,7 @@ public class QuestionControllerTest {
     void t6() throws Exception {
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1")
-                        .content("""
-                                {
-                                    "title": "title1 수정",
-                                    "content": "content1 수정",
-                                    "categoryId": 1,
-                                    "point" : 100
-                                }
-                                """)
+                        .content(editRequestJson)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
@@ -251,14 +323,7 @@ public class QuestionControllerTest {
     void t11() throws Exception {
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/100000")
-                        .content("""
-                                {
-                                    "title": "title1 수정",
-                                    "content": "content1 수정",
-                                    "categoryId": 1,
-                                    "point": 100
-                                }
-                                """)
+                        .content(editRequestJson)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
@@ -275,14 +340,7 @@ public class QuestionControllerTest {
     void t12() throws Exception {
         ResultActions resultActions = mvc.perform(
                 put("/api/questions/1")
-                        .content("""
-                                {
-                                    "title": "title1 수정",
-                                    "content": "content1 수정",
-                                    "categoryId": 1,
-                                    "point": 100
-                                }
-                                """)
+                        .content(editRequestJson)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
@@ -339,9 +397,9 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.selected_answer.selected").value(true))
                 .andExpect(jsonPath("$.data.selected_answer.selected_at").exists())
                 .andExpect(jsonPath("$.data.closed").value(true))
-                .andExpect(jsonPath("$.data.point").value(question.getPoint()));
+                .andExpect(jsonPath("$.data.amount").value(question.getAmount()));
 
-        assertThat(answer.getAuthor().getPoint().getAmount()).isEqualTo(answerPoint + question.getPoint());
+        assertThat(answer.getAuthor().getPoint().getAmount()).isEqualTo(answerPoint + question.getAmount());
     }
 
     @Test
@@ -434,7 +492,7 @@ public class QuestionControllerTest {
                     .andExpect(jsonPath("$.items[%d].name".formatted(i)).value(question.getName()))
                     .andExpect(jsonPath("$.items[%d].recommend_count".formatted(i)).value(question.getRecommendCount()))
                     .andExpect(jsonPath("$.items[%d].closed".formatted(i)).value(question.isClosed()))
-                    .andExpect(jsonPath("$.items[%d].point".formatted(i)).value(question.getPoint()))
+                    .andExpect(jsonPath("$.items[%d].amount".formatted(i)).value(question.getAmount()))
                     .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
         }
     }
@@ -470,7 +528,7 @@ public class QuestionControllerTest {
                     .andExpect(jsonPath("$.items[%d].name".formatted(i)).value(question.getName()))
                     .andExpect(jsonPath("$.items[%d].recommend_count".formatted(i)).value(question.getRecommendCount()))
                     .andExpect(jsonPath("$.items[%d].closed".formatted(i)).value(question.isClosed()))
-                    .andExpect(jsonPath("$.items[%d].point".formatted(i)).value(question.getPoint()))
+                    .andExpect(jsonPath("$.items[%d].amount".formatted(i)).value(question.getAmount()))
                     .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
         }
     }

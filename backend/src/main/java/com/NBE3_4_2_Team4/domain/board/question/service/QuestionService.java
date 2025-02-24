@@ -104,7 +104,7 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
-    private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
@@ -122,7 +122,7 @@ public class QuestionService {
 
     @Transactional(readOnly = true)
     public Page<QuestionDto> findByUserListed(int page, int pageSize) {
-        Member actor = AuthManager.getNonNullMember();
+        Member actor = AuthManager.getMemberFromContext();
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);
