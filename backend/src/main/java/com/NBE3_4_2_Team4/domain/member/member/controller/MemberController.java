@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -90,10 +91,19 @@ public class MemberController {
     public ResponseEntity<RsData<Empty>> verifyEmail(
             @RequestParam("memberId") long memberId,
             @RequestParam("authCode") String authCode,
+            @RequestParam("emailAddress") String emailAddress,
             HttpServletResponse resp
     ){
-        String verifyEmailResult = memberService.verifyEmail(memberId, authCode) ? "success" : "fail";
-        String location = String.format("%s/verify-email/%s", frontDomain, verifyEmailResult);
+        boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
+        String location;
+
+        if (isEmailVerified) {
+           location = String.format("%s/verify-email/success", frontDomain);
+        }else {
+            location = String.format("%s/verify-email/fail", frontDomain);
+            String tempToken = jwtManager.generateTempToken(memberId, emailAddress);
+            httpManager.setTempTokenForVerifyEmailCookie(resp, tempToken, 5);
+        }
 
         httpManager.expireJwtCookie(resp);
 
@@ -104,6 +114,18 @@ public class MemberController {
                         "302-1",
                         String.format("email verifying complete. redirecting to %s ", location)
                 ));
+    }
+
+    @PostMapping ("/api/members/resend-verification-email")
+    public RsData<Empty> resendVerificationEmail(
+            @CookieValue("tempToken") String tempToken
+    ){
+        Map<String, Object> map = jwtManager.getClaims(tempToken);
+        Long memberId = (Long) map.get("memberId");
+        String emailAddress = (String) map.get("emailAddress");
+        memberService.sendAuthenticationMail(memberId, emailAddress);
+
+        return new RsData<>("200-1", "resend verification email complete");
     }
 
     @PostMapping("/api/admin/login")

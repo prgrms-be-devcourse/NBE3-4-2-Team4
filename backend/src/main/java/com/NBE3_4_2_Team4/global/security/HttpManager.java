@@ -55,4 +55,14 @@ public class HttpManager {
     public void setTempTokenForSignUpCookie(HttpServletResponse resp, String tempToken, int minute){
         this.setCookie(resp, "tempToken", tempToken, minute);
     }
+
+    public void setTempTokenForVerifyEmailCookie(HttpServletResponse resp, String tempToken, int minute){
+        Cookie cookie = new Cookie("tempToken", tempToken);
+        cookie.setPath("/verify");
+        cookie.setDomain("localhost");
+//        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(minute * 60); // 쿠키 만료 시간 (초 단위)
+        resp.addCookie(cookie); // 응답에 쿠키 추가
+    }
 }

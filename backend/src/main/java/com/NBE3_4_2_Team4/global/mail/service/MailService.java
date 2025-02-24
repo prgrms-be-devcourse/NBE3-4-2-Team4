@@ -45,12 +45,13 @@ public class MailService {
     }
 
     @Async
-    public void sendAuthenticationMail(String email, Long memberId, String authCode){
+    public void sendAuthenticationMail(String emailAddress, Long memberId, String authCode){
         Map<String, String> variables = Map.of(
                 "memberId", memberId.toString(),
-                "authCode", authCode
+                "authCode", authCode,
+                "emailAddress", emailAddress
         );
         String body = makeThymeleafMailContent("auth-email", variables);
-        sendEmail(email, "인증 완료해주세용", body);
+        sendEmail(emailAddress, "인증 완료해주세용", body);
     }
 }

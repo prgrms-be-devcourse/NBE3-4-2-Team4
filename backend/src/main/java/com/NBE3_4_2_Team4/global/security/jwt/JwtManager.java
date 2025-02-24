@@ -105,4 +105,14 @@ public class JwtManager {
                 .signWith(key)
                 .compact();
     }
+
+    public String generateTempToken(Long memberId, String emailAddress){
+        return Jwts.builder()
+                .claim("memberId", memberId)
+                .claim("emailAddress", emailAddress)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 60 * 1000))
+                .signWith(key)
+                .compact();
+    }
 }
