@@ -105,7 +105,6 @@ public class MemberController {
     public ResponseEntity<RsData<Empty>> verifyEmail(
             @RequestParam("memberId") long memberId,
             @RequestParam("authCode") String authCode,
-            @RequestParam("emailAddress") String emailAddress,
             HttpServletResponse resp
     ){
         boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);

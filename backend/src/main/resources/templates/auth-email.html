@@ -11,7 +11,6 @@
 <form th:action="@{${backendDomain}/api/members/verify-email}" method="post">
     <input type="hidden" name="authCode" th:value="${authCode}" />
     <input type="hidden" name="memberId" th:value="${memberId}" />
-    <input type="hidden" name="emailAddress" th:value="${emailAddress}" />
 
     <button type="submit" style="display:inline-block;padding:10px 20px;background:#007bff;color:white;text-decoration:none;border-radius:5px;">
         이메일 인증하기

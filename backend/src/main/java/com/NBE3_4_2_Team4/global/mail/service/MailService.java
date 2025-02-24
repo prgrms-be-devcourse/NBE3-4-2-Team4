@@ -53,8 +53,7 @@ public class MailService {
         Map<String, String> variables = Map.of(
                 "backendDomain", backendDomain,
                 "memberId", memberId.toString(),
-                "authCode", authCode,
-                "emailAddress", emailAddress
+                "authCode", authCode
         );
         String body = makeThymeleafMailContent("auth-email", variables);
         sendEmail(emailAddress, "인증 완료해주세용", body);
