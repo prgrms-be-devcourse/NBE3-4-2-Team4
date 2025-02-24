@@ -963,7 +963,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
             /** Format: date-time */
             startDateTime?: string;
             /** Format: date-time */

@@ -71,7 +71,7 @@ public class QuestionControllerTest {
     @DisplayName("전체 게시글 조회")
     void t1() {
         List<Question> questions = questionService.findAll();
-        assertThat(questions).hasSize(20);
+        assertThat(questions).hasSize(15);
     }
 
     @Test
@@ -86,26 +86,26 @@ public class QuestionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page_number").value(3))
                 .andExpect(jsonPath("$.page_size").value(7))
-                .andExpect(jsonPath("$.total_items").value(20))
+                .andExpect(jsonPath("$.total_items").value(15))
                 .andExpect(jsonPath("$.has_more").value(false))
-                .andExpect(jsonPath("$.items.length()").value(6));
+                .andExpect(jsonPath("$.items.length()").value(1));
     }
 
     @Test
     @DisplayName("다건 조회 with paging, 포인트 질문만")
     void t2_2() throws Exception {
-        ResultActions resultActions = mvc.perform(get("/api/questions?page=3&pageSize=7&assetType=POINT"))
+        ResultActions resultActions = mvc.perform(get("/api/questions?page=2&pageSize=7&assetType=POINT"))
                 .andDo(print());
 
         resultActions
                 .andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("getQuestions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.current_page_number").value(3))
+                .andExpect(jsonPath("$.current_page_number").value(2))
                 .andExpect(jsonPath("$.page_size").value(7))
-                .andExpect(jsonPath("$.total_items").value(15))
+                .andExpect(jsonPath("$.total_items").value(12))
                 .andExpect(jsonPath("$.has_more").value(false))
-                .andExpect(jsonPath("$.items.length()").value(1));
+                .andExpect(jsonPath("$.items.length()").value(5));
     }
 
     @Test
@@ -120,9 +120,9 @@ public class QuestionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page_number").value(1))
                 .andExpect(jsonPath("$.page_size").value(10))
-                .andExpect(jsonPath("$.total_items").value(5))
+                .andExpect(jsonPath("$.total_items").value(3))
                 .andExpect(jsonPath("$.has_more").value(false))
-                .andExpect(jsonPath("$.items.length()").value(5));
+                .andExpect(jsonPath("$.items.length()").value(3));
     }
 
     @Test
@@ -139,8 +139,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.modified_at").value(Matchers.startsWith(question.getModifiedAt().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.title").value("title1"))
-                .andExpect(jsonPath("$.content").value("content1"))
+                .andExpect(jsonPath("$.title").value("성격 차이 극복 방법"))
+                .andExpect(jsonPath("$.content").value("이 사람에게 어떻게 다가가야 할까요?"))
                 .andExpect(jsonPath("$.name").value("관리자"));
     }
 
@@ -160,8 +160,8 @@ public class QuestionControllerTest {
                 .andExpect(handler().methodName("write"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.result_code").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("21번 게시글 생성이 완료되었습니다."))
-                .andExpect(jsonPath("$.data.item.id").value(21L))
+                .andExpect(jsonPath("$.msg").value("16번 게시글 생성이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.item.id").value(16L))
                 .andExpect(jsonPath("$.data.item.title").value("title21"))
                 .andExpect(jsonPath("$.data.item.content").value("content21"))
                 .andExpect(jsonPath("$.data.item.category_name").value("건강"))
@@ -169,7 +169,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.amount").value(100))
-                .andExpect(jsonPath("$.data.total_count").value(21L));
+                .andExpect(jsonPath("$.data.total_count").value(16L));
     }
 
     @Test
@@ -188,8 +188,8 @@ public class QuestionControllerTest {
                 .andExpect(handler().methodName("write"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.result_code").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("22번 게시글 생성이 완료되었습니다."))
-                .andExpect(jsonPath("$.data.item.id").value(22L))
+                .andExpect(jsonPath("$.msg").value("17번 게시글 생성이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.item.id").value(17L))
                 .andExpect(jsonPath("$.data.item.title").value("title22"))
                 .andExpect(jsonPath("$.data.item.content").value("content22"))
                 .andExpect(jsonPath("$.data.item.category_name").value("연애"))
@@ -197,7 +197,7 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.data.item.created_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.modified_at").value(Matchers.startsWith(question.getCreatedAt().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.item.amount").value(100))
-                .andExpect(jsonPath("$.data.total_count").value(21L));
+                .andExpect(jsonPath("$.data.total_count").value(16L));
     }
 
     @Test
@@ -236,7 +236,7 @@ public class QuestionControllerTest {
     @DisplayName("게시글 검색")
     void t7() throws Exception {
         ResultActions resultActions = mvc.perform(
-                get("/api/questions?searchKeyword=2&keywordType=TITLE")
+                get("/api/questions?searchKeyword=노트북&keywordType=TITLE")
                 )
                 .andDo(print());
 
@@ -247,9 +247,9 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.current_page_number").value(1))
                 .andExpect(jsonPath("$.page_size").value(10))
                 .andExpect(jsonPath("$.total_pages").value(1))
-                .andExpect(jsonPath("$.total_items").value(3))
+                .andExpect(jsonPath("$.total_items").value(1))
                 .andExpect(jsonPath("$.has_more").value(false))
-                .andExpect(jsonPath("$.items.length()").value(3));
+                .andExpect(jsonPath("$.items.length()").value(1));
     }
 
     @Test
@@ -449,7 +449,7 @@ public class QuestionControllerTest {
     @WithUserDetails("admin@test.com")
     void t14_4() throws Exception {
         ResultActions resultActions = mvc.perform(
-                put("/api/questions/2/select/1")).andDo(print());
+                put("/api/questions/3/select/1")).andDo(print());
 
         resultActions.andExpect(handler().handlerType(QuestionController.class))
                 .andExpect(handler().methodName("select"))
@@ -510,9 +510,9 @@ public class QuestionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page_number").value(1))
                 .andExpect(jsonPath("$.page_size").value(10))
-                .andExpect(jsonPath("$.total_items").value(11))
-                .andExpect(jsonPath("$.has_more").value(true))
-                .andExpect(jsonPath("$.items.length()").value(10));
+                .andExpect(jsonPath("$.total_items").value(7))
+                .andExpect(jsonPath("$.has_more").value(false))
+                .andExpect(jsonPath("$.items.length()").value(7));
 
         List<QuestionDto> questions = questionService.findByUserListed(1, 10).getContent();
 
