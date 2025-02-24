@@ -89,10 +89,14 @@ public class MemberController {
     @PostMapping("/api/members/verify-email")
     public ResponseEntity<RsData<Empty>> verifyEmail(
             @RequestParam("memberId") long memberId,
-            @RequestParam("authCode") String authCode
+            @RequestParam("authCode") String authCode,
+            HttpServletResponse resp
     ){
         String verifyEmailResult = memberService.verifyEmail(memberId, authCode) ? "success" : "fail";
         String location = String.format("%s/verify-email/%s", frontDomain, verifyEmailResult);
+
+        httpManager.expireJwtCookie(resp);
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header("Location", location)
