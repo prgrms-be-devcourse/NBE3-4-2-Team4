@@ -91,6 +91,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/{parentId}/genFiles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 단건조회 */
+        get: operations["item_1"];
+        /** 수정 */
+        put: operations["modify_1"];
+        post?: never;
+        /** 삭제 */
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/points/transfer": {
         parameters: {
             query?: never;
@@ -156,12 +175,12 @@ export interface paths {
             cookie?: never;
         };
         /** 단건조회 */
-        get: operations["item_1"];
+        get: operations["item_2"];
         /** 수정 */
-        put: operations["modify_1"];
+        put: operations["modify_2"];
         post?: never;
         /** 삭제 */
-        delete: operations["delete_2"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         patch?: never;
@@ -421,6 +440,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/{parentId}/genFiles/{typeCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 다건등록 */
+        post: operations["makeNewItems_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/members": {
         parameters: {
             query?: never;
@@ -519,7 +555,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 다건등록 */
-        post: operations["makeNewItems_1"];
+        post: operations["makeNewItems_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -605,21 +641,21 @@ export interface paths {
          * 답변 단건 조회
          * @description 답변 Id를 기준으로 특정 답변을 가져옵니다.
          */
-        get: operations["item_2"];
+        get: operations["item_3"];
         put?: never;
         post?: never;
         /**
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_3"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         /**
          * 답변 수정
          * @description 답변를 수정합니다.
          */
-        patch: operations["modify_2"];
+        patch: operations["modify_3"];
         trace?: never;
     };
     "/question/genFile/download/{parentId}/{fileName}": {
@@ -631,6 +667,23 @@ export interface paths {
         };
         /** 파일 다운로드 */
         get: operations["download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/genFile/download/{parentId}/{fileName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 파일 다운로드 */
+        get: operations["download_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -668,6 +721,23 @@ export interface paths {
          * @description 추천 수 기준으로 내림차순 정렬
          */
         get: operations["getRecommended"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{parentId}/genFiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 다건조회 */
+        get: operations["items_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -941,7 +1011,7 @@ export interface paths {
          * 답변 전체 다건 조회
          * @description 모든 답변을 가져옵니다.
          */
-        get: operations["items_2"];
+        get: operations["items_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -958,7 +1028,7 @@ export interface paths {
             cookie?: never;
         };
         /** 다건조회 */
-        get: operations["items_3"];
+        get: operations["items_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -975,7 +1045,7 @@ export interface paths {
             cookie?: never;
         };
         /** 파일 다운로드 */
-        get: operations["download_1"];
+        get: operations["download_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1244,6 +1314,34 @@ export interface components {
             productImageUrl: string;
             productCategory: string;
             productSaleState: string;
+        };
+        GenFileDtoProductGenFile: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int64 */
+            fileSize: number;
+            /** Format: int64 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataListGenFileDtoProductGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoProductGenFile"][];
         };
         SignupRequestDto: {
             email: string;
@@ -1702,6 +1800,109 @@ export interface operations {
             };
         };
     };
+    item_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    modify_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    delete_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     transfer: {
         parameters: {
             query?: never;
@@ -1833,6 +2034,7 @@ export interface operations {
         };
     };
     item_1: {
+    item_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -1864,7 +2066,7 @@ export interface operations {
             };
         };
     };
-    modify_1: {
+    modify_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -1903,7 +2105,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -2437,6 +2639,45 @@ export interface operations {
             };
         };
     };
+    makeNewItems_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                typeCode: "attachment" | "body";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGenFileDtoProductGenFile"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    nicknameCheck: {
     checkNicknameIsAvailable: {
         parameters: {
             query: {
@@ -2669,7 +2910,7 @@ export interface operations {
             };
         };
     };
-    makeNewItems_1: {
+    makeNewItems_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2897,7 +3138,7 @@ export interface operations {
             };
         };
     };
-    item_2: {
+    item_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -2928,7 +3169,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -2959,7 +3200,7 @@ export interface operations {
             };
         };
     };
-    modify_2: {
+    modify_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -2995,6 +3236,38 @@ export interface operations {
         };
     };
     download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+                fileName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    download_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3076,6 +3349,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["PageDtoQuestionDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    items_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoProductGenFile"][];
                 };
             };
             /** @description Bad Request */
@@ -3504,7 +3808,7 @@ export interface operations {
             };
         };
     };
-    items_2: {
+    items_3: {
         parameters: {
             query?: {
                 page?: number;
@@ -3536,7 +3840,7 @@ export interface operations {
             };
         };
     };
-    items_3: {
+    items_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -3567,7 +3871,7 @@ export interface operations {
             };
         };
     };
-    download_1: {
+    download_2: {
         parameters: {
             query?: never;
             header?: never;

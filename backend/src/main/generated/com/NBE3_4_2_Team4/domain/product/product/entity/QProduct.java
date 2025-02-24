@@ -22,13 +22,25 @@ public class QProduct extends EntityPathBase<Product> {
 
     public static final QProduct product = new QProduct("product");
 
+    public final com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFileParent _super = new com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFileParent(this);
+
     public final com.NBE3_4_2_Team4.domain.product.category.entity.QProductCategory category;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     public final StringPath description = createString("description");
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final ListPath<com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFile<?>, com.NBE3_4_2_Team4.domain.base.genFile.entity.QGenFile> genFiles = _super.genFiles;
+
+    //inherited
+    public final NumberPath<Long> id = _super.id;
 
     public final StringPath imageUrl = createString("imageUrl");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
     public final StringPath name = createString("name");
 

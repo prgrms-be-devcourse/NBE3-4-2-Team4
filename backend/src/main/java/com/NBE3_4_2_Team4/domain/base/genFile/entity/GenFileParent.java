@@ -9,6 +9,7 @@ import com.NBE3_4_2_Team4.standard.util.Ut;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class GenFileParent<T extends GenFile> extends BaseTime {
+    @Transient
     private Class<T> type;
 
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)

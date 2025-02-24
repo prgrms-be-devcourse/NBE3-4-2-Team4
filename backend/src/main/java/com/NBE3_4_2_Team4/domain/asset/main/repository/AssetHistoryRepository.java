@@ -1,7 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.main.repository;
 
 
-
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
@@ -14,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Repository
@@ -39,4 +39,6 @@ public interface AssetHistoryRepository extends JpaRepository<AssetHistory, Long
             @Param("endDateTime") LocalDateTime endDateTime,
             Pageable pageable
     );
+
+    List<AssetHistory> findByMemberId(Long memberId);
 }

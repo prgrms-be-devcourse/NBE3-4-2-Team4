@@ -58,8 +58,6 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public final StringPath title = createString("title");
 
-    public final SimplePath<Class<com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile>> type = createSimple("type", Class.class);
-
     public QQuestion(String variable) {
         this(Question.class, forVariable(variable), INITS);
     }

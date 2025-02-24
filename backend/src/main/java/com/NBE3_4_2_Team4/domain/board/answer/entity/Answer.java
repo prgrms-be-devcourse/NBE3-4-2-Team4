@@ -77,6 +77,7 @@ public class Answer extends GenFileParent<AnswerGenFile> {
         this.author = author;
     }
 
+    @Override
     public void checkActorCanMakeNewGenFile(Member actor) {
         Optional.of(
                         getCheckActorCanMakeNewGenFileRs(actor)
@@ -87,6 +88,7 @@ public class Answer extends GenFileParent<AnswerGenFile> {
                 });
     }
 
+    @Override
     protected RsData<Empty> getCheckActorCanMakeNewGenFileRs(Member actor) {
         if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
         if (actor.equals(author)) return RsData.OK;

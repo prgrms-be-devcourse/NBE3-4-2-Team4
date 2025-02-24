@@ -1,10 +1,11 @@
 package com.NBE3_4_2_Team4.domain.asset.point.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.standard.util.test.ConcurrencyTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,8 +43,8 @@ public class PointConcurrencyTest {
                 .point(new Point(300L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
-                .username("m1")
-                .nickname("n1")
+                .username("point_test_" + UUID.randomUUID())
+                .nickname("point_test_" + UUID.randomUUID())
                 .password("1234")
                 .build();
 
@@ -48,8 +52,8 @@ public class PointConcurrencyTest {
                 .point(new Point(0L))
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
-                .username("m2")
-                .nickname("n2")
+                .username("point_test_" + UUID.randomUUID())
+                .nickname("point_test_" + UUID.randomUUID())
                 .password("1234")
                 .build();
 
@@ -62,7 +66,13 @@ public class PointConcurrencyTest {
 
     @AfterEach
     void cleanUp() {
-        assetHistoryRepository.deleteAll();
+        List<AssetHistory> member1Histories = assetHistoryRepository.findByMemberId(member1Id);
+        List<AssetHistory> member2Histories = assetHistoryRepository.findByMemberId(member2Id);
+
+        assetHistoryRepository.deleteAll(member1Histories);
+        assetHistoryRepository.deleteAll(member2Histories);
+
+        //assetHistoryRepository.deleteAll();
         memberRepository.deleteById(member1Id);
         memberRepository.deleteById(member2Id);
     }
