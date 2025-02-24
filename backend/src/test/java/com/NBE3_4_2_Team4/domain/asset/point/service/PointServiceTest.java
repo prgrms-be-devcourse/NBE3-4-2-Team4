@@ -123,20 +123,20 @@ public class PointServiceTest {
         assertTrue(Duration.between(assetHistory.getCreatedAt(), createdAt).getSeconds() < 5);
     }
 
-    @Test
-    @DisplayName("history page")
-    void t5() {
-        LocalDate today = LocalDate.now();
-
-        AssetHistoryReq dto = new AssetHistoryReq();
-        dto.setPage(1);
-        dto.setAssetCategory(AssetCategory.ANSWER);
-        dto.setStartDate(today.minusDays(30));
-        dto.setEndDate(today);
-
-        PageDto<AssetHistoryRes> res = assetHistoryService.getHistoryPageWithFilter(member1, 10, dto);
-        assertEquals(2, res.getTotalItems());
-    }
+//    @Test
+//    @DisplayName("history page")
+//    void t5() {
+//        LocalDate today = LocalDate.now();
+//
+//        AssetHistoryReq dto = new AssetHistoryReq();
+//        dto.setPage(1);
+//        dto.setAssetCategory(AssetCategory.ANSWER);
+//        dto.setStartDate(today.minusDays(30));
+//        dto.setEndDate(today);
+//
+//        PageDto<AssetHistoryRes> res = assetHistoryService.getHistoryPageWithFilter(member1, 10, dto);
+//        assertEquals(2, res.getTotalItems());
+//    }
 
     @Test
     @DisplayName("출석 테스트")

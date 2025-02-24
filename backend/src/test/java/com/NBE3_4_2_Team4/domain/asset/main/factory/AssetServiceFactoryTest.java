@@ -1,6 +1,7 @@
-package com.NBE3_4_2_Team4.domain.asset;
+package com.NBE3_4_2_Team4.domain.asset.main.factory;
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class AssetServiceFactoryTest {
     void t1() {
         int expectedSize = assetServices.size();
         int actualSize = assetServiceFactory.getSize();
-        String className = assetServiceFactory.getService("Point").getClass().getSuperclass().getSimpleName();
+        String className = assetServiceFactory.getService(AssetType.POINT).getClass().getSuperclass().getSimpleName();
 
         assertEquals(expectedSize, actualSize, "AssetServiceFactory의 서비스 개수가 일치해야 함");
         assertEquals(className, "PointService");

@@ -27,8 +27,7 @@ public class PointService implements AssetService {
 
     //기록없이 포인트를 전송하는 메소드
     @Transactional
-    @Override
-    public Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
+    private Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
         Point.validateAmount(amount);
         if (fromUsername.equals(toUsername)) throw new PointClientException("자기 자신에게 송금할 수 없습니다");
 
@@ -68,8 +67,7 @@ public class PointService implements AssetService {
 
     //포인트 차감 & 기록없음
     @Transactional
-    @Override
-    public Member deductWithoutHistory(String from, long amount) {
+    private Member deductWithoutHistory(String from, long amount) {
         Point.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(from)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", from)));
@@ -90,8 +88,7 @@ public class PointService implements AssetService {
 
     //포인트 적립, 기록없음
     @Transactional
-    @Override
-    public Member accumulateWithoutHistory(String to, long amount) {
+    private Member accumulateWithoutHistory(String to, long amount) {
         Point.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(to)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", to)));
@@ -120,9 +117,7 @@ public class PointService implements AssetService {
         LocalDate lastAttendance = member.getLastAttendanceDate();
 
         //현재 날짜보다 전이면 포인트지급 & 마지막 출석일 업데이트, 아니면 에러
-        if (
-                lastAttendance != null && (lastAttendance.isEqual(today) || lastAttendance.isAfter(today))
-        ) {
+        if (lastAttendance != null && (lastAttendance.isEqual(today) || lastAttendance.isAfter(today))) {
             throw new PointClientException("출석실패: 이미 출석했습니다");
         }
         member.setLastAttendanceDate(today);
