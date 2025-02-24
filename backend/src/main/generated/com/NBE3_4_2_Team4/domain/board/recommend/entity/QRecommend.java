@@ -51,7 +51,7 @@ public class QRecommend extends EntityPathBase<Recommend> {
 
     public QRecommend(Class<? extends Recommend> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.NBE3_4_2_Team4.domain.member.member.entity.QMember(forProperty("member"), inits.get("member")) : null;
         this.question = inits.isInitialized("question") ? new com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion(forProperty("question"), inits.get("question")) : null;
     }
 

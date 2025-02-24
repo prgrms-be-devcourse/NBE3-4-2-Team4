@@ -24,7 +24,11 @@ public class QQuestion extends EntityPathBase<Question> {
 
     public final com.NBE3_4_2_Team4.global.jpa.entity.QBaseTime _super = new com.NBE3_4_2_Team4.global.jpa.entity.QBaseTime(this);
 
+    public final NumberPath<Long> amount = createNumber("amount", Long.class);
+
     public final ListPath<com.NBE3_4_2_Team4.domain.board.answer.entity.Answer, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer> answers = this.<com.NBE3_4_2_Team4.domain.board.answer.entity.Answer, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer>createList("answers", com.NBE3_4_2_Team4.domain.board.answer.entity.Answer.class, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer.class, PathInits.DIRECT2);
+
+    public final EnumPath<com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType> assetType = createEnum("assetType", com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType.class);
 
     public final com.NBE3_4_2_Team4.domain.member.member.entity.QMember author;
 
@@ -42,8 +46,6 @@ public class QQuestion extends EntityPathBase<Question> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
-
-    public final NumberPath<Long> point = createNumber("point", Long.class);
 
     public final BooleanPath rankReceived = createBoolean("rankReceived");
 

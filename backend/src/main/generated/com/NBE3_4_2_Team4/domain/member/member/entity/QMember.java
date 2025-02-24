@@ -24,7 +24,11 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<com.NBE3_4_2_Team4.domain.board.answer.entity.Answer, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer> answers = this.<com.NBE3_4_2_Team4.domain.board.answer.entity.Answer, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer>createList("answers", com.NBE3_4_2_Team4.domain.board.answer.entity.Answer.class, com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer.class, PathInits.DIRECT2);
 
+    public final com.NBE3_4_2_Team4.domain.member.member.entity.asset.QCash cash;
+
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
+
+    public final StringPath emailAddress = createString("emailAddress");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -38,11 +42,11 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath password = createString("password");
 
-    public final StringPath phoneNumber = createString("phoneNumber");
-
-    public final NumberPath<Long> point = createNumber("point", Long.class);
+    public final com.NBE3_4_2_Team4.domain.member.member.entity.asset.QPoint point;
 
     public final ListPath<com.NBE3_4_2_Team4.domain.board.question.entity.Question, com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion> questions = this.<com.NBE3_4_2_Team4.domain.board.question.entity.Question, com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion>createList("questions", com.NBE3_4_2_Team4.domain.board.question.entity.Question.class, com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.class, PathInits.DIRECT2);
+
+    public final StringPath realName = createString("realName");
 
     public final EnumPath<Member.Role> role = createEnum("role", Member.Role.class);
 
@@ -66,7 +70,9 @@ public class QMember extends EntityPathBase<Member> {
 
     public QMember(Class<? extends Member> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.cash = inits.isInitialized("cash") ? new com.NBE3_4_2_Team4.domain.member.member.entity.asset.QCash(forProperty("cash")) : null;
         this.oauth2RefreshToken = inits.isInitialized("oauth2RefreshToken") ? new com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.QOAuth2RefreshToken(forProperty("oauth2RefreshToken"), inits.get("oauth2RefreshToken")) : null;
+        this.point = inits.isInitialized("point") ? new com.NBE3_4_2_Team4.domain.member.member.entity.asset.QPoint(forProperty("point")) : null;
     }
 
 }

@@ -26,6 +26,8 @@ public class QOAuth2RefreshToken extends EntityPathBase<OAuth2RefreshToken> {
 
     public final com.NBE3_4_2_Team4.domain.member.member.entity.QMember member;
 
+    public final StringPath oAuth2Id = createString("oAuth2Id");
+
     public final StringPath refreshToken = createString("refreshToken");
 
     public QOAuth2RefreshToken(String variable) {
