@@ -435,7 +435,7 @@ public class MemberServiceTest {
         String tempToken = "tempToken";
 
         OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo("oAuth2Id", "realName");
-        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, "KAKKO", "refreshToken");
+        TempUserBeforeSignUp tempUserBeforeSignUp = new TempUserBeforeSignUp(oAuth2UserInfo, Member.OAuth2Provider.KAKAO.name(), "refreshToken");
 
         when(tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken))
                 .thenReturn(tempUserBeforeSignUp);
