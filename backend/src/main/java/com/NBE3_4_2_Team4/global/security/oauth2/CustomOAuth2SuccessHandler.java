@@ -32,6 +32,9 @@ import java.time.LocalDate;
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+    @Value("${custom.domain.frontend}")
+    private String frontDomain;
+
     @Value("${custom.jwt.accessToken.validMinute:30}")
     int accessTokenValidMinute;
 
@@ -85,7 +88,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
         httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
 
-        resp.sendRedirect("http://localhost:3000/signup");
+        resp.sendRedirect(String.format("%s/signup", frontDomain));
     }
 
     private boolean isFirstLoginToday(Member member) {
