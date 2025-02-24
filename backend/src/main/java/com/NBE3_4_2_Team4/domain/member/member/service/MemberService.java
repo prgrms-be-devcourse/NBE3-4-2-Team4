@@ -91,12 +91,21 @@ public class MemberService {
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
 
+        Long memberId = member.getId();
+        String emailAddress = member.getEmailAddress();
+
+        sendAuthenticationMail(memberId, emailAddress);
+    }
+
+
+    public void sendAuthenticationMail(Long memberId, String emailAddress){
         String authCode = UUID.randomUUID().toString();
 
-        tempUserBeforeSignUpService.saveAuthCodeForMember(member.getId(), authCode);
+        tempUserBeforeSignUpService.saveAuthCodeForMember(memberId, authCode);
 
-        mailService.sendAuthenticationMail(member.getEmailAddress(), member.getId(), authCode);
+        mailService.sendAuthenticationMail(emailAddress, memberId, authCode);
     }
+
 
     private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
         if (memberRepository.existsByUsername(tempUser.getUsername())) {
