@@ -91,14 +91,14 @@ public class MemberController {
             @RequestParam("memberId") long memberId,
             @RequestParam("authCode") String authCode
     ){
-        memberService.verifyEmail(memberId, authCode);
-        String location = String.format("%s/verify-email", frontDomain);
+        String verifyEmailResult = memberService.verifyEmail(memberId, authCode) ? "success" : "fail";
+        String location = String.format("%s/verify-email/%s", frontDomain, verifyEmailResult);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header("Location", location)
                 .body(new RsData<>(
                         "302-1",
-                        String.format("logout complete. redirecting to %s ", location)
+                        String.format("email verifying complete. redirecting to %s ", location)
                 ));
     }
 

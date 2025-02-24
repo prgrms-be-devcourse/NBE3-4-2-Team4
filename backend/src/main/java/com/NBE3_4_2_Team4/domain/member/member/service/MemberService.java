@@ -139,13 +139,15 @@ public class MemberService {
     }
 
 
-    public void verifyEmail(Long memberId, String authCode) {
+    public boolean verifyEmail(Long memberId, String authCode) {
         Member member = memberRepository.findById(memberId).orElseThrow();
 
         boolean isEmailVerified = tempUserBeforeSignUpService
                 .isEmailVerified(memberId, authCode);
 
         member.setEmailVerified(isEmailVerified);
+
+        return isEmailVerified;
     }
 
 
