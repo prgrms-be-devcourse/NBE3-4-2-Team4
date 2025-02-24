@@ -38,7 +38,8 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                         m.point,
                         m.cash,
                         q.count(),
-                        a.count()))
+                        a.count(),
+                        m.emailAddress))
                 .distinct()
                 .where(m.id.eq(member.getId()))
                 .groupBy(m.nickname)
@@ -72,6 +73,7 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
     public void updateLastLoginDate(Member member, LocalDate today) {
         update(m)
                 .set(m.lastAttendanceDate, today)
+                .where(m.id.eq(member.getId()))
                 .execute();
     }
 }

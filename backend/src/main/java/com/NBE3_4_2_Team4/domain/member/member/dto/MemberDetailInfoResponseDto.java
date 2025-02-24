@@ -12,7 +12,8 @@ public record MemberDetailInfoResponseDto(
         Point point,
         Cash cash,
         long questionSize,
-        long answerSize
+        long answerSize,
+        String emailAddress
 ) {
     @JsonCreator
     public MemberDetailInfoResponseDto{}
