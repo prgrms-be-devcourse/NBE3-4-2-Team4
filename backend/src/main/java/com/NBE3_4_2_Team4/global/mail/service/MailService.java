@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +19,9 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class MailService {
+    @Value("${custom.domain.backend}")
+    private String backendDomain;
+
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
@@ -47,6 +51,7 @@ public class MailService {
     @Async
     public void sendAuthenticationMail(String emailAddress, Long memberId, String authCode){
         Map<String, String> variables = Map.of(
+                "backendDomain", backendDomain,
                 "memberId", memberId.toString(),
                 "authCode", authCode,
                 "emailAddress", emailAddress
