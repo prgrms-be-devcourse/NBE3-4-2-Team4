@@ -46,6 +46,13 @@ public class MemberService {
     private final TempUserBeforeSignUpService tempUserBeforeSignUpService;
     private final MailService mailService;
 
+
+    private void checkIfMemberExists(Long memberId){
+        if(!memberRepository.existsById(memberId)){
+            throw new ServiceException("404-1", String.format("no member found with id %d", memberId));
+        }
+    }
+
     public Member adminLogin(AdminLoginRequestDto adminLoginRequestDto) {
         String adminUsername = adminLoginRequestDto.adminUsername();
         Member member = memberRepository.findByUsername(adminUsername)
@@ -68,6 +75,8 @@ public class MemberService {
 
 
     public String getLogoutUrl(Member member){
+        checkIfMemberExists(member.getId());
+
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
         OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
@@ -99,6 +108,8 @@ public class MemberService {
 
 
     public void sendAuthenticationMail(Long memberId, String emailAddress){
+        checkIfMemberExists(memberId);
+
         String authCode = UUID.randomUUID().toString();
 
         tempUserBeforeSignUpService.saveAuthCodeForMember(memberId, authCode);
@@ -149,6 +160,8 @@ public class MemberService {
 
 
     public boolean verifyEmail(Long memberId, String authCode) {
+        checkIfMemberExists(memberId);
+
         Member member = memberRepository.findById(memberId).orElseThrow();
 
         boolean isEmailVerified = tempUserBeforeSignUpService
@@ -161,13 +174,17 @@ public class MemberService {
 
 
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
+        checkIfMemberExists(member.getId());
         return memberQuerydsl.getMemberDetailInfo(member);
     }
 
 
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        checkIfMemberExists(member.getId());
+
         Member memberData = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new ServiceException("404-1", String.format("no member found with id %d", member.getId())));
+                .orElseThrow();
+
         String newNickname = nicknameUpdateRequestDto.newNickname();
         memberData.setNickname(newNickname);
     }
@@ -181,9 +198,7 @@ public class MemberService {
     public void withdrawalMembership(Member member) {
         Long memberId = member.getId();
 
-        if (!memberRepository.existsById(memberId)) {
-            throw new ServiceException("404-1", String.format("no member found with id %d", memberId));
-        }
+        checkIfMemberExists(memberId);
 
         Member.OAuth2Provider oAuth2Provider = member.getOAuth2Provider();
 
