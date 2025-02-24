@@ -13,7 +13,8 @@ public record MemberDetailInfoResponseDto(
         Cash cash,
         long questionSize,
         long answerSize,
-        String emailAddress
+        String emailAddress,
+        boolean isEmailVerified
 ) {
     @JsonCreator
     public MemberDetailInfoResponseDto{}

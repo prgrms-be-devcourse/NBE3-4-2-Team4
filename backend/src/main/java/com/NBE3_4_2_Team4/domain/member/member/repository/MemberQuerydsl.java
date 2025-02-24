@@ -39,7 +39,8 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                         m.cash,
                         q.count(),
                         a.count(),
-                        m.emailAddress))
+                        m.emailAddress,
+                        m.emailVerified))
                 .distinct()
                 .where(m.id.eq(member.getId()))
                 .groupBy(m.nickname)

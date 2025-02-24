@@ -95,15 +95,8 @@ public class MemberController {
             HttpServletResponse resp
     ){
         boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
-        String location;
-
-        if (isEmailVerified) {
-           location = String.format("%s/verify-email/success", frontDomain);
-        }else {
-            location = String.format("%s/verify-email/fail", frontDomain);
-            String tempToken = jwtManager.generateTempToken(memberId, emailAddress);
-            httpManager.setTempTokenForVerifyEmailCookie(resp, tempToken, 5);
-        }
+        String result = isEmailVerified ? "success" : "fail";
+        String location = String.format("%s/verify-email/%s", frontDomain, result);
 
         httpManager.expireJwtCookie(resp);
 
@@ -117,12 +110,10 @@ public class MemberController {
     }
 
     @PostMapping ("/api/members/resend-verification-email")
-    public RsData<Empty> resendVerificationEmail(
-            @CookieValue("tempToken") String tempToken
-    ){
-        Map<String, Object> map = jwtManager.getClaims(tempToken);
-        Long memberId = (Long) map.get("memberId");
-        String emailAddress = (String) map.get("emailAddress");
+    public RsData<Empty> resendVerificationEmail(){
+        Member member = AuthManager.getNonNullMember();
+        Long memberId = member.getId();
+        String emailAddress = member.getEmailAddress();
         memberService.sendAuthenticationMail(memberId, emailAddress);
 
         return new RsData<>("200-1", "resend verification email complete");
