@@ -56,6 +56,6 @@ public class MailService {
                 "authCode", authCode
         );
         String body = makeThymeleafMailContent("auth-email", variables);
-        sendEmail(emailAddress, "인증 완료해주세용", body);
+        sendEmail(emailAddress, "[WikiPoint] 이메일 인증을 완료해주세요.", body);
     }
 }
