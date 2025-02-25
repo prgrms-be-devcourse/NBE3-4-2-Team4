@@ -18,6 +18,7 @@ public class JwtObjectMapper {
         Boolean emailVerified = (Boolean) claims.get(AuthConstants.EMAIL_VERIFIED);
 
         if (id == null
+                || isNullOrBlank(username)
                 || isNullOrBlank(nickname)
                 || isNullOrBlank(roleName)
                 || isNullOrBlank(OAuth2ProviderName)
