@@ -23,8 +23,7 @@ public class CashService implements AssetService {
     private final AssetHistoryService assetHistoryService;
 
     @Transactional
-    @Override
-    public Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
+    private Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
         Cash.validateAmount(amount);
         if (fromUsername.equals(toUsername)) throw new ServiceException("401-1", "자기 자신에게 송금할 수 없습니다");
 
@@ -62,8 +61,7 @@ public class CashService implements AssetService {
     }
 
     @Transactional
-    @Override
-    public Member deductWithoutHistory(String from, long amount) {
+    private Member deductWithoutHistory(String from, long amount) {
         Cash.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(from)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", from)));
@@ -83,8 +81,7 @@ public class CashService implements AssetService {
     }
 
     @Transactional
-    @Override
-    public Member accumulateWithoutHistory(String to, long amount) {
+    private Member accumulateWithoutHistory(String to, long amount) {
         Cash.validateAmount(amount);
         Member member = memberRepository.findByUsernameWithLock(to)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", to)));
@@ -100,6 +97,6 @@ public class CashService implements AssetService {
     @Override
     public Long accumulate(String to, long amount, AssetCategory assetCategory) {
         Member member = accumulateWithoutHistory(to, amount);
-        return assetHistoryService.createHistory(member, null, amount, assetCategory, AssetType.CASH,UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount, assetCategory, AssetType.CASH, UUID.randomUUID().toString());
     }
 }

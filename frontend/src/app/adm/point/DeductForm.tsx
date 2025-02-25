@@ -15,6 +15,13 @@ import { paths } from "@/lib/backend/apiV1/schema";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const client = createClient<paths>({
   baseUrl: "http://localhost:8080",
@@ -23,6 +30,7 @@ const client = createClient<paths>({
 export default function DeductForm() {
   const [username, setUsername] = useState("");
   const [amount, setAmount] = useState(0);
+  const [selectedType, setSelectedType] = useState("POINT");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -50,10 +58,11 @@ export default function DeductForm() {
       return;
     }
 
-    const data = await client.PUT("/api/admin/points/deduct", {
+    const data = await client.PUT("/api/admin/asset/deduct", {
       body: {
         username: username,
         amount: Number(amount),
+        assetType: selectedType
       },
       credentials: "include",
     });
@@ -80,22 +89,35 @@ export default function DeductForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">포인트 차감</CardTitle>
+        <CardTitle className="text-lg">차감</CardTitle>
       </CardHeader>
 
       <CardContent className="flex gap-2">
         <Input
           type="text"
-          placeholder="포인트 차감 대상"
+          placeholder="차감 대상"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <Input
           type="number"
-          placeholder="포인트 금액을 입력하세요"
+          placeholder="금액을 입력하세요"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+         <Select
+                                                value={selectedType}
+                                                onValueChange={(value) => setSelectedType(value)}
+                                              >
+                                                <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
+                                                  <SelectValue placeholder="재화 타입" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+
+                                                  <SelectItem value="POINT">포인트</SelectItem>
+                                                  <SelectItem value="CASH">캐시</SelectItem>
+                                                </SelectContent>
+                                           </Select>
         <Button onClick={handleDeduct}>차감</Button>
       </CardContent>
     </Card>

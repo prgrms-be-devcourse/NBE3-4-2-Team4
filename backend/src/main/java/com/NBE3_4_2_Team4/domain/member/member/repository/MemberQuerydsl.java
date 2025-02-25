@@ -36,6 +36,7 @@ public class MemberQuerydsl extends QuerydslRepositorySupport {
                         m.username,
                         m.nickname,
                         m.point,
+                        m.cash,
                         q.count(),
                         a.count()))
                 .distinct()

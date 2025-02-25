@@ -31,9 +31,11 @@ function formatDate(date: string) {
 export default function ClientPage({
   body,
   point,
+  cash,
 }: {
   body: PageDtoPointHistoryRes;
   point: number;
+  cash : number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,7 +43,8 @@ export default function ClientPage({
   const { toast } = useToast();
 
   const currentPage = Number(searchParams.get("page")) || 1;
-  const selectedCategory = String(searchParams.get("pointCategory") || "");
+  const selectedCategory = String(searchParams.get("assetCategory") || "");
+  const selectedType = String(searchParams.get("assetType") || "");
 
   const handleCategoryChange = (value: string) => {
     const newCategory = value === "전체" ? "" : value;
@@ -49,13 +52,27 @@ export default function ClientPage({
     const queryParams = new URLSearchParams();
 
     if (newCategory) {
-      queryParams.set("pointCategory", newCategory);
+      queryParams.set("assetCategory", newCategory);
     } else {
-      queryParams.delete("pointCategory");
+      queryParams.delete("assetCategory");
     }
 
     router.push(`?${queryParams.toString()}`);
   };
+
+    const handleTypeChange = (value: string) => {
+      const newType = value === "전체" ? "" : value;
+
+      const queryParams = new URLSearchParams();
+
+      if (newType) {
+        queryParams.set("assetType", newType);
+      } else {
+        queryParams.delete("assetType");
+      }
+
+      router.push(`?${queryParams.toString()}`);
+    };
 
   //날짜 부분
 
@@ -134,7 +151,7 @@ export default function ClientPage({
           <AttendanceButton />
         </div>
       </div>
-      <TransferForm point={point} />
+      <TransferForm point={point} cash={cash} />
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -199,6 +216,20 @@ export default function ClientPage({
               <SelectItem value="RANKING">랭킹</SelectItem>
             </SelectContent>
           </Select>
+
+                 <Select
+                      value={selectedType}
+                      onValueChange={(value: string) => handleTypeChange(value)}
+                    >
+                      <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
+                        <SelectValue placeholder="재화 타입으로 검색" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="전체">전체</SelectItem>
+                        <SelectItem value="POINT">포인트</SelectItem>
+                        <SelectItem value="CASH">캐시</SelectItem>
+                      </SelectContent>
+                 </Select>
         </div>
 
         <ul>
@@ -234,8 +265,7 @@ export default function ClientPage({
                     item.amount >= 0 ? "text-sky-400" : "text-rose-500"
                   }`}
                 >
-                  {item.amount >= 0 ? "+" : ""}
-                  {item.amount}
+                  {`${item.amount >= 0 ? "+" : ""}${item.amount} ${item.assetType}`}
                 </div>
               </div>
             </li>
