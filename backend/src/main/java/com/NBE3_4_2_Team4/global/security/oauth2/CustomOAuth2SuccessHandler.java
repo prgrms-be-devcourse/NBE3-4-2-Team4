@@ -46,8 +46,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final HttpManager httpManager;
 
     private final PointService pointService;
-//    private final AssetHistoryRepository assetHistoryRepository;
-//    private final MemberQuerydsl memberQuerydsl;
 
     @SneakyThrows
     @Transactional
@@ -73,7 +71,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         if(member.isFirstLoginToday()){
             pointService.attend(member.getId());
-//            rewardPointForFirstLoginOfDay(member);
 
             targetUrl += String.format("?attendanceMessage=%s",
                     URLEncoder.encode(
@@ -93,18 +90,4 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         resp.sendRedirect(String.format("%s/signup", frontDomain));
     }
-//
-//
-//    private void rewardPointForFirstLoginOfDay(Member member){
-//        LocalDate today = LocalDate.now();
-//        memberQuerydsl.updateLastLoginDate(member, today);
-//
-//        assetHistoryRepository.save(AssetHistory.builder()
-//                .member(member)
-//                .amount(PointConstants.ATTENDANCE_POINT)
-//                .assetType(AssetType.POINT)
-//                .assetCategory(AssetCategory.ATTENDANCE)
-//                .correlationId("asdasdasdaff")
-//                .build());
-//    }
 }
