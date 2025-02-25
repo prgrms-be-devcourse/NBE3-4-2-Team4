@@ -58,11 +58,14 @@ custom: #   이 둘은 실제 서비스 시 변경 or prod.yml 을 만들고 거
         username: admin@test.com
         password: 1234
         nickname: 관리자
+        email: admin@test.com
       member1:
         username: test@test.com
         password: 1234
         nickname: 테스트 유저
+        email: member1@test.com
       member2:
         username: test2@test.com
         password: 1234
         nickname: 테스트 유저 2
+        email: member2@test.com

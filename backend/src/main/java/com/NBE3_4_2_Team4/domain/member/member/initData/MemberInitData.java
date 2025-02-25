@@ -26,38 +26,39 @@ import org.springframework.transaction.annotation.Transactional;
 @Configuration
 @RequiredArgsConstructor
 public class MemberInitData {
-//    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final AssetHistoryRepository assetHistoryRepository;
+
+
     @Value("${custom.initData.member.admin.username}")
     private String adminUsername;
-
     @Value("${custom.initData.member.admin.password}")
     private String adminPassword;
-
     @Value("${custom.initData.member.admin.nickname}")
     private String adminNickname;
+    @Value("${custom.initData.member.admin.email}")
+    private String adminEmail;
 
 
     @Value("${custom.initData.member.member1.username}")
     private String member1Username;
-
     @Value("${custom.initData.member.member1.password}")
     private String member1Password;
-
     @Value("${custom.initData.member.member1.nickname}")
     private String member1Nickname;
+    @Value("${custom.initData.member.member1.email}")
+    private String member1Email;
 
 
     @Value("${custom.initData.member.member2.username}")
     private String member2Username;
-
     @Value("${custom.initData.member.member2.password}")
     private String member2Password;
-
     @Value("${custom.initData.member.member2.nickname}")
     private String member2Nickname;
+    @Value("${custom.initData.member.member2.email}")
+    private String member2Email;
 
 
     @Autowired
@@ -91,6 +92,8 @@ public class MemberInitData {
                 .username(adminUsername)
                 .password(passwordEncoder.encode(adminPassword))
                 .nickname(adminNickname)
+                .emailAddress(adminEmail)
+                .emailVerified(true)
                 .role(Member.Role.ADMIN)
                 .oAuth2Provider(oAuth2Provider)
                 .build());
@@ -100,6 +103,8 @@ public class MemberInitData {
                 .username(member1Username)
                 .password(passwordEncoder.encode(member1Password))
                 .nickname(member1Nickname)
+                .emailAddress(member1Email)
+                .emailVerified(true)
                 .role(Member.Role.USER)
                 .oAuth2Provider(oAuth2Provider)
                 .build());
@@ -109,14 +114,11 @@ public class MemberInitData {
                 .username(member2Username)
                 .password(passwordEncoder.encode(member2Password))
                 .nickname(member2Nickname)
+                .emailAddress(member2Email)
+                .emailVerified(true)
                 .role(Member.Role.USER)
                 .oAuth2Provider(oAuth2Provider)
                 .build());
         saveSignUpPoint(member2);
-
-
-//        memberService.signUp(adminUsername, adminPassword, adminNickname, Member.Role.ADMIN, oAuth2Provider);
-//        memberService.signUp(member1Username, member1Password, member1Nickname, Member.Role.USER, oAuth2Provider);
-//        memberService.signUp(member2Username, member2Password, member2Nickname, Member.Role.USER, oAuth2Provider);
     }
 }

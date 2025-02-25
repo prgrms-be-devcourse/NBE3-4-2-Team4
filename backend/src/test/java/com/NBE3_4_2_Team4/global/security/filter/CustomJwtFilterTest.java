@@ -7,6 +7,7 @@ import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -67,6 +68,8 @@ public class CustomJwtFilterTest {
     @Value("${custom.initData.member.admin.nickname}")
     private String adminNickname;
 
+    @Value("${custom.initData.member.admin.email}")
+    private String adminEmail;
 
 
     @Value("${custom.initData.member.member1.username}")
@@ -75,6 +78,8 @@ public class CustomJwtFilterTest {
     @Value("${custom.initData.member.member1.nickname}")
     private String member1Nickname;
 
+    @Value("${custom.initData.member.member1.email}")
+    private String member1Email;
 
     @Value("${custom.domain.backend}")
     String backendDomain;
@@ -92,6 +97,7 @@ public class CustomJwtFilterTest {
                 .nickname(member1Nickname)
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .emailAddress(member1Email)
                 .build();
 
         admin = Member.builder()
@@ -100,6 +106,7 @@ public class CustomJwtFilterTest {
                 .nickname(adminNickname)
                 .role(Member.Role.ADMIN)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .emailAddress(adminEmail)
                 .build();
 
         byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
@@ -234,11 +241,13 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter11() throws Exception {
         when(jwtManager.generateAccessToken(member))
                 .thenReturn(Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
                         .signWith(key)
@@ -270,11 +279,13 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter12() throws Exception {
         when(jwtManager.generateAccessToken(member))
                 .thenReturn(Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
                         .signWith(key)
@@ -288,11 +299,13 @@ public class CustomJwtFilterTest {
 
         Mockito.doReturn(
                 Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                         .signWith(key)

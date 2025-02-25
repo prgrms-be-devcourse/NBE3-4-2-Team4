@@ -420,14 +420,14 @@ public class MemberServiceTest {
     void isNicknameDuplicateTest1(){
         when(memberRepository.existsByUsername(member.getUsername())).thenReturn(true);
 
-        assertFalse(memberService.isNicknameDuplicate(member.getUsername()));
+        assertFalse(memberService.isNicknameAvailable(member.getUsername()));
     }
 
     @Test
     void isNicknameDuplicateTest2(){
         when(memberRepository.existsByUsername(member.getUsername())).thenReturn(false);
 
-        assertTrue(memberService.isNicknameDuplicate(member.getUsername()));
+        assertTrue(memberService.isNicknameAvailable(member.getUsername()));
     }
 
     @Test
