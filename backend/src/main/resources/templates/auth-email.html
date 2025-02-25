@@ -4,18 +4,28 @@
     <meta charset="UTF-8">
     <title>이메일 인증</title>
 </head>
-<body>
-<h1>이메일 인증 요청</h1>
-<p>아래 버튼을 눌러 이메일 인증을 완료하세요.</p>
-<!-- 인증을 위한 POST 방식 양식 -->
-<form th:action="@{${backendDomain}/api/members/verify-email}" method="post">
-    <input type="hidden" name="authCode" th:value="${authCode}" />
-    <input type="hidden" name="memberId" th:value="${memberId}" />
+<body style="background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
 
-    <button type="submit" style="display:inline-block;padding:10px 20px;background:#007bff;color:white;text-decoration:none;border-radius:5px;">
-        이메일 인증하기
-    </button>
-</form>
+<!-- 전체 컨테이너를 중앙 정렬 및 최대 너비 지정 -->
+<div style="background-color: white; padding: 24px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); text-align: center; max-width: 600px; width: 100%; margin: auto;">
+    <h1 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">이메일 인증 요청</h1>
+    <p style="color: #4b5563; margin-bottom: 16px;">아래 버튼을 눌러 이메일 인증을 완료하세요.</p>
+
+    <form th:action="@{${backendDomain}/api/members/verify-email}" method="post">
+        <input type="hidden" name="authCode" th:value="${authCode}" />
+        <input type="hidden" name="memberId" th:value="${memberId}" />
+
+        <!-- 버튼 스타일 수정 -->
+        <button type="submit"
+                style="background-color: #3b82f6; color: white; font-weight: bold; padding: 12px 20px; border-radius: 4px; border: none; cursor: pointer; transition: background-color 0.2s;">
+            이메일 인증하기
+        </button>
+    </form>
+
+    <p style="color: #6b7280; font-size: 12px; margin-top: 16px;">
+        ⚠ 본인이 요청한 인증이 아니라면 이 메일을 무시하세요.
+    </p>
+</div>
 
 </body>
 </html>
