@@ -19,8 +19,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
 import React from "react";
+import MyEditor from "@/lib/business/components/MyEditor";
+import { useFileUploader } from "@/lib/business/components/FileUploader";
+
+interface EnhancedFile extends File {
+  uploadedUrl?: string;
+  blobId?: string;
+}
 
 const answerWriteFormSchema = z.object({
   content: z
@@ -31,11 +37,6 @@ const answerWriteFormSchema = z.object({
 });
 
 type AnswerWriteFormInputs = z.infer<typeof answerWriteFormSchema>;
-
-interface EnhancedFile extends File {
-  uploadedUrl?: string;
-  blobId?: string;
-}
 
 export default function ClientPage({
   params,
@@ -57,140 +58,7 @@ export default function ClientPage({
     },
   });
 
-  const MyEditor = React.useMemo(() => {
-    return (
-      <TinyMCEEditor
-        apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-        initialValue={form.getValues("content")}
-        onEditorChange={(content, editor) => {
-          form.setValue("content", content);
-
-          // 현재 에디터 이미지들 중 임시 이미지만 추출(이게 없으면 에디터에 올렸다가 지운 이미지까지 업로드 됨)
-          const currentImages = editor.dom
-            .select("img")
-            .map((img) => img.src)
-            .filter((src) => src.startsWith("blob:"));
-
-          // 업로드할 이미지들 중 현재 에디터에 있는 이미지들만 필터링
-          setUploadedImages((prev) => {
-            const updated = prev.filter((file) => {
-              return currentImages.includes(file.uploadedUrl || "");
-            });
-
-            return updated;
-          });
-        }}
-        init={{
-          language: "ko_KR",
-          height: 500,
-          menubar: false,
-          plugins: [
-            "advlist",
-            "autolink",
-            "codesample",
-            "emoticons",
-            "lists",
-            "link",
-            "image",
-            "charmap",
-            "preview",
-            "anchor",
-            "searchreplace",
-            "wordcount",
-            "media",
-            "table",
-          ],
-          toolbar:
-            "undo redo | blocks | " +
-            "bold italic underline strikethrough subscript superscript | " +
-            "forecolor backcolor | " +
-            "alignleft aligncenter alignright | " +
-            "bullist numlist outdent indent | " +
-            "codesample emoticons | link image media | table",
-          file_picker_types: "file media",
-          link_picker_callback: false,
-          link_quicklink: true,
-          media_alt_source: false,
-          media_poster: false,
-          images_upload_handler: async function (blobInfo, progress) {
-            try {
-              const currentBlob = blobInfo.blob();
-              const blobId = blobInfo.id();
-
-              // File 객체 생성 시 직접 Blob을 사용하고 lastModified 추가
-              const imageFile = new File([currentBlob], blobInfo.filename(), {
-                type: currentBlob.type,
-                lastModified: new Date().getTime(),
-              }) as EnhancedFile;
-
-              // 이미지 처리를 Promise로 래핑
-              const objectUrl = await new Promise<string>((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  const url = URL.createObjectURL(imageFile);
-                  imageFile.uploadedUrl = url;
-                  imageFile.blobId = blobId;
-
-                  setUploadedImages((prev) => {
-                    // blobId를 이용해 중복 확인
-                    const isDuplicate = prev.some(
-                      (file) => file.blobId === blobId
-                    );
-                    if (isDuplicate) return prev;
-
-                    return [...prev, imageFile];
-                  });
-
-                  resolve(url);
-                };
-                reader.readAsDataURL(currentBlob);
-              });
-
-              return objectUrl;
-            } catch (error) {
-              console.error("Image upload failed:", error);
-              throw error;
-            }
-          },
-        }}
-      />
-    );
-  }, []);
-
-  const uploadFiles = async (
-    files: File[],
-    parentId: number,
-    typeCode: "body" | "attachment"
-  ) => {
-    const formData = new FormData();
-    const filesToUpload =
-      typeCode === "attachment" ? [...files].reverse() : files;
-
-    for (const file of filesToUpload) {
-      formData.append("files", file);
-    }
-
-    const uploadResponse = await client.POST(
-      "/api/answers/{parentId}/genFiles/{typeCode}",
-      {
-        params: {
-          path: {
-            parentId,
-            typeCode,
-          },
-        },
-        body: formData as any,
-      }
-    );
-
-    if (uploadResponse.error) {
-      toast({
-        title: uploadResponse.error.msg,
-        variant: "destructive",
-      });
-      throw uploadResponse.error;
-    }
-  };
+  const { uploadFiles } = useFileUploader({ entityType: "answers" });
 
   const onSubmit = async (data: AnswerWriteFormInputs) => {
     try {
@@ -251,7 +119,13 @@ export default function ClientPage({
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormControl>{MyEditor}</FormControl>
+                <FormControl>
+                  <MyEditor
+                    form={form}
+                    uploadedImages={uploadedImages}
+                    onUploadedImagesChange={setUploadedImages}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

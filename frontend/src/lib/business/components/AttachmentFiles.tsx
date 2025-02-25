@@ -4,30 +4,35 @@ import { Button } from "@/components/ui/button";
 import client from "@/lib/backend/client";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Eye } from "lucide-react";
-import Image from "next/image";
 import { components } from "@/lib/backend/apiV1/schema";
 import { useEffect, useState } from "react";
-import imageLoader from "@/utils/imageLoader";
 import { getFileSize } from "@/utils/fileSize";
 import Link from "next/link";
+import { convertSnakeToCamel } from "@/utils/convertCase";
 
-type GenFile = components["schemas"]["AnswerGenFileDto"];
+type GenFile = components["schemas"]["GenFileDto"];
+type EntityType = "answers" | "questions";
 
-export const AnswerAttachmentFiles = ({
+export const AttachmentFiles = ({
   questionId,
-  answerId,
+  parentId,
+  entityType,
 }: {
   questionId: number;
-  answerId: number;
+  parentId: number;
+  entityType: EntityType;
 }) => {
   const { toast } = useToast();
   const [files, setFiles] = useState<GenFile[]>([]);
 
   useEffect(() => {
     const fetchFiles = async () => {
-      const response = await client.GET("/api/answers/{answerId}/genFiles", {
-        params: { path: { answerId } },
-      });
+      const response = await client.GET(
+        `/api/${entityType}/{parentId}/genFiles`,
+        {
+          params: { path: { parentId: parentId } },
+        }
+      );
 
       if (response.error) {
         toast({
@@ -41,12 +46,19 @@ export const AnswerAttachmentFiles = ({
     };
 
     fetchFiles();
-  }, [answerId, toast]);
+  }, [parentId, toast]);
+
+  const getViewPath = (file: GenFile) => {
+    if (entityType === "answers") {
+      return `/question/${questionId}/answer/${parentId}/genFile/${file.id}`;
+    }
+    return `/question/${questionId}/genFile/${file.id}`;
+  };
 
   return (
     <div className="flex flex-wrap gap-2 p-2">
-      {files
-        .filter((file) => file.type_code === "attachment")
+      {convertSnakeToCamel(files)
+        .filter((file) => file.typeCode === "attachment")
         .map((file) => (
           <Button
             key={file.id}
@@ -55,30 +67,30 @@ export const AnswerAttachmentFiles = ({
             className="h-8 px-3"
             asChild
           >
-            {file.file_ext_type_code === "img" ||
-            file.file_ext_type_code === "audio" ||
-            file.file_ext_type_code === "video" ? (
+            {file.fileExtTypeCode === "img" ||
+            file.fileExtTypeCode === "audio" ||
+            file.fileExtTypeCode === "video" ? (
               <Link
-                href={`/question/${questionId}/answer/${answerId}/genFile/${file.id}`}
+                href={getViewPath(file)}
                 className="flex items-center gap-1.5"
               >
                 <Eye className="h-3.5 w-3.5" />
                 <span className="max-w-[100px] truncate text-xs">
-                  {file.original_file_name}
+                  {file.originalFileName}
                 </span>
               </Link>
             ) : (
               <a
-                href={file.download_url}
+                href={file.downloadUrl}
                 className="flex items-center gap-1.5"
-                title={file.original_file_name}
+                title={file.originalFileName}
               >
                 <Download className="h-3.5 w-3.5" />
                 <span className="max-w-[100px] truncate text-xs">
-                  {file.original_file_name}
+                  {file.originalFileName}
                 </span>
                 <span className="text-xs text-gray-500">
-                  ({getFileSize(file.file_size)})
+                  ({getFileSize(file.fileSize)})
                 </span>
               </a>
             )}
