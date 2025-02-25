@@ -36,7 +36,7 @@ public class MessageController {
         return new RsData<>(
                 "201-1",
                 "쪽지를 성공적으로 보냈습니다.",
-                messageService.write(reqBody.receiverName(), reqBody.content())
+                messageService.write(reqBody.senderName(), reqBody.receiverName(), reqBody.title(), reqBody.content())
         );
     }
 
@@ -47,16 +47,6 @@ public class MessageController {
         return new RsData<>(
                 "200-1",
                 "%d번 쪽지를 삭제하였습니다.".formatted(id)
-        );
-    }
-
-    @PutMapping("/{id}")
-    @Operation(summary = "쪽지 수정", description = "쪽지 id에 해당하는 쪽지 수정, 작성자만 수정 가능")
-    public RsData<MessageDto> modify(@PathVariable long id, @RequestBody MessageWriteReqDto reqBody) {
-        return new RsData<>(
-                "200-2",
-                "%d번 쪽지를 수정하였습니다.".formatted(id),
-                messageService.modify(id, reqBody.content())
         );
     }
 

@@ -19,6 +19,10 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final MemberRepository memberRepository;
 
+    public long count() {
+        return messageRepository.count();
+    }
+
     @Transactional(readOnly = true)
     public List<MessageDto> getMessages() {
         Member actor = AuthManager.getNonNullMember();
@@ -40,13 +44,14 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageDto write(String receiverName, String content) {
-        Member sender = AuthManager.getNonNullMember();
+    public MessageDto write(String senderName, String receiverName, String title, String content) {
+        Member sender = memberRepository.findByUsername(senderName).get();
         Member receiver = memberRepository.findByUsername(receiverName).get();
 
         Message message = Message.builder()
                 .sender(sender)
                 .receiver(receiver)
+                .title(title)
                 .content(content)
                 .isChecked(false)
                 .build();
@@ -63,18 +68,6 @@ public class MessageService {
 
         message.checkActorCanDelete(actor);
         messageRepository.deleteById(id);
-    }
-
-    @Transactional
-    public MessageDto modify(long id, String content) {
-        Member actor = AuthManager.getNonNullMember();
-        Message message = messageRepository.findById(id)
-                .orElseThrow(() -> new ServiceException("404-1", "존재하지 않는 메시지입니다."));
-
-        message.checkSenderCanModify(actor);
-        message.setContent(content);
-
-        return new MessageDto(message);
     }
 
     @Transactional

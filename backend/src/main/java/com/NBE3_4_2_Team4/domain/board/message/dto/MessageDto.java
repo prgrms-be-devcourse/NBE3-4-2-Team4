@@ -12,11 +12,15 @@ public class MessageDto {
     private final Member receiver;
     private final boolean isChecked;
     private final LocalDateTime createdAt;
+    private final String title;
+    private final String content;
 
     public MessageDto(Message message) {
         this.sender = message.getSender();
         this.receiver = message.getReceiver();
         this.isChecked = message.isChecked();
         this.createdAt = message.getCreatedAt();
+        this.title = message.getTitle();
+        this.content = message.getContent();
     }
 }
