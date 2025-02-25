@@ -7,7 +7,6 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-//import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
