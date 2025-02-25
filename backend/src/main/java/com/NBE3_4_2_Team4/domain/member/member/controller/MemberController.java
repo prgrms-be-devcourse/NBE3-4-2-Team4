@@ -54,7 +54,7 @@ public class MemberController {
     }
 
     @ExceptionHandler(EmailAlreadyVerifiedException.class)
-    public ResponseEntity<RsData<Empty>> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException e) {
+    public ResponseEntity<RsData<Empty>> handleEmailAlreadyVerifiedException() {
         String location = String.format("%s/verify-email/%s", frontDomain, "already-verified");
 
         return ResponseEntity
@@ -173,7 +173,7 @@ public class MemberController {
 
 
     @PostMapping ("/api/members/resend-verification-email")
-    @Operation(summary = "verify email", description = "인증 이메일을 재전송합니다..")
+    @Operation(summary = "verify email", description = "인증 이메일을 재전송합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 결과에 따른 리다이렉트."),
             @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
