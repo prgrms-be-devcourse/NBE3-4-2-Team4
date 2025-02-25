@@ -11,7 +11,7 @@
     <h1 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">이메일 인증 요청</h1>
     <p style="color: #4b5563; margin-bottom: 16px;">아래 버튼을 눌러 이메일 인증을 완료하세요.</p>
 
-    <form th:action="@{${backendDomain}/api/members/verify-email}" method="post">
+    <form th:action="@{${backendDomain} + '/api/members/verify-email'}" method="post">
         <input type="hidden" name="authCode" th:value="${authCode}" />
         <input type="hidden" name="memberId" th:value="${memberId}" />
 
@@ -21,7 +21,6 @@
             이메일 인증하기
         </button>
     </form>
-
     <p style="color: #6b7280; font-size: 12px; margin-top: 16px;">
         ⚠ 본인이 요청한 인증이 아니라면 이 메일을 무시하세요.
     </p>
