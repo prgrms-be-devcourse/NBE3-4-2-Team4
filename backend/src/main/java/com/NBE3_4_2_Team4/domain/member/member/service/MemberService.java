@@ -70,7 +70,7 @@ public class MemberService {
 
 
 
-    public boolean isNicknameDuplicate(String nickname) {
+    public boolean isNicknameAvailable(String nickname) {
         return !memberRepository.existsByUsername(nickname);
     }
 
