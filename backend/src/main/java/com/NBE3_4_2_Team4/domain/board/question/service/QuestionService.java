@@ -1,6 +1,8 @@
 package com.NBE3_4_2_Team4.domain.board.question.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
@@ -9,7 +11,7 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
@@ -31,25 +33,28 @@ public class QuestionService {
     private final QuestionCategoryRepository questionCategoryRepository;
     private final PointService pointService;
     private final AnswerRepository answerRepository;
+    private final MemberRepository memberRepository;
 
     public long count() {
         return questionRepository.count();
     }
 
     @Transactional
-    public QuestionDto write(String title, String content, Long categoryId, Member author, long point) {
+    public QuestionDto write(String title, String content, Long categoryId,
+                             Member author, long amount, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         Question question = Question.builder()
                 .title(title)
                 .content(content)
                 .author(author)
                 .category(category)
-                .point(point)
+                .assetType(assetType)
+                .amount(amount)
                 .rankReceived(false)
                 .build();
 
         //질문글 작성 시 포인트 차감
-        pointService.deduct(author.getUsername(), point, AssetCategory.QUESTION.QUESTION);
+        pointService.deduct(author.getUsername(), amount, AssetCategory.QUESTION);
         questionRepository.save(question);
 
         return new QuestionDto(question);
@@ -64,33 +69,63 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+    public Page<QuestionDto> getQuestions(int page, int pageSize, String searchKeyword, long categoryId,
+                                          QuestionSearchKeywordType keywordType, String asset) {
+        AssetType assetType = AssetType.fromValue(asset);
 
-        return questionRepository.findByKw(searchKeywordType, searchKeyword, pageRequest)
+        if (categoryId == 0 && asset.equals("ALL")) {
+            return findByListed(page, pageSize, searchKeyword, keywordType);
+        }
+        // 카테고리 ID만 설정된 경우
+        if (categoryId != 0 && assetType == AssetType.ALL) {
+            return getQuestionsByCategory(categoryId, page, pageSize);
+        }
+        // assetType 만 설정된 경우
+        if (categoryId == 0 && assetType != AssetType.ALL) {
+            return getQuestionsByAssetType(assetType, page, pageSize);
+        }
+        // 둘 다 설정된 경우
+        return getQuestionsByCategoryAndAssetType(categoryId, page, pageSize, assetType);
+    }
+
+    private PageRequest createPageRequest(int page, int pageSize) {
+        return PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    private Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
+        return questionRepository.findByKw(searchKeywordType, searchKeyword, createPageRequest(page, pageSize))
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategoryAndAssetType(category, assetType, createPageRequest(page, pageSize))
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
+        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
+
+        return questionRepository.findByCategory(category, createPageRequest(page, pageSize))
+                .map(QuestionDto::new);
+    }
+
+    private Page<QuestionDto> getQuestionsByAssetType(AssetType assetType, int page, int pageSize) {
+       return questionRepository.findByAssetType(assetType, createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     @Transactional(readOnly = true)
-    public Page<QuestionDto> findByUserListed(Member actor, int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+    public Page<QuestionDto> findByUserListed(int page, int pageSize, String username) {
+        Member actor = memberRepository.findByUsername(username).get();
 
-        return questionRepository.findByAuthor(actor, pageRequest).map(QuestionDto::new);
+        return questionRepository.findByAuthor(actor, createPageRequest(page, pageSize)).map(QuestionDto::new);
     }
 
     @Transactional(readOnly = true)
     public Page<QuestionDto> findByRecommends(int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findRecommendedQuestions(pageRequest)
-                .map(QuestionDto::new);
-    }
-
-    public Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
-        QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
-
-        return questionRepository.findByCategory(category, pageRequest)
+        return questionRepository.findRecommendedQuestions(createPageRequest(page, pageSize))
                 .map(QuestionDto::new);
     }
 
@@ -112,14 +147,17 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionDto update(long id, String title, String content, Member actor, long point, long categoryId) {
+    public QuestionDto update(long id, String title, String content, Member actor, long amount, long categoryId) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
 
-        question.modify(title, content, point, category);
+        if (amount < question.getAmount()) {
+            throw new ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.");
+        }
+        question.modify(title, content, amount, category);
         return new QuestionDto(question);
     }
 
@@ -148,7 +186,7 @@ public class QuestionService {
         question.setClosed(true);
 
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
-        pointService.accumulate(answer.getAuthor().getUsername(), question.getPoint(), AssetCategory.ANSWER);
+        pointService.accumulate(answer.getAuthor().getUsername(), question.getAmount(), AssetCategory.ANSWER);
 
         return new QuestionDto(question);
     }
@@ -165,13 +203,13 @@ public class QuestionService {
 
             if(question.getAnswers().size() == 0) {
                 //답변자가 없는 경우 질문자에게 포인트 반환
-                pointService.accumulate(question.getAuthor().getUsername(), question.getPoint(), AssetCategory.REFUND);
+                pointService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
 
                 continue;
             }
 
-            long selectedPoint = question.getPoint() != 0 && question.getPoint() / question.getAnswers().size() > 1
-                    ? question.getPoint() / question.getAnswers().size()
+            long selectedPoint = question.getAmount() != 0 && question.getAmount() / question.getAnswers().size() > 1
+                    ? question.getAmount() / question.getAnswers().size()
                     : 1; //최소 1포인트는 받을 수 있도록
 
             for(Answer answer : question.getAnswers()) {

@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
 import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
@@ -25,20 +26,15 @@ public class QuestionController {
     @GetMapping
     @Operation(summary = "질문 글 조회 with 검색", description = "지식인 질문을 검색어, 페이지, 페이지 크기를 기준으로 조회")
     public PageDto<QuestionDto> getQuestions(@RequestParam(defaultValue = "") String searchKeyword,
-                                             @RequestParam(defaultValue = "ALL")QuestionSearchKeywordType keywordType,
+                                             @RequestParam(defaultValue = "ALL") QuestionSearchKeywordType keywordType,
+                                             @RequestParam(defaultValue = "ALL") String assetType,
                                              @RequestParam(defaultValue = "1") int page,
                                              @RequestParam(defaultValue = "10") int pageSize,
                                              @RequestParam(defaultValue = "0") long categoryId
                                              ) {
-        if(categoryId == 0) {
-            return new PageDto<>(
-                    questionService.findByListed(page, pageSize, searchKeyword, keywordType)
-            );
-        } else {
-            return new PageDto<>(
-                    questionService.getQuestionsByCategory(categoryId, page, pageSize)
-            );
-        }
+        return new PageDto<>(
+                questionService.getQuestions(page, pageSize, searchKeyword, categoryId, keywordType, assetType)
+        );
     }
 
     @GetMapping("/recommends")
@@ -73,7 +69,7 @@ public class QuestionController {
     public RsData<QuestionWriteResDto> write(@RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member author = AuthManager.getMemberFromContext();
         QuestionDto question = questionService.write(reqBody.title(), reqBody.content(),
-                reqBody.categoryId(), author, reqBody.point());
+                reqBody.categoryId(), author, reqBody.amount(), reqBody.assetType());
 
         return new RsData<>(
                 "201-1",
@@ -90,7 +86,7 @@ public class QuestionController {
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member actor = AuthManager.getMemberFromContext();
         QuestionDto question = questionService.update(id, reqBody.title(), reqBody.content(),
-                actor, reqBody.point(), reqBody.categoryId());
+                actor, reqBody.amount(), reqBody.categoryId());
 
         return new RsData<>(
                 "200-2",
@@ -114,13 +110,13 @@ public class QuestionController {
         );
     }
 
-    @GetMapping("/me")
+    @PostMapping("/me")
     @Operation(summary = "내 질문 조회", description = "현재 사용자의 질문 조회")
     public PageDto<QuestionDto> getMyQuestions(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
-    ) {
-        Member actor = AuthManager.getMemberFromContext();
-        return new PageDto<>(questionService.findByUserListed(actor, page, pageSize));
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestBody @Valid MyQuestionReqDto reqBody
+            ) {
+        return new PageDto<>(questionService.findByUserListed(page, pageSize, reqBody.username()));
     }
 }

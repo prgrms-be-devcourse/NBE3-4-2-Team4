@@ -115,7 +115,7 @@ export default function ClientPage({
                   className="flex items-center gap-1 bg-amber-500 hover:bg-amber-500 text-white"
                 >
                   <Coins size={16} />
-                  {question.point}
+                  {question.amount}
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Pencil width={14} height={14} />
@@ -259,20 +259,6 @@ export default function ClientPage({
 
       {/* 페이지 이동 버튼 */}
       <Pagination1 totalPages={answers.totalPages ?? 0} />
-
-      {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          답변 작성
-        </h3>
-        <textarea
-          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring focus:ring-blue-500"
-          placeholder="답변을 입력하세요..."
-          rows={4}
-        />
-        <button className="mt-4 px-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md">
-          답변 등록
-        </button>
-      </div> */}
     </div>
   );
 }

@@ -9,6 +9,7 @@ export default async function Page({
     page?: string;
     searchKeyword?: string;
     keywordType?: string;
+    assetType?: string;
     categoryId?: number;
   };
 }) {
@@ -16,6 +17,7 @@ export default async function Page({
     page = 1,
     searchKeyword = "",
     keywordType = "ALL",
+    assetType = "ALL",
     categoryId = 0,
   } = await searchParams;
 
@@ -32,6 +34,7 @@ export default async function Page({
             | "AUTHOR"
             | "ANSWER_CONTENT"
             | undefined,
+          assetType: assetType as "ALL" | "POINT" | "CASH" | undefined,
           categoryId: Number(categoryId),
         },
       },

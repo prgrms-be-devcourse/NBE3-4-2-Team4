@@ -2,8 +2,8 @@ package com.NBE3_4_2_Team4.domain.asset.point.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryRes;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryRes;
 import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
@@ -53,18 +53,6 @@ public class PointController {
         );
     }
 
-    @GetMapping("/all")
-    @Operation(summary="포인트 기록 조회(필터 없는버전)")
-    public RsData<PageDto<AssetHistoryRes>> getPointHistoriesWithDateAndCategory(@RequestParam(defaultValue = "1") int page) {
-        Member member = getNonNullMember();
-        PageDto<AssetHistoryRes> points = assetHistoryService.getHistoryPage(member, page, POINT_HISTORY_SIZE);
-
-        return new RsData<>(
-                "200-1",
-                "OK",
-                points
-        );
-    }
 
     @GetMapping()
     @Operation(summary="포인트 기록 조회(날짜 & 카테고리 필터포함)")

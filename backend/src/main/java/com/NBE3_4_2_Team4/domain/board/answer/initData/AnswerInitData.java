@@ -52,16 +52,16 @@ public class AnswerInitData {
         if (answerService.count() > 0) return;
 
         Question question1 = questionRepository.findById(1L).get();
-        Question question2 = questionRepository.findById(2L).get();
+        Question question3 = questionRepository.findById(3L).get();
 
         Member author = memberRepository.findByUsername(member1Username).get();
 
         Answer answer1 = answerService.save(question1, author, "답변 내용1");
         Answer answer2 = answerService.save(question1, author, "답변 내용2");
-        Answer answer3 = answerService.save(question2, author, "답변 내용3");
+        Answer answer3 = answerService.save(question3, author, "답변 내용3");
 
         for(int i = 0; i < 20; i++) {
-            answerService.save(question2, author, """
+            answerService.save(question3, author, """
                     What is Lorem Ipsum?
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                     

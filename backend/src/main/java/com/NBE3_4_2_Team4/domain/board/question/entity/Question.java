@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.board.question.entity;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -40,7 +41,10 @@ public class Question extends BaseTime {
     @Setter
     private boolean closed; //질문 상태(답변 추가 가능 여부)
 
-    private long point;
+    private long amount;
+
+    @Enumerated(EnumType.STRING) // 포인트/캐시 여부
+    private AssetType assetType;
 
     @Setter
     private boolean rankReceived; // 랭킹 포인트 지급 여부
@@ -49,10 +53,10 @@ public class Question extends BaseTime {
         return recommends == null ? 0 : recommends.size();
     }
 
-    public void modify(String title, String content, long point, QuestionCategory category) {
+    public void modify(String title, String content, long amount, QuestionCategory category) {
         this.title = title;
         this.content = content;
-        this.point = point;
+        this.amount = amount;
         this.category = category;
     }
 

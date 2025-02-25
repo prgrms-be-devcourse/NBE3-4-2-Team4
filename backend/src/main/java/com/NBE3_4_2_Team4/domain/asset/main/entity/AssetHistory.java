@@ -42,7 +42,7 @@ public class AssetHistory {
     @Column(nullable = false)
     private AssetCategory assetCategory;
 
-    //Cash or Point
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssetType assetType;
 }

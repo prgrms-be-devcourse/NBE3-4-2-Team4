@@ -14,6 +14,7 @@ import {
   Settings,
   LockOpen,
   UserRound,
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
@@ -211,6 +212,11 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
               <Button variant="link" asChild>
                 <Link href="/adm/point">
                   <Coins /> 포인트 관리
+                </Link>
+              </Button>
+              <Button variant="link" asChild>
+                <Link href="/adm/question">
+                  <MessageSquare /> 질문 관리
                 </Link>
               </Button>
             </>
