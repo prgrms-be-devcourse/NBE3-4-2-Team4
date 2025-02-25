@@ -92,6 +92,11 @@ public class Member {
 
     private LocalDate lastAttendanceDate;
 
+    public boolean isFirstLoginToday(){
+        LocalDate today = LocalDate.now();
+        return lastAttendanceDate == null || today.isBefore(lastAttendanceDate);
+    }
+
     public Member(Long id, String username, String nickname, String roleName, String oAuth2ProviderName, String emailAddress,  boolean emailVerified){
         this.id = id;
         this.username = username;

@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.global.security.oauth2;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
@@ -44,8 +45,9 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
 
-    private final AssetHistoryRepository assetHistoryRepository;
-    private final MemberQuerydsl memberQuerydsl;
+    private final PointService pointService;
+//    private final AssetHistoryRepository assetHistoryRepository;
+//    private final MemberQuerydsl memberQuerydsl;
 
     @SneakyThrows
     @Transactional
@@ -69,8 +71,9 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         String targetUrl = req.getParameter("state");
 
-        if(isFirstLoginToday(member)){
-            rewardPointForFirstLoginOfDay(member);
+        if(member.isFirstLoginToday()){
+            pointService.attend(member.getId());
+//            rewardPointForFirstLoginOfDay(member);
 
             targetUrl += String.format("?attendanceMessage=%s",
                     URLEncoder.encode(
@@ -90,23 +93,18 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         resp.sendRedirect(String.format("%s/signup", frontDomain));
     }
-
-    private boolean isFirstLoginToday(Member member) {
-        LocalDate today = LocalDate.now();
-        LocalDate lastLoginDate = member.getLastAttendanceDate();
-        return lastLoginDate == null || lastLoginDate.isBefore(today);
-    }
-
-    private void rewardPointForFirstLoginOfDay(Member member){
-        LocalDate today = LocalDate.now();
-        memberQuerydsl.updateLastLoginDate(member, today);
-
-        assetHistoryRepository.save(AssetHistory.builder()
-                .member(member)
-                .amount(PointConstants.ATTENDANCE_POINT)
-                .assetType(AssetType.POINT)
-                .assetCategory(AssetCategory.ATTENDANCE)
-                .correlationId("asdasdasdaff")
-                .build());
-    }
+//
+//
+//    private void rewardPointForFirstLoginOfDay(Member member){
+//        LocalDate today = LocalDate.now();
+//        memberQuerydsl.updateLastLoginDate(member, today);
+//
+//        assetHistoryRepository.save(AssetHistory.builder()
+//                .member(member)
+//                .amount(PointConstants.ATTENDANCE_POINT)
+//                .assetType(AssetType.POINT)
+//                .assetCategory(AssetCategory.ATTENDANCE)
+//                .correlationId("asdasdasdaff")
+//                .build());
+//    }
 }
