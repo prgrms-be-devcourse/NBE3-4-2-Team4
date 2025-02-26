@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {Button} from "@/components/ui/button";
 
 export default function ClientPage() {
     const [nickname, setNickname] = useState("");
@@ -165,12 +166,12 @@ export default function ClientPage() {
                         className="border p-2 rounded-md w-full"
                         placeholder="닉네임 입력"
                     />
-                    <button
+                    <Button
                         onClick={checkNicknameAvailability}
                         className="bg-blue-500 text-white px-5 py-2 rounded-md whitespace-nowrap"
                     >
                         중복 확인
-                    </button>
+                    </Button>
                 </div>
 
                 {/* 중복 확인 결과 메시지 */}
