@@ -1,8 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-
 import { components } from "@/lib/backend/apiV1/schema";
 
 import { Button } from "@/components/ui/button";
@@ -16,8 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
 import { getFileSize } from "@/utils/fileSize";
-import imageLoader from "@/utils/imageLoader";
 import { convertSnakeToCamel } from "@/utils/convertCase";
+import { FilePreview } from "@/lib/business/components/FilePreview";
 
 export default function ClientPage({
   id,
@@ -41,25 +39,9 @@ export default function ClientPage({
           <DialogTitle>파일 미리보기</DialogTitle>
           <DialogDescription>{genFile.originalFileName}</DialogDescription>
         </DialogHeader>
-        <div className="flex justify-center">
-          {genFile.fileExtTypeCode == "img" && (
-            <Image
-              loader={imageLoader}
-              src={genFile.publicUrl}
-              alt={genFile.originalFileName}
-              width={100}
-              height={100}
-              quality={100}
-              className="max-w-[80dvh] max-w-[80dvh] w-full"
-            />
-          )}
-          {genFile.fileExtTypeCode == "audio" && (
-            <audio src={genFile.publicUrl} controls />
-          )}
-          {genFile.fileExtTypeCode == "video" && (
-            <video src={genFile.publicUrl} controls />
-          )}
-        </div>
+
+        <FilePreview genFile={genFile} />
+
         <DialogFooter className="gap-2">
           <Button variant="link" asChild className="justify-start">
             <a href={genFile.downloadUrl} className="flex items-center gap-2">
