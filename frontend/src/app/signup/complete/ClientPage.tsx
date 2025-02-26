@@ -18,7 +18,7 @@ export default function ClientPage() {
                     ⚠ 인증 이메일을 확인하시고, 인증을 완료해 주세요.
                 </p>
 
-                <Button className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200">
+                <Button>
                     <Link href="/">
                         메인 페이지로 이동
                     </Link>

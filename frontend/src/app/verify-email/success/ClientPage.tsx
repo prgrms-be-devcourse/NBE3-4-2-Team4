@@ -16,7 +16,6 @@ export default function ClientPage(){
                 </p>
                 <Button
                     onClick={() => router.push('/login')} // 로그인 페이지로 이동
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
                 >
                     로그인 페이지로 가기
                 </Button>
