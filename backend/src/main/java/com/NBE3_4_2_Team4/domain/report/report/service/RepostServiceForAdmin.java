@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RepositoryService {
-    private final ReportRepository reportRepository;
+public class RepostServiceForAdmin {
+    public ReportRepository reportRepository;
 }
