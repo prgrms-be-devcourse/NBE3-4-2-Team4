@@ -18,10 +18,16 @@ import java.util.List;
 public class MessageController {
     private final MessageService messageService;
 
-    @GetMapping
-    @Operation(summary = "쪽지 조회", description = "받은 쪽지 목록 조회")
-    public List<MessageDto> getMessages() {
-        return messageService.getMessages();
+    @GetMapping("/send")
+    @Operation(summary = "보낸 쪽지 조회", description = "보낸 쪽지 목록 조회")
+    public List<MessageDto> getSentMessages() {
+        return messageService.getSentMessages();
+    }
+
+    @GetMapping("/receive")
+    @Operation(summary = "받은 쪽지 조회", description = "받은 쪽지 목록 조회")
+    public List<MessageDto> getReceivedMessages() {
+        return messageService.getReceivedMessages();
     }
 
     @GetMapping("/{id}")

@@ -30,7 +30,7 @@ public class Message extends BaseEntity {
     @Column(length = 100)
     private String title;
 
-    @Column(length = 200)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate

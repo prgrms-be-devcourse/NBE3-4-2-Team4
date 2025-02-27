@@ -129,34 +129,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/messages/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 쪽지 단건 조회
-         * @description 쪽지 id에 해당하는 쪽지 조회
-         */
-        get: operations["getMessage"];
-        /**
-         * 쪽지 수정
-         * @description 쪽지 id에 해당하는 쪽지 수정, 작성자만 수정 가능
-         */
-        put: operations["modify"];
-        post?: never;
-        /**
-         * 쪽지 삭제
-         * @description 쪽지 id에 해당하는 쪽지 삭제, 작성자만 삭제 가능
-         */
-        delete: operations["delete_1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/messages/{id}/read": {
         parameters: {
             query?: never;
@@ -382,11 +354,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 쪽지 조회
-         * @description 받은 쪽지 목록 조회
-         */
-        get: operations["getMessages"];
+        get?: never;
         put?: never;
         /**
          * 쪽지 작성
@@ -525,14 +493,14 @@ export interface paths {
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_2"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         /**
          * 답변 수정
          * @description 답변를 수정합니다.
          */
-        patch: operations["modify_1"];
+        patch: operations["modify"];
         trace?: never;
     };
     "/api/questions/recommends": {
@@ -704,6 +672,70 @@ export interface paths {
         };
         /** 포인트 기록 조회(날짜 & 카테고리 필터포함) */
         get: operations["getPointHistories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/messages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 쪽지 단건 조회
+         * @description 쪽지 id에 해당하는 쪽지 조회
+         */
+        get: operations["getMessage"];
+        put?: never;
+        post?: never;
+        /**
+         * 쪽지 삭제
+         * @description 쪽지 id에 해당하는 쪽지 삭제, 작성자만 삭제 가능
+         */
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/messages/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 보낸 쪽지 조회
+         * @description 보낸 쪽지 목록 조회
+         */
+        get: operations["getSentMessages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/messages/receive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 받은 쪽지 조회
+         * @description 받은 쪽지 목록 조회
+         */
+        get: operations["getReceivedMessages"];
         put?: never;
         post?: never;
         delete?: never;
@@ -941,113 +973,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"];
         };
-        MessageWriteReqDto: {
-            content: string;
-            receiverName: string;
-        };
-        Answer: {
-            /** Format: int64 */
-            readonly id?: number;
-            /** Format: date-time */
-            readonly createdAt?: string;
-            /** Format: date-time */
-            readonly modifiedAt?: string;
-            question?: components["schemas"]["Question"];
-            author?: components["schemas"]["Member"];
-            content?: string;
-            selected?: boolean;
-            /** Format: date-time */
-            selectedAt?: string;
-        };
-        Cash: {
-            /** Format: int64 */
-            amount?: number;
-        };
-        GrantedAuthority: {
-            authority?: string;
-        };
-        Member: {
-            /** Format: int64 */
-            id?: number;
-            /** @enum {string} */
-            role?: "ADMIN" | "USER";
-            username?: string;
-            password?: string;
-            realName?: string;
-            emailAddress?: string;
-            nickname?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            point?: components["schemas"]["Point"];
-            cash?: components["schemas"]["Cash"];
-            questions?: components["schemas"]["Question"][];
-            answers?: components["schemas"]["Answer"][];
-            oauth2RefreshToken?: components["schemas"]["OAuth2RefreshToken"];
-            /** Format: date */
-            lastAttendanceDate?: string;
-            /** @enum {string} */
-            oauth2Provider?: "NONE" | "KAKAO" | "NAVER" | "GOOGLE";
-            authorities?: components["schemas"]["GrantedAuthority"][];
-        };
-        MessageDto: {
-            sender?: components["schemas"]["Member"];
-            receiver?: components["schemas"]["Member"];
-            /** Format: date-time */
-            createdAt?: string;
-            checked?: boolean;
-        };
-        OAuth2RefreshToken: {
-            /** Format: int64 */
-            id?: number;
-            member?: components["schemas"]["Member"];
-            refreshToken?: string;
-            oauth2Id?: string;
-        };
-        Point: {
-            /** Format: int64 */
-            amount?: number;
-        };
-        Question: {
-            /** Format: int64 */
-            readonly id?: number;
-            /** Format: date-time */
-            readonly createdAt?: string;
-            /** Format: date-time */
-            readonly modifiedAt?: string;
-            author?: components["schemas"]["Member"];
-            title?: string;
-            content?: string;
-            category?: components["schemas"]["QuestionCategory"];
-            answers?: components["schemas"]["Answer"][];
-            recommends?: components["schemas"]["Recommend"][];
-            selectedAnswer?: components["schemas"]["Answer"];
-            closed?: boolean;
-            /** Format: int64 */
-            amount?: number;
-            /** @enum {string} */
-            assetType?: "캐시" | "포인트" | "전체";
-            rankReceived?: boolean;
-            /** Format: int64 */
-            recommendCount?: number;
-        };
-        QuestionCategory: {
-            /** Format: int64 */
-            readonly id?: number;
-            name?: string;
-        };
-        Recommend: {
-            /** Format: int64 */
-            readonly id?: number;
-            question?: components["schemas"]["Question"];
-            member?: components["schemas"]["Member"];
-            /** Format: date-time */
-            recommendAt?: string;
-        };
-        RsDataMessageDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["MessageDto"];
-        };
         AssetTransferReq: {
             username: string;
             /** Format: int64 */
@@ -1109,6 +1034,117 @@ export interface components {
             productImageUrl: string;
             productCategory: string;
             productSaleState: string;
+        };
+        MessageWriteReqDto: {
+            title: string;
+            content: string;
+            senderName: string;
+            receiverName: string;
+        };
+        Answer: {
+            /** Format: int64 */
+            readonly id?: number;
+            /** Format: date-time */
+            readonly createdAt?: string;
+            /** Format: date-time */
+            readonly modifiedAt?: string;
+            question?: components["schemas"]["Question"];
+            author?: components["schemas"]["Member"];
+            content?: string;
+            selected?: boolean;
+            /** Format: date-time */
+            selectedAt?: string;
+        };
+        Cash: {
+            /** Format: int64 */
+            amount?: number;
+        };
+        GrantedAuthority: {
+            authority?: string;
+        };
+        Member: {
+            /** Format: int64 */
+            id?: number;
+            /** @enum {string} */
+            role?: "ADMIN" | "USER";
+            username?: string;
+            password?: string;
+            realName?: string;
+            emailAddress?: string;
+            nickname?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            point?: components["schemas"]["Point"];
+            cash?: components["schemas"]["Cash"];
+            questions?: components["schemas"]["Question"][];
+            answers?: components["schemas"]["Answer"][];
+            oauth2RefreshToken?: components["schemas"]["OAuth2RefreshToken"];
+            /** Format: date */
+            lastAttendanceDate?: string;
+            /** @enum {string} */
+            oauth2Provider?: "NONE" | "KAKAO" | "NAVER" | "GOOGLE";
+            authorities?: components["schemas"]["GrantedAuthority"][];
+        };
+        MessageDto: {
+            sender?: components["schemas"]["Member"];
+            receiver?: components["schemas"]["Member"];
+            /** Format: date-time */
+            createdAt?: string;
+            title?: string;
+            content?: string;
+            checked?: boolean;
+        };
+        OAuth2RefreshToken: {
+            /** Format: int64 */
+            id?: number;
+            member?: components["schemas"]["Member"];
+            refreshToken?: string;
+            oauth2Id?: string;
+        };
+        Point: {
+            /** Format: int64 */
+            amount?: number;
+        };
+        Question: {
+            /** Format: int64 */
+            readonly id?: number;
+            /** Format: date-time */
+            readonly createdAt?: string;
+            /** Format: date-time */
+            readonly modifiedAt?: string;
+            author?: components["schemas"]["Member"];
+            title?: string;
+            content?: string;
+            category?: components["schemas"]["QuestionCategory"];
+            answers?: components["schemas"]["Answer"][];
+            recommends?: components["schemas"]["Recommend"][];
+            selectedAnswer?: components["schemas"]["Answer"];
+            closed?: boolean;
+            /** Format: int64 */
+            amount?: number;
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
+            rankReceived?: boolean;
+            /** Format: int64 */
+            recommendCount?: number;
+        };
+        QuestionCategory: {
+            /** Format: int64 */
+            readonly id?: number;
+            name?: string;
+        };
+        Recommend: {
+            /** Format: int64 */
+            readonly id?: number;
+            question?: components["schemas"]["Question"];
+            member?: components["schemas"]["Member"];
+            /** Format: date-time */
+            recommendAt?: string;
+        };
+        RsDataMessageDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["MessageDto"];
         };
         SignupRequestDto: {
             email: string;
@@ -1515,103 +1551,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getMessage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["MessageDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    modify: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MessageWriteReqDto"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataMessageDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    delete_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */
@@ -2126,35 +2065,6 @@ export interface operations {
             };
         };
     };
-    getMessages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["MessageDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     write_2: {
         parameters: {
             query?: never;
@@ -2560,7 +2470,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -2591,7 +2501,7 @@ export interface operations {
             };
         };
     };
-    modify_1: {
+    modify: {
         parameters: {
             query?: never;
             header?: never;
@@ -2891,6 +2801,126 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["MessageDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    delete_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getSentMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["MessageDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getReceivedMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["MessageDto"][];
                 };
             };
             /** @description Bad Request */

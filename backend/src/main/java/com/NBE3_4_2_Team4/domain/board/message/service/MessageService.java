@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.message.service;
 
 import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto;
 import com.NBE3_4_2_Team4.domain.board.message.entity.Message;
+import com.NBE3_4_2_Team4.domain.board.message.entity.MessageType;
 import com.NBE3_4_2_Team4.domain.board.message.repository.MessageRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -24,13 +25,26 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDto> getMessages() {
-        Member actor = AuthManager.getNonNullMember();
-        List<Message> messages = messageRepository.findAllByReceiver(actor);
+    public List<MessageDto> getSentMessages() {
+        return getMessagesByType(MessageType.SENT);
+    }
 
-        return messages.stream()
-                .map(MessageDto::new)
-                .toList();
+    @Transactional(readOnly = true)
+    public List<MessageDto> getReceivedMessages() {
+        return getMessagesByType(MessageType.RECEIVED);
+    }
+
+    private List<MessageDto> getMessagesByType(MessageType type) {
+        Member actor = AuthManager.getNonNullMember();
+        List<Message> messages;
+
+        if (type == MessageType.RECEIVED) {
+            messages = messageRepository.findAllByReceiver(actor);
+        } else {
+            messages = messageRepository.findAllBySender(actor);
+        }
+
+        return messages.stream().map(MessageDto::new).toList();
     }
 
     @Transactional(readOnly = true)
