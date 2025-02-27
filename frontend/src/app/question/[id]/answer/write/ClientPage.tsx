@@ -20,6 +20,7 @@ import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
 import React from "react";
 import MyEditor from "@/lib/business/components/MyEditor";
 import { useFileUploader } from "@/lib/business/components/FileUploader";
+import { FileUploadField } from "@/lib/business/components/FileUploadField";
 
 interface EnhancedFile extends File {
   uploadedUrl?: string;
@@ -127,31 +128,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="attachment_0"
-            render={({ field: { onChange, ...field } }) => (
-              <FormItem className="my-4">
-                <FormLabel>
-                  첨부파일 추가 (드래그 앤 드롭 가능, 최대 5개)
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    multiple
-                    accept={getUplodableInputAccept()}
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      onChange(files);
-                    }}
-                    {...field}
-                    value={undefined}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FileUploadField control={form.control} name="attachment_0" />
 
           <div className="mt-6 flex justify-start gap-2">
             <Button type="submit" disabled={form.formState.isSubmitting}>

@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import Pagination1 from "@/lib/business/components/Pagination1";
 import client from "@/lib/backend/client";
 import { AttachmentFiles } from "@/lib/business/components/AttachmentFiles";
+import { useRole } from "@/context/RoleContext";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -43,6 +44,7 @@ export default function ClientPage({
 }) {
   const router = useRouter();
   const { id } = useId();
+  const { role, setRole } = useRole();
   const { nickname } = useNickname();
   const { toast } = useToast();
 
@@ -106,7 +108,11 @@ export default function ClientPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="whitespace-pre-line">{question.content}</div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: question.content,
+              }}
+            />
           </CardContent>
           <CardFooter className="flex justify-end">
             <AttachmentFiles
@@ -146,14 +152,14 @@ export default function ClientPage({
                 </Button>
               )}
               {/* 수정 버튼 (작성자만 가능) */}
-              {question.name === nickname && (
+              {question.name === nickname && !question.closed && (
                 <Button variant="outline" onClick={handleEdit}>
                   수정
                 </Button>
               )}
 
               {/* 삭제 버튼 (작성자만 가능) */}
-              {question.name === nickname && (
+              {question.name === nickname && !question.closed && (
                 <Button variant="destructive" asChild>
                   <Link href={`/question/${question.id}/delete`}>삭제</Link>
                 </Button>
@@ -269,7 +275,7 @@ export default function ClientPage({
                       </Link>
                     </Button>
                   )}
-                  {(id === answer.authorId || nickname === "관리자") && (
+                  {(id === answer.authorId || role === "ADMIN") && (
                     <Button variant="destructive" asChild>
                       <Link
                         href={`/question/${question.id}/answer/${answer.id}/delete`}
