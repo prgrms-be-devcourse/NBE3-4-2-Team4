@@ -85,7 +85,6 @@ export default function ClientPage({ categories }: Props) {
   });
 
   const onSubmit = async (data: QuestionFormInputs) => {
-
     try {
       const response = await client.POST("/api/questions", {
         headers: {
@@ -204,54 +203,54 @@ export default function ClientPage({ categories }: Props) {
 
             {/* 포인트/캐시 설정 */}
             <div className="flex flex-col gap-2">
-            <FormField
-              control={form.control}
-              name="assetType"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-3">
-                    <div className="flex items-center gap-2 mt-2">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="포인트"
-                        checked={field.value === "포인트"}
-                        onChange={() => field.onChange("포인트")}
-                      />
-                      <Label>포인트</Label>
+              <FormField
+                control={form.control}
+                name="assetType"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-3">
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="radio"
+                          {...field}
+                          value="포인트"
+                          checked={field.value === "포인트"}
+                          onChange={() => field.onChange("포인트")}
+                        />
+                        <Label>포인트</Label>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="radio"
+                          {...field}
+                          value="캐시"
+                          checked={field.value === "캐시"}
+                          onChange={() => field.onChange("캐시")}
+                        />
+                        <Label>캐시</Label>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <input
-                        type="radio"
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
                         {...field}
-                        value="캐시"
-                        checked={field.value === "캐시"}
-                        onChange={() => field.onChange("캐시")}
+                        type="number"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        autoComplete="off"
+                        className="w-[120px]"
                       />
-                      <Label>캐시</Label>
-                    </div>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      autoComplete="off"
-                      className="w-[120px]"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
 

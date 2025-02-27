@@ -108,6 +108,13 @@ export default function ClientPage({
           <CardContent>
             <div className="whitespace-pre-line">{question.content}</div>
           </CardContent>
+          <CardFooter className="flex justify-end">
+            <AttachmentFiles
+              questionId={question.id}
+              parentId={question.id}
+              entityType="questions"
+            />
+          </CardFooter>
           <CardFooter className="flex justify-between gap-2 sm:flex-row flex-col sm:items-center items-start">
             <div>
               <div className="flex items-center gap-2">
@@ -153,7 +160,6 @@ export default function ClientPage({
               )}
             </div>
           </CardFooter>
-          <CardFooter></CardFooter>
         </Card>
       </div>
 
