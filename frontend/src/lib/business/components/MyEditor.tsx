@@ -8,12 +8,14 @@ interface EnhancedFile extends File {
 
 interface MyEditorProps {
   form: any;
+  name?: string;
   uploadedImages: EnhancedFile[];
   onUploadedImagesChange: (images: EnhancedFile[]) => void;
 }
 
 export default function MyEditor({
   form,
+  name = "content",
   uploadedImages,
   onUploadedImagesChange,
 }: MyEditorProps) {
@@ -30,9 +32,9 @@ export default function MyEditor({
     return (
       <TinyMCEEditor
         apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-        initialValue={form.getValues("content")}
+        initialValue={form.getValues(name)}
         onEditorChange={(content, editor) => {
-          form.setValue("content", content);
+          form.setValue(name, content);
 
           // 현재 에디터 이미지들 중 임시 이미지만 추출(이게 없으면 에디터에 올렸다가 지운 이미지까지 업로드 됨)
           const currentImages = editor.dom
