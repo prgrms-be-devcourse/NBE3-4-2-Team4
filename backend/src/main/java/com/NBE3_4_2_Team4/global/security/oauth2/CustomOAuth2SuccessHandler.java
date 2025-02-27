@@ -1,12 +1,7 @@
 package com.NBE3_4_2_Team4.global.security.oauth2;
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
-import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.security.HttpManager;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.user.customUser.CustomUser;
@@ -26,13 +21,15 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+    @Value("${custom.domain.frontend}")
+    private String frontDomain;
+
     @Value("${custom.jwt.accessToken.validMinute:30}")
     int accessTokenValidMinute;
 
@@ -42,8 +39,6 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final JwtManager jwtManager;
     private final HttpManager httpManager;
 
-    private final AssetHistoryRepository assetHistoryRepository;
-    private final MemberQuerydsl memberQuerydsl;
     private final PointService pointService;
 
     @SneakyThrows
@@ -54,7 +49,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             handleExistingMember(req, resp, auth);
             super.onAuthenticationSuccess(req, resp, auth);
         }else {
-            handleNewMember(req, resp, auth);
+            handleNewMember(resp, auth);
         }
     }
 
@@ -68,7 +63,7 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
 
         String targetUrl = req.getParameter("state");
 
-        if(isFirstLoginToday(member)){
+        if(member.isFirstLoginToday()){
             pointService.attend(member.getId());
 
             targetUrl += String.format("?attendanceMessage=%s",
@@ -80,33 +75,13 @@ public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         setDefaultTargetUrl(targetUrl);
     }
 
-    private void handleNewMember(HttpServletRequest req, HttpServletResponse resp, Authentication auth) throws IOException {
+    private void handleNewMember(HttpServletResponse resp, Authentication auth) throws IOException {
         TempUserBeforeSignUp tempUserBeforeSignUp = (TempUserBeforeSignUp) auth.getPrincipal();
         //TempUser 에는 OAuth2UserID (회원 가입용 아이디), 이름, 리프레시 토큰 있음.
 
         String tempTokenForSignUp = jwtManager.generateTempToken(tempUserBeforeSignUp);
         httpManager.setTempTokenForSignUpCookie(resp, tempTokenForSignUp, accessTokenValidMinute);
 
-        resp.sendRedirect("http://localhost:3000/signup");
-    }
-
-    private boolean isFirstLoginToday(Member member) {
-        LocalDate today = LocalDate.now();
-        LocalDate lastLoginDate = member.getLastAttendanceDate();
-        return lastLoginDate == null || lastLoginDate.isBefore(today);
-    }
-
-    private void rewardPointForFirstLoginOfDay(Member member){
-
-        LocalDate today = LocalDate.now();
-        memberQuerydsl.updateLastLoginDate(member, today);
-
-        assetHistoryRepository.save(AssetHistory.builder()
-                .member(member)
-                .amount(PointConstants.ATTENDANCE_POINT)
-                .assetCategory(AssetCategory.ATTENDANCE)
-                .assetType(AssetType.POINT)
-                .correlationId("asdasdasdaff")
-                .build());
+        resp.sendRedirect(String.format("%s/signup", frontDomain));
     }
 }

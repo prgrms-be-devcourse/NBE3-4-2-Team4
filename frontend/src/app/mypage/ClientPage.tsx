@@ -26,6 +26,28 @@ export default function ClientPage({
   const [error, setError] = useState<string | null>(null);
   useRedirectIfNotAuthenticated();
 
+  const sendVerificationEmail = async () => {
+    try {
+      const response = await fetch(
+          "http://localhost:8080/api/members/resend-verification-email",
+          {
+            method: "POST",
+            credentials: "include",
+          }
+      );
+
+      if (response.ok) {
+        alert("인증 메일이 전송되었습니다.");
+      } else {
+        const errorData = await response.json();
+        alert(`메일 전송 실패: ${errorData.message || "알 수 없는 오류"}`);
+      }
+    } catch (error) {
+      alert("인증 메일 전송 중 오류가 발생했습니다.");
+    }
+  };
+
+
   useEffect(() => {
     const fetchMemberDetail = async () => {
       try {
@@ -99,10 +121,28 @@ export default function ClientPage({
         </CardHeader>
         <CardContent>
           <div className="text-center flex items-center justify-between">
-            <p className="mr-2">{memberInfo?.nickname}</p>
+            <p className="mr-2">닉네임 : {memberInfo?.nickname}</p>
             <Button variant="outline" asChild>
               <Link href="/mypage/edit/nickname">수정하기</Link>
             </Button>
+          </div>
+        </CardContent>
+        <CardContent>
+          <div className="text-center flex items-center justify-between">
+            <p className="mr-2">이메일 : {memberInfo?.email_address}</p>
+            {memberInfo?.is_email_verified ? (
+                <p className="text-green-500 font-semibold">인증 완료</p>
+            ) : (
+                <div className="flex items-center gap-4">
+                  <p className="text-red-500 font-semibold">미인증</p>
+                  <Button
+                      onClick={sendVerificationEmail}
+                      className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+                  >
+                    인증 메일 전송
+                  </Button>
+                </div>
+            )}
           </div>
         </CardContent>
         <CardFooter>

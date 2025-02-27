@@ -129,6 +129,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/asset/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 재화 송금 기능 */
+        put: operations["transfer_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/points/deduct": {
         parameters: {
             query?: never;
@@ -157,6 +174,60 @@ export interface paths {
         /** 유저에게 포인트를 적립 */
         put: operations["accumulateForMember"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/asset/deduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 유저에게서 재화를 차감 */
+        put: operations["deductFromMember_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/asset/accumulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 유저에게 재화를 적립 */
+        put: operations["accumulateForMember_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * test
+         * @description 이메일 인증 여부에 따른 필터링 테스틀 위한 간이 매서드입니다. 추후 삭제할 예정.
+         */
+        post: operations["test"];
         delete?: never;
         options?: never;
         head?: never;
@@ -283,14 +354,62 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["nicknameCheck"];
+        /**
+         * check if nickname exists
+         * @description 회원가입 페이지에서 입력한 닉네임이 존재하는 지 사전 검사합니다.
+         */
+        get: operations["checkNicknameIsAvailable"];
         put?: never;
+        /**
+         * signup
+         * @description 회원가입 요청을 처리합니다.
+         */
         post: operations["signup"];
         /**
          * withdrawal membership
          * @description 회원 탈퇴를 요청합니다. 성공 시 연동된 OAuth 서비스와의 연결도 해제됩니다.
          */
         delete: operations["withdrawalMembership"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members/verify-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * verify email
+         * @description 이메일 인증 요청을 처리합니다.
+         */
+        post: operations["verifyEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members/resend-verification-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * verify email
+         * @description 인증 이메일을 재전송합니다.
+         */
+        post: operations["resendVerificationEmail"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -589,23 +708,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/points/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 포인트 기록 조회(필터 없는버전) */
-        get: operations["getPointHistoriesWithDateAndCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/members/thumbnail": {
         parameters: {
             query?: never;
@@ -673,7 +775,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * check temp token exists
+         * @description 회원가입 페이지에 접근 시, 임시 토큰이 존재하는 지 확인합니다. 임시 토큰이 없는 상태로 회원가입 페이지에 접근 시, 홈페이지로 리다이렉트 시키기 위해 호출됩니다.
+         */
         get: operations["tempTokenCheck"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/asset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 재화 기록 조회(날짜 & 카테고리 필터포함) */
+        get: operations["getAssetHistories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -817,6 +940,13 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItem"];
+        };
+        AssetTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
         };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
@@ -967,6 +1097,8 @@ export interface components {
             endDate?: string;
             /** @enum {string} */
             assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
             endDateTime?: string;
             /** Format: date-time */
@@ -979,6 +1111,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             assetCategory?: string;
+            assetType?: string;
         };
         PageDtoAssetHistoryRes: {
             /** Format: int32 */
@@ -997,24 +1130,26 @@ export interface components {
             msg: string;
             data: components["schemas"]["PageDtoAssetHistoryRes"];
         };
-        RsDataBoolean: {
-            resultCode: string;
-            msg: string;
-            data: boolean;
-        };
         RsDataObject: {
             resultCode: string;
             msg: string;
             data: unknown;
         };
+        Cash: {
+            /** Format: int64 */
+            amount?: number;
+        };
         MemberDetailInfoResponseDto: {
             username?: string;
             nickname?: string;
             point?: components["schemas"]["Point"];
+            cash?: components["schemas"]["Cash"];
             /** Format: int64 */
             questionSize?: number;
             /** Format: int64 */
             answerSize?: number;
+            emailAddress?: string;
+            isEmailVerified?: boolean;
         };
         Point: {
             /** Format: int64 */
@@ -1291,6 +1426,39 @@ export interface operations {
             };
         };
     };
+    transfer_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     deductFromMember: {
         parameters: {
             query?: never;
@@ -1345,6 +1513,99 @@ export interface operations {
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deductFromMember_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    accumulateForMember_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {
@@ -1662,7 +1923,7 @@ export interface operations {
             };
         };
     };
-    nicknameCheck: {
+    checkNicknameIsAvailable: {
         parameters: {
             query: {
                 nickname: string;
@@ -1673,13 +1934,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 닉네임의 중복 여부. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
+                    "application/json": unknown;
                 };
             };
             /** @description Bad Request */
@@ -1708,8 +1969,8 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 회원 가입 성공. */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1719,6 +1980,15 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 이미 존재하는 닉네임으로 회원가입을 시도하였을 때. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1766,6 +2036,78 @@ export interface operations {
             };
             /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    verifyEmail: {
+        parameters: {
+            query: {
+                memberId: number;
+                authCode: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 이메일 인증 결과에 따른 리다이렉트. */
+            302: {
+                headers: {
+                    /** @description 성공한 경우 성공 페이지, 인증 실패(인증 코드 유효 기간 만료 등)의 경우 실패 페이지, 이미 인증된 경우 이미 인증됐다고 표시하는 페이지. */
+                    Location?: unknown;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    resendVerificationEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 이메일 인증 결과에 따른 리다이렉트. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description 인증 없는 회원. (JWT 필터에 걸림) */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2378,37 +2720,6 @@ export interface operations {
             };
         };
     };
-    getPointHistoriesWithDateAndCategory: {
-        parameters: {
-            query?: {
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getMemberThumbnailInfo: {
         parameters: {
             query?: never;
@@ -2527,13 +2838,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 임시 토큰의 존재 여부. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getAssetHistories: {
+        parameters: {
+            query: {
+                assetHistoryReq: components["schemas"]["AssetHistoryReq"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
             /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */

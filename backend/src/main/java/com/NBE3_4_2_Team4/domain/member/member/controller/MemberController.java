@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.member.member.controller;
 import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.global.exceptions.EmailAlreadyVerifiedException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -52,14 +53,61 @@ public class MemberController {
                 ));
     }
 
-    @GetMapping("/api/members")
-    public RsData<Boolean> nicknameCheck(
-            @RequestParam(name = "nickname") String nickname
-    ){
-        return new RsData<>("200-1", "", memberService.duplicateNickname(nickname));
+    @ExceptionHandler(EmailAlreadyVerifiedException.class)
+    public ResponseEntity<RsData<Empty>> handleEmailAlreadyVerifiedException() {
+        String location = String.format("%s/verify-email/%s", frontDomain, "already-verified");
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", location)
+                .body(new RsData<>(
+                        "302-1",
+                        String.format("already verified email. redirecting to %s ", location)
+                ));
     }
 
+
+
+
+    @PostMapping("/api/test")
+    @Operation(summary = "test", description = "이메일 인증 여부에 따른 필터링 테스틀 위한 간이 매서드입니다. 추후 삭제할 예정.")
+    public ResponseEntity<Void> test(){
+        return ResponseEntity.ok().build();
+    }
+
+
+
+
+
+
+
+    @GetMapping("/api/members")
+    @Operation(summary = "check if nickname exists", description = "회원가입 페이지에서 입력한 닉네임이 존재하는 지 사전 검사합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "닉네임의 중복 여부.",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(description = "닉네임 사용 가능 (중복 없음)의 경우 true, 불가능 (중복 닉네임 존재)의 경우 false"))
+            )
+    })
+    public RsData<Boolean> checkNicknameIsAvailable(
+            @RequestParam(name = "nickname") String nickname
+    ){
+        return new RsData<>("200-1", "", memberService.isNicknameAvailable(nickname));
+    }
+
+
+
+
+
     @GetMapping("/api/auth/temp-token")
+    @Operation(summary = "check temp token exists",
+            description = "회원가입 페이지에 접근 시, 임시 토큰이 존재하는 지 확인합니다. 임시 토큰이 없는 상태로 회원가입 페이지에 접근 시, 홈페이지로 리다이렉트 시키기 위해 호출됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "임시 토큰의 존재 여부.",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(description = "임시 토큰이 존재할 경우 true, 존재하지 않을 경우 false"))
+            )
+    })
     public RsData<Boolean> tempTokenCheck(
             @CookieValue(name = "tempToken", required = false) String tempToken
     ){
@@ -68,14 +116,78 @@ public class MemberController {
     }
 
 
+
+
+
     @PostMapping("/api/members")
+    @Operation(summary = "signup", description = "회원가입 요청을 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "회원 가입 성공."),
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 닉네임으로 회원가입을 시도하였을 때.")
+    })
     public RsData<Empty> signup(
             @CookieValue(name = "tempToken") String tempToken,
-            @RequestBody @Valid SignupRequestDto signupRequestDto
+            @RequestBody @Valid SignupRequestDto signupRequestDto,
+            HttpServletResponse resp
     ){
         memberService.signUp(tempToken, signupRequestDto);
+        httpManager.deleteCookie(resp,"tempToken");
         return new RsData<>("201-1", "sign up complete");
     }
+
+
+
+
+
+
+    @PostMapping("/api/members/verify-email")
+    @Operation(summary = "verify email", description = "이메일 인증 요청을 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "이메일 인증 결과에 따른 리다이렉트.",
+                    headers = {
+                            @Header(name = "Location",
+                                    description = "성공한 경우 성공 페이지, 인증 실패(인증 코드 유효 기간 만료 등)의 경우 실패 페이지, 이미 인증된 경우 이미 인증됐다고 표시하는 페이지.")
+                    }),
+    })
+    public ResponseEntity<RsData<Empty>> verifyEmail(
+            @RequestParam("memberId") long memberId,
+            @RequestParam("authCode") String authCode,
+            HttpServletResponse resp
+    ){
+        boolean isEmailVerified = memberService.verifyEmail(memberId, authCode);
+        String result = isEmailVerified ? "success" : "fail";
+        String location = String.format("%s/verify-email/%s", frontDomain, result);
+
+        httpManager.expireJwtCookie(resp);
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", location)
+                .body(new RsData<>(
+                        "302-1",
+                        String.format("email verifying complete. redirecting to %s ", location)
+                ));
+    }
+
+
+
+
+    @PostMapping ("/api/members/resend-verification-email")
+    @Operation(summary = "verify email", description = "인증 이메일을 재전송합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이메일 인증 결과에 따른 리다이렉트."),
+            @ApiResponse(responseCode = "401", description = "인증 없는 회원. (JWT 필터에 걸림)")
+    })
+    public RsData<Empty> resendVerificationEmail(){
+        Member member = AuthManager.getNonNullMember();
+        Long memberId = member.getId();
+        String emailAddress = member.getEmailAddress();
+        memberService.sendAuthenticationMail(memberId, emailAddress);
+
+        return new RsData<>("200-1", "resend verification email complete");
+    }
+
+
 
 
 
@@ -104,6 +216,12 @@ public class MemberController {
                 "admin login complete", responseDto);
     }
 
+
+
+
+
+
+
     @GetMapping("/api/members/thumbnail")
     @Operation(summary = "get member's simple info", description = "멤버의 간단한 정보 (현재는 닉네임만)를 조회합니다. 프론트의 헤더에서 사용합니다.")
     @ApiResponses(value = {
@@ -123,6 +241,11 @@ public class MemberController {
         }
     }
 
+
+
+
+
+
     @GetMapping("/api/members/details")
     @Operation(summary = "get member's detail info", description = "멤버의 자세한 정보 (포인트 작성 질문/답변 수, 닉네임)를 조회합니다. 마이 페이지에서 사용합니다.")
     @ApiResponses(value = {
@@ -135,8 +258,13 @@ public class MemberController {
     public RsData<MemberDetailInfoResponseDto> getMemberDetailInfo(){
         Member member = AuthManager.getNonNullMember();
         MemberDetailInfoResponseDto responseDto = memberService.getMemberDetailInfo(member);
+        log.error("detail info : {}", responseDto);
         return new RsData<>("200-1", "member found", responseDto);
     }
+
+
+
+
 
 
 
@@ -158,6 +286,8 @@ public class MemberController {
         return new RsData<>("200-3",  String.format("Trying to log out for %s",
                 Objects.requireNonNull(member).getOAuth2Provider().name()), redirectUrl);
     }
+
+
 
 
 
@@ -189,6 +319,8 @@ public class MemberController {
                         String.format("logout complete. redirecting to %s ", frontDomain)
                 ));
     }
+
+
 
 
 
