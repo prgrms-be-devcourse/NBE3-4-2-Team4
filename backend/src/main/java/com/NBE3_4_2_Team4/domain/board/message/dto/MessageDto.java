@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class MessageDto {
+    private final long id;
     private final String senderName;
     private final String receiverName;
     private final boolean isChecked;
@@ -15,6 +16,7 @@ public class MessageDto {
     private final String content;
 
     public MessageDto(Message message) {
+        this.id = message.getId();
         this.senderName = message.getSender().getNickname();
         this.receiverName = message.getReceiver().getNickname();
         this.isChecked = message.isChecked();

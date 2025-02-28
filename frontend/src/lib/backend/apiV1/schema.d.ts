@@ -1026,6 +1026,8 @@ export interface components {
             receiverName: string;
         };
         MessageDto: {
+            /** Format: int64 */
+            id?: number;
             senderName?: string;
             receiverName?: string;
             /** Format: date-time */
