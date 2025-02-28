@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.repository;
 
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
@@ -30,14 +31,17 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
         if(kw != null && !kw.isBlank())
             applyKeywordFilter(kwType, kw, builder);
 
-        JPAQuery<Question> questionsQuery = createPostsQuery(builder);
-        applySorting(pageable, questionsQuery);
+        return getQuestions(builder, pageable);
+    }
 
-        questionsQuery.offset(pageable.getOffset()).limit(pageable.getPageSize());
+    @Override
+    public Page<Question> findByAnswerAuthor(Member author, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
 
-        JPAQuery<Long> totalQuery = createTotalQuery(builder);
+        if(author != null)
+            answerAuthorFilter(author, builder);
 
-        return PageableExecutionUtils.getPage(questionsQuery.fetch(), pageable, totalQuery::fetchOne);
+        return getQuestions(builder, pageable);
     }
 
     private void applyKeywordFilter(QuestionSearchKeywordType kwType, String kw, BooleanBuilder builder) {
@@ -84,5 +88,27 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .select(question.count())
                 .from(question)
                 .where(builder);
+    }
+
+    private void answerAuthorFilter(Member author, BooleanBuilder builder) {
+        builder.and(
+                JPAExpressions
+                        .selectOne()
+                        .from(answer)
+                        .where(answer.question.eq(question)
+                                .and(answer.author.eq(author)))
+                        .exists()
+        );
+    }
+
+    public Page<Question> getQuestions(BooleanBuilder builder, Pageable pageable) {
+        JPAQuery<Question> questionsQuery = createPostsQuery(builder);
+        applySorting(pageable, questionsQuery);
+
+        questionsQuery.offset(pageable.getOffset()).limit(pageable.getPageSize());
+
+        JPAQuery<Long> totalQuery = createTotalQuery(builder);
+
+        return PageableExecutionUtils.getPage(questionsQuery.fetch(), pageable, totalQuery::fetchOne);
     }
 }

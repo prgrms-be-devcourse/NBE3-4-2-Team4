@@ -97,6 +97,16 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
+    @Transactional(readOnly = true)
+    public Page<QuestionDto> findByAnswerAuthor(long memberId, int page, int pageSize) {
+        Member author = memberRepository.findById(memberId).orElseThrow(
+                () -> new ServiceException("404-1", "존재하지 않는 회원입니다.")
+        );
+
+        return questionRepository.findByAnswerAuthor(author, createPageRequest(page, pageSize))
+                .map(QuestionDto::new);
+    }
+
     private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 

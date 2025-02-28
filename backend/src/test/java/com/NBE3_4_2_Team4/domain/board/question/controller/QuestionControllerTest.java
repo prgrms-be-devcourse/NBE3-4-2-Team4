@@ -546,4 +546,42 @@ public class QuestionControllerTest {
                     .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
         }
     }
+
+    @Test
+    @DisplayName("답변 작성자 기준으로 질문 검색")
+    void t17() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(get("/api/questions/answerer/2"))
+                .andDo(print());
+
+        Page<QuestionDto> questionPages = questionService.findByAnswerAuthor(2,  1, 10);
+
+        resultActions
+                .andExpect(handler().handlerType(QuestionController.class))
+                .andExpect(handler().methodName("getAQuestionsByAnswerAuthor"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page_number").value(1))
+                .andExpect(jsonPath("$.page_size").value(10))
+                .andExpect(jsonPath("$.total_pages").value(questionPages.getTotalPages()))
+                .andExpect(jsonPath("$.total_items").value(questionPages.getTotalElements()))
+                .andExpect(jsonPath("$.has_more").value(questionPages.hasNext()));
+
+        List<QuestionDto> questions = questionPages.getContent();
+
+        for(int i = 0; i < questions.size(); i++) {
+            QuestionDto question = questions.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(question.getId()))
+                    .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].modified_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(question.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(question.getContent()))
+                    .andExpect(jsonPath("$.items[%d].name".formatted(i)).value(question.getName()))
+                    .andExpect(jsonPath("$.items[%d].recommend_count".formatted(i)).value(question.getRecommendCount()))
+                    .andExpect(jsonPath("$.items[%d].closed".formatted(i)).value(question.isClosed()))
+                    .andExpect(jsonPath("$.items[%d].amount".formatted(i)).value(question.getAmount()))
+                    .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(question.getAuthorId()));
+        }
+    }
 }
