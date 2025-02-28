@@ -11,6 +11,8 @@ import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +53,9 @@ public class ReportServiceForMember {
                 .build());
     }
 
-    public Page<Report> findReportsByReporterId(Long reporterId) {
-        return null;
+    public Page<Report> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reportRepository.findByReporterId(reporterId, pageable);
     }
 
     public void updateReport() {}
