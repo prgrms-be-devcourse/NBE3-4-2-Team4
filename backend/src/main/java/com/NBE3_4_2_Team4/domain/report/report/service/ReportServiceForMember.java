@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.report.report.service;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.report.report.dto.ReportRequestDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.ReportUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
 import com.NBE3_4_2_Team4.domain.report.report.repository.ReportRepository;
 import com.NBE3_4_2_Team4.domain.report.reportType.entity.ReportType;
@@ -27,6 +28,11 @@ public class ReportServiceForMember {
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found"));
+    }
+
+    private Report getReport(Long reportId) {
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new ServiceException("404-1", "Report not found"));
     }
 
     private ReportType getReportType(Long reportTypeId) {
@@ -58,5 +64,20 @@ public class ReportServiceForMember {
         return reportRepository.findByReporterId(reporterId, pageable);
     }
 
-    public void updateReport() {}
+    public void updateReport(ReportUpdateRequestDto reportUpdateRequestDto) {
+        Long reportId = reportUpdateRequestDto.reportId();
+        Report report = getReport(reportId);
+
+        if (report.isProcessed()){
+            throw new ServiceException("400-1", "Report already processed");
+        }
+
+        Long reportTypeId = reportUpdateRequestDto.reportTypeId();
+        ReportType reportType = getReportType(reportTypeId);
+
+        String content = reportUpdateRequestDto.content();
+
+        report.setReportType(reportType);
+        report.setContent(content);
+    }
 }
