@@ -6,7 +6,6 @@ import lombok.Builder;
 @Builder
 public record ReportRequestDto (
         Long reportTypeId,
-        Long reporterId,
         Long reportedId,
         String content
 ){

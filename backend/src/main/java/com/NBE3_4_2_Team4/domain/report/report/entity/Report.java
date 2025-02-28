@@ -27,5 +27,6 @@ public class Report extends BaseTime {
     private String content;
 
     @Setter
-    private boolean processed;
+    @Builder.Default
+    private boolean processed = false;
 }
