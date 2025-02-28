@@ -75,22 +75,33 @@ public class MessageService {
     }
 
     @Transactional
-    public void delete(long id) {
+    public void delete(List<Long> ids) {
         Member actor = AuthManager.getNonNullMember();
-        Message message = messageRepository.findById(id)
-                .orElseThrow(() -> new ServiceException("404-1", "존재하지 않는 메시지입니다."));
+        List<Message> messages = messageRepository.findAllById(ids);
 
-        message.checkActorCanDelete(actor);
-        messageRepository.deleteById(id);
+        messages.forEach(message -> {
+                    if (message == null) {
+                        throw new ServiceException("404-1", "존재하지 않는 메시지가 포함되어 있습니다.");
+                    }
+                    message.checkActorCanDelete(actor);
+                }
+        );
+
+        messageRepository.deleteAll(messages);
     }
 
     @Transactional
-    public void readMessage(long id) {
+    public void readMessage(List<Long> ids) {
         Member actor = AuthManager.getNonNullMember();
-        Message message = messageRepository.findById(id)
-                .orElseThrow(() -> new ServiceException("404-1", "존재하지 않는 메시지입니다."));
+        List<Message> messages = messageRepository.findAllById(ids);
 
-        message.checkReceiverCanRead(actor);
-        message.setChecked(true);
+        messages.forEach(message -> {
+                    if (message == null) {
+                        throw new ServiceException("404-1", "존재하지 않는 메시지가 포함되어 있습니다.");
+                    }
+                    message.checkReceiverCanRead(actor);
+                    message.setChecked(true);
+                }
+        );
     }
 }

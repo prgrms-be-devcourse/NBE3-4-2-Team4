@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.board.message.controller;
 
 import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto;
 import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto;
+import com.NBE3_4_2_Team4.domain.board.message.entity.Message;
 import com.NBE3_4_2_Team4.domain.board.message.repository.MessageRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -158,15 +160,22 @@ public class MessageControllerTest {
     @DisplayName("내가 받은 쪽지 삭제")
     @WithUserDetails("test@test.com")
     void t4_1() throws Exception {
+        List<Long> ids = List.of(1L, 3L);
+
         ResultActions resultActions = mvc.perform(
-                delete("/api/messages/1")
+                delete("/api/messages")
+                        .content(new ObjectMapper().writeValueAsString(ids))
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
         resultActions.andExpect(handler().handlerType(MessageController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("1번 쪽지를 삭제하였습니다."));
+                .andExpect(jsonPath("$.result_code").value("200-2"))
+                .andExpect(jsonPath("$.msg").value("%d개의 쪽지를 삭제하였습니다.".formatted(ids.size())));
+
+        List<Message> messages = messageRepository.findAllById(ids);
+        assertThat(messages).isEmpty();
     }
 
     @Test
@@ -174,7 +183,9 @@ public class MessageControllerTest {
     @WithUserDetails("test@test.com")
     void t4_2() throws Exception {
         ResultActions resultActions = mvc.perform(
-                delete("/api/messages/5")
+                delete("/api/messages")
+                        .content("[3, 4]")
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
         resultActions.andExpect(handler().handlerType(MessageController.class))
@@ -184,25 +195,39 @@ public class MessageControllerTest {
                 .andExpect(jsonPath("$.msg").value("작성자만 쪽지를 삭제할 수 있습니다."));
     }
 
-//    @Test
-//    @DisplayName("쪽지 취소 - 임시 기능, 구현 여부는 추후 결정")
-//    @WithUserDetails("test@test.com")
-//    void t4_3() throws Exception {
-//
-//    }
-
     @Test
     @DisplayName("쪽지 확인(읽기)")
     @WithUserDetails("admin@test.com")
-    void t5() throws Exception {
+    void t5_1() throws Exception {
+        List<Long> ids = List.of(1L, 3L);
+
         ResultActions resultActions = mvc.perform(
-                put("/api/messages/1")
+                put("/api/messages")
+                        .content(new ObjectMapper().writeValueAsString(ids))
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo(print());
 
         resultActions.andExpect(handler().handlerType(MessageController.class))
                 .andExpect(handler().methodName("check"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result_code").value("200-3"))
-                .andExpect(jsonPath("$.msg").value("1번 쪽지를 읽었습니다."));
+                .andExpect(jsonPath("$.msg").value("%d개의 쪽지를 읽었습니다.".formatted(ids.size())));
+    }
+
+    @Test
+    @DisplayName("내가 받지 않은 쪽지는 읽기 불가")
+    @WithUserDetails("admin@test.com")
+    void t5_2() throws Exception {
+        ResultActions resultActions = mvc.perform(
+                put("/api/messages")
+                        .content("[1, 2]")
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        ).andDo(print());
+
+        resultActions.andExpect(handler().handlerType(MessageController.class))
+                .andExpect(handler().methodName("check"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.result_code").value("403-3"))
+                .andExpect(jsonPath("$.msg").value("받는 사람만 쪽지를 읽을 수 있습니다."));
     }
 }

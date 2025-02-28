@@ -53,7 +53,7 @@ public class Message extends BaseEntity {
 
     public void checkReceiverCanRead(Member actor) {
         if (!receiver.equals(actor)) {
-            throw new ServiceException("403-4", "받는 사람만 쪽지를 읽을 수 있습니다.");
+            throw new ServiceException("403-3", "받는 사람만 쪽지를 읽을 수 있습니다.");
         }
     }
 }

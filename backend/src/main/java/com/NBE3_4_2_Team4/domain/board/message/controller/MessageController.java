@@ -46,23 +46,23 @@ public class MessageController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "쪽지 삭제", description = "쪽지 id에 해당하는 쪽지 삭제, 작성자만 삭제 가능")
-    public RsData<Void> delete(@PathVariable long id) {
-        messageService.delete(id);
+    public RsData<Void> delete(@RequestBody List<Long> ids) {
+        messageService.delete(ids);
         return new RsData<>(
-                "200-1",
-                "%d번 쪽지를 삭제하였습니다.".formatted(id)
+                "200-2",
+                "%d개의 쪽지를 삭제하였습니다.".formatted(ids.size())
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @Operation(summary = "쪽지 읽음 표시", description = "쪽지 id에 해당하는 쪽지를 읽음 표시, 수신자만 읽기 가능")
-    public RsData<Void> check(@PathVariable long id) {
-        messageService.readMessage(id);
+    public RsData<Void> check(@RequestBody List<Long> ids) {
+        messageService.readMessage(ids);
         return new RsData<>(
                 "200-3",
-                "%d번 쪽지를 읽었습니다.".formatted(id)
+                "%d개의 쪽지를 읽었습니다.".formatted(ids.size())
         );
     }
 }
