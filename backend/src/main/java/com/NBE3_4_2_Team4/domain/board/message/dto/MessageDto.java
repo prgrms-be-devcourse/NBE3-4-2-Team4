@@ -15,8 +15,8 @@ public class MessageDto {
     private final String content;
 
     public MessageDto(Message message) {
-        this.senderName = message.getSender().getUsername();
-        this.receiverName = message.getReceiver().getUsername();
+        this.senderName = message.getSender().getNickname();
+        this.receiverName = message.getReceiver().getNickname();
         this.isChecked = message.isChecked();
         this.createdAt = message.getCreatedAt();
         this.title = message.getTitle();

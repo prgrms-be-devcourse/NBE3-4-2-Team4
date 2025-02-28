@@ -1041,105 +1041,14 @@ export interface components {
             senderName: string;
             receiverName: string;
         };
-        Answer: {
-            /** Format: int64 */
-            readonly id?: number;
-            /** Format: date-time */
-            readonly createdAt?: string;
-            /** Format: date-time */
-            readonly modifiedAt?: string;
-            question?: components["schemas"]["Question"];
-            author?: components["schemas"]["Member"];
-            content?: string;
-            selected?: boolean;
-            /** Format: date-time */
-            selectedAt?: string;
-        };
-        Cash: {
-            /** Format: int64 */
-            amount?: number;
-        };
-        GrantedAuthority: {
-            authority?: string;
-        };
-        Member: {
-            /** Format: int64 */
-            id?: number;
-            /** @enum {string} */
-            role?: "ADMIN" | "USER";
-            username?: string;
-            password?: string;
-            realName?: string;
-            emailAddress?: string;
-            nickname?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            point?: components["schemas"]["Point"];
-            cash?: components["schemas"]["Cash"];
-            questions?: components["schemas"]["Question"][];
-            answers?: components["schemas"]["Answer"][];
-            oauth2RefreshToken?: components["schemas"]["OAuth2RefreshToken"];
-            /** Format: date */
-            lastAttendanceDate?: string;
-            /** @enum {string} */
-            oauth2Provider?: "NONE" | "KAKAO" | "NAVER" | "GOOGLE";
-            authorities?: components["schemas"]["GrantedAuthority"][];
-        };
         MessageDto: {
-            sender?: components["schemas"]["Member"];
-            receiver?: components["schemas"]["Member"];
+            senderName?: string;
+            receiverName?: string;
             /** Format: date-time */
             createdAt?: string;
             title?: string;
             content?: string;
             checked?: boolean;
-        };
-        OAuth2RefreshToken: {
-            /** Format: int64 */
-            id?: number;
-            member?: components["schemas"]["Member"];
-            refreshToken?: string;
-            oauth2Id?: string;
-        };
-        Point: {
-            /** Format: int64 */
-            amount?: number;
-        };
-        Question: {
-            /** Format: int64 */
-            readonly id?: number;
-            /** Format: date-time */
-            readonly createdAt?: string;
-            /** Format: date-time */
-            readonly modifiedAt?: string;
-            author?: components["schemas"]["Member"];
-            title?: string;
-            content?: string;
-            category?: components["schemas"]["QuestionCategory"];
-            answers?: components["schemas"]["Answer"][];
-            recommends?: components["schemas"]["Recommend"][];
-            selectedAnswer?: components["schemas"]["Answer"];
-            closed?: boolean;
-            /** Format: int64 */
-            amount?: number;
-            /** @enum {string} */
-            assetType?: "캐시" | "포인트" | "전체";
-            rankReceived?: boolean;
-            /** Format: int64 */
-            recommendCount?: number;
-        };
-        QuestionCategory: {
-            /** Format: int64 */
-            readonly id?: number;
-            name?: string;
-        };
-        Recommend: {
-            /** Format: int64 */
-            readonly id?: number;
-            question?: components["schemas"]["Question"];
-            member?: components["schemas"]["Member"];
-            /** Format: date-time */
-            recommendAt?: string;
         };
         RsDataMessageDto: {
             resultCode: string;
@@ -1283,6 +1192,10 @@ export interface components {
             msg: string;
             data: unknown;
         };
+        Cash: {
+            /** Format: int64 */
+            amount?: number;
+        };
         MemberDetailInfoResponseDto: {
             username?: string;
             nickname?: string;
@@ -1292,6 +1205,10 @@ export interface components {
             questionSize?: number;
             /** Format: int64 */
             answerSize?: number;
+        };
+        Point: {
+            /** Format: int64 */
+            amount?: number;
         };
         RsDataMemberDetailInfoResponseDto: {
             resultCode: string;

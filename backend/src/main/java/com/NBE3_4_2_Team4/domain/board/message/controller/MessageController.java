@@ -56,7 +56,7 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/{id}/read")
+    @PutMapping("/{id}")
     @Operation(summary = "쪽지 읽음 표시", description = "쪽지 id에 해당하는 쪽지를 읽음 표시, 수신자만 읽기 가능")
     public RsData<Void> check(@PathVariable long id) {
         messageService.readMessage(id);
