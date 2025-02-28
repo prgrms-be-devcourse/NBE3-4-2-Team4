@@ -129,7 +129,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/messages/{id}/read": {
+    "/api/messages": {
         parameters: {
             query?: never;
             header?: never;
@@ -142,8 +142,16 @@ export interface paths {
          * @description 쪽지 id에 해당하는 쪽지를 읽음 표시, 수신자만 읽기 가능
          */
         put: operations["check"];
-        post?: never;
-        delete?: never;
+        /**
+         * 쪽지 작성
+         * @description 쪽지 작성
+         */
+        post: operations["write"];
+        /**
+         * 쪽지 삭제
+         * @description 쪽지 id에 해당하는 쪽지 삭제, 작성자만 삭제 가능
+         */
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -248,7 +256,7 @@ export interface paths {
         get: operations["getQuestions"];
         put?: never;
         /** 질문 등록 */
-        post: operations["write"];
+        post: operations["write_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -272,7 +280,7 @@ export interface paths {
          * 답변 등록
          * @description 질문글에 새로운 답변을 등록합니다.
          */
-        post: operations["write_1"];
+        post: operations["write_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -341,26 +349,6 @@ export interface paths {
          * @description 단건 상품을 생성합니다.
          */
         post: operations["writeProduct"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/messages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 쪽지 작성
-         * @description 쪽지 작성
-         */
-        post: operations["write_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -493,7 +481,7 @@ export interface paths {
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_1"];
+        delete: operations["delete_2"];
         options?: never;
         head?: never;
         /**
@@ -694,11 +682,7 @@ export interface paths {
         get: operations["getMessage"];
         put?: never;
         post?: never;
-        /**
-         * 쪽지 삭제
-         * @description 쪽지 id에 해당하는 쪽지 삭제, 작성자만 삭제 가능
-         */
-        delete: operations["delete_2"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1485,12 +1469,80 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": number[];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    write: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageWriteReqDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataMessageDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    delete_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": number[];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -1713,7 +1765,7 @@ export interface operations {
             };
         };
     };
-    write: {
+    write_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1780,7 +1832,7 @@ export interface operations {
             };
         };
     };
-    write_1: {
+    write_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -1969,39 +2021,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    write_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MessageWriteReqDto"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataMessageDto"];
                 };
             };
             /** @description Bad Request */
@@ -2387,7 +2406,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2749,37 +2768,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["MessageDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    delete_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Bad Request */

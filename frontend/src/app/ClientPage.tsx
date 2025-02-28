@@ -71,7 +71,7 @@ export default function ClientPage({ body }: ClientPageProps) {
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1 text-amber-500">
                           <Coins size={16} />
-                          {item.point}
+                          {item.amount}
                         </div>
                         {item.recommendCount && item.recommendCount > 0 && (
                           <span className="flex items-center gap-1 text-sky-400 font-medium">

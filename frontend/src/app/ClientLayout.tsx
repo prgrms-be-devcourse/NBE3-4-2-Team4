@@ -16,6 +16,7 @@ import {
   UserRound,
   MessageSquare,
 } from "lucide-react";
+import MessageNumIcon from "@/components/icon/message-icon";
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
 import { NicknameProvider, useNickname } from "@/context/NicknameContext";
@@ -225,6 +226,8 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="flex-grow"></div>
           {isAuthenticated ? (
             <div className="flex items-center">
+              <MessageNumIcon count={2} />
+
               <span className="text-sm font-medium flex items-center">
                 환영합니다,
               </span>
