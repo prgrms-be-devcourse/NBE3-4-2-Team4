@@ -67,7 +67,7 @@ public class MemberInitData {
 
     @Bean
     public ApplicationRunner memberInitDataApplicationRunner() {
-        return _ -> {
+        return ignored -> {
             self.work();
         };
     }
