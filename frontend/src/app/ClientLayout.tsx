@@ -10,11 +10,12 @@ import {
   MessageCircleQuestion,
   ShoppingCart,
   Lock,
-  Coins,
   Settings,
   LockOpen,
   UserRound,
   MessageSquare,
+  Wallet,
+  Scale,
 } from "lucide-react";
 import Link from "next/link";
 import { IdProvider, useId } from "@/context/IdContext";
@@ -27,8 +28,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {useToast} from "@/hooks/use-toast";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -63,7 +64,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (attendanceMessage) {
       toast({
-        title:decodeURIComponent(attendanceMessage),
+        title: decodeURIComponent(attendanceMessage),
         variant: "destructive",
       });
       // alert()
@@ -181,12 +182,12 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
               </Button>
               <Button variant="link" asChild>
                 <Link href="/shop/list">
-                  <ShoppingCart /> 포인트 쇼핑
+                  <ShoppingCart /> 쇼핑
                 </Link>
               </Button>
               <Button variant="link" asChild>
                 <Link href="/point/list">
-                  <Coins /> 포인트
+                  <Wallet /> 자금 관리
                 </Link>
               </Button>
             </>
@@ -211,7 +212,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
               </Button>
               <Button variant="link" asChild>
                 <Link href="/adm/point">
-                  <Coins /> 포인트 관리
+                  <Scale /> 포인트/캐시 관리
                 </Link>
               </Button>
               <Button variant="link" asChild>
