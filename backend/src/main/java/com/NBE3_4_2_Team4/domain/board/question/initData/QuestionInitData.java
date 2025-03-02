@@ -42,7 +42,7 @@ public class QuestionInitData {
 
     @Bean
     public ApplicationRunner questionInitDataApplicationRunner() {
-        return _ -> {
+        return ignored -> {
             memberInitData.work(); // admin이 먼저 생성되도록 하기 위해 호출
             self.initData();
         };

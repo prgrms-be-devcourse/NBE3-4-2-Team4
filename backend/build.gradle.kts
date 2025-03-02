@@ -1,7 +1,10 @@
 plugins {
-	java
+	kotlin("jvm") version "1.9.25"
+	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
+	kotlin("kapt") version "1.9.25"
+	kotlin("plugin.jpa") version "1.9.25"
 }
 
 group = "com"
@@ -9,7 +12,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -47,9 +50,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1")
 
 	implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
-	annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
-	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
 
 	implementation ("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
@@ -57,6 +58,22 @@ dependencies {
 	implementation("org.apache.tika:tika-core:3.0.0")
 
 	implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
+
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+}
+
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll("-Xjsr305=strict")
+	}
+}
+
+allOpen {
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
 }
 
 tasks.withType<Test> {
