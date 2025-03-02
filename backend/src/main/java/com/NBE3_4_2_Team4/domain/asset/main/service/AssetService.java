@@ -10,4 +10,6 @@ public interface AssetService {
     public void transfer(String fromUsername, String toUsername, long amount, AssetCategory assetCategory);
     public Long deduct(String from, long amount, AssetCategory assetCategory);
     public Long accumulate(String to, long amount, AssetCategory assetCategory);
+    public Long adminDeduct(String from, long amount, long admAstCategory);
+    public Long adminAccumulate(String to, long amount, long admAstCategory);
 }

@@ -1,7 +1,9 @@
 package com.NBE3_4_2_Team4.domain.asset.cash.service;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class CashService implements AssetService {
     private final MemberRepository memberRepository;
     private final AssetHistoryService assetHistoryService;
+    private final AdminAssetCategoryRepository adminAssetCategoryRepository;
 
     @Transactional
     private Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
@@ -56,8 +59,8 @@ public class CashService implements AssetService {
 
         //기록 생성
         String correlationId = UUID.randomUUID().toString();
-        assetHistoryService.createHistory(sender, recipient, amount * -1, assetCategory, AssetType.CASH, correlationId);
-        assetHistoryService.createHistory(recipient, sender, amount, assetCategory, AssetType.CASH, correlationId);
+        assetHistoryService.createHistory(sender, recipient, amount * -1, assetCategory, null ,AssetType.CASH, correlationId);
+        assetHistoryService.createHistory(recipient, sender, amount, assetCategory, null, AssetType.CASH, correlationId);
     }
 
     @Transactional
@@ -77,7 +80,7 @@ public class CashService implements AssetService {
     @Override
     public Long deduct(String from, long amount, AssetCategory cashCategory) {
         Member member = deductWithoutHistory(from, amount);
-        return assetHistoryService.createHistory(member, null, amount * -1, cashCategory, AssetType.CASH, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount * -1, cashCategory, null, AssetType.CASH, UUID.randomUUID().toString());
     }
 
     @Transactional
@@ -97,6 +100,20 @@ public class CashService implements AssetService {
     @Override
     public Long accumulate(String to, long amount, AssetCategory assetCategory) {
         Member member = accumulateWithoutHistory(to, amount);
-        return assetHistoryService.createHistory(member, null, amount, assetCategory, AssetType.CASH, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount, assetCategory, null, AssetType.CASH, UUID.randomUUID().toString());
+    }
+
+    public Long adminDeduct(String from, long amount, long admAstCategoryId) {
+        AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
+                .orElseThrow(() -> new ServiceException("404-1", "category not found"));
+        Member member = deductWithoutHistory(from, amount);
+        return assetHistoryService.createHistory(member, null, amount, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
+    }
+
+    public Long adminAccumulate(String to, long amount, long admAstCategoryId) {
+        AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
+                .orElseThrow(() -> new ServiceException("404-1", "category not found"));
+        Member member = accumulateWithoutHistory(to, amount);
+        return assetHistoryService.createHistory(member, null, amount*-1, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
     }
 }

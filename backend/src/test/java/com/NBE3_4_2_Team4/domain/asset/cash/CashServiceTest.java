@@ -65,10 +65,10 @@ public class CashServiceTest {
         memberRepository.save(member1);
         memberRepository.save(member2);
 
-        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, AssetType.CASH, "a");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.ANSWER, AssetType.CASH, "b");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, AssetType.CASH, "b");
-        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, AssetType.CASH, "c");
+        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, null, AssetType.CASH, "a");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.ANSWER, null, AssetType.CASH, "b");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.CASH, "b");
+        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.CASH, "c");
 
         member1Id = member1.getId();
         member2Id = member2.getId();
@@ -104,5 +104,23 @@ public class CashServiceTest {
         Member updatedMember1 = memberRepository.findById(member1Id).orElseThrow(() -> new RuntimeException("Account not found"));
 
         assertEquals(150, updatedMember1.getCash().getAmount());
+    }
+
+    @Test
+    @DisplayName("adminAccumulate 테스트")
+    void t4() {
+        Long historyId = cashService.adminAccumulate(member1.getUsername(), 10, 1);
+        String name = assetHistoryRepository
+                .findById(historyId).get().getAdminAssetCategory().getName();
+        assertEquals("SYSTEM_COMPENSATION", name);
+    }
+
+    @Test
+    @DisplayName("adminDeduct 서비스 테스트")
+    void t5() {
+        Long historyId = cashService.adminDeduct(member1.getUsername(), 10, 1);
+        String name = assetHistoryRepository
+                .findById(historyId).get().getAdminAssetCategory().getName();
+        assertEquals("SYSTEM_COMPENSATION", name);
     }
 }
