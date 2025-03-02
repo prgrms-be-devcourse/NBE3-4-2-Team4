@@ -11,16 +11,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
 @Getter
-@Builder
 public class Answer extends GenFileParent<AnswerGenFile> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question;
@@ -28,7 +25,6 @@ public class Answer extends GenFileParent<AnswerGenFile> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
 
-    @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -47,6 +43,10 @@ public class Answer extends GenFileParent<AnswerGenFile> {
         this.content = content;
         this.selected = selected;
         this.selectedAt = selectedAt;
+    }
+
+    public Answer(Question question, Member author, String content) {
+        this(question, author, content, false, null);
     }
 
     public void checkActorCanModify(Member actor) {
@@ -75,6 +75,10 @@ public class Answer extends GenFileParent<AnswerGenFile> {
 
     public void setAuthor(Member author) {
         this.author = author;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
