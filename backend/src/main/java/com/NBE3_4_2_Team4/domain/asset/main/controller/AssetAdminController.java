@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/asset")
-@Tag(name = "PointAdminController", description = "API 어드민 전용 재화 컨트롤러")
+@Tag(name = "AssetAdminController", description = "API 어드민 전용 재화 컨트롤러")
 public class AssetAdminController {
     private final AssetServiceFactory assetServiceFactory;
 
