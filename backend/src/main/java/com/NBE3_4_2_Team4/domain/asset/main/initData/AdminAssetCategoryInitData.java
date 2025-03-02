@@ -24,7 +24,7 @@ public class AdminAssetCategoryInitData {
     @Bean
     @Order(0)
     public ApplicationRunner AdminAssetCategoryInitDataApplicationRunner() {
-        return _ -> {
+        return ignored -> {
             if (adminAssetCategoryService.count() <= 0)
                 self.initData();
         };
