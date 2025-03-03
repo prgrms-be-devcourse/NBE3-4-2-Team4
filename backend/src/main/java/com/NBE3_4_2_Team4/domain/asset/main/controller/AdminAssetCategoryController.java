@@ -8,12 +8,13 @@ import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/adminAssetCategory")
@@ -23,8 +24,9 @@ public class AdminAssetCategoryController {
 
     @GetMapping
     public RsData<List<AdminAssetCategory>> getAdminAssetCategoryList() {
+
         return new RsData<>(
-                "201-1",
+                "200-1",
                 "",
                 adminAssetCategoryService.findAll());
     }
@@ -32,11 +34,7 @@ public class AdminAssetCategoryController {
     @PostMapping
     public RsData<Empty> create(@RequestBody @Valid AdminAssetCategoryCreateReq req) {
         adminAssetCategoryService.create(req.getName());
-        return new RsData<>(
-                "201-1",
-                "",
-                new Empty()
-        );
+        return RsData.OK;
     }
 
     @PutMapping("/{categoryId}")
@@ -45,11 +43,7 @@ public class AdminAssetCategoryController {
             @RequestBody @Valid AdminAssetCategoryUpdateReq req
     ) {
         adminAssetCategoryService.updateName(categoryId, req.getName());
-        return new RsData<>(
-                "201-1",
-                "",
-                new Empty()
-        );
+        return RsData.OK;
     }
 
     @DeleteMapping("/{categoryId}")
@@ -57,10 +51,6 @@ public class AdminAssetCategoryController {
             @PathVariable Long categoryId
     ) {
         adminAssetCategoryService.disable(categoryId);
-        return new RsData<>(
-                "201-1",
-                "",
-                new Empty()
-        );
+        return RsData.OK;
     }
 }

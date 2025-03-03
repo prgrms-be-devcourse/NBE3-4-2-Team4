@@ -60,9 +60,6 @@ export default function TransferForm({ point, cash }: { point: number, cash : nu
         amount: Number(amount),
         assetType: selectedType
       },
-      //                 headers: {
-      //                   cookie: cookies,
-      //                 },
       credentials: "include",
     });
 

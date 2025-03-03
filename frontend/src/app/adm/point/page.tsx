@@ -3,6 +3,7 @@
 import AccumulateForm from "./AccumulateForm";
 import DeductForm from "./DeductForm";
 import { useRedirectIfNotAdmin } from "@/lib/hooks/useRedirect";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   useRedirectIfNotAdmin();
@@ -13,6 +14,11 @@ export default function Page() {
         <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
           재화 관리
         </h2>
+        <div className="flex flex-left">
+            <Button>
+                <a href="point/categories">Admin Categories</a>
+            </Button>
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         <AccumulateForm />
