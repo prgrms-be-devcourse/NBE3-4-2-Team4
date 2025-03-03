@@ -129,6 +129,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/asset/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 재화 송금 기능 */
+        put: operations["transfer_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/points/deduct": {
         parameters: {
             query?: never;
@@ -156,6 +173,40 @@ export interface paths {
         get?: never;
         /** 유저에게 포인트를 적립 */
         put: operations["accumulateForMember"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/asset/deduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 유저에게서 재화를 차감 */
+        put: operations["deductFromMember_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/asset/accumulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 유저에게 재화를 적립 */
+        put: operations["accumulateForMember_1"];
         post?: never;
         delete?: never;
         options?: never;
@@ -316,6 +367,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/banks/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 은행 계좌 목록 조회
+         * @description 해당 유저가 등록된 은행 계좌 목록을 조회합니다.
+         */
+        get: operations["getBankAccounts"];
+        put?: never;
+        /**
+         * 은행 계좌 인증 + 등록
+         * @description 해당 유저의 은행 계좌를 인증 후 등록합니다.
+         */
+        post: operations["generateBankAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banks/accounts/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 은행 계좌 인증
+         * @description 은행 계좌를 인증합니다.
+         */
+        post: operations["verify0ankAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/login": {
         parameters: {
             query?: never;
@@ -382,6 +477,34 @@ export interface paths {
          * @description 회원의 닉네임을 변경합니다.
          */
         patch: operations["updateMembersNickname"];
+        trace?: never;
+    };
+    "/api/banks/accounts/{bank_account_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 은행 계좌 단건 조회
+         * @description 은행 계좌를 단건 조회합니다.
+         */
+        get: operations["getBankAccount"];
+        put?: never;
+        post?: never;
+        /**
+         * 은행 계좌 삭제
+         * @description 은행 계좌를 삭제합니다.
+         */
+        delete: operations["deleteBankAccount"];
+        options?: never;
+        head?: never;
+        /**
+         * 은행 계좌 별칭 수정
+         * @description 은행 계좌의 별칭을 수정합니다.
+         */
+        patch: operations["updateBankAccountNickname"];
         trace?: never;
     };
     "/api/answers/{id}": {
@@ -589,23 +712,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/points/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 포인트 기록 조회(필터 없는버전) */
-        get: operations["getPointHistoriesWithDateAndCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/members/thumbnail": {
         parameters: {
             query?: never;
@@ -666,6 +772,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/banks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 은행 코드 목록 조회
+         * @description 은행 코드 목록을 조회합니다.
+         */
+        get: operations["getBankCodes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/temp-token": {
         parameters: {
             query?: never;
@@ -674,6 +800,23 @@ export interface paths {
             cookie?: never;
         };
         get: operations["tempTokenCheck"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/asset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 재화 기록 조회(날짜 & 카테고리 필터포함) */
+        get: operations["getAssetHistories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -818,6 +961,13 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"];
         };
+        AssetTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+        };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
             /** Format: int64 */
@@ -882,6 +1032,39 @@ export interface components {
             msg: string;
             data: string;
         };
+        GenerateBankAccount: {
+            bankCode: string;
+            accountNumber: string;
+            accountHolder: string;
+            nickname?: string;
+        };
+        GetBankAccount: {
+            /** Format: int64 */
+            bankAccountId?: number;
+            bankName?: string;
+            maskedAccountNumber?: string;
+            accountHolder?: string;
+            nickname?: string;
+        };
+        RsDataGetBankAccount: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetBankAccount"];
+        };
+        VerifyBankAccount: {
+            bankCode: string;
+            accountNumber: string;
+        };
+        RsDataValidBankAccount: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["ValidBankAccount"];
+        };
+        ValidBankAccount: {
+            bankCode?: string;
+            accountNumber?: string;
+            accountHolder?: string;
+        };
         AdminLoginRequestDto: {
             adminUsername: string;
             password: string;
@@ -909,6 +1092,9 @@ export interface components {
         };
         NicknameUpdateRequestDto: {
             newNickname: string;
+        };
+        UpdateBankAccount: {
+            nickname?: string;
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
@@ -967,6 +1153,8 @@ export interface components {
             endDate?: string;
             /** @enum {string} */
             assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
             endDateTime?: string;
             /** Format: date-time */
@@ -979,6 +1167,7 @@ export interface components {
             createdAt?: string;
             counterAccountUsername?: string;
             assetCategory?: string;
+            assetType?: string;
         };
         PageDtoAssetHistoryRes: {
             /** Format: int32 */
@@ -1007,10 +1196,15 @@ export interface components {
             msg: string;
             data: unknown;
         };
+        Cash: {
+            /** Format: int64 */
+            amount?: number;
+        };
         MemberDetailInfoResponseDto: {
             username?: string;
             nickname?: string;
             point?: components["schemas"]["Point"];
+            cash?: components["schemas"]["Cash"];
             /** Format: int64 */
             questionSize?: number;
             /** Format: int64 */
@@ -1024,6 +1218,20 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["MemberDetailInfoResponseDto"];
+        };
+        GetBanks: {
+            bankCode?: string;
+            bankName?: string;
+        };
+        RsDataListGetBanks: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetBanks"][];
+        };
+        RsDataListGetBankAccount: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetBankAccount"][];
         };
     };
     responses: never;
@@ -1291,6 +1499,39 @@ export interface operations {
             };
         };
     };
+    transfer_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     deductFromMember: {
         parameters: {
             query?: never;
@@ -1334,6 +1575,72 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["PointTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deductFromMember_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    accumulateForMember_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTransferReq"];
             };
         };
         responses: {
@@ -1813,6 +2120,101 @@ export interface operations {
             };
         };
     };
+    getBankAccounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGetBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    generateBankAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateBankAccount"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    verify0ankAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyBankAccount"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataValidBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     adminLogin: {
         parameters: {
             query?: never;
@@ -1994,6 +2396,103 @@ export interface operations {
             };
             /** @description 존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음) */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getBankAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bank_account_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    deleteBankAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bank_account_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    updateBankAccountNickname: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bank_account_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateBankAccount"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetBankAccount"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2378,37 +2877,6 @@ export interface operations {
             };
         };
     };
-    getPointHistoriesWithDateAndCategory: {
-        parameters: {
-            query?: {
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getMemberThumbnailInfo: {
         parameters: {
             query?: never;
@@ -2516,6 +2984,35 @@ export interface operations {
             };
         };
     };
+    getBankCodes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListGetBanks"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     tempTokenCheck: {
         parameters: {
             query?: never;
@@ -2534,6 +3031,37 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataBoolean"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getAssetHistories: {
+        parameters: {
+            query: {
+                assetHistoryReq: components["schemas"]["AssetHistoryReq"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */
