@@ -27,10 +27,11 @@ const client = createClient<paths>({
   baseUrl: "http://localhost:8080",
 });
 
-export default function DeductForm() {
+export default function DeductForm({categories}) {
   const [username, setUsername] = useState("");
   const [amount, setAmount] = useState(0);
   const [selectedType, setSelectedType] = useState("POINT");
+  const [selectedCategory, setSelectedCategory] = useState(categories.length > 0 ? categories[0].id : 0);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -62,7 +63,8 @@ export default function DeductForm() {
       body: {
         username: username,
         amount: Number(amount),
-        assetType: selectedType
+        assetType: selectedType,
+        adminAssetCategoryId: Number(selectedCategory)
       },
       credentials: "include",
     });
@@ -118,6 +120,22 @@ export default function DeductForm() {
                                                   <SelectItem value="CASH">캐시</SelectItem>
                                                 </SelectContent>
                                            </Select>
+         <Select
+
+           value={selectedCategory}
+           onValueChange={(val) => setSelectedCategory(val)} // 변경
+         >
+           <SelectTrigger className="md:w-[180px] w-[120px]">
+             <SelectValue placeholder="카테고리 선택" />
+           </SelectTrigger>
+           <SelectContent>
+             {categories.map((category) => (
+               <SelectItem key={category.id} value={category.id}>
+                 {category.name}
+               </SelectItem>
+             ))}
+           </SelectContent>
+         </Select>
         <Button onClick={handleDeduct}>차감</Button>
       </CardContent>
     </Card>

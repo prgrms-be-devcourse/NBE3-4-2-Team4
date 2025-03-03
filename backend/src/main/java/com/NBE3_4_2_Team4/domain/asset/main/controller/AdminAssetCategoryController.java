@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/adminAssetCategory")
-@Tag(name = "adminAssetController", description = "asset 카테고리 관리 API")
+@Tag(name = "adminAssetCategoryController", description = "asset 카테고리 관리 API")
 public class AdminAssetCategoryController {
     private final AdminAssetCategoryService adminAssetCategoryService;
 

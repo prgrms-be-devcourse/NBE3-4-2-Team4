@@ -1,11 +1,9 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetTransferReq;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,9 +24,9 @@ public class AssetAdminController {
 
     @Operation(summary="유저에게 재화를 적립")
     @PutMapping("/accumulate")
-    public RsData<Empty> accumulateForMember(@RequestBody @Validated AssetTransferReq reqDto) {
+    public RsData<Empty> accumulateForMember(@RequestBody @Validated AdminAssetTransferReq reqDto) {
         AssetService assetService = assetServiceFactory.getService(reqDto.getAssetType());
-        assetService.accumulate(reqDto.getUsername(), reqDto.getAmount(), AssetCategory.ADMIN);
+        assetService.adminAccumulate(reqDto.getUsername(), reqDto.getAmount(), reqDto.getAdminAssetCategoryId());
 
         return new RsData<>(
                 "200-1",
@@ -39,9 +37,10 @@ public class AssetAdminController {
 
     @Operation(summary="유저에게서 재화를 차감")
     @PutMapping("/deduct")
-    public RsData<Empty> deductFromMember(@RequestBody @Validated AssetTransferReq reqDto) {
+    public RsData<Empty> deductFromMember(@RequestBody @Validated AdminAssetTransferReq reqDto) {
         AssetService assetService = assetServiceFactory.getService(reqDto.getAssetType());
-        assetService.deduct(reqDto.getUsername(), reqDto.getAmount(), AssetCategory.ADMIN);
+        assetService.adminDeduct(reqDto.getUsername(), reqDto.getAmount(), reqDto.getAdminAssetCategoryId());
+
         return new RsData<>(
                 "200-1",
                 "차감 성공",

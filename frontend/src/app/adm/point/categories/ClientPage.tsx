@@ -7,8 +7,10 @@ import {
 import { Input } from "@/components/ui/input";
 import client from "@/lib/backend/client";
 import { useRouter } from "next/navigation";
+import { useRedirectIfNotAdmin } from "@/lib/hooks/useRedirect";
 
 export default function ClientPage({categories}) {
+     useRedirectIfNotAdmin();
     const [edit, setEdit] = useState(0);
     const [val, setVal] = useState("");
     const [createField, setCreateField] = useState("");

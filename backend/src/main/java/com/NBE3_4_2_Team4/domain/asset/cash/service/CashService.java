@@ -103,17 +103,21 @@ public class CashService implements AssetService {
         return assetHistoryService.createHistory(member, null, amount, assetCategory, null, AssetType.CASH, UUID.randomUUID().toString());
     }
 
+    @Transactional
+    @Override
     public Long adminDeduct(String from, long amount, long admAstCategoryId) {
         AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
                 .orElseThrow(() -> new ServiceException("404-1", "category not found"));
         Member member = deductWithoutHistory(from, amount);
-        return assetHistoryService.createHistory(member, null, amount, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount*-1, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
     }
 
+    @Transactional
+    @Override
     public Long adminAccumulate(String to, long amount, long admAstCategoryId) {
         AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
                 .orElseThrow(() -> new ServiceException("404-1", "category not found"));
         Member member = accumulateWithoutHistory(to, amount);
-        return assetHistoryService.createHistory(member, null, amount*-1, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount, AssetCategory.ADMIN, adminAssetCategory, AssetType.CASH, UUID.randomUUID().toString());
     }
 }

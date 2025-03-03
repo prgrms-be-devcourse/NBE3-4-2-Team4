@@ -118,7 +118,7 @@ public class PointService implements AssetService {
         AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
                 .orElseThrow(() -> new ServiceException("404-1", "category not found"));
         Member member = deductWithoutHistory(from, amount);
-        return assetHistoryService.createHistory(member, null, amount, AssetCategory.ADMIN, adminAssetCategory, AssetType.POINT, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount*-1, AssetCategory.ADMIN, adminAssetCategory, AssetType.POINT, UUID.randomUUID().toString());
     }
 
     @Transactional
@@ -127,7 +127,7 @@ public class PointService implements AssetService {
         AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findById(admAstCategoryId)
                 .orElseThrow(() -> new ServiceException("404-1", "category not found"));
         Member member = accumulateWithoutHistory(to, amount);
-        return assetHistoryService.createHistory(member, null, amount*-1, AssetCategory.ADMIN, adminAssetCategory ,AssetType.POINT, UUID.randomUUID().toString());
+        return assetHistoryService.createHistory(member, null, amount, AssetCategory.ADMIN, adminAssetCategory ,AssetType.POINT, UUID.randomUUID().toString());
     }
 
     @Transactional
