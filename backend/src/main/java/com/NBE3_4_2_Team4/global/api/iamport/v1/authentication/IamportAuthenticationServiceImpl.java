@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,13 +40,15 @@ public class IamportAuthenticationServiceImpl implements IamportAuthenticationSe
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("imp_key", apiKey);
-            requestBody.put("imp_secret", apiSecret);
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            requestBody.add("imp_key", apiKey);
+            requestBody.add("imp_secret", apiSecret);
 
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+
             ResponseEntity<Map> response = restTemplate.exchange(
                     IAMPORT_GENERATE_TOKEN_URL,
                     HttpMethod.POST,

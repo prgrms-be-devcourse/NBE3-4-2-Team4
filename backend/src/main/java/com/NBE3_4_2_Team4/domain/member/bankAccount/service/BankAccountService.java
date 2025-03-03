@@ -70,8 +70,8 @@ public class BankAccountService {
         return bankCodes.stream()
                 .map(bankCode ->
                     GetBanks.builder()
-                                .bankCode(bankCode.getBankCode())
-                                .bankName(bankCode.getBankName())
+                                .bankCode(bankCode.getCode())
+                                .bankName(bankCode.getName())
                             .build())
                 .toList();
     }
@@ -122,7 +122,7 @@ public class BankAccountService {
                 accountInfo.toBankAccount(
                         member,
                         maskAccountNumber(accountInfo.getAccountNumber()),
-                        bankInfo.getBankName()
+                        bankInfo.getName()
                 )
         );
 
@@ -205,6 +205,6 @@ public class BankAccountService {
             return "****";
         }
 
-        return accountNumber.replaceAll("(?<=\\d{4})\\d(?=\\d{4})", "*");
+        return accountNumber.replaceAll("(?<=\\d{3})\\d(?=\\d{3})", "*");
     }
 }

@@ -9,7 +9,7 @@ public class IamportAccountResponseDto {
     @Builder
     public static class BankInfo {
 
-        private final String bankCode;
-        private final String bankName;
+        private final String code;
+        private final String name;
     }
 }

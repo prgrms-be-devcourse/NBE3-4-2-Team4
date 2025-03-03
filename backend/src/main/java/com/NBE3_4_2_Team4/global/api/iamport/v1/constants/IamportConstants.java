@@ -3,7 +3,7 @@ package com.NBE3_4_2_Team4.global.api.iamport.v1.constants;
 public class IamportConstants {
 
     /* URL */
-    public static final String IAMPORT_BASE_URL = "https://api.iamport.com";
+    public static final String IAMPORT_BASE_URL = "https://api.iamport.kr";
 
     public static final String IAMPORT_GENERATE_TOKEN_URL = IAMPORT_BASE_URL + "/users/getToken";
 
