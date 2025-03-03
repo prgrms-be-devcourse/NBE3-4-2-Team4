@@ -7,8 +7,6 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryRes;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;

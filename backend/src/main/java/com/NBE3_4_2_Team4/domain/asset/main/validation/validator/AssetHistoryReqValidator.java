@@ -1,16 +1,16 @@
-package com.NBE3_4_2_Team4.domain.asset.point.validation.validator;
+package com.NBE3_4_2_Team4.domain.asset.main.validation.validator;
 
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.point.validation.annotation.ValidPointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.main.validation.annotation.ValidAssetHistoryReq;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class PointHistoryReqValidator implements ConstraintValidator<ValidPointHistoryReq, AssetHistoryReq> {
+public class AssetHistoryReqValidator implements ConstraintValidator<ValidAssetHistoryReq, AssetHistoryReq> {
     @Override
-    public void initialize(ValidPointHistoryReq constraintAnnotation) {
+    public void initialize(ValidAssetHistoryReq constraintAnnotation) {
     }
 
     @Override

@@ -2,10 +2,9 @@ package com.NBE3_4_2_Team4.domain.asset.main.dto;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
-import com.NBE3_4_2_Team4.domain.asset.point.validation.annotation.ValidPointHistoryReq;
+import com.NBE3_4_2_Team4.domain.asset.main.validation.annotation.ValidAssetHistoryReq;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@ValidPointHistoryReq
+@ValidAssetHistoryReq
 @Getter
 @Setter
 public class AssetHistoryReq {
