@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.main.controller.AdminAssetCategoryController;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryRes;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AdminAssetCategoryService;
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
@@ -42,9 +43,17 @@ public class AdminAssetCategoryControllerTest {
 
     @Test
     public void t1() throws Exception{
-        List<AdminAssetCategory> categories = List.of(
-                new AdminAssetCategory(1L, "Category 1", false),
-                new AdminAssetCategory(2L, "Category 2", false)
+        List<AdminAssetCategoryRes> categories = List.of(
+                AdminAssetCategoryRes
+                        .builder()
+                        .id(1L)
+                        .name("Category 1")
+                        .build(),
+                AdminAssetCategoryRes
+                        .builder()
+                        .id(2L)
+                        .name("Category 2")
+                        .build()
         );
 
         given(adminAssetCategoryService.findAll()).willReturn(categories);

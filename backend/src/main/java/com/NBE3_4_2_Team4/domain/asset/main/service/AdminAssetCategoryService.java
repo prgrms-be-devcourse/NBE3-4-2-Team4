@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.main.service;
 
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryRes;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -25,8 +26,11 @@ public class AdminAssetCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminAssetCategory> findAll() {
-        return adminAssetCategoryRepository.findAllByDisabledFalse();
+    public List<AdminAssetCategoryRes> findAll() {
+        return adminAssetCategoryRepository.findAllByDisabledFalse()
+                .stream()
+                .map(AdminAssetCategoryRes::from)
+                .toList();
     }
 
     @Transactional

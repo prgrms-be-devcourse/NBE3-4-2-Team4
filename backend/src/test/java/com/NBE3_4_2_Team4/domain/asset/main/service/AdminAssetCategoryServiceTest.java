@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.main.service;
 
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryRes;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ public class AdminAssetCategoryServiceTest {
     @Test
     @DisplayName("카테고리 출력")
     void t1() {
-        List<AdminAssetCategory> adminAssetCategories = adminAssetCategoryService.findAll();
+        List<AdminAssetCategoryRes> adminAssetCategories = adminAssetCategoryService.findAll();
         assertEquals(3, adminAssetCategories.size());
     }
 

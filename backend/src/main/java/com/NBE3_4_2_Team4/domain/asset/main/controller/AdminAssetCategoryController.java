@@ -1,8 +1,8 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryCreateReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryRes;
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryUpdateReq;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AdminAssetCategoryService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
@@ -23,7 +23,7 @@ public class AdminAssetCategoryController {
     private final AdminAssetCategoryService adminAssetCategoryService;
 
     @GetMapping
-    public RsData<List<AdminAssetCategory>> getAdminAssetCategoryList() {
+    public RsData<List<AdminAssetCategoryRes>> getAdminAssetCategoryList() {
 
         return new RsData<>(
                 "200-1",
