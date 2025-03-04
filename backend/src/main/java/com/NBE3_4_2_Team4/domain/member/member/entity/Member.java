@@ -44,7 +44,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long id;
+    public Long id;
 
     @Column(nullable = false)
     public Role role;
@@ -67,7 +67,7 @@ public class Member {
     private boolean emailVerified = false;
 
     @Column(nullable = false, unique = true)
-    private String nickname;
+    public String nickname;
 
     @CreatedDate
     @Setter(AccessLevel.NONE)

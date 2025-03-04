@@ -26,7 +26,7 @@ public class AnswerController {
     ) {
         AnswerDto answerDto = answerService.write(
                 questionId,
-                answerRequestDto.content()
+                answerRequestDto.content
         );
 
         return new RsData(

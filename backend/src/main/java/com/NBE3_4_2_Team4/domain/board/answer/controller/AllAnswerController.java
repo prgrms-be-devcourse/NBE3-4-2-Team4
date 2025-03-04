@@ -45,7 +45,7 @@ public class AllAnswerController {
         return new RsData<>(
                 "200-1",
                 "%d번 답변이 수정 되었습니다.".formatted(id),
-                answerService.modify(id, answerRequestDto.content())
+                answerService.modify(id, answerRequestDto.content)
         );
     }
 

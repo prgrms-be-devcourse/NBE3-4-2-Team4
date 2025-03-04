@@ -16,10 +16,10 @@ import java.util.*
 
 @Entity
 class Answer : GenFileParent<AnswerGenFile> {
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne //Todo : (fetch = FetchType.LAZY)
     lateinit var question: Question
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne //Todo : (fetch = FetchType.LAZY)
     lateinit var author: Member
 
     @Column(columnDefinition = "TEXT")
