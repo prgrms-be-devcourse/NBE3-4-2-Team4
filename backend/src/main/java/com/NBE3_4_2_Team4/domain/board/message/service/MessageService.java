@@ -35,7 +35,7 @@ public class MessageService {
     }
 
     private List<MessageDto> getMessagesByType(MessageType type) {
-        Member actor = memberRepository.findByUsername("admin@test.com").get();
+        Member actor = AuthManager.getNonNullMember();
         List<Message> messages;
 
         if (type == MessageType.RECEIVED) {

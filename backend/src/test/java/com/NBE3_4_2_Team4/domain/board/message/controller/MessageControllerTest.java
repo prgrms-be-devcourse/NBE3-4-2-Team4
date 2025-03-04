@@ -133,8 +133,7 @@ public class MessageControllerTest {
     @DisplayName("쪽지 작성")
     @WithUserDetails("admin@test.com")
     void t3() throws Exception {
-        Member sender = AuthManager.getNonNullMember();
-        MessageWriteReqDto request = new MessageWriteReqDto("쪽지 제목", "쪽지 내용", sender.getUsername(), "test@test.com");
+        MessageWriteReqDto request = new MessageWriteReqDto("쪽지 제목", "쪽지 내용", "테스트 유저");
         String requestJson = objectMapper.writeValueAsString(request);
 
         ResultActions resultActions = mvc.perform(
