@@ -263,7 +263,8 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
                             <Label>별칭 (선택)</Label>
                             <Input
                                 value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
+                                onChange={(e) => setNickname(e.target.value.slice(0, 20))}
+                                maxLength={20}
                                 placeholder="계좌 별칭 입력"
                                 disabled={loading}
                             />

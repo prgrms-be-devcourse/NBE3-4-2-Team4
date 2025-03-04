@@ -49,7 +49,7 @@ public class BankAccountRequestDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class UpdateBankAccount {
 
-        @Size(max = 10, message = "계좌 별칭은 최대 10자만 가능합니다.")
+        @Size(max = 20, message = "계좌 별칭은 최대 20자만 입력 가능합니다.")
         private String nickname;
     }
 

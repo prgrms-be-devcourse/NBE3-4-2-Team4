@@ -73,13 +73,13 @@ export function BankAccountNicknameEditModal({ isOpen, onClose, account, refresh
                         <Label>새 별칭</Label>
                         <Input
                             value={newNickname}
-                            onChange={(e) => setNewNickname(e.target.value.slice(0, 10))} // 최대 10자 제한
-                            maxLength={10}
+                            onChange={(e) => setNewNickname(e.target.value.slice(0, 20))} // 최대 20자 제한
+                            maxLength={20}
                             placeholder="새로운 별칭 입력"
                             disabled={loading}
                         />
                         <p className="text-sm text-gray-500 mt-1 text-right">
-                            {newNickname.length} / 10
+                            {newNickname.length} / 20
                         </p>
                     </div>
 
