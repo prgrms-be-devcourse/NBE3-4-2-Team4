@@ -34,9 +34,24 @@ export function RefundRequestModal({
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
 
+    // 은행 점검 시간 체크 함수
+    const isBankMaintenanceTime = () => {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+
+        // 은행 점검 시간: 23:30 ~ 00:30
+        if ((hours === 23 && minutes >= 30) || (hours === 0 && minutes < 30)) {
+            return true;
+        }
+        return false;
+    };
+
+    // 환불 처리 핸들러
     const handleRefundRequest = async () => {
         const amount = Number(refundAmount);
 
+        // 환급 계좌 선택 확인
         if (!selectedAccount) {
             toast({
                 title: "환급 계좌 선택 필요",
@@ -46,6 +61,7 @@ export function RefundRequestModal({
             return;
         }
 
+        // 최소 환급 금액 이상 입력 확인
         if (isNaN(amount) || amount < 500) {
             toast({
                 title: "환급 신청 실패",
@@ -55,6 +71,7 @@ export function RefundRequestModal({
             return;
         }
 
+        // 보유 포인트보다 많은 환급 금액 입력 확인
         if (amount > currentPoint) {
             toast({
                 title: "환급 신청 실패",
@@ -64,6 +81,17 @@ export function RefundRequestModal({
             return;
         }
 
+        // 은행 점검 시간 확인
+        if (isBankMaintenanceTime()) {
+            toast({
+                title: "환급 신청 실패",
+                description: "은행 점검 시간 (23:30 ~ 00:30)에는 환급 신청이 불가능합니다.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        // 환급 요청
         try {
             setLoading(true);
 
