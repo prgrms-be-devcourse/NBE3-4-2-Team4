@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.report.report.repository;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.QMember;
-import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.report.ReportResponseDto;
 import com.NBE3_4_2_Team4.domain.report.report.entity.QReport;
 import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
 import com.NBE3_4_2_Team4.domain.report.reportType.entity.QReportType;

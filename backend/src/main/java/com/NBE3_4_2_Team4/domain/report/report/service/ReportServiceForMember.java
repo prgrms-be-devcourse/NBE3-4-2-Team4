@@ -2,9 +2,9 @@ package com.NBE3_4_2_Team4.domain.report.report.service;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.report.report.dto.ReportRequestDto;
-import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
-import com.NBE3_4_2_Team4.domain.report.report.dto.ReportUpdateRequestDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.report.ReportRequestDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.report.ReportResponseDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.report.ReportUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
 import com.NBE3_4_2_Team4.domain.report.report.repository.ReportQuerydsl;
 import com.NBE3_4_2_Team4.domain.report.report.repository.ReportRepository;
