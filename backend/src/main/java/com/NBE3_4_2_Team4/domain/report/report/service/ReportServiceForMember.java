@@ -67,7 +67,7 @@ public class ReportServiceForMember {
 
     public Page<ReportResponseDto> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return reportQuerydsl.getReportsPage(reporterId, pageable);
+        return reportQuerydsl.getReportsPageByReporterId(reporterId, pageable);
     }
 
     public void updateReport(ReportUpdateRequestDto reportUpdateRequestDto) {

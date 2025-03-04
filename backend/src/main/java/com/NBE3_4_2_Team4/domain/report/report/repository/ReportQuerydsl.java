@@ -5,7 +5,9 @@ import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
 import com.NBE3_4_2_Team4.domain.report.report.entity.QReport;
 import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
 import com.NBE3_4_2_Team4.domain.report.reportType.entity.QReportType;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,12 +26,12 @@ public class ReportQuerydsl extends QuerydslRepositorySupport {
         super(Report.class);
     }
 
-    public Page<ReportResponseDto> getReportsPage(Long memberId, Pageable pageable) {
+    private JPQLQuery<ReportResponseDto> selectReportQuery(Pageable pageable){
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
         int offset = (page + 1) * size;
 
-        List<ReportResponseDto> content = from(r)
+        return from(r)
                 .innerJoin(m)
                 .on(r.reporter.eq(m))
                 .innerJoin(reportType)
@@ -41,10 +43,28 @@ public class ReportQuerydsl extends QuerydslRepositorySupport {
                         r.title,
                         r.content,
                         r.createdAt
-                        ))
-                .where(r.reporter.id.eq(memberId))
+                ))
                 .limit(size)
-                .offset(offset)
+                .offset(offset);
+    }
+
+    public Page<ReportResponseDto> getReportsPageByReporterId(Long reporterId, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(r.reporter.id.eq(reporterId));
+
+        List<ReportResponseDto> content = selectReportQuery(pageable)
+                .where(builder)
+                .fetch();
+
+        return new PageImpl<>(content, pageable, content.size());
+    }
+
+    public Page<ReportResponseDto> getReportsPageByReportedId(Long reportedId, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(r.reportedMember.id.eq(reportedId));
+
+        List<ReportResponseDto> content = selectReportQuery(pageable)
+                .where(builder)
                 .fetch();
 
         return new PageImpl<>(content, pageable, content.size());
