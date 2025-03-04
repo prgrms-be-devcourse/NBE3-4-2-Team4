@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.bankAccount.controller;
 
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.DuplicateCheckBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.GenerateBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.UpdateBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBankAccount;
@@ -105,6 +106,22 @@ public class BankAccountController {
         return new RsData<>(
                 "200-1",
                 "%d번 은행 계좌가 삭제되었습니다.".formatted(bankAccountId)
+        );
+    }
+
+    @PostMapping("/accounts/duplicate")
+    @Operation(summary = "은행 계좌 중복 체크", description = "이미 등록된 은행 계좌인지 체크합니다.")
+    RsData<GetBankAccount> duplicateCheckBankAccount(
+            @RequestBody DuplicateCheckBankAccount request
+    ) {
+
+        bankAccountService.checkBankAccountDuplicated(request);
+
+        return new RsData<>(
+                "200-1",
+                "[(%s) %s] 은행 계좌는 등록되지 않았습니다.".formatted(
+                        request.getBankCode(),
+                        request.getAccountNumber())
         );
     }
 }

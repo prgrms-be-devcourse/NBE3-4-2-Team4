@@ -9,4 +9,8 @@ import java.util.List;
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
 
     List<BankAccount> findAllByMember(Member member);
+
+    boolean existsByBankCodeAndAccountNumberAndAccountHolder(
+            String bankCode, String accountNumber, String accountHolder
+    );
 }

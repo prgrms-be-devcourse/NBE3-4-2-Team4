@@ -52,4 +52,22 @@ public class BankAccountRequestDto {
         @Size(max = 10, message = "계좌 별칭은 최대 10자만 가능합니다.")
         private String nickname;
     }
+
+    @Getter
+    @Builder
+    public static class DuplicateCheckBankAccount {
+
+        @NotBlank(message = "은행코드는 필수 입력 값입니다.")
+        @Size(max = 3, message = "은행코드는 최대 3자리 숫자만 가능합니다.")
+        @Pattern(regexp = "^[0-9]+$", message = "은행코드는 숫자만 입력 가능합니다.")
+        private String bankCode;
+
+        @NotBlank(message = "계좌번호는 필수 입력 값입니다.")
+        @Size(min = 10, max = 15, message = "계좌번호는 10~15자리여야 합니다.")
+        @Pattern(regexp = "^[0-9]+$", message = "계좌번호는 숫자만 입력 가능합니다.")
+        private String accountNumber;
+
+        @NotBlank(message = "예금주는 필수 입력 값입니다.")
+        private String accountHolder;
+    }
 }

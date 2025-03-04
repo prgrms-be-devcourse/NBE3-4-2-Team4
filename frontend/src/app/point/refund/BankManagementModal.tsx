@@ -72,6 +72,20 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
 
         try {
             setLoading(true);
+
+            // 환급 계좌 중복 체크
+            const duplicateCheckResponse = await client.POST("/api/banks/accounts/duplicate", {
+                body: {
+                    bank_code: newBank,
+                    account_number: newAccountNum,
+                    account_holder: accountHolder
+                }
+            });
+
+            if (duplicateCheckResponse.response.status === 409) {
+                throw { status: 409, message: "이미 존재하는 환불 계좌입니다."};
+            }
+
             const response = await client.POST("/api/banks/accounts", {
                 body: {
                     bank_code: newBank,
@@ -84,7 +98,7 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
             const responseData = response?.data?.data ?? null;
 
             if (!responseData) {
-                throw new Error("계좌를 등록하는데 실패했습니다.")
+                throw new Error("환급 계좌를 등록하는데 실패했습니다.")
             }
 
             toast({
@@ -98,9 +112,19 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
             setNickname("");
 
             refreshAccounts(); // 계좌 목록 새로고침
-        } catch (error) {
-            console.error("계좌 등록 중 오류 발생:", error);
-            alert("계좌 등록 중 오류가 발생했습니다.");
+
+        } catch (error: any) {
+            if (error?.status === 409) {
+                toast({
+                    title: "환불 계좌가 이미 존재합니다.",
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: "계좌 등록 중 오류가 발생했습니다.",
+                    variant: "destructive",
+                });
+            }
         } finally {
             setLoading(false);
         }

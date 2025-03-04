@@ -1,5 +1,7 @@
 package com.NBE3_4_2_Team4.domain.member.bankAccount.service;
 
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto;
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.DuplicateCheckBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBanks;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.entity.BankAccount;
@@ -172,6 +174,22 @@ public class BankAccountService {
         bankAccountRepository.delete(bankAccount);
 
         log.info("BankAccount Id [{}] is deleted", bankAccount.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkBankAccountDuplicated(DuplicateCheckBankAccount checkBankAccount) {
+
+        boolean isExist = bankAccountRepository.existsByBankCodeAndAccountNumberAndAccountHolder(
+                checkBankAccount.getBankCode(),
+                checkBankAccount.getAccountNumber(),
+                checkBankAccount.getAccountHolder()
+        );
+
+        if (isExist) {
+            throw new ServiceException("409-1", "해당 은행 계좌는 이미 등록되었습니다.");
+        }
+
+        return isExist;
     }
 
     private boolean verifyBankAccount(

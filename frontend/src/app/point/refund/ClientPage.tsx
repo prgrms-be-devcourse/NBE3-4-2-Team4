@@ -53,7 +53,7 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
                     계좌로 환급 신청
                 </h2>
                 <p className="text-md text-gray-400 mt-3">
-                    활동으로 얻은 포인트를 본인 계좌로 환급하세요.
+                    활동으로 얻은 포인트를 현금화 해보세요.
                 </p>
             </div>
 
