@@ -95,23 +95,23 @@ export default function TransferForm({ point, cash }: { point: number, cash : nu
               <HandCoins size={17} />
               포인트 송금
             </span>
-            <div className="flex gap-2">
-            <Badge
-              className="flex items-center gap-2 font-normal"
-              variant="outline"
-            >
-              <Coins size={16} /> 포인트 잔액 :{" "}
-              <span className="font-semibold text-base">{point}</span>
-            </Badge>
+            {/*<div className="flex gap-2">*/}
+            {/*<Badge*/}
+            {/*  className="flex items-center gap-2 font-normal"*/}
+            {/*  variant="outline"*/}
+            {/*>*/}
+            {/*  <Coins size={16} /> 포인트 잔액 :{" "}*/}
+            {/*  <span className="font-semibold text-base">{point}</span>*/}
+            {/*</Badge>*/}
 
-                        <Badge
-                          className="flex items-center gap-2 font-normal"
-                          variant="outline"
-                        >
-                          <Wallet size={16} /> 캐시 잔액 :{" "}
-                          <span className="font-semibold text-base">{cash}</span>
-                        </Badge>
-            </div>
+            {/*            <Badge*/}
+            {/*              className="flex items-center gap-2 font-normal"*/}
+            {/*              variant="outline"*/}
+            {/*            >*/}
+            {/*              <Wallet size={16} /> 캐시 잔액 :{" "}*/}
+            {/*              <span className="font-semibold text-base">{cash}</span>*/}
+            {/*            </Badge>*/}
+            {/*</div>*/}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex sm:gap-5 gap-2 sm:flex-row flex-col">

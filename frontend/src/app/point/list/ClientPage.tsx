@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import PayInfoForm from "./PayInfoForm";
 import TransferForm from "./TransferForm";
 import AttendanceButton from "./AttendanceButton";
 import { Calendar } from "lucide-react";
@@ -151,6 +152,7 @@ export default function ClientPage({
           <AttendanceButton />
         </div>
       </div>
+      <PayInfoForm point={point} cash={cash} />
       <TransferForm point={point} cash={cash} />
       <Card>
         <CardHeader>
