@@ -50,7 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String oAuth2Id = oAuth2UserInfo.getOAuth2Id();
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
-        Optional<Member> optionalMember = memberService.signIn(username);
+        Optional<Member> optionalMember = memberService.findByUsername(username);
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             oAuth2RefreshTokenService.saveOrUpdateOAuth2RefreshToken(member, refreshToken, oAuth2Id);

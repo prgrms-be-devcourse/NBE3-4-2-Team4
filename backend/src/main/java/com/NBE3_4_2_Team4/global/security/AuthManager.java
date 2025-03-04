@@ -37,6 +37,4 @@ public class AuthManager {
         if (member == null) throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
         return member;
     }
-
-
 }

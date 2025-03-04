@@ -50,6 +50,13 @@ dependencies {
 	annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+	implementation ("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+	implementation("org.apache.tika:tika-core:3.0.0")
+
+	implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
 }
 
 tasks.withType<Test> {

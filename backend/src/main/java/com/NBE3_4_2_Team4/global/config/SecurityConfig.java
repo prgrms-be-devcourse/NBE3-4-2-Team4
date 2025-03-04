@@ -6,17 +6,19 @@ import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2AccessTokenResponseClient;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2RequestResolver;
 import com.NBE3_4_2_Team4.global.security.oauth2.CustomOAuth2SuccessHandler;
+import com.NBE3_4_2_Team4.global.security.user.customUser.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -48,6 +50,8 @@ public class SecurityConfig{
                     needAuthenticated(req, "/api/products/**");
                     needAuthenticated(req, "/api/points/**");
                     needAuthenticated(req, "/api/messages/**");
+
+                    needEmailVerified(req, "/api/test");
                     req.anyRequest().permitAll();
                 })
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -66,7 +70,7 @@ public class SecurityConfig{
                             oauth2Login.tokenEndpoint(tokenEndpointConfig ->
                                     tokenEndpointConfig.accessTokenResponseClient(accessTokenResponseClient));
                         })
-                .cors(Customizer.withDefaults());
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
 
@@ -77,6 +81,42 @@ public class SecurityConfig{
         req.requestMatchers(HttpMethod.DELETE,  pattern).authenticated();
     }
 
+    private boolean isEmailVerified(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+
+        Object principal = auth.getPrincipal();
+
+        if (principal instanceof CustomUser) {
+            return ((CustomUser) principal).getMember().isEmailVerified();
+        }
+
+        return false;
+    }
+
+    private AuthorizationDecision authDecisionByEmailVerified(Authentication auth) {
+        return isEmailVerified(auth) ?
+                new AuthorizationDecision(true) :
+                new AuthorizationDecision(false);
+    }
+
+    private void needEmailVerified(AuthorizeHttpRequestsConfigurer<?>.AuthorizationManagerRequestMatcherRegistry req,
+                                   String pattern) {
+        req.requestMatchers(HttpMethod.POST, pattern).access((auth, context) ->
+                authDecisionByEmailVerified(auth.get())
+        );
+        req.requestMatchers(HttpMethod.PUT, pattern).access((auth, context) ->
+                authDecisionByEmailVerified(auth.get())
+        );
+        req.requestMatchers(HttpMethod.PATCH, pattern).access((auth, context) ->
+                authDecisionByEmailVerified(auth.get())
+        );
+        req.requestMatchers(HttpMethod.DELETE, pattern).access((auth, context) ->
+                authDecisionByEmailVerified(auth.get())
+        );
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -84,14 +124,20 @@ public class SecurityConfig{
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");  // 허용할 origin
-        configuration.addAllowedMethod("*");  // 허용할 HTTP 메서드
-        configuration.addAllowedHeader("*");  // 허용할 HTTP 헤더
-        configuration.setAllowCredentials(true);  // 자격 증명 허용
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정
+
+        CorsConfiguration emailVerifyingConfiguration = new CorsConfiguration();
+        emailVerifyingConfiguration.addAllowedOrigin("*");
+        emailVerifyingConfiguration.addAllowedMethod("POST");
+        emailVerifyingConfiguration.addAllowedHeader("*");
+        source.registerCorsConfiguration("/api/members/verify-email", emailVerifyingConfiguration);
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }

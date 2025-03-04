@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.global.security.jwt;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.nimbusds.jose.util.Base64;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -68,11 +69,11 @@ public class JwtManagerTest {
                 .parseSignedClaims(accessToken)
                 .getPayload();
 
-        assertEquals(member.getId(), ((Integer)claims.get("id")).longValue());
-        assertEquals(member.getUsername(), claims.get("username"));
-        assertEquals(member.getNickname(), claims.get("nickname"));
-        assertEquals(member.getRole().name(), claims.get("role"));
-        assertEquals(member.getOAuth2Provider().name(), claims.get("OAuth2Provider"));
+        assertEquals(member.getId(), ((Integer)claims.get(AuthConstants.ID)).longValue());
+        assertEquals(member.getUsername(), claims.get(AuthConstants.USERNAME));
+        assertEquals(member.getNickname(), claims.get(AuthConstants.NICKNAME));
+        assertEquals(member.getRole().name(), claims.get(AuthConstants.ROLE));
+        assertEquals(member.getOAuth2Provider().name(), claims.get(AuthConstants.OAUTH2_PROVIDER));
 
         assertNotNull(claims.getIssuedAt());
         assertNotNull(claims.getExpiration());
@@ -87,12 +88,12 @@ public class JwtManagerTest {
                 .parseSignedClaims(refreshToken)
                 .getPayload();
 
-        assertEquals(member.getId(), ((Integer)claims.get("id")).longValue());
+        assertEquals(member.getId(), ((Integer)claims.get(AuthConstants.ID)).longValue());
 
-        assertNull(claims.get("username"));
-        assertNull(claims.get("nickname"));
-        assertNull(claims.get("role"));
-        assertNull(claims.get("OAuth2Provider"));
+        assertNull(claims.get(AuthConstants.USERNAME));
+        assertNull(claims.get(AuthConstants.NICKNAME));
+        assertNull(claims.get(AuthConstants.ROLE));
+        assertNull(claims.get(AuthConstants.OAUTH2_PROVIDER));
 
         assertNotNull(claims.getIssuedAt());
         assertNotNull(claims.getExpiration());
@@ -113,11 +114,11 @@ public class JwtManagerTest {
                 .parseSignedClaims(freshAccessToken)
                 .getPayload();
 
-        assertEquals(member.getId(), ((Integer)claims.get("id")).longValue());
-        assertEquals(member.getUsername(), claims.get("username"));
-        assertEquals(member.getNickname(), claims.get("nickname"));
-        assertEquals(member.getRole().name(), claims.get("role"));
-        assertEquals(member.getOAuth2Provider().name(), claims.get("OAuth2Provider"));
+        assertEquals(member.getId(), ((Integer)claims.get(AuthConstants.ID)).longValue());
+        assertEquals(member.getUsername(), claims.get(AuthConstants.USERNAME));
+        assertEquals(member.getNickname(), claims.get(AuthConstants.NICKNAME));
+        assertEquals(member.getRole().name(), claims.get(AuthConstants.ROLE));
+        assertEquals(member.getOAuth2Provider().name(), claims.get(AuthConstants.OAUTH2_PROVIDER));
 
         assertNotNull(claims.getIssuedAt());
         assertNotNull(claims.getExpiration());
@@ -142,7 +143,7 @@ public class JwtManagerTest {
     @Test
     void getClaimsTest4(){
         String expiredToken = Jwts.builder()
-                .claim("id", member.getId())
+                .claim(AuthConstants.ID, member.getId())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() - 1000))
                 .signWith(secretKey)

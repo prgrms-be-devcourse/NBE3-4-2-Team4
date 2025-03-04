@@ -84,8 +84,8 @@ export default function ClientPage({ product, cookieString }) {
       if (error.message.includes("401") || error.response?.status === 401) {
         router.push("/login");
       } else if (
-          error.message.includes("404") ||
-          error.response?.status === 404
+        error.message.includes("404") ||
+        error.response?.status === 404
       ) {
         toast({
           title: "구매 요청에 실패하였습니다.",
@@ -108,8 +108,7 @@ export default function ClientPage({ product, cookieString }) {
   let purchaseButtonText = "";
   if (!isPurchasable) {
     if (product.product_sale_state === "UNAVAILABLE") {
-      purchaseButtonText =
-          "판매가 중지되었습니다.";
+      purchaseButtonText = "판매가 중지되었습니다.";
     } else if (product.product_sale_state === "UPCOMING") {
       purchaseButtonText = "출시 예정 상품입니다.";
     }
@@ -118,78 +117,81 @@ export default function ClientPage({ product, cookieString }) {
   }
 
   return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mt-20 mb-10 text-center">
-          <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
-            포인트 쇼핑
-          </h2>
-          <p className="text-md text-gray-400 mt-3">
-            적립한 포인트로 특별한 혜택을 누리세요
-          </p>
-        </div>
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* 상품 상세 정보 */}
-          <div className="flex-1">
-            {product.product_image_url ? (
-                <Image
-                    loader={imageLoader}
-                    src={product.product_image_url}
-                    alt={product.product_name}
-                    width={600}
-                    height={400}
-                    className="object-cover w-full border border-gray-100"
-                />
-            ) : (
-                <div className="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
-                  이미지 없음
-                </div>
-            )}
-
-            <div className="text-3xl font-bold mt-6 mb-3">
-              {product.product_name}
+    <div className="container mx-auto px-4 py-8">
+      <div className="mt-20 mb-10 text-center">
+        <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
+          포인트 쇼핑
+        </h2>
+        <p className="text-md text-gray-400 mt-3">
+          적립한 포인트로 특별한 혜택을 누리세요
+        </p>
+      </div>
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* 상품 상세 정보 */}
+        <div className="flex-1">
+          {product.product_image_url ? (
+            <Image
+              loader={imageLoader}
+              src={product.product_image_url}
+              alt={product.product_name}
+              width={600}
+              height={400}
+              className="object-cover w-full border border-gray-100"
+            />
+          ) : (
+            <div className="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
+              이미지 없음
             </div>
-            <p className="text-xl font-semibold text-primary mb-4">
-              {product.product_price.toLocaleString()} 원
-            </p>
+          )}
 
-            {product.product_description && (
-                <div className="mt-10 py-10 border-t border-dashed border-gray-200">
-                  <h3 className="text-2xl font-semibold mb-4">상품 설명</h3>
-                  <p className="text-base text-gray-700">
-                    {product.product_description}
-                  </p>
-                </div>
-            )}
+          <div className="text-3xl font-bold mt-6 mb-3">
+            {product.product_name}
           </div>
+          <p className="text-xl font-semibold text-primary mb-4">
+            {product.product_price.toLocaleString()} 원
+          </p>
 
-          {/* 데스크톱용 구매 정보 (오른쪽 고정) */}
-          <div className="w-full md:w-1/3 lg:w-2/5">
-            <div className="sticky top-20">
-              <Card>
-                <CardContent className="pt-6 h-full flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <h2 className="text-2xl font-bold mb-6">구매 정보</h2>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg">{product.product_name}</span>
-                      <span className="text-4xl font-bold text-primary">
+          {product.product_description && (
+            <div className="mt-10 py-10 border-t border-dashed border-gray-200">
+              <h3 className="text-2xl font-semibold mb-4">상품 설명</h3>
+              <div
+                className="text-base text-gray-700"
+                dangerouslySetInnerHTML={{
+                  __html: product.product_description,
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* 데스크톱용 구매 정보 (오른쪽 고정) */}
+        <div className="w-full md:w-1/3 lg:w-2/5">
+          <div className="sticky top-20">
+            <Card>
+              <CardContent className="pt-6 h-full flex flex-col justify-between">
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold mb-6">구매 정보</h2>
+                </div>
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg">{product.product_name}</span>
+                    <span className="text-4xl font-bold text-primary">
                       {product.product_price.toLocaleString()} 원
                     </span>
-                    </div>
-                    <Button
-                        onClick={onPurchase}
-                        disabled={loading || !isPurchasable}
-                        className="w-full mt-4"
-                    >
-                      {purchaseButtonText}
-                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <Button
+                    onClick={onPurchase}
+                    disabled={loading || !isPurchasable}
+                    className="w-full mt-4"
+                  >
+                    {purchaseButtonText}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
+    </div>
   );
 }

@@ -1,7 +1,14 @@
 "use client";
 import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
-import { MessageCircle, ThumbsUp, Award, Coins, Star } from "lucide-react";
+import {
+  MessageCircle,
+  ThumbsUp,
+  Award,
+  Coins,
+  Star,
+  CircleDollarSign,
+} from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,8 +76,24 @@ export default function ClientPage({ body }: ClientPageProps) {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
+<<<<<<< HEAD
                         <div className="flex items-center gap-1 text-amber-500">
                           <Coins size={16} />
+=======
+                        <div
+                          className={`flex items-center gap-1 
+                      ${
+                        item.assetType === "포인트"
+                          ? "text-lime-500"
+                          : "text-amber-500"
+                      }`}
+                        >
+                          {item.assetType === "포인트" ? (
+                            <Coins size={16} />
+                          ) : (
+                            <CircleDollarSign size={16} />
+                          )}
+>>>>>>> main
                           {item.amount}
                         </div>
                         {item.recommendCount && item.recommendCount > 0 && (

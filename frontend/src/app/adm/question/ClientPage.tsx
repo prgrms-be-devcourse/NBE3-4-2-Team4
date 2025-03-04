@@ -3,6 +3,10 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
 
@@ -13,6 +17,7 @@ interface Props {
 export default function ClientPage({ categories }: Props) {
   const { toast } = useToast();
   const [categoryName, setCategoryName] = useState("");
+  const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,13 +32,15 @@ export default function ClientPage({ categories }: Props) {
       });
 
       setCategoryName("");
+
+      router.refresh();
     } catch (error) {
       toast({
         title: "카테고리 등록 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     }
-  }
+  };
 
   const onDelete = async (category: CategoryDto) => {
     try {
@@ -62,41 +69,53 @@ export default function ClientPage({ categories }: Props) {
         variant: "destructive",
       });
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="flex justify-center">카테고리 설정</h1>
-      <form onSubmit={onSubmit} className="flex items-center space-x-4">
-        <label className="text-gray-700 font-medium">카테고리 이름</label>
-        <input
-          type="text"
-          placeholder="카테고리 입력"
-          value={categoryName}
-          onChange={(e) => setCategoryName(e.target.value)}
-          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          className="bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+    <div className="flex flex-col gap-8">
+      <div>
+        <Label className="text-gray-700 font-semibold text-lg mb-3 block">
+          카테고리 설정
+        </Label>
+        <form
+          onSubmit={onSubmit}
+          className="flex items-center gap-2 border-b border-dashed pb-8"
         >
-          추가
-        </button>
-      </form>
+          <Label className="text-gray-700 font-medium w-[120px]">
+            카테고리 이름
+          </Label>
+          <Input
+            type="text"
+            placeholder="카테고리 입력"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+          />
+          <Button type="submit" variant="default">
+            추가
+          </Button>
+        </form>
+      </div>
 
-      <h1>카테고리 목록</h1>
-      <ul className="space-y-2 mb-5">
-        {categories.map((category, index) => (
-          <li key={index} className="flex justify-between items-center p-2 border-b">
-            <span className="text-gray-700 font-medium">{category.name}</span>
-            <form onSubmit={() => onDelete(category)}>
-              <button type="submit" className="text-red-500 hover:text-red-600 transition">
-                삭제
-              </button>
-            </form>
-          </li>
-        ))}
-      </ul>
+      <div>
+        <Label className="text-gray-700 font-semibold text-lg mb-3 block">
+          카테고리 목록
+        </Label>
+        <ul className="mb-5">
+          {categories.map((category, index) => (
+            <li
+              key={index}
+              className="flex justify-between items-center py-2 border-b last:border-b-0"
+            >
+              <span className="text-gray-700 font-medium">{category.name}</span>
+              <form onSubmit={() => onDelete(category)}>
+                <Button type="submit" variant="destructive">
+                  삭제
+                </Button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
