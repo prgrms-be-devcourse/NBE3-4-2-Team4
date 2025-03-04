@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.global.security.jwt;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,13 @@ public class JwtObjectMapperTest {
     void setUp() {
         jwtObjectMapper = new JwtObjectMapper();
         claims = new HashMap<>();
-        claims.put("id", 1);
-        claims.put("username", "testUser");
-        claims.put("nickname", "testNick");
-        claims.put("role", "USER");
-        claims.put("OAuth2Provider", "NONE");
+        claims.put(AuthConstants.ID, 1);
+        claims.put(AuthConstants.USERNAME, "testUser");
+        claims.put(AuthConstants.NICKNAME, "testNick");
+        claims.put(AuthConstants.ROLE, "USER");
+        claims.put(AuthConstants.OAUTH2_PROVIDER, "NONE");
+        claims.put(AuthConstants.EMAIL_ADDRESS, "testEmail");
+        claims.put(AuthConstants.EMAIL_VERIFIED, true);
     }
 
     @AfterEach
@@ -37,7 +40,7 @@ public class JwtObjectMapperTest {
     }
 
     static Stream<String> provideInvalidClaims() {
-        return Stream.of("nickname", "role", "OAuth2Provider");
+        return Stream.of(AuthConstants.USERNAME, AuthConstants.NICKNAME, AuthConstants.ROLE, AuthConstants.OAUTH2_PROVIDER);
     }
 
     @Test
@@ -50,11 +53,12 @@ public class JwtObjectMapperTest {
         assertEquals("testNick", member.getNickname());
         assertEquals(Member.Role.USER, member.getRole());
         assertEquals(Member.OAuth2Provider.NONE, member.getOAuth2Provider());
+        assertTrue(member.isEmailVerified());
     }
 
     @Test
     void getMemberByJwtClaims_NullId() {
-        claims.remove("id");
+        claims.remove(AuthConstants.ID);
 
         Exception exception = assertThrows(RuntimeException.class, () -> jwtObjectMapper.getMemberByJwtClaims(claims));
         assertEquals("Invalid claims", exception.getMessage());

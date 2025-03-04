@@ -114,10 +114,11 @@ public class PointService implements AssetService {
         //락으로 여러번 출석실행 방지
         Member member = memberRepository.findByIdWithLock(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 유저입니다"));
-        LocalDate lastAttendance = member.getLastAttendanceDate();
+//        LocalDate lastAttendance = member.getLastAttendanceDate();
 
         //현재 날짜보다 전이면 포인트지급 & 마지막 출석일 업데이트, 아니면 에러
-        if (lastAttendance != null && (lastAttendance.isEqual(today) || lastAttendance.isAfter(today))) {
+//        if (lastAttendance != null && (lastAttendance.isEqual(today) || lastAttendance.isAfter(today))) {
+        if (!member.isFirstLoginToday()){
             throw new PointClientException("출석실패: 이미 출석했습니다");
         }
         member.setLastAttendanceDate(today);

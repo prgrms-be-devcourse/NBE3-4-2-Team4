@@ -8,6 +8,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -25,11 +26,21 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import MyEditor from "@/lib/business/components/MyEditor";
+import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
+import React from "react";
+import { useFileUploader } from "@/lib/business/components/FileUploader";
+import { FileUploadField } from "@/lib/business/components/FileUploadField";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
 
 interface Props {
   categories: CategoryDto[];
+}
+
+interface EnhancedFile extends File {
+  uploadedUrl?: string;
+  blobId?: string;
 }
 
 const questionFormSchema = z.object({
@@ -43,6 +54,7 @@ const questionFormSchema = z.object({
     .min(4, "내용은 4자 이상이여야 합니다."),
   amount: z.number().min(1, "포인트/캐시는 1 이상이여야 합니다."),
   assetType: z.enum(["포인트", "캐시"]),
+  attachment_0: z.array(z.instanceof(File)).optional(),
 });
 
 type QuestionFormInputs = z.infer<typeof questionFormSchema>;
@@ -56,6 +68,12 @@ export default function ClientPage({ categories }: Props) {
 
   const { toast } = useToast();
   const router = useRouter();
+
+  const [uploadedImages, setUploadedImages] = React.useState<EnhancedFile[]>(
+    []
+  );
+
+  const { uploadFiles } = useFileUploader({ entityType: "questions" });
 
   useEffect(() => {
     if (categories.length > 0 && categoryId === 0) {
@@ -85,7 +103,6 @@ export default function ClientPage({ categories }: Props) {
   });
 
   const onSubmit = async (data: QuestionFormInputs) => {
-
     try {
       const response = await client.POST("/api/questions", {
         headers: {
@@ -107,9 +124,22 @@ export default function ClientPage({ categories }: Props) {
         });
         return;
       }
+
+      const questionId = response.data.data.item?.id!!;
+
+      // 에디터 이미지와 첨부파일 각각 업로드
+      if (uploadedImages && uploadedImages.length > 0) {
+        await uploadFiles(uploadedImages, questionId, "body");
+      }
+
+      if (data.attachment_0 && data.attachment_0.length > 0) {
+        await uploadFiles(data.attachment_0, questionId, "attachment");
+      }
+
       toast({
         title: response.data.msg,
       });
+
       router.replace(`/question/list`);
     } catch (error) {
       toast({
@@ -158,11 +188,10 @@ export default function ClientPage({ categories }: Props) {
                 <FormItem>
                   <Label>내용</Label>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="내용을 입력해주세요"
-                      autoComplete="off"
-                      rows={20}
+                    <MyEditor
+                      form={form}
+                      uploadedImages={uploadedImages}
+                      onUploadedImagesChange={setUploadedImages}
                     />
                   </FormControl>
                   <FormMessage />
@@ -204,56 +233,58 @@ export default function ClientPage({ categories }: Props) {
 
             {/* 포인트/캐시 설정 */}
             <div className="flex flex-col gap-2">
-            <FormField
-              control={form.control}
-              name="assetType"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-3">
-                    <div className="flex items-center gap-2 mt-2">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="포인트"
-                        checked={field.value === "포인트"}
-                        onChange={() => field.onChange("포인트")}
-                      />
-                      <Label>포인트</Label>
+              <FormField
+                control={form.control}
+                name="assetType"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-3">
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="radio"
+                          {...field}
+                          value="포인트"
+                          checked={field.value === "포인트"}
+                          onChange={() => field.onChange("포인트")}
+                        />
+                        <Label>포인트</Label>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="radio"
+                          {...field}
+                          value="캐시"
+                          checked={field.value === "캐시"}
+                          onChange={() => field.onChange("캐시")}
+                        />
+                        <Label>캐시</Label>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <input
-                        type="radio"
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
                         {...field}
-                        value="캐시"
-                        checked={field.value === "캐시"}
-                        onChange={() => field.onChange("캐시")}
+                        type="number"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        autoComplete="off"
+                        className="w-[120px]"
                       />
-                      <Label>캐시</Label>
-                    </div>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      autoComplete="off"
-                      className="w-[120px]"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
+
+          <FileUploadField control={form.control} name="attachment_0" />
 
           {/* 작성 버튼 */}
           <Button type="submit" className="mt-6">

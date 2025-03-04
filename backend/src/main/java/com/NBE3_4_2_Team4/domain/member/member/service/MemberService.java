@@ -4,19 +4,18 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
+import com.NBE3_4_2_Team4.domain.member.member.dto.*;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
-import com.NBE3_4_2_Team4.domain.member.member.dto.AdminLoginRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.MemberDetailInfoResponseDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.NicknameUpdateRequestDto;
-import com.NBE3_4_2_Team4.domain.member.member.dto.SignupRequestDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
+import com.NBE3_4_2_Team4.global.exceptions.EmailAlreadyVerifiedException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.global.mail.service.MailService;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
 import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -45,12 +45,13 @@ public class MemberService {
     private final OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
 
     private final TempUserBeforeSignUpService tempUserBeforeSignUpService;
+    private final MailService mailService;
 
 
-
-    @Transactional(readOnly = true)
-    public long count(){
-        return memberRepository.count();
+    private void checkIfMemberExists(Long memberId){
+        if(!memberRepository.existsById(memberId)){
+            throw new ServiceException("404-1", String.format("no member found with id %d", memberId));
+        }
     }
 
     public Member adminLogin(AdminLoginRequestDto adminLoginRequestDto) {
@@ -69,12 +70,14 @@ public class MemberService {
 
 
 
-    public boolean duplicateNickname(String nickname) {
+    public boolean isNicknameAvailable(String nickname) {
         return !memberRepository.existsByUsername(nickname);
     }
 
 
     public String getLogoutUrl(Member member){
+        checkIfMemberExists(member.getId());
+
         Member.OAuth2Provider oAuthProvider = member.getOAuth2Provider();
 
         OAuth2LogoutService oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider);
@@ -86,75 +89,69 @@ public class MemberService {
 
 
 
-
-    public Member signUp(
-            String username,
-            String password,
-            String nickname,
-            Member.Role role,
-            Member.OAuth2Provider oAuth2Provider){
-        if (memberRepository.existsByUsername(username)) {
-            throw new ServiceException("400-1", String.format("member already exist with name %s", username));
-        }
-        Member member = memberRepository.save(Member.builder()
-                .role(role)
-                .oAuth2Provider(oAuth2Provider)
-                .username(username)
-                .password(passwordEncoder.encode(password))
-                .nickname(nickname)
-                .build());
-        saveInitialPoints(member);
-        return member;
-    }
-
-
-    public Member signUp(String tempToken, SignupRequestDto signupRequestDto){
+    public void signUp(String tempToken, SignupRequestDto signupRequestDto){
         TempUserBeforeSignUp tempUserBeforeSignUp =
                 tempUserBeforeSignUpService.getTempUserFromRedisWithJwt(tempToken);
 
+        Member member = saveMember(tempUserBeforeSignUp, signupRequestDto);
 
-        String username = tempUserBeforeSignUp.getUsername();
-        String realName = tempUserBeforeSignUp.getRealName();
-        String provider = tempUserBeforeSignUp.getProviderTypeCode();
-        String nickname = signupRequestDto.nickname();
-        String emailAddress = signupRequestDto.email();
+        saveOAuth2RefreshToken(member, tempUserBeforeSignUp);
 
-        Member member = memberRepository.save(Member.builder()
-                        .role(Member.Role.USER)
-                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(provider))
-                .username(username)
-                .password(passwordEncoder.encode(""))
-                .nickname(nickname)
-                .emailAddress(emailAddress)
-                .realName(realName)
-                .build());
-
-        // OAuth2 용 리프레시 토큰 저장 (추후 회원 탈퇴 시 연동 해제용)
-        String oAuth2Id = tempUserBeforeSignUp.getOAuth2Id();
-        String refreshToken = tempUserBeforeSignUp.getRefreshToken();
-
-        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
-                .oAuth2Id(oAuth2Id)
-                .member(member)
-                .refreshToken(refreshToken)
-                .build());
-
-        saveInitialPoints(member);
+        saveSignupPoints(member);
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken);
 
-        return member;
+        Long memberId = member.getId();
+        String emailAddress = member.getEmailAddress();
+
+        sendAuthenticationMail(memberId, emailAddress);
     }
 
 
-    private void saveInitialPoints(Member member) {
+    public void sendAuthenticationMail(Long memberId, String emailAddress){
+        checkIfMemberExists(memberId);
+
+        String authCode = UUID.randomUUID().toString();
+
+        tempUserBeforeSignUpService.saveAuthCodeForMember(memberId, authCode);
+
+        mailService.sendAuthenticationMail(emailAddress, memberId, authCode);
+    }
+
+
+    private Member saveMember(TempUserBeforeSignUp tempUser, SignupRequestDto signupRequestDto) {
+        if (memberRepository.existsByUsername(tempUser.getUsername())) {
+            throw new ServiceException("409-1", String.format("already exists with username %s", tempUser.getUsername()));
+        }
+        return memberRepository.saveAndFlush(Member.builder()
+                .role(Member.Role.USER)
+                .oAuth2Provider(Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()))
+                .username(tempUser.getUsername())
+                .password(passwordEncoder.encode(""))
+                .nickname(signupRequestDto.nickname())
+                .emailAddress(signupRequestDto.email())
+                .realName(tempUser.getRealName())
+                .build());
+    }
+
+
+    private void saveOAuth2RefreshToken(Member member, TempUserBeforeSignUp tempUser) {
+        oAuth2RefreshTokenRepository.save(OAuth2RefreshToken.builder()
+                .oAuth2Id(tempUser.getOAuth2Id())
+                .member(member)
+                .refreshToken(tempUser.getRefreshToken())
+                .build());
+    }
+
+
+    private void saveSignupPoints(Member member) {
         try {
             assetHistoryRepository.save(AssetHistory.builder()
-                            .member(member)
-                            .amount(PointConstants.INITIAL_POINT)
-                            .assetCategory(AssetCategory.SIGN_UP)
-                            .assetType(AssetType.POINT)
-                            .correlationId("asdsaaddasasddsa")
+                    .member(member)
+                    .amount(PointConstants.INITIAL_POINT)
+                    .assetCategory(AssetCategory.SIGN_UP)
+                    .assetType(AssetType.POINT)
+                    .correlationId("asdsaaddasasddsa")
                     .build());
             member.setPoint(new Point(PointConstants.INITIAL_POINT));
         } catch (Exception e) {
@@ -163,53 +160,50 @@ public class MemberService {
     }
 
 
+    public boolean verifyEmail(Long memberId, String authCode) {
+        checkIfMemberExists(memberId);
 
+        Member member = memberRepository.findById(memberId).orElseThrow();
 
-    public Member userSignUp(
-            String username,
-            String password,
-            String nickname,
-            Member.OAuth2Provider oAuth2Provider){
-        return signUp(username, password, nickname, Member.Role.USER, oAuth2Provider);
+        if (member.isEmailVerified()){
+            throw new EmailAlreadyVerifiedException();
+        }
+
+        boolean isEmailVerified = tempUserBeforeSignUpService
+                .isEmailVerified(memberId, authCode);
+
+        member.setEmailVerified(isEmailVerified);
+
+        return isEmailVerified;
     }
 
 
-
-
     public MemberDetailInfoResponseDto getMemberDetailInfo(Member member){
+        checkIfMemberExists(member.getId());
         return memberQuerydsl.getMemberDetailInfo(member);
     }
 
 
-
-
     public void updateNickname(Member member, NicknameUpdateRequestDto nicknameUpdateRequestDto){
+        checkIfMemberExists(member.getId());
+
         Member memberData = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new ServiceException("404-1", String.format("no member found with id %d", member.getId())));
+                .orElseThrow();
+
         String newNickname = nicknameUpdateRequestDto.newNickname();
         memberData.setNickname(newNickname);
     }
 
 
-    public Optional<Member> signIn(String username){
+    public Optional<Member> findByUsername(String username){
         return memberRepository.findByUsername(username);
     }
-
-
-    public Member signUpOrIn(String username, String password, String nickname, Member.OAuth2Provider oAuth2Provider) {
-        Optional<Member> member = memberRepository.findByUsername(username);
-        return member.orElseGet(() -> userSignUp(username, password, nickname, oAuth2Provider));
-    }
-
-
 
 
     public void withdrawalMembership(Member member) {
         Long memberId = member.getId();
 
-        if (!memberRepository.existsById(memberId)) {
-            throw new ServiceException("404-1", String.format("no member found with id %d", memberId));
-        }
+        checkIfMemberExists(memberId);
 
         Member.OAuth2Provider oAuth2Provider = member.getOAuth2Provider();
 

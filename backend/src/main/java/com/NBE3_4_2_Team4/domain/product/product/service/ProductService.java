@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
-import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.*;
+import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.updateItem;
+import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.writeItem;
 import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
 
 @Slf4j
@@ -201,17 +201,24 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public GetItem getProduct(Long productId) {
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ServiceException("404-2", "해당 상품이 존재하지 않습니다."));
-
-        log.info("Product Id [{}] is found.", productId);
+        Product product = findById(productId);
 
         return new GetItem(
                 product,
                 makeFullCategory(product),
                 product.getSaleState().getName()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Product findById(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ServiceException("404-2", "해당 상품이 존재하지 않습니다."));
+
+        log.info("Product Id [{}] is found.", productId);
+
+        return product;
     }
 
     @Transactional
