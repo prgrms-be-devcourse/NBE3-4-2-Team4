@@ -21,4 +21,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByIdWithLock(@Param("id") Long id);
 
     boolean existsByUsername(String username);
+
+    Optional<Member> findByNickname(String nickname);
 }

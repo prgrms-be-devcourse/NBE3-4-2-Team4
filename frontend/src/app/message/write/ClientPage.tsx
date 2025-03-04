@@ -1,4 +1,5 @@
 "use client";
+import client from "@/lib/backend/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +16,7 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -38,6 +40,7 @@ interface ClientPageProps {
 
 export default function ClientPage({ user }: ClientPageProps) {
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<MessageWriteFormInputs>({
     resolver: zodResolver(messageWriteFormSchema),
@@ -47,11 +50,33 @@ export default function ClientPage({ user }: ClientPageProps) {
     },
   });
 
+  const onSubmit = async (data: MessageWriteFormInputs) => {
+    console.log(data);
+    const response = await client.POST("/api/messages", {
+      body: {
+        title: data.title,
+        content: data.content,
+        receiverName: user!!,
+      }
+    });
+
+    if (response.error) {
+      console.error("쪽지 전송 실패:", response.error);
+      return
+    } else {
+      toast({
+        title: "쪽지를 보냈습니다.",
+        variant: "default",
+      });
+      router.back();
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 mb-4 my-4">
       <Form {...form}>
         <form
-          // onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4 w-full"
         >
           <Card>

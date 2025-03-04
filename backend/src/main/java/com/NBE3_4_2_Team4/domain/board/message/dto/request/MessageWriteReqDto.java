@@ -9,8 +9,6 @@ public record MessageWriteReqDto(
         String title,
         @NotNull @Length(min = 2)
         String content,
-        @NotNull @JsonProperty("senderName")
-        String senderName,
         @NotNull @JsonProperty("receiverName")
         String receiverName
 ) {}

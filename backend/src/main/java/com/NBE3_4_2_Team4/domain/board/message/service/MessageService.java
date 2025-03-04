@@ -58,10 +58,9 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageDto write(String senderName, String receiverName, String title, String content) {
-        Member sender = memberRepository.findByUsername(senderName).get();
-        Member receiver = memberRepository.findByUsername(receiverName).get();
-
+    public MessageDto write(Member sender, String receiverName, String title, String content) {
+        Member receiver = memberRepository.findByNickname(receiverName)
+                .orElseThrow(() -> new ServiceException("404-1", "존재하지 않는 사용자입니다."));
         Message message = Message.builder()
                 .sender(sender)
                 .receiver(receiver)

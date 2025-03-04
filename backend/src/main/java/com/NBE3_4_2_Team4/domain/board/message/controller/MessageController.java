@@ -3,7 +3,9 @@ package com.NBE3_4_2_Team4.domain.board.message.controller;
 import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto;
 import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.message.service.MessageService;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +41,11 @@ public class MessageController {
     @PostMapping
     @Operation(summary = "쪽지 작성", description = "쪽지 작성")
     public RsData<MessageDto> write(@RequestBody MessageWriteReqDto reqBody) {
+        Member sender = AuthManager.getNonNullMember();
         return new RsData<>(
                 "201-1",
                 "쪽지를 성공적으로 보냈습니다.",
-                messageService.write(reqBody.senderName(), reqBody.receiverName(), reqBody.title(), reqBody.content())
+                messageService.write(sender, reqBody.receiverName(), reqBody.title(), reqBody.content())
         );
     }
 

@@ -1022,7 +1022,6 @@ export interface components {
         MessageWriteReqDto: {
             title: string;
             content: string;
-            senderName: string;
             receiverName: string;
         };
         MessageDto: {
@@ -1138,9 +1137,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
