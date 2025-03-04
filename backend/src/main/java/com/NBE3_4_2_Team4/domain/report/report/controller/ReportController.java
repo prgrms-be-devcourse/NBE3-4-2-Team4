@@ -3,7 +3,7 @@ package com.NBE3_4_2_Team4.domain.report.report.controller;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.report.report.dto.ReportRequestDto;
 import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
-import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
+import com.NBE3_4_2_Team4.domain.report.report.dto.ReportUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.report.report.service.ReportServiceForMember;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
@@ -34,5 +34,13 @@ public class ReportController {
         Member member = AuthManager.getNonNullMember();
         Page<ReportResponseDto> reportsPage = reportService.findReportsByReporterId(member.getId(), page, size);
         return new RsData<>("201-1","report list", reportsPage);
+    }
+
+    @PatchMapping
+    public RsData<Empty> updateReport(
+            @RequestBody ReportUpdateRequestDto reportUpdateRequestDto
+    ){
+        reportService.updateReport(reportUpdateRequestDto);
+        return new RsData<>("200-1","report updated");
     }
 }
