@@ -14,10 +14,10 @@ public class RsData<T> {
     public static final RsData<Empty> OK = new RsData<>("200-1", "OK", new Empty());
 
     @NonNull
-    private final String resultCode;
+    public final String resultCode;
 
     @NonNull
-    private final String msg;
+    public final String msg;
 
     @NonNull
     private final T data;

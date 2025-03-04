@@ -47,7 +47,7 @@ public class Member {
     private Long id;
 
     @Column(nullable = false)
-    private Role role;
+    public Role role;
 
     @Column(nullable = false)
     private OAuth2Provider oAuth2Provider;
