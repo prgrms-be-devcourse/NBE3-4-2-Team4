@@ -12,6 +12,7 @@ import com.NBE3_4_2_Team4.domain.report.reportType.entity.ReportType;
 import com.NBE3_4_2_Team4.domain.report.reportType.repository.ReportTypeRepository;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,7 +67,7 @@ public class ReportServiceForMember {
     }
 
     public Page<ReportResponseDto> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = Ut.pageable.makePageable(page, size);
         return reportQuerydsl.getReportsPageByReporterId(reporterId, pageable);
     }
 

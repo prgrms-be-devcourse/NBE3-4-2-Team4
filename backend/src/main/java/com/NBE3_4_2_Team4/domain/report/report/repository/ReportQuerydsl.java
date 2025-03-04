@@ -45,7 +45,15 @@ public class ReportQuerydsl extends QuerydslRepositorySupport {
                         r.createdAt
                 ))
                 .limit(size)
-                .offset(offset);
+                .offset(offset)
+                .orderBy(r.createdAt.desc());
+    }
+
+    public Page<ReportResponseDto> getReportsPage(Pageable pageable){
+        List<ReportResponseDto> content = selectReportQuery(pageable)
+                .fetch();
+
+        return new PageImpl<>(content, pageable, content.size());
     }
 
     public Page<ReportResponseDto> getReportsPageByReporterId(Long reporterId, Pageable pageable) {

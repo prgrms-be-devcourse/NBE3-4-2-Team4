@@ -9,6 +9,7 @@ import com.NBE3_4_2_Team4.domain.report.report.repository.ReportRepository;
 import com.NBE3_4_2_Team4.domain.report.reportType.entity.ReportType;
 import com.NBE3_4_2_Team4.domain.report.reportType.repository.ReportTypeRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,18 +20,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class RepostServiceForAdmin {
+public class ReportServiceForAdmin {
     public ReportRepository reportRepository;
     public ReportQuerydsl reportQuerydsl;
     public ReportTypeRepository reportTypeRepository;
 
+    public Page<ReportResponseDto> findAllReports(Integer page, Integer size) {
+        Pageable pageable = Ut.pageable.makePageable(page, size);
+        return reportQuerydsl.getReportsPage(pageable);
+    }
+
     public Page<ReportResponseDto> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = Ut.pageable.makePageable(page, size);
         return reportQuerydsl.getReportsPageByReporterId(reporterId, pageable);
     }
 
     public Page<ReportResponseDto> findReportsByReportedId(Long reportedId, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = Ut.pageable.makePageable(page, size);
         return reportQuerydsl.getReportsPageByReportedId(reportedId, pageable);
     }
 
