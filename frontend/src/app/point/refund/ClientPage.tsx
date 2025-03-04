@@ -118,7 +118,7 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
                                     </Card>
                                 ))
                             ) : (
-                                <p className="text-gray-400 text-center">등록된 계좌가 없습니다.</p>
+                                <p className="text-gray-400">등록된 계좌가 없습니다.</p>
                             )}
                         </div>
                         <div className="flex justify-end w-full mt-4">

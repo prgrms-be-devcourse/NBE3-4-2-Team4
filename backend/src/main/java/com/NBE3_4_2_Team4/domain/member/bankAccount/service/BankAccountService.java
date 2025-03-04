@@ -1,6 +1,5 @@
 package com.NBE3_4_2_Team4.domain.member.bankAccount.service;
 
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.DuplicateCheckBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBanks;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
@@ -128,6 +127,11 @@ public class BankAccountService {
                 )
         );
 
+        // 별명이 존재하지 않을 경우, 기본 닉네임 생성
+        if (bankAccount.getNickname() == null) {
+            bankAccount.updateNickname(null);
+        }
+
         log.info("BankAccount Id [{}] is saved.", bankAccount.getId());
 
         return GetBankAccount.builder()
@@ -179,7 +183,12 @@ public class BankAccountService {
     @Transactional(readOnly = true)
     public boolean checkBankAccountDuplicated(DuplicateCheckBankAccount checkBankAccount) {
 
-        boolean isExist = bankAccountRepository.existsByBankCodeAndAccountNumberAndAccountHolder(
+        // 회원 확인
+        Member member = getNonNullMember();
+
+        // 환불 계좌 존재 유무 확인
+        boolean isExist = bankAccountRepository.existsByMemberIdAndBankCodeAndAccountNumberAndAccountHolder(
+                member.getId(),
                 checkBankAccount.getBankCode(),
                 checkBankAccount.getAccountNumber(),
                 checkBankAccount.getAccountHolder()

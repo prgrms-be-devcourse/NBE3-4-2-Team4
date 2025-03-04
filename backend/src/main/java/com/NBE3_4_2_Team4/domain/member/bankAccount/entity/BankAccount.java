@@ -47,7 +47,7 @@ public class BankAccount extends BaseTime {
             this.nickname = "%s %s"
                     .formatted(
                             this.bankName,
-                            this.accountNumber.substring(this.accountNumber.length() - 5)
+                            this.accountNumber.substring(this.accountNumber.length() - 4)
                     );
 
         } else {

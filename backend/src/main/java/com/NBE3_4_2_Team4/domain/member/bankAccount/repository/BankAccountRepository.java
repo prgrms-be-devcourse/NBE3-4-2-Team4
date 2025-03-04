@@ -10,7 +10,7 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Long> 
 
     List<BankAccount> findAllByMember(Member member);
 
-    boolean existsByBankCodeAndAccountNumberAndAccountHolder(
-            String bankCode, String accountNumber, String accountHolder
+    boolean existsByMemberIdAndBankCodeAndAccountNumberAndAccountHolder(
+            Long memberId, String bankCode, String accountNumber, String accountHolder
     );
 }
