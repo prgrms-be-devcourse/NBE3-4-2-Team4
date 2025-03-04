@@ -14,7 +14,7 @@ export default function ClientPage({ body }: ClientPageProps) {
     <div className="container mx-auto px-4">
       <div className="mt-20 mb-10 text-center">
         <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
-          내가 쓴 질문 모아 보기
+          내가 쓴 답변 모아 보기
         </h2>
       </div>
 

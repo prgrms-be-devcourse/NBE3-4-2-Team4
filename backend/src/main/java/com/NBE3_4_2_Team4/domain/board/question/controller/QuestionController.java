@@ -46,6 +46,18 @@ public class QuestionController {
         );
     }
 
+    @GetMapping("/answerer/{memberId}")
+    @Operation(summary = "답변 작성자 기준 질문글 조회", description = "내가 남긴 답변 보기, 혹은 누군가가 답변을 남긴 질문글들 보기")
+    public PageDto<QuestionDto> getAQuestionsByAnswerAuthor(
+            @PathVariable long memberId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                questionService.findByAnswerAuthor(memberId, page, pageSize)
+        );
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "질문 글 단건조회", description = "질문 id에 해당하는 글 조회")
     public QuestionDto getQuestion(@PathVariable long id) {

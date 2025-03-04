@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
@@ -82,6 +83,17 @@ public class MemberInitData {
         member.setPoint(new Point(PointConstants.INITIAL_POINT));
     }
 
+    private void saveSignUpCash(Member member) {
+        assetHistoryRepository.save(AssetHistory.builder()
+                .member(member)
+                .amount(PointConstants.INITIAL_POINT)
+                .assetCategory(AssetCategory.SIGN_UP)
+                .assetType(AssetType.CASH)
+                .correlationId("asdsaaddasasddsadd")
+                .build());
+        member.setCash(new Cash(10000L));
+    }
+
     @Transactional
     public void work() {
         if (memberRepository.count() > 0) return;
@@ -97,6 +109,7 @@ public class MemberInitData {
                 .oAuth2Provider(oAuth2Provider)
                 .build());
         saveSignUpPoint(admin);
+        saveSignUpCash(admin);
 
         Member member1 = memberRepository.save(Member.builder()
                 .username(member1Username)
@@ -108,6 +121,7 @@ public class MemberInitData {
                 .oAuth2Provider(oAuth2Provider)
                 .build());
         saveSignUpPoint(member1);
+        saveSignUpCash(member1);
 
         Member member2 = memberRepository.save(Member.builder()
                 .username(member2Username)
@@ -119,5 +133,6 @@ public class MemberInitData {
                 .oAuth2Provider(oAuth2Provider)
                 .build());
         saveSignUpPoint(member2);
+        saveSignUpCash(member2);
     }
 }
