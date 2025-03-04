@@ -49,6 +49,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { nickname } = useNickname();
   const { setNickname } = useNickname();
+  const [unreadMessages, setUnreadMessages] = useState<number>(0);
   const { setId } = useId();
   const { role, setRole } = useRole();
   const pathname = usePathname();
@@ -71,6 +72,25 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       router.push("/"); // 파라미터 제거된 URL로 이동
     }
   }, [attendanceMessage]);
+
+  const fetchUnreadMessages = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/messages/receive/unread",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadMessages(data || 0);
+      }
+    } catch (error) {
+      console.error("쪽지 개수 가져오기 실패:", error);
+    }
+  };
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -96,6 +116,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
           const data = await response.json();
 
           if (data?.result_code === "200-1") {
+            fetchUnreadMessages();
             return {
               isAuthenticated: true,
               nickname: data?.data?.nickname || null,
@@ -226,7 +247,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="flex-grow"></div>
           {isAuthenticated ? (
             <div className="flex items-center">
-              <MessageNumIcon count={2} />
+              <MessageNumIcon count={unreadMessages} />
 
               <span className="text-sm font-medium flex items-center">
                 환영합니다,

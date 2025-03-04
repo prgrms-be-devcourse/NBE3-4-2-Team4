@@ -48,6 +48,14 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
+    public Long getUnreadMessages() {
+        Member actor = AuthManager.getNonNullMember();
+        List<Message> messages = messageRepository.findAllByReceiverAndIsChecked(actor, false);
+
+        return (long) messages.stream().map(MessageDto::new).toList().size();
+    }
+
+    @Transactional(readOnly = true)
     public MessageDto getMessage(long id) {
         Member actor = AuthManager.getNonNullMember();
         Message message = messageRepository.findById(id)

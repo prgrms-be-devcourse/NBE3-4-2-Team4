@@ -728,6 +728,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/messages/receive/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 읽지 않은 쪽지 조회
+         * @description 받은 쪽지 중 읽지 않은 목록 조회
+         */
+        get: operations["getUnreadMessages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/members/thumbnail": {
         parameters: {
             query?: never;
@@ -1137,9 +1157,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
@@ -2827,6 +2847,35 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["MessageDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getUnreadMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": number;
                 };
             };
             /** @description Bad Request */

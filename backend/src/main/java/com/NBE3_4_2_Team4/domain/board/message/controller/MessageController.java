@@ -32,6 +32,12 @@ public class MessageController {
         return messageService.getReceivedMessages();
     }
 
+    @GetMapping("/receive/unread")
+    @Operation(summary = "읽지 않은 쪽지 조회", description = "받은 쪽지 중 읽지 않은 목록 조회")
+    public Long getUnreadMessages() {
+        return messageService.getUnreadMessages();
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "쪽지 단건 조회", description = "쪽지 id에 해당하는 쪽지 조회")
     public MessageDto getMessage(@PathVariable long id) {
