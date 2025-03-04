@@ -12,6 +12,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,12 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import React from "react";
+import { useFileUploader } from "@/lib/business/components/FileUploader";
+import MyEditor from "@/lib/business/components/MyEditor";
+import { getUplodableInputAccept } from "@/utils/uplodableInputAccept";
+import Link from "next/link";
+import { FileUploadField } from "@/lib/business/components/FileUploadField";
 
 type CategoryDto = components["schemas"]["QuestionCategoryDto"];
 type QuestionDto = components["schemas"]["QuestionDto"];
@@ -42,6 +49,11 @@ type QuestionDto = components["schemas"]["QuestionDto"];
 interface Props {
   categories: CategoryDto[];
   questionData: QuestionDto;
+}
+
+interface EnhancedFile extends File {
+  uploadedUrl?: string;
+  blobId?: string;
 }
 
 const questionFormSchema = z.object({
@@ -55,6 +67,7 @@ const questionFormSchema = z.object({
     .min(4, "내용은 4자 이상이여야 합니다."),
   amount: z.number().min(1, "포인트/캐시는 1 이상이여야 합니다."),
   assetType: z.enum(["포인트", "캐시"]),
+  attachment_0: z.array(z.instanceof(File)).optional(),
 });
 
 type QuestionFormInputs = z.infer<typeof questionFormSchema>;
@@ -69,6 +82,10 @@ export default function ClientPage({ categories, questionData }: Props) {
   const [content, setContent] = useState("");
   const [amounts, setAmounts] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number>(0);
+  const [uploadedImages, setUploadedImages] = React.useState<EnhancedFile[]>(
+    []
+  );
+  const { uploadFiles } = useFileUploader({ entityType: "questions" });
 
   const { toast } = useToast();
   const router = useRouter();
@@ -108,7 +125,8 @@ export default function ClientPage({ categories, questionData }: Props) {
       title: questionData.title,
       content: questionData.content,
       amount: questionData.amount,
-      assetType: questionData.assetType === "전체" ? "포인트" : questionData.assetType,
+      assetType:
+        questionData.assetType === "전체" ? "포인트" : questionData.assetType,
     },
   });
 
@@ -124,7 +142,7 @@ export default function ClientPage({ categories, questionData }: Props) {
           content: data.content,
           categoryId: categoryId!!,
           amount: data.amount,
-          assetType: data.assetType
+          assetType: data.assetType,
         },
       });
 
@@ -135,6 +153,20 @@ export default function ClientPage({ categories, questionData }: Props) {
         });
         return;
       }
+
+      // 에디터 이미지와 첨부파일 각각 업로드
+      if (uploadedImages && uploadedImages.length > 0) {
+        await uploadFiles(uploadedImages, Number(questionData.id), "body");
+      }
+
+      if (data.attachment_0 && data.attachment_0.length > 0) {
+        await uploadFiles(
+          data.attachment_0,
+          Number(questionData.id),
+          "attachment"
+        );
+      }
+
       toast({
         title: response.data.msg,
       });
@@ -186,11 +218,10 @@ export default function ClientPage({ categories, questionData }: Props) {
                 <FormItem>
                   <Label>내용</Label>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="내용을 입력해주세요"
-                      autoComplete="off"
-                      rows={20}
+                    <MyEditor
+                      form={form}
+                      uploadedImages={uploadedImages}
+                      onUploadedImagesChange={setUploadedImages}
                     />
                   </FormControl>
                   <FormMessage />
@@ -253,6 +284,17 @@ export default function ClientPage({ categories, questionData }: Props) {
             />
           </div>
 
+          <div className="flex gap-2 items-end my-4">
+            <div className="flex-1">
+              <FileUploadField control={form.control} name="attachment_0" />
+            </div>
+            <Button variant="outline" asChild>
+              <Link href={`/question/${questionData.id}/genFile/listForEdit`}>
+                기존 첨부파일 변경/삭제
+              </Link>
+            </Button>
+          </div>
+
           {/* 작성 버튼 */}
           <Dialog>
             <DialogTrigger asChild>
@@ -283,7 +325,6 @@ export default function ClientPage({ categories, questionData }: Props) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
         </form>
       </Form>
     </div>
