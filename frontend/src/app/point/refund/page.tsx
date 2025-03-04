@@ -27,5 +27,5 @@ export default async function Page() {
         redirect("/login");
     }
 
-    return <ClientPage user={user} bankAccounts={bankAccounts} />;
+    return <ClientPage user={user} bankAccounts={bankAccounts} cookieString={cookieHeader} />;
 }

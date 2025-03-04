@@ -5,10 +5,15 @@ import { Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BankManagementModal } from "./BankManagementModal";
-import {BankAccountNicknameEditModal} from "./BankAccountNicknameEditModal";
+import { BankAccountNicknameEditModal } from "./BankAccountNicknameEditModal";
+import { RefundRequestModal } from "./RefundRequestModal";
 import client from "@/lib/backend/client";
 
-export default function ClientPage({ user, bankAccounts: initialBankAccounts }: {
+export default function ClientPage({
+                                       user: initialUser,
+                                       bankAccounts: initialBankAccounts,
+                                       cookieString
+}: {
     user: {
         username: string;
         nickname: string;
@@ -24,11 +29,14 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
         accountHolder: string;
         nickname: string;
     }[];
+    cookieString: string;
 }) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
     const [bankAccounts, setBankAccounts] = useState(initialBankAccounts);
+    const [user, setUser] = useState(initialUser);
     const [selectedBankAccount, setSelectedBankAccount] = useState<{
         bankAccountId: number;
         nickname: string;
@@ -45,6 +53,24 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
             console.error("계좌 목록을 불러오는 중 오류 발생:", error);
         }
     };
+
+    // 유저 포인트 갱신 함수
+    const refreshPoint = async () => {
+
+        // 유저 정보 조회
+        try {
+            const response = await client.GET("/api/members/details", {
+                headers: {
+                    cookie: cookieString,
+                },
+            });
+            if (response.data) {
+                setUser(response.data.data);
+            }
+        } catch (error) {
+            console.error("유저 포인트 정보 불러오는 중 오류 발생:", error);
+        }
+    }
 
     return (
         <div className="container mx-auto px-4">
@@ -77,7 +103,7 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
                                 <span className="font-semibold text-sm">P</span>
                             </div>
 
-                            <Button className="flex flex-row justify-normal gap-3">
+                            <Button onClick={() => setIsRefundModalOpen(true)} className="flex flex-row justify-normal gap-3">
                                 환급 신청
                             </Button>
                         </div>
@@ -147,6 +173,16 @@ export default function ClientPage({ user, bankAccounts: initialBankAccounts }: 
                         </p>
                     </CardContent>
                 </Card>
+
+                {/* 환불 신청 모달 */}
+                <RefundRequestModal
+                    isOpen={isRefundModalOpen}
+                    onClose={() => setIsRefundModalOpen(false)}
+                    currentPoint={user.point.amount}
+                    bankAccounts={bankAccounts}
+                    refreshAccounts={refreshAccounts}
+                    refreshPoint={refreshPoint}
+                />
 
                 {/* 계좌 관리 모달 (계좌 추가/삭제) */}
                 <BankManagementModal

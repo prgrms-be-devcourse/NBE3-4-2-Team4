@@ -391,7 +391,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/banks/accounts/verify": {
+    "/api/banks/accounts/duplicate": {
         parameters: {
             query?: never;
             header?: never;
@@ -401,10 +401,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * 은행 계좌 인증
-         * @description 은행 계좌를 인증합니다.
+         * 은행 계좌 중복 체크
+         * @description 이미 등록된 은행 계좌인지 체크합니다.
          */
-        post: operations["verify0ankAccount"];
+        post: operations["duplicateCheckBankAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -457,6 +457,23 @@ export interface paths {
          * @description 단건 상품을 수정합니다.
          */
         patch: operations["updateProduct"];
+        trace?: never;
+    };
+    "/api/points/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 포인트 환급 신청 */
+        patch: operations["refund"];
         trace?: never;
     };
     "/api/members/nickname": {
@@ -1051,19 +1068,10 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetBankAccount"];
         };
-        VerifyBankAccount: {
+        DuplicateCheckBankAccount: {
             bankCode: string;
             accountNumber: string;
-        };
-        RsDataValidBankAccount: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["ValidBankAccount"];
-        };
-        ValidBankAccount: {
-            bankCode?: string;
-            accountNumber?: string;
-            accountHolder?: string;
+            accountHolder: string;
         };
         AdminLoginRequestDto: {
             adminUsername: string;
@@ -1089,6 +1097,10 @@ export interface components {
             productImageUrl?: string;
             productCategory?: string;
             productSaleState?: string;
+        };
+        PointRefundReq: {
+            /** Format: int64 */
+            amount?: number;
         };
         NicknameUpdateRequestDto: {
             newNickname: string;
@@ -2182,7 +2194,7 @@ export interface operations {
             };
         };
     };
-    verify0ankAccount: {
+    duplicateCheckBankAccount: {
         parameters: {
             query?: never;
             header?: never;
@@ -2191,7 +2203,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VerifyBankAccount"];
+                "application/json": components["schemas"]["DuplicateCheckBankAccount"];
             };
         };
         responses: {
@@ -2201,7 +2213,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataValidBankAccount"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetBankAccount"];
                 };
             };
             /** @description Bad Request */
@@ -2341,6 +2353,39 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    refund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PointRefundReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */
