@@ -5,7 +5,6 @@ import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
-import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -43,12 +42,12 @@ public class AnswerInitData {
         return args -> {
             memberInitData.work();
             questionInitData.initData();
-            self.work();
+            self.initData();
         };
     }
 
     @Transactional
-    public void work() {
+    public void initData() {
         if (answerService.count() > 0) return;
 
         Question question1 = questionRepository.findById(1L).get();

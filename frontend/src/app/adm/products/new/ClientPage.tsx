@@ -21,11 +21,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import React from "react";
+import { useFileUploader } from "@/lib/business/components/FileUploader";
+import MyEditor from "@/lib/business/components/MyEditor";
+import { useForm } from "react-hook-form";
 
 const saleStates = [
-  { value: "ONSALE", label: "판매 중" },
-  { value: "SOLDOUT", label: "품절" },
-  { value: "COMINGSOON", label: "곧 출시 예정" },
+  // { value: "ONSALE", label: "판매 중" },
+  // { value: "SOLDOUT", label: "품절" },
+  // { value: "COMINGSOON", label: "곧 출시 예정" },
+  { value: "AVAILABLE", label: "판매 중" },
+  { value: "UNAVAILABLE", label: "품절" },
+  { value: "UPCOMING", label: "곧 출시 예정" },
 ];
 
 export default function ClientPage() {
@@ -33,13 +40,30 @@ export default function ClientPage() {
   const [formData, setFormData] = useState({
     product_name: "",
     product_price: 0,
-    product_description: "",
+    //product_description: "",
     product_image: "",
     product_category: "",
     product_sale_state: "ONSALE",
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  interface EnhancedFile extends File {
+    uploadedUrl?: string;
+    blobId?: string;
+  }
+
+  const form = useForm({
+    defaultValues: {
+      product_description: "",
+    },
+  });
+
+  const [uploadedImages, setUploadedImages] = React.useState<EnhancedFile[]>(
+    []
+  );
+
+  const { uploadFiles } = useFileUploader({ entityType: "products" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,11 +79,14 @@ export default function ClientPage() {
     setLoading(true);
 
     try {
+      console.log(formData.product_sale_state);
+
       const response = await client.POST("/api/products", {
         body: {
           product_name: formData.product_name,
           product_price: formData.product_price,
-          product_description: formData.product_description,
+          //product_description: formData.product_description,
+          product_description: form.getValues("product_description"),
           product_image_url: formData.product_image,
           product_category: formData.product_category,
           product_sale_state: formData.product_sale_state,
@@ -77,9 +104,19 @@ export default function ClientPage() {
         });
         return;
       }
+
+      if (uploadedImages && uploadedImages.length > 0) {
+        await uploadFiles(
+          uploadedImages,
+          response.data.data.product_id!!,
+          "body"
+        );
+      }
+
       toast({
         title: "상품이 성공적으로 등록되었습니다!",
       });
+
       router.push("/adm/products/list");
     } catch (error) {
       console.error("상품 등록 중 오류 발생:", error);
@@ -99,6 +136,7 @@ export default function ClientPage() {
           상품 등록
         </h2>
       </div>
+
       <form onSubmit={handleSubmit}>
         <Card className="shadow-lg rounded-xl w-full">
           <CardHeader></CardHeader>
@@ -146,14 +184,11 @@ export default function ClientPage() {
 
             <div className="space-y-2">
               <Label htmlFor="product_description">설명</Label>
-              <Textarea
-                id="product_description"
+              <MyEditor
+                form={form}
                 name="product_description"
-                placeholder="상품 설명을 입력하세요"
-                value={formData.product_description}
-                onChange={handleChange}
-                rows={10}
-                required
+                uploadedImages={uploadedImages}
+                onUploadedImagesChange={setUploadedImages}
               />
             </div>
 

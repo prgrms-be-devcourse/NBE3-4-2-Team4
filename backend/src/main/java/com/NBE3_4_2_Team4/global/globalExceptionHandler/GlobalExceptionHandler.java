@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.global.globalExceptionHandler;
 
+import com.NBE3_4_2_Team4.global.config.AppConfig;
 import com.NBE3_4_2_Team4.global.exceptions.InValidAccessException;
 import com.NBE3_4_2_Team4.global.exceptions.MemberNotFoundException;
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -86,6 +88,18 @@ public class GlobalExceptionHandler {
                 .body(new RsData<>(
                         "400-1",
                         e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<RsData<Empty>> handle(MaxUploadSizeExceededException ex) {
+        if (AppConfig.isNotProd()) ex.printStackTrace();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new RsData<>(
+                        "413-2",
+                        "업로드되는 개별 파일의 용량은 %s(을)를 초과할 수 없습니다.".formatted(AppConfig.getSpringServletMultipartMaxFileSize())
                 ));
     }
 }
