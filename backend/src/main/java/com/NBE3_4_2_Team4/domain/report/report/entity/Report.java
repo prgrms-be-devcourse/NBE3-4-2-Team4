@@ -24,6 +24,9 @@ public class Report extends BaseTime {
     private Member reportedMember;
 
     @Setter
+    private String title;
+
+    @Setter
     private String content;
 
     @Setter

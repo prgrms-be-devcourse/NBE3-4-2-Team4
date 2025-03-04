@@ -3,8 +3,10 @@ package com.NBE3_4_2_Team4.domain.report.report.service;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.report.report.dto.ReportRequestDto;
+import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
 import com.NBE3_4_2_Team4.domain.report.report.dto.ReportUpdateRequestDto;
 import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
+import com.NBE3_4_2_Team4.domain.report.report.repository.ReportQuerydsl;
 import com.NBE3_4_2_Team4.domain.report.report.repository.ReportRepository;
 import com.NBE3_4_2_Team4.domain.report.reportType.entity.ReportType;
 import com.NBE3_4_2_Team4.domain.report.reportType.repository.ReportTypeRepository;
@@ -24,6 +26,7 @@ public class ReportServiceForMember {
     private final ReportRepository reportRepository;
     private final ReportTypeRepository reportTypeRepository;
     private final MemberRepository memberRepository;
+    private final ReportQuerydsl reportQuerydsl;
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
@@ -49,19 +52,22 @@ public class ReportServiceForMember {
         Long reportedId = reportRequestDto.reportedId();
         Member reportedMember = getMember(reportedId);
 
+        String title = reportRequestDto.title();
+
         String content = reportRequestDto.content();
 
         reportRepository.save(Report.builder()
                 .reportType(reportType)
                 .reporter(reporter)
                 .reportedMember(reportedMember)
+                .title(title)
                 .content(content)
                 .build());
     }
 
-    public Page<Report> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
+    public Page<ReportResponseDto> findReportsByReporterId(Long reporterId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return reportRepository.findByReporterId(reporterId, pageable);
+        return reportQuerydsl.getReportsPage(reporterId, pageable);
     }
 
     public void updateReport(ReportUpdateRequestDto reportUpdateRequestDto) {

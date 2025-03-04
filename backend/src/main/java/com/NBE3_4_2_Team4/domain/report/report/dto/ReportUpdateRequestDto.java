@@ -7,6 +7,7 @@ import lombok.Builder;
 public record ReportUpdateRequestDto(
         Long reportId,
         Long reportTypeId,
+        String title,
         String content
 ) {
     @JsonCreator

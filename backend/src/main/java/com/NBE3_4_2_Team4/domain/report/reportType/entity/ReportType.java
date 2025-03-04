@@ -5,4 +5,5 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class ReportType extends BaseEntity {
+    private String name;
 }

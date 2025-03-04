@@ -1,0 +1,51 @@
+package com.NBE3_4_2_Team4.domain.report.report.repository;
+
+import com.NBE3_4_2_Team4.domain.member.member.entity.QMember;
+import com.NBE3_4_2_Team4.domain.report.report.dto.ReportResponseDto;
+import com.NBE3_4_2_Team4.domain.report.report.entity.QReport;
+import com.NBE3_4_2_Team4.domain.report.report.entity.Report;
+import com.NBE3_4_2_Team4.domain.report.reportType.entity.QReportType;
+import com.querydsl.core.types.Projections;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class ReportQuerydsl extends QuerydslRepositorySupport {
+    private final QReport r = QReport.report;
+    private final QMember m = QMember.member;
+    private final QReportType reportType = QReportType.reportType;
+
+    public ReportQuerydsl() {
+        super(Report.class);
+    }
+
+    public Page<ReportResponseDto> getReportsPage(Long memberId, Pageable pageable) {
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        int offset = (page + 1) * size;
+
+        List<ReportResponseDto> content = from(r)
+                .innerJoin(m)
+                .on(r.reporter.eq(m))
+                .innerJoin(reportType)
+                .on(r.reportType.eq(reportType))
+                .select(Projections.constructor(ReportResponseDto.class,
+                        r.reporter.nickname,
+                        r.reportedMember.nickname,
+                        reportType.name,
+                        r.title,
+                        r.content,
+                        r.createdAt
+                        ))
+                .limit(size)
+                .offset(offset)
+                .fetch();
+
+        return new PageImpl<>(content, pageable, content.size());
+    }
+}
