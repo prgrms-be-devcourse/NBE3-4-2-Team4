@@ -39,9 +39,9 @@ public class MessageService {
         List<Message> messages;
 
         if (type == MessageType.RECEIVED) {
-            messages = messageRepository.findAllByReceiver(actor);
+            messages = messageRepository.findReceivedMessages(actor.getId());
         } else {
-            messages = messageRepository.findAllBySender(actor);
+            messages = messageRepository.findSentMessages(actor.getId());
         }
 
         return messages.stream().map(MessageDto::new).toList();
@@ -89,11 +89,24 @@ public class MessageService {
                     if (message == null) {
                         throw new ServiceException("404-1", "존재하지 않는 메시지가 포함되어 있습니다.");
                     }
-                    message.checkActorCanDelete(actor);
+
+                    // 발신자가 삭제
+                    if (message.getSender().equals(actor)) {
+                        message.setDeletedBySender(true);
+                    }
+                    // 수신자가 삭제
+                    if (message.getReceiver().equals(actor)) {
+                        message.setDeletedByReceiver(true);
+                    }
                 }
         );
 
-        messageRepository.deleteAll(messages);
+        // 발신자와 수신자 모두 삭제한 경우 실제 DB 에서 삭제
+        List<Message> toDelete = messages.stream()
+                .filter(msg -> msg.isDeletedBySender() && msg.isDeletedByReceiver())
+                .toList();
+
+        messageRepository.deleteAll(toDelete);
     }
 
     @Transactional

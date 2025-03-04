@@ -84,7 +84,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         variant: "default",
       });
       setSelectedMessages([]);
-      router.refresh();
+      window.location.reload();
     } catch (error) {
       console.error("쪽지 삭제 중 오류 발생:", error);
     }
@@ -113,7 +113,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         variant: "default",
       });
       setSelectedMessages([]);
-      router.refresh();
+      window.location.reload();
     } catch (error) {
       console.error("쪽지 읽는 중 오류 발생:", error);
     }
@@ -179,7 +179,9 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         {selectedMessages.length > 0 && (
           <div className="flex gap-2 items-center">
             <span>{selectedMessages.length + "개가 선택됨"}</span>
-            <Button className="bg-blue-400 h-8" onClick={handleReadMessages}>읽기</Button>
+            {activeTab === 'received' && (
+              <Button className="bg-blue-400 h-8" onClick={handleReadMessages}>읽기</Button>
+            )}
             <Button className="bg-red-500 h-8" onClick={handleDeleteMessages}>삭제</Button>
           </div>
         )}

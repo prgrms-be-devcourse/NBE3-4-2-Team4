@@ -39,6 +39,12 @@ public class Message extends BaseEntity {
     @Setter
     private boolean isChecked;
 
+    @Setter
+    private boolean deletedBySender;
+
+    @Setter
+    private boolean deletedByReceiver;
+
     public void checkSenderCanRead(Member actor) {
         if (!sender.equals(actor)) {
             throw new ServiceException("403-1", "작성자만 쪽지를 읽을 수 있습니다.");
@@ -46,8 +52,8 @@ public class Message extends BaseEntity {
     }
 
     public void checkActorCanDelete(Member actor) {
-        if (!sender.equals(actor)) {
-            throw new ServiceException("403-2", "작성자만 쪽지를 삭제할 수 있습니다.");
+        if (!sender.equals(actor) || !receiver.equals(actor)) {
+            throw new ServiceException("403-2", "작성자/수신자 만 쪽지를 삭제할 수 있습니다.");
         }
     }
 

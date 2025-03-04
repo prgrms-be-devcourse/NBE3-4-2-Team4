@@ -16,6 +16,7 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/ui/form";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,6 +72,10 @@ export default function ClientPage({ user }: ClientPageProps) {
       router.back();
     }
   };
+
+  useEffect(() => {
+    router.refresh();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 mb-4 my-4">

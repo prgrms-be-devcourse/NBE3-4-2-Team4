@@ -51,15 +51,11 @@ public class MessageInitData {
         Member member2 = memberRepository.findByUsername(member2Username).get();
 
         messageService.write(member1, "관리자", "문의드립니다.", "서비스 이용 중 궁금한 점이 있어 문의드립니다.");
-        messageService.write(member1, "테스트 유저 2", "오늘 일정 가능할까요?", "시간 괜찮으시면 연락 주세요.");
         messageService.write(member1, "관리자", "결제 관련 문의", "결제 내역을 확인해 주실 수 있을까요?");
+        messageService.write(member2, "관리자", "권한 요청", "추가 권한이 필요하여 요청드립니다.");
 
         messageService.write(admin, "테스트 유저", "문의 확인 완료", "문의 주신 사항을 검토하고 답변 드립니다.");
-        messageService.write(admin, "테스트 유저 2", "공지사항 안내", "중요한 공지가 있어 전달드립니다.");
         messageService.write(admin, "테스트 유저", "업데이트 소식", "새로운 기능이 추가되었습니다!");
-
-        messageService.write(member2, "테스트 유저", "함께 공부할까요?", "스터디 모임에 관심 있으시면 알려주세요.");
-        messageService.write(member2, "관리자", "권한 요청", "추가 권한이 필요하여 요청드립니다.");
-        messageService.write(member2, "테스트 유저", "파일 공유", "필요한 자료를 보내드립니다.");
+        messageService.write(admin, "테스트 유저 2", "공지사항 안내", "중요한 공지가 있어 전달드립니다.");
     }
 }
