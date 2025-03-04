@@ -22,7 +22,7 @@ import java.util.Optional;
 @Builder
 public class Question extends GenFileParent<QuestionGenFile> {
     @ManyToOne
-    private Member author;
+    public Member author;
 
     @Column(length = 100)
     private String title;
