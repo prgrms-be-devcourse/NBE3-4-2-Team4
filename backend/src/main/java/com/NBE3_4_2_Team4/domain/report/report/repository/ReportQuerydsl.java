@@ -42,6 +42,7 @@ public class ReportQuerydsl extends QuerydslRepositorySupport {
                         r.content,
                         r.createdAt
                         ))
+                .where(r.reporter.id.eq(memberId))
                 .limit(size)
                 .offset(offset)
                 .fetch();
