@@ -1,4 +1,6 @@
 "use client";
+import client from "@/lib/backend/client";
+import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { components } from "@/lib/backend/apiV1/schema";
@@ -15,10 +17,10 @@ interface ClientPageProps {
 
 export default function ClientPage({ receive, send }: ClientPageProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('received');
   const [viewMessage, setViewMessage] = useState<MessageDto | null>(null);
   const [selectedMessages, setSelectedMessages] = useState<number[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState(null);
 
   // 현재 탭에서 표시할 메시지 배열 가져오기
   const messages = activeTab === "received" ? receive : send;
@@ -59,6 +61,64 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
     router.push("/message/write");
   }
 
+  const handleDeleteMessages = async () => {
+    if (selectedMessages.length === 0) {
+      toast({
+        title: "삭제할 메시지를 선택해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await client.DELETE("/api/messages", {
+        body: selectedMessages,
+      });
+      if (response.error) {
+        console.error("쪽지 삭제 실패:", response.error);
+        return;
+      }
+
+      toast({
+        title: `${selectedMessages.length}개의 쪽지가 삭제되었습니다.`,
+        variant: "default",
+      });
+      setSelectedMessages([]);
+      router.refresh();
+    } catch (error) {
+      console.error("쪽지 삭제 중 오류 발생:", error);
+    }
+  };
+
+  const handleReadMessages = async () => {
+    if (selectedMessages.length === 0) {
+      toast({
+        title: "읽을 메시지를 선택해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await client.PUT("/api/messages", {
+        body: selectedMessages,
+      });
+      if (response.error) {
+        console.error("쪽지 읽기 실패:", response.error);
+        return;
+      }
+
+      toast({
+        title: `${selectedMessages.length}개의 쪽지를 읽었습니다.`,
+        variant: "default",
+      });
+      setSelectedMessages([]);
+      router.refresh();
+    } catch (error) {
+      console.error("쪽지 읽는 중 오류 발생:", error);
+    }
+  };
+
   useEffect(() => {
     setSelectedMessages([]); // 탭이 변경될 때 선택된 메시지 초기화
   }, [activeTab]);
@@ -83,9 +143,6 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
               <div className="flex justify-end gap-2">
                 <Button className="mt-3 w-13 h-8" onClick={() => writeMessage(viewMessage.senderName!!)}>
                   답장하기
-                </Button>
-                <Button className="mt-3 w-12 h-8">
-                  삭제
                 </Button>
               </div>
             )}
@@ -122,8 +179,8 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         {selectedMessages.length > 0 && (
           <div className="flex gap-2 items-center">
             <span>{selectedMessages.length + "개가 선택됨"}</span>
-            <Button className="bg-blue-400 h-8" >읽기</Button>
-            <Button className="bg-red-500 h-8">삭제</Button>
+            <Button className="bg-blue-400 h-8" onClick={handleReadMessages}>읽기</Button>
+            <Button className="bg-red-500 h-8" onClick={handleDeleteMessages}>삭제</Button>
           </div>
         )}
       </div>
