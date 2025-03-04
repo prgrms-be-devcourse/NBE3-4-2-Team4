@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BankManagementModal } from "./BankManagementModal";
 import { BankAccountNicknameEditModal } from "./BankAccountNicknameEditModal";
-import { RefundRequestModal } from "./RefundRequestModal";
+import { WithdrawRequestModal } from "./WithdrawRequestModal";
 import client from "@/lib/backend/client";
 
 export default function ClientPage({
@@ -34,7 +34,7 @@ export default function ClientPage({
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const [bankAccounts, setBankAccounts] = useState(initialBankAccounts);
     const [user, setUser] = useState(initialUser);
     const [selectedBankAccount, setSelectedBankAccount] = useState<{
@@ -103,7 +103,7 @@ export default function ClientPage({
                                 <span className="font-semibold text-sm">P</span>
                             </div>
 
-                            <Button onClick={() => setIsRefundModalOpen(true)} className="flex flex-row justify-normal gap-3">
+                            <Button onClick={() => setIsWithdrawModalOpen(true)} className="flex flex-row justify-normal gap-3">
                                 환급 신청
                             </Button>
                         </div>
@@ -114,9 +114,9 @@ export default function ClientPage({
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-                환급 계좌
-            </span>
+                            <span className="flex items-center gap-2">
+                                환급 계좌
+                            </span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -174,10 +174,10 @@ export default function ClientPage({
                     </CardContent>
                 </Card>
 
-                {/* 환불 신청 모달 */}
-                <RefundRequestModal
-                    isOpen={isRefundModalOpen}
-                    onClose={() => setIsRefundModalOpen(false)}
+                {/* 환급 신청 모달 */}
+                <WithdrawRequestModal
+                    isOpen={isWithdrawModalOpen}
+                    onClose={() => setIsWithdrawModalOpen(false)}
                     currentPoint={user.point.amount}
                     bankAccounts={bankAccounts}
                     refreshAccounts={refreshAccounts}

@@ -8,8 +8,8 @@ export default function PayInfoForm({point, cash}: { point: number, cash: number
 
     const router = useRouter();
 
-    const refundPoint = () => {
-        router.push("/point/refund");
+    const withdrawPoint = () => {
+        router.push("/point/withdrawal");
     };
 
     return (
@@ -28,7 +28,7 @@ export default function PayInfoForm({point, cash}: { point: number, cash: number
                     </div>
 
                     <div className="flex flex-row justify-normal gap-3">
-                        <Button className="w-full" onClick={refundPoint}>계좌로 환급</Button>
+                        <Button className="w-full" onClick={withdrawPoint}>계좌로 환급</Button>
                     </div>
                 </CardContent>
             </Card>

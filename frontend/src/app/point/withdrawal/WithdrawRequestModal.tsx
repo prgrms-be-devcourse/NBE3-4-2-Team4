@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import client from "@/lib/backend/client";
 
-export function RefundRequestModal({
+export function WithdrawRequestModal({
                                        isOpen,
                                        onClose,
                                        currentPoint,
@@ -29,7 +29,7 @@ export function RefundRequestModal({
     refreshAccounts: () => void;
     refreshPoint: () => void;
 }) {
-    const [refundAmount, setRefundAmount] = useState("");
+    const [withdrawalAmount, setWithdrawalAmount] = useState("");
     const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -48,8 +48,8 @@ export function RefundRequestModal({
     };
 
     // 환불 처리 핸들러
-    const handleRefundRequest = async () => {
-        const amount = Number(refundAmount);
+    const handleWithdrawRequest = async () => {
+        const amount = Number(withdrawalAmount);
 
         // 환급 계좌 선택 확인
         if (!selectedAccount) {
@@ -95,7 +95,7 @@ export function RefundRequestModal({
         try {
             setLoading(true);
 
-            const response = await client.PATCH("/api/points/refund", {
+            const response = await client.PATCH("/api/points/withdrawal", {
                 body: { amount },
             });
 
@@ -124,10 +124,10 @@ export function RefundRequestModal({
     };
 
     // 수수료 및 환급액 계산
-    const amount = parseInt(refundAmount, 10);
+    const amount = parseInt(withdrawalAmount, 10);
     const isValidAmount = !isNaN(amount) && amount >= 500 && currentPoint >= 500;
     const fee = 500;
-    const refundAfterFee = isValidAmount ? amount - fee : 0; // 최종 환급액
+    const withdrawAfterFee = isValidAmount ? amount - fee : 0; // 최종 환급액
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -174,8 +174,8 @@ export function RefundRequestModal({
                         <Label>환급할 포인트</Label>
                         <Input
                             type="number"
-                            value={refundAmount}
-                            onChange={(e) => setRefundAmount(e.target.value)}
+                            value={withdrawalAmount}
+                            onChange={(e) => setWithdrawalAmount(e.target.value)}
                             placeholder="환급할 포인트 입력"
                             disabled={loading}
                         />
@@ -192,13 +192,13 @@ export function RefundRequestModal({
                     <div className="flex justify-end gap-2">
                         <Button
                             className="w-full"
-                            onClick={handleRefundRequest}
+                            onClick={handleWithdrawRequest}
                             disabled={loading || currentPoint < 500 || !isValidAmount || bankAccounts.length === 0}
                         >
                             {loading
                                 ? "환급 신청 중..."
                                 : isValidAmount
-                                    ? `${refundAfterFee.toLocaleString()}원 환급 신청`
+                                    ? `${withdrawAfterFee.toLocaleString()}원 환급 신청`
                                     : "환급 신청 불가"}
                         </Button>
                     </div>

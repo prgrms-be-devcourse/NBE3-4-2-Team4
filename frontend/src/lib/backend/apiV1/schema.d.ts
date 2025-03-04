@@ -459,7 +459,7 @@ export interface paths {
         patch: operations["updateProduct"];
         trace?: never;
     };
-    "/api/points/refund": {
+    "/api/points/withdrawal": {
         parameters: {
             query?: never;
             header?: never;
@@ -1098,7 +1098,7 @@ export interface components {
             productCategory?: string;
             productSaleState?: string;
         };
-        PointRefundReq: {
+        PointWithdrawReq: {
             /** Format: int64 */
             amount?: number;
         };
@@ -2375,7 +2375,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PointRefundReq"];
+                "application/json": components["schemas"]["PointWithdrawReq"];
             };
         };
         responses: {

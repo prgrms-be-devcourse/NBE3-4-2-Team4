@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.point.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointRefundReq;
+import com.NBE3_4_2_Team4.domain.asset.point.dto.PointWithdrawReq;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryReq;
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryRes;
@@ -69,13 +69,13 @@ public class PointController {
         );
     }
 
-    @PatchMapping("/refund")
+    @PatchMapping("/withdrawal")
     @Operation(summary = "포인트 환급 신청")
-    public RsData<Empty> refund(@RequestBody PointRefundReq pointRefundReq) {
+    public RsData<Empty> refund(@RequestBody PointWithdrawReq pointWithdrawReq) {
 
         Member member = getNonNullMember();
 
-        pointService.deduct(member.getUsername(), pointRefundReq.getAmount(), AssetCategory.REFUND);
+        pointService.deduct(member.getUsername(), pointWithdrawReq.amount(), AssetCategory.REFUND);
 
         return new RsData<>(
                 "200-1",
