@@ -51,15 +51,9 @@ public class Message extends BaseEntity {
         }
     }
 
-    public void checkActorCanDelete(Member actor) {
-        if (!sender.equals(actor) || !receiver.equals(actor)) {
-            throw new ServiceException("403-2", "작성자/수신자 만 쪽지를 삭제할 수 있습니다.");
-        }
-    }
-
     public void checkReceiverCanRead(Member actor) {
         if (!receiver.equals(actor)) {
-            throw new ServiceException("403-3", "받는 사람만 쪽지를 읽을 수 있습니다.");
+            throw new ServiceException("403-2", "수신자만 쪽지를 읽을 수 있습니다.");
         }
     }
 }
