@@ -1,66 +1,62 @@
-package com.NBE3_4_2_Team4.domain.board.answer.initData;
+package com.NBE3_4_2_Team4.domain.board.answer.initData
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService;
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData;
-import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.annotation.Order;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.board.answer.service.AnswerService
+import com.NBE3_4_2_Team4.domain.board.question.initData.QuestionInitData
+import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository
+import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.ApplicationRunner
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
+import org.springframework.context.annotation.Lazy
+import org.springframework.core.annotation.Order
+import org.springframework.transaction.annotation.Transactional
 
 @Order(2)
 @Configuration
-@RequiredArgsConstructor
 @DependsOn("questionInitData")
-public class AnswerInitData {
-    private final AnswerService answerService;
-    private final QuestionInitData questionInitData;
-    private final MemberRepository memberRepository;
-    private final QuestionRepository questionRepository;
-    private final MemberInitData memberInitData;
-
-    @Value("${custom.initData.member.member1.username}")
-    private String member1Username;
+class AnswerInitData(
+    private val answerService: AnswerService,
+    private val questionInitData: QuestionInitData,
+    private val memberRepository: MemberRepository,
+    private val questionRepository: QuestionRepository,
+    private val memberInitData: MemberInitData
+) {
+    @Value("\${custom.initData.member.member1.username}")
+    private lateinit var member1Username: String
 
     @Autowired
     @Lazy
-    private AnswerInitData self;
+    private lateinit var self: AnswerInitData
 
     @Bean
-    public ApplicationRunner answerInitDataApplicationRunner() {
-        return args -> {
-            memberInitData.work();
-            questionInitData.initData();
-            self.initData();
-        };
+    fun answerInitDataApplicationRunner(): ApplicationRunner {
+        return ApplicationRunner {
+            memberInitData.work()
+            questionInitData.initData()
+            self.initData()
+        }
     }
 
     @Transactional
-    public void initData() {
-        if (answerService.count() > 0) return;
+    fun initData() {
+        if (answerService.count() > 0) return
 
-        Question question1 = questionRepository.findById(1L).get();
-        Question question3 = questionRepository.findById(3L).get();
+        val question1 = questionRepository.findById(1L).get()
+        val question3 = questionRepository.findById(3L).get()
 
-        Member author = memberRepository.findByUsername(member1Username).get();
+        val author = memberRepository.findByUsername(member1Username).get()
 
-        Answer answer1 = answerService.save(question1, author, "답변 내용1");
-        Answer answer2 = answerService.save(question1, author, "답변 내용2");
-        Answer answer3 = answerService.save(question3, author, "답변 내용3");
+        val answer1 = answerService.save(question1, author, "답변 내용1")
+        val answer2 = answerService.save(question1, author, "답변 내용2")
+        val answer3 = answerService.save(question3, author, "답변 내용3")
 
-        for(int i = 0; i < 20; i++) {
-            answerService.save(question3, author, """
+        for (i in 0..19) {
+            answerService.save(
+                question3, author, """
                     What is Lorem Ipsum?
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                     
@@ -75,7 +71,9 @@ public class AnswerInitData {
                     
                     Where can I get some?
                     There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-                    """);
+                    
+                    """.trimIndent()
+            )
         }
     }
 }
