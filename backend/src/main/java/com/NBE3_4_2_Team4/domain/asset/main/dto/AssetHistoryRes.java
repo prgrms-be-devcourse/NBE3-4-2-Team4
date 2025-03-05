@@ -14,18 +14,22 @@ public class AssetHistoryRes {
     private final LocalDateTime createdAt;
     private final String counterAccountUsername;
     private final String assetCategory;
+    private final String adminAssetCategory;
     private final String assetType;
 
     public static AssetHistoryRes from(AssetHistory assetHistory) {
         Member counterMember = assetHistory.getCounterMember();
         String counterMemberUsername = (counterMember != null)
                 ? counterMember.getUsername() : "";
+        String adminAssetCategory = (assetHistory.getAdminAssetCategory() != null)
+                ? assetHistory.getAdminAssetCategory().getName() : "";
 
         return AssetHistoryRes.builder()
                 .amount(assetHistory.getAmount())
                 .createdAt(assetHistory.getCreatedAt())
                 .counterAccountUsername(counterMemberUsername)
                 .assetCategory(assetHistory.getAssetCategory().getDisplayName())
+                .adminAssetCategory(adminAssetCategory)
                 .assetType(assetHistory.getAssetType().getDisplayName())
                 .build();
     }

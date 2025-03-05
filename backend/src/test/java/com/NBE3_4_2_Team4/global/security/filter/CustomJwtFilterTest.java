@@ -1,12 +1,14 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetTransferReq;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
+import com.NBE3_4_2_Team4.standard.constants.AuthConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -67,6 +69,8 @@ public class CustomJwtFilterTest {
     @Value("${custom.initData.member.admin.nickname}")
     private String adminNickname;
 
+    @Value("${custom.initData.member.admin.email}")
+    private String adminEmail;
 
 
     @Value("${custom.initData.member.member1.username}")
@@ -75,6 +79,8 @@ public class CustomJwtFilterTest {
     @Value("${custom.initData.member.member1.nickname}")
     private String member1Nickname;
 
+    @Value("${custom.initData.member.member1.email}")
+    private String member1Email;
 
     @Value("${custom.domain.backend}")
     String backendDomain;
@@ -92,6 +98,7 @@ public class CustomJwtFilterTest {
                 .nickname(member1Nickname)
                 .role(Member.Role.USER)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .emailAddress(member1Email)
                 .build();
 
         admin = Member.builder()
@@ -100,6 +107,7 @@ public class CustomJwtFilterTest {
                 .nickname(adminNickname)
                 .role(Member.Role.ADMIN)
                 .oAuth2Provider(Member.OAuth2Provider.NONE)
+                .emailAddress(adminEmail)
                 .build();
 
         byte[] keyBytes = Base64.getDecoder().decode(jwtSecretKey);
@@ -190,10 +198,10 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateAccessToken(admin);
         Cookie accessToken = new Cookie("accessToken", jwtToken);
 
-        PointTransferReq pointTransferReq = new PointTransferReq("test@test.com", 1L);
+        AdminAssetTransferReq pointTransferReq = new AdminAssetTransferReq("test@test.com", 1L, AssetType.POINT, 1L);
         String body = objectMapper.writeValueAsString(pointTransferReq);
 
-        mockMvc.perform(put("/api/admin/points/accumulate")
+        mockMvc.perform(put("/api/admin/asset/accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .cookie(accessToken)
                         .with(csrf())
@@ -234,11 +242,13 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter11() throws Exception {
         when(jwtManager.generateAccessToken(member))
                 .thenReturn(Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
                         .signWith(key)
@@ -270,11 +280,13 @@ public class CustomJwtFilterTest {
     public void testCustomJwtFilter12() throws Exception {
         when(jwtManager.generateAccessToken(member))
                 .thenReturn(Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() - (long) accessTokenValidMinute * 2 * 50)) // 현재보다 과거
                         .signWith(key)
@@ -288,11 +300,13 @@ public class CustomJwtFilterTest {
 
         Mockito.doReturn(
                 Jwts.builder()
-                        .claim("id", member.getId())
-                        .claim("username", member.getUsername())
-                        .claim("nickname", member.getNickname())
-                        .claim("role", member.getRole().name())
-                        .claim("OAuth2Provider", member.getOAuth2Provider().name())
+                        .claim(AuthConstants.ID, member.getId())
+                        .claim(AuthConstants.USERNAME, member.getUsername())
+                        .claim(AuthConstants.NICKNAME, member.getNickname())
+                        .claim(AuthConstants.ROLE, member.getRole().name())
+                        .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
+                        .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
+                        .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                         .signWith(key)
@@ -316,5 +330,47 @@ public class CustomJwtFilterTest {
                 .andDo(print());
 
         verify(jwtManager, times(1)).getFreshAccessToken(eq(refreshToken));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 필터링 테스트 - 헤더에 사용자의 JWT 없는 경우 (로그인 되어 있지 않은 경우) 401")
+    void testFilterWithEmailVerified1() throws Exception {
+
+        mockMvc.perform(post("/api/test")
+                        .with(csrf())
+                )
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("이메일 인증 필터링 테스트 - 이메일이 인증되지 않았을 경우 403")
+    void testFilterWithEmailVerified2() throws Exception {
+        String accessToken = jwtManager.generateAccessToken(member);
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+
+        mockMvc.perform(post("/api/test")
+                        .header("Authorization", String.format("Bearer %s", accessToken))
+                        .cookie(accessTokenCookie)
+                        .with(csrf())
+                )
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("이메일 인증 필터링 테스트 - 이메일이 인증된 경우 200")
+    void testFilterWithEmailVerified3() throws Exception {
+        member.setEmailVerified(true);
+        String accessToken = jwtManager.generateAccessToken(member);
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+
+        mockMvc.perform(post("/api/test")
+                        .header("Authorization", String.format("Bearer %s", accessToken))
+                        .cookie(accessTokenCookie)
+                        .with(csrf())
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 }

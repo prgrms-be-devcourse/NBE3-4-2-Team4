@@ -1,8 +1,9 @@
 package com.NBE3_4_2_Team4.domain.board.question.service;
 
+import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.answer.repository.AnswerRepository;
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
@@ -31,7 +32,7 @@ import java.util.Optional;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
-    private final PointService pointService;
+    private final AssetServiceFactory assetServiceFactory;
     private final AnswerRepository answerRepository;
     private final MemberRepository memberRepository;
 
@@ -43,6 +44,7 @@ public class QuestionService {
     public QuestionDto write(String title, String content, Long categoryId,
                              Member author, long amount, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
+        AssetService assetService = assetServiceFactory.getService(assetType);
         Question question = Question.builder()
                 .title(title)
                 .content(content)
@@ -54,7 +56,7 @@ public class QuestionService {
                 .build();
 
         //질문글 작성 시 포인트 차감
-        pointService.deduct(author.getUsername(), amount, AssetCategory.QUESTION);
+        assetService.deduct(author.getUsername(), amount, AssetCategory.QUESTION);
         questionRepository.save(question);
 
         return new QuestionDto(question);
@@ -97,6 +99,16 @@ public class QuestionService {
                 .map(QuestionDto::new);
     }
 
+    @Transactional(readOnly = true)
+    public Page<QuestionDto> findByAnswerAuthor(long memberId, int page, int pageSize) {
+        Member author = memberRepository.findById(memberId).orElseThrow(
+                () -> new ServiceException("404-1", "존재하지 않는 회원입니다.")
+        );
+
+        return questionRepository.findByAnswerAuthor(author, createPageRequest(page, pageSize))
+                .map(QuestionDto::new);
+    }
+
     private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
@@ -135,6 +147,12 @@ public class QuestionService {
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         return new QuestionDto(question);
+    }
+
+    public Question findQuestionById(long id) {
+        return questionRepository.findById(id).orElseThrow(
+                () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
+        );
     }
 
     @Transactional
@@ -186,7 +204,8 @@ public class QuestionService {
         question.setClosed(true);
 
         //질문글 채택 시 채택된 답변 작성자 포인트 지급
-        pointService.accumulate(answer.getAuthor().getUsername(), question.getAmount(), AssetCategory.ANSWER);
+        AssetService assetService = assetServiceFactory.getService(question.getAssetType());
+        assetService.accumulate(answer.getAuthor().getUsername(), question.getAmount(), AssetCategory.ANSWER);
 
         return new QuestionDto(question);
     }
@@ -200,10 +219,11 @@ public class QuestionService {
 
         for (Question question : expiredQuestions) {
             question.setClosed(true);
+            AssetService assetService = assetServiceFactory.getService(question.getAssetType());
 
             if(question.getAnswers().size() == 0) {
                 //답변자가 없는 경우 질문자에게 포인트 반환
-                pointService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
+                assetService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
 
                 continue;
             }
@@ -217,7 +237,7 @@ public class QuestionService {
                 answer.setSelectedAt();
 
                 //분배된 포인트 지급
-                pointService.accumulate(answer.getAuthor().getUsername(), selectedPoint, AssetCategory.EXPIRED_QUESTION);
+                assetService.accumulate(answer.getAuthor().getUsername(), selectedPoint, AssetCategory.EXPIRED_QUESTION);
             }
         }
 
@@ -237,6 +257,7 @@ public class QuestionService {
         for (int i = 0; i < topQuestions.size(); i++) {
             Question question = topQuestions.get(i);
             Member author = question.getAuthor();
+            AssetService assetService = assetServiceFactory.getService(question.getAssetType());
 
             if (currentRecommendCount == question.getRecommendCount()) {
                 assignedRankCount++;
@@ -252,7 +273,7 @@ public class QuestionService {
             if (accumulatedCount < 3 && currentRank <= 3) {
                 int pointToAward = points[currentRank - 1]; // 순위에 맞는 포인트(공동 순위 고려)
                 if (author != null) {
-                    pointService.accumulate(author.getUsername(), pointToAward, AssetCategory.RANKING);
+                    assetService.accumulate(author.getUsername(), pointToAward, AssetCategory.RANKING);
                 }
                 // 포인트 지급 후 랭킹 포인트 지급 여부 true로 변경
                 question.setRankReceived(true);

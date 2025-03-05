@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Coins, HandCoins, Wallet } from "lucide-react";
+import { CircleDollarSign, Coins, HandCoins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -20,7 +20,13 @@ const client = createClient<paths>({
   baseUrl: "http://localhost:8080",
 });
 
-export default function TransferForm({ point, cash }: { point: number, cash : number }) {
+export default function TransferForm({
+  point,
+  cash,
+}: {
+  point: number;
+  cash: number;
+}) {
   const [username, setUsername] = useState("");
   const [selectedType, setSelectedType] = useState("POINT");
   const [amount, setAmount] = useState(0);
@@ -58,11 +64,8 @@ export default function TransferForm({ point, cash }: { point: number, cash : nu
       body: {
         username: username,
         amount: Number(amount),
-        assetType: selectedType
+        assetType: selectedType,
       },
-      //                 headers: {
-      //                   cookie: cookies,
-      //                 },
       credentials: "include",
     });
 
@@ -93,25 +96,25 @@ export default function TransferForm({ point, cash }: { point: number, cash : nu
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <HandCoins size={17} />
-              포인트 송금
+              자금 송금
             </span>
-            {/*<div className="flex gap-2">*/}
-            {/*<Badge*/}
-            {/*  className="flex items-center gap-2 font-normal"*/}
-            {/*  variant="outline"*/}
-            {/*>*/}
-            {/*  <Coins size={16} /> 포인트 잔액 :{" "}*/}
-            {/*  <span className="font-semibold text-base">{point}</span>*/}
-            {/*</Badge>*/}
+            <div className="flex gap-2">
+              <Badge
+                className="flex items-center gap-2 font-normal"
+                variant="outline"
+              >
+                <Coins size={16} /> 포인트 잔액 :{" "}
+                <span className="font-semibold text-base">{point}</span>
+              </Badge>
 
-            {/*            <Badge*/}
-            {/*              className="flex items-center gap-2 font-normal"*/}
-            {/*              variant="outline"*/}
-            {/*            >*/}
-            {/*              <Wallet size={16} /> 캐시 잔액 :{" "}*/}
-            {/*              <span className="font-semibold text-base">{cash}</span>*/}
-            {/*            </Badge>*/}
-            {/*</div>*/}
+              <Badge
+                className="flex items-center gap-2 font-normal"
+                variant="outline"
+              >
+                <CircleDollarSign size={16} /> 캐시 잔액 :{" "}
+                <span className="font-semibold text-base">{cash}</span>
+              </Badge>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex sm:gap-5 gap-2 sm:flex-row flex-col">
@@ -129,19 +132,18 @@ export default function TransferForm({ point, cash }: { point: number, cash : nu
             onChange={(e) => setAmount(e.target.value)}
             className="max-w-[250px]"
           />
-                          <Select
-                                value={selectedType}
-                                onValueChange={(value) => setSelectedType(value)}
-                              >
-                                <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
-                                  <SelectValue placeholder="재화 타입" />
-                                </SelectTrigger>
-                                <SelectContent>
-
-                                  <SelectItem value="POINT">포인트</SelectItem>
-                                  <SelectItem value="CASH">캐시</SelectItem>
-                                </SelectContent>
-                           </Select>
+          <Select
+            value={selectedType}
+            onValueChange={(value) => setSelectedType(value)}
+          >
+            <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
+              <SelectValue placeholder="재화 타입" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="POINT">포인트</SelectItem>
+              <SelectItem value="CASH">캐시</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={handleTransfer}>송금</Button>
         </CardContent>
       </Card>

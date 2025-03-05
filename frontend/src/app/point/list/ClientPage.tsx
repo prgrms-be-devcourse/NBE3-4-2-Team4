@@ -36,7 +36,7 @@ export default function ClientPage({
 }: {
   body: PageDtoPointHistoryRes;
   point: number;
-  cash : number;
+  cash: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,19 +61,19 @@ export default function ClientPage({
     router.push(`?${queryParams.toString()}`);
   };
 
-    const handleTypeChange = (value: string) => {
-      const newType = value === "전체" ? "" : value;
+  const handleTypeChange = (value: string) => {
+    const newType = value === "전체" ? "" : value;
 
-      const queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
-      if (newType) {
-        queryParams.set("assetType", newType);
-      } else {
-        queryParams.delete("assetType");
-      }
+    if (newType) {
+      queryParams.set("assetType", newType);
+    } else {
+      queryParams.delete("assetType");
+    }
 
-      router.push(`?${queryParams.toString()}`);
-    };
+    router.push(`?${queryParams.toString()}`);
+  };
 
   //날짜 부분
 
@@ -142,11 +142,11 @@ export default function ClientPage({
     <div className="container mx-auto px-4 flex flex-col gap-6">
       <div className="mt-20 mb-10 text-center relative">
         <h2 className="flex items-center text-4xl font-bold justify-center gap-2">
-          포인트
+          자금 관리
         </h2>
         <p className="text-md text-gray-400 mt-3">
-          여러분의 활동이 포인트가 됩니다. <br />
-          다양한 활동으로 포인트를 얻어보세요.
+          여러분의 활동이 캐시와 포인트가 됩니다. <br />
+          다양한 활동으로 캐시와 포인트를 얻어보세요.
         </p>
         <div className="sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2 sm:mt-0 mt-5">
           <AttendanceButton />
@@ -158,7 +158,7 @@ export default function ClientPage({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar size={16} />
-            기간 별 포인트 내역 조회
+            기간 별 자금 내역 조회
           </CardTitle>
         </CardHeader>
         <CardContent className="flex gap-3 sm:flex-row flex-col sm:items-center items-start sm:flex-row flex-col">
@@ -197,41 +197,43 @@ export default function ClientPage({
       </Card>
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 justify-between items-center">
-          <span className="text-2xl font-bold">포인트 내역 보기</span>
-          <Select
-            value={selectedCategory}
-            onValueChange={(value: string) => handleCategoryChange(value)}
-          >
-            <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
-              <SelectValue placeholder="카테고리별 검색" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="전체">전체</SelectItem>
-              <SelectItem value="ANSWER">답변채택</SelectItem>
-              <SelectItem value="PURCHASE">구매</SelectItem>
-              <SelectItem value="TRANSFER">송금</SelectItem>
-              <SelectItem value="ATTENDANCE">출석</SelectItem>
-              <SelectItem value="ADMIN">관리자</SelectItem>
-              <SelectItem value="QUESTION">질문등록</SelectItem>
-              <SelectItem value="EXPIRED_QUESTION">만료된 질문</SelectItem>
-              <SelectItem value="REFUND">포인트 반환</SelectItem>
-              <SelectItem value="RANKING">랭킹</SelectItem>
-            </SelectContent>
-          </Select>
+          <span className="text-2xl font-bold">자금 내역 보기</span>
+          <div className="flex gap-2">
+            <Select
+              value={selectedCategory}
+              onValueChange={(value: string) => handleCategoryChange(value)}
+            >
+              <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
+                <SelectValue placeholder="카테고리별로 보기" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="전체">전체</SelectItem>
+                <SelectItem value="ANSWER">답변채택</SelectItem>
+                <SelectItem value="PURCHASE">구매</SelectItem>
+                <SelectItem value="TRANSFER">송금</SelectItem>
+                <SelectItem value="ATTENDANCE">출석</SelectItem>
+                <SelectItem value="ADMIN">관리자</SelectItem>
+                <SelectItem value="QUESTION">질문등록</SelectItem>
+                <SelectItem value="EXPIRED_QUESTION">만료된 질문</SelectItem>
+                <SelectItem value="REFUND">포인트 반환</SelectItem>
+                <SelectItem value="RANKING">랭킹</SelectItem>
+              </SelectContent>
+            </Select>
 
-                 <Select
-                      value={selectedType}
-                      onValueChange={(value: string) => handleTypeChange(value)}
-                    >
-                      <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
-                        <SelectValue placeholder="재화 타입으로 검색" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="전체">전체</SelectItem>
-                        <SelectItem value="POINT">포인트</SelectItem>
-                        <SelectItem value="CASH">캐시</SelectItem>
-                      </SelectContent>
-                 </Select>
+            <Select
+              value={selectedType}
+              onValueChange={(value: string) => handleTypeChange(value)}
+            >
+              <SelectTrigger className="md:w-[180px] w-[120px]" id="category">
+                <SelectValue placeholder="자금 유형별로 보기" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="전체">전체</SelectItem>
+                <SelectItem value="POINT">포인트</SelectItem>
+                <SelectItem value="CASH">캐시</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <ul>
@@ -249,6 +251,8 @@ export default function ClientPage({
                   <div className="flex items-center gap-5">
                     <div className="text-lg font-bold">
                       {item.assetCategory}
+                      {item.adminAssetCategory && ` - ${item.adminAssetCategory}`}
+
                     </div>
                     {item.counterAccountUsername && (
                       <Badge variant="outline">
@@ -267,7 +271,9 @@ export default function ClientPage({
                     item.amount >= 0 ? "text-sky-400" : "text-rose-500"
                   }`}
                 >
-                  {`${item.amount >= 0 ? "+" : ""}${item.amount} ${item.assetType}`}
+                  {`${item.amount >= 0 ? "+" : ""}${item.amount} ${
+                    item.assetType
+                  }`}
                 </div>
               </div>
             </li>

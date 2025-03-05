@@ -91,6 +91,7 @@ export default function WithdrawalPage() {
           id="confirmation"
           value={confirmationText}
           onChange={handleInputChange}
+          autoComplete="off"
         />
       </div>
 

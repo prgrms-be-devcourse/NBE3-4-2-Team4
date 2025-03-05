@@ -39,7 +39,7 @@ public class AssetServiceTest extends BaseAssetTestSetup {
     @Test
     @DisplayName("Asset 히스토리 생성")
     void t2() {
-        long id = assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, AssetType.POINT, "a");
+        long id = assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "a");
         AssetHistory assetHistory = assetHistoryRepository.findById(id).orElseThrow(() -> new RuntimeException("히스토리 없음"));
         assertEquals(member1.getId(), assetHistory.getMember().getId());
         LocalDateTime createdAt = LocalDateTime.now();
