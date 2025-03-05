@@ -40,7 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getRegistrationId()
                 .toUpperCase();
 
-        Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(providerTypeCode);
+        Member.OAuth2Provider oAuth2Provider = Member.OAuth2Provider.Companion.getOAuth2ProviderByName(providerTypeCode);
 
 
         OAuth2UserInfoService oAuth2UserInfoService = oAuth2Manager.getOAuth2UserInfoService(oAuth2Provider);
@@ -50,7 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String oAuth2Id = oAuth2UserInfo.getOAuth2Id();
         String username = String.format("%s_%s", providerTypeCode, oAuth2Id);
 
-        Optional<Member> optionalMember = memberService.findByUsername(username);
+        Optional<Member> optionalMember = Optional.ofNullable(memberService.findByUsername(username));
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             oAuth2RefreshTokenService.saveOrUpdateOAuth2RefreshToken(member, refreshToken, oAuth2Id);

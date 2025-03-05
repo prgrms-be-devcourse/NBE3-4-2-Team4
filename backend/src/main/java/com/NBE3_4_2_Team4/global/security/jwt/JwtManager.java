@@ -20,9 +20,9 @@ import java.util.Map;
 @Component
 public class JwtManager {
     @Getter
-    private final int accessTokenValidMinute;
+    public final int accessTokenValidMinute;
     @Getter
-    private final int refreshTokenValidHour;
+    public final int refreshTokenValidHour;
     private final SecretKey key;
     private final MemberRepository memberRepository;
 
@@ -51,7 +51,7 @@ public class JwtManager {
                 .claim(AuthConstants.ROLE, member.getRole().name())
                 .claim(AuthConstants.OAUTH2_PROVIDER, member.getOAuth2Provider().name())
                 .claim(AuthConstants.EMAIL_ADDRESS, member.getEmailAddress())
-                .claim(AuthConstants.EMAIL_VERIFIED, member.isEmailVerified())
+                .claim(AuthConstants.EMAIL_VERIFIED, member.getEmailVerified())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + (long) accessTokenValidMinute * 2 * 50))
                 .signWith(key)

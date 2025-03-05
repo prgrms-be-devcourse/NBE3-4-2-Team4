@@ -47,10 +47,10 @@ class Member(
     val createdAt: LocalDateTime? = null,
 
     @Embedded
-    var point: Point = Point(),
+    var point: Point = Point(0L),
 
     @Embedded
-    var cash: Cash = Cash(),
+    var cash: Cash = Cash(0L),
 
     @OneToMany(mappedBy = "author")
     val questions: MutableList<Question> = mutableListOf(),
