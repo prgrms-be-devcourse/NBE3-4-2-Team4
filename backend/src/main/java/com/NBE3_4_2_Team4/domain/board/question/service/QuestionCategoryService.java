@@ -20,9 +20,7 @@ public class QuestionCategoryService {
 
     @Transactional
     public QuestionCategoryDto createCategory(Member actor, String name) {
-        QuestionCategory category = QuestionCategory.builder()
-                .name(name)
-                .build();
+        QuestionCategory category = new QuestionCategory(name);
 
         category.checkActorCanCreate(actor);
         questionCategoryRepository.save(category);
