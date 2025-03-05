@@ -2,10 +2,10 @@ package com.NBE3_4_2_Team4.global.security.oAuth2;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.oauth2.OAuth2Manager;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.GoogleDisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.KaKaoDisconnectService;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl.NaverDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.OAuth2DisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.impl.GoogleDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.impl.KaKaoDisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.impl.NaverDisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.DefaultLogoutService;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.impl.GoogleLogoutService;

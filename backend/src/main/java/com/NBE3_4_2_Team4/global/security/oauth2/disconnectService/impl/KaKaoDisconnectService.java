@@ -1,7 +1,7 @@
-package com.NBE3_4_2_Team4.global.security.oauth2.disconectService.impl;
+package com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.impl;
 
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.security.oauth2.disconectService.OAuth2DisconnectService;
+import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.OAuth2DisconnectService;
 import com.NBE3_4_2_Team4.global.security.oauth2.tokenService.impl.KakaoTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
