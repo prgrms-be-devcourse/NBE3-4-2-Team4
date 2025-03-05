@@ -27,7 +27,7 @@ public class AdminAssetCategoryService {
 
     @Transactional(readOnly = true)
     public List<AdminAssetCategoryRes> findAll() {
-        return adminAssetCategoryRepository.findAllByDisabledFalse()
+        return adminAssetCategoryRepository.findAllByIsDisabledFalse()
                 .stream()
                 .map(AdminAssetCategoryRes::from)
                 .toList();
