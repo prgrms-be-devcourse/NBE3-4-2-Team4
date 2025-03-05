@@ -65,7 +65,7 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .selectOne()
                 .from(answer)
                 .where(answer.question.eq(question)
-                        .and(answer.answerContent.containsIgnoreCase(kw)))
+                        .and(answer.content.containsIgnoreCase(kw)))
                 .exists();
     }
 
