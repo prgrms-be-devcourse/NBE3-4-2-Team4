@@ -21,6 +21,6 @@ public class BaseEntity {
     @Setter(AccessLevel.PROTECTED)
     @EqualsAndHashCode.Include
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private Long id;
+    public Long id;
 
 }
