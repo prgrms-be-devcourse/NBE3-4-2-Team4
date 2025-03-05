@@ -162,17 +162,24 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionDto update(long id, String title, String content, Member actor, long amount, long categoryId) {
+    public QuestionDto update(long id, String title, String content, Member actor,
+                              long amount, long categoryId, AssetType assetType) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
+        AssetService assetService = assetServiceFactory.getService(assetType);
 
-        if (amount < question.getAmount()) {
+        if (amount <= question.getAmount()) {
             throw new ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.");
         }
+        // 기존 포인트/캐시 반환 후 새 포인트/캐시 차감
+        assetService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
+
         question.modify(title, content, amount, category);
+        assetService.deduct(actor.getUsername(), amount, AssetCategory.QUESTION_MODIFY);
+
         return new QuestionDto(question);
     }
 
