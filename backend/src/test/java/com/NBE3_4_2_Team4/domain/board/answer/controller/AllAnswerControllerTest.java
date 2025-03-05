@@ -69,7 +69,7 @@ public class AllAnswerControllerTest {
                     .andExpect(jsonPath("$.items[%d].author_id".formatted(i)).value(answer.getAuthorId()))
                     .andExpect(jsonPath("$.items[%d].author_name".formatted(i)).value(answer.getAuthorName()))
                     .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(answer.getContent()))
-                    .andExpect(jsonPath("$.items[%d].selected".formatted(i)).value(answer.isSelected()))
+                    .andExpect(jsonPath("$.items[%d].selected".formatted(i)).value(answer.getSelected()))
                     .andExpect(jsonPath("$.items[%d].selected_at".formatted(i)).value(answer.getSelectedAt()));
         }
     }
@@ -94,7 +94,7 @@ public class AllAnswerControllerTest {
                 .andExpect(jsonPath("$.author_id").value(answer.getAuthorId()))
                 .andExpect(jsonPath("$.author_name").value(answer.getAuthorName()))
                 .andExpect(jsonPath("$.content").value(answer.getContent()))
-                .andExpect(jsonPath("$.selected").value(answer.isSelected()))
+                .andExpect(jsonPath("$.selected").value(answer.getSelected()))
                 .andExpect(jsonPath("$.selected_at").value(answer.getSelectedAt()));
     }
 
@@ -172,8 +172,8 @@ public class AllAnswerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.result_code").value("400-1"))
                 .andExpect(jsonPath("$.msg").value("""
-                        content-Length-length must be between 2 and 2147483647
                         content-NotBlank-must not be blank
+                        content-Size-size must be between 2 and 2147483647
                         """.stripIndent().trim()));
     }
 
