@@ -1,127 +1,86 @@
-package com.NBE3_4_2_Team4.domain.board.question.entity;
+package com.NBE3_4_2_Team4.domain.board.question.entity
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
-import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent;
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
-import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile;
-import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.standard.base.Empty;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
-import java.util.Optional;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent
+import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer
+import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile
+import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.global.rsData.RsData
+import com.NBE3_4_2_Team4.standard.base.Empty
+import jakarta.persistence.*
 
 @Entity
-@Getter
-public class Question extends GenFileParent<QuestionGenFile> {
+class Question(
     @ManyToOne
-    public Member author;
+    val author: Member,
 
     @Column(length = 100)
-    private String title;
+    var title: String,
 
     @Column(columnDefinition = "TEXT")
-    private String content;
+    var questionContent: String,
 
     @ManyToOne
-    private QuestionCategory category;
+    var category: QuestionCategory,
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL) // 질문 삭제 시 답변 삭제
-    private List<Answer> answers;
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL]) // 질문 삭제 시 답변 삭제
+    val answers: MutableList<Answer>,
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<Recommend> recommends;
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
+    val recommends: MutableList<Recommend>,
 
-    @OneToOne @Setter
-    private Answer selectedAnswer;
+    @OneToOne
+    val selectedAnswer: Answer? = null,
 
-    @Setter
-    private boolean closed; //질문 상태(답변 추가 가능 여부)
+    var closed: Boolean, // 질문 상태(답변 추가 가능 여부)
 
-    private long amount;
+    var amount: Long,
 
     @Enumerated(EnumType.STRING) // 포인트/캐시 여부
-    private AssetType assetType;
+    val assetType: AssetType,
 
-    @Setter
-    private boolean rankReceived; // 랭킹 포인트 지급 여부
+    var rankReceived: Boolean // 랭킹 포인트 지급 여부
+) : GenFileParent<QuestionGenFile>(QuestionGenFile::class.java) {
+    fun getRecommendCount(): Long = recommends.size.toLong() // 추천 수 반환
 
-    public Question() {
-        super(QuestionGenFile.class);
+    fun modify(title: String, content: String, amount: Long, category: QuestionCategory) {
+        this.title = title
+        this.questionContent = content
+        this.amount = amount
+        this.category = category
     }
 
-    public Question(Member author, String title, String content, QuestionCategory category, List<Answer> answers, List<Recommend> recommends, Answer selectedAnswer, boolean closed, long amount, AssetType assetType, boolean rankReceived) {
-        super(QuestionGenFile.class);
-        this.author = author;
-        this.title = title;
-        this.content = content;
-        this.category = category;
-        this.answers = answers;
-        this.recommends = recommends;
-        this.selectedAnswer = selectedAnswer;
-        this.closed = closed;
-        this.amount = amount;
-        this.assetType = assetType;
-        this.rankReceived = rankReceived;
+    fun checkActorCanModify(actor: Member) {
+        if (actor != author)
+            throw ServiceException("403-1", "게시글 작성자만 수정할 수 있습니다.")
     }
 
-    public Question(String title, String content, Member author, QuestionCategory category, AssetType assetType, long amount, boolean b) {
-        super(QuestionGenFile.class);
-        this.title = title;
-        this.content = content;
-        this.author = author;
-        this.category = category;
-        this.assetType = assetType;
-        this.amount = amount;
-        this.closed = b;
+    fun checkActorCanDelete(actor: Member) {
+        if (actor.role != Member.Role.ADMIN && actor != author)
+            throw ServiceException("403-1", "게시글 작성자만 삭제할 수 있습니다.")
     }
 
-    public long getRecommendCount() { // 추천 수 반환
-        return recommends == null ? 0 : recommends.size();
+    override fun modify(content: String) {
+        this.questionContent = content
     }
 
-    public void modify(String title, String content, long amount, QuestionCategory category) {
-        this.title = title;
-        this.content = content;
-        this.amount = amount;
-        this.category = category;
+    override fun getContent(): String {
+        return questionContent
     }
 
-    public void checkActorCanModify(Member actor) {
-        if (!actor.equals(this.getAuthor()))
-            throw new ServiceException("403-1", "게시글 작성자만 수정할 수 있습니다.");
+    override fun checkActorCanMakeNewGenFile(actor: Member) {
+        getCheckActorCanMakeNewGenFileRs(actor).takeIf { it.isFail }?.let {
+            throw ServiceException(it.resultCode, it.msg)
+        }
     }
 
-    public void checkActorCanDelete(Member actor) {
-        if (actor.getRole() != Member.Role.ADMIN && !actor.equals(this.getAuthor()))
-            throw new ServiceException("403-1", "게시글 작성자만 삭제할 수 있습니다.");
-    }
-
-    @Override
-    public void modify(String content) {
-        this.content = content;
-    }
-
-    @Override
-    public void checkActorCanMakeNewGenFile(Member actor) {
-        Optional.of(
-                        getCheckActorCanMakeNewGenFileRs(actor)
-                )
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new ServiceException(rsData.getResultCode(), rsData.getMsg());
-                });
-    }
-
-    @Override
-    protected RsData<Empty> getCheckActorCanMakeNewGenFileRs(Member actor) {
-        if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
-        if (actor.equals(author)) return RsData.OK;
-        return new RsData<>("403-1", "작성자만 파일을 업로드할 수 있습니다.");
+    override fun getCheckActorCanMakeNewGenFileRs(actor: Member?): RsData<Empty> {
+        return when (actor) {
+            null -> RsData("401-1", "로그인 후 이용해주세요.")
+            author -> RsData.OK
+            else -> RsData("403-1", "작성자만 파일을 업로드할 수 있습니다.")
+        }
     }
 }
