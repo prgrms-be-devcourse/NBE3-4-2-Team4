@@ -1,65 +1,42 @@
-package com.NBE3_4_2_Team4.domain.board.question.dto;
+package com.NBE3_4_2_Team4.domain.board.question.dto
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
-import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import lombok.Getter;
-import org.springframework.lang.NonNull;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType
+import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime
 
-@Getter
-public class QuestionDto {
-    @NonNull
-    private final Long id;
-    @NonNull
-    private final String title;
-    @NonNull
-    private final String content;
-    @NonNull
-    private final String name;
-    @NonNull
-    private final String categoryName;
-    @NonNull
-    private final LocalDateTime createdAt;
-    @NonNull
-    private final LocalDateTime modifiedAt;
-    @NonNull
-    private final Long recommendCount;
-
-    private final List<AnswerDto> answers;
-
-    private final AnswerDto selectedAnswer;
-    @NonNull
-    private final boolean closed;
-    @NonNull
-    private final long amount;
-    @NonNull
-    private final AssetType assetType;
-    @NonNull
-    private final long authorId;
-
-    public QuestionDto(Question question) {
-        this.id = question.getId();
-        this.title = question.getTitle();
-        this.content = question.getContent();
-        this.name = question.getAuthor().getNickname();
-        this.categoryName = question.getCategory().getName();
-        this.createdAt = question.getCreatedAt();
-        this.modifiedAt = question.getModifiedAt();
-        this.recommendCount = question.getRecommendCount();
-        this.answers = question.getAnswers() == null ? new ArrayList<>() :question.getAnswers()
-                .stream()
-                .map(AnswerDto::new)
-                .toList();
-        this.selectedAnswer = question.getSelectedAnswer() != null
-                ? new AnswerDto(question.getSelectedAnswer())
-                : null;
-        this.closed = question.isClosed();
-        this.amount = question.getAmount();
-        this.assetType = question.getAssetType();
-        this.authorId = question.getAuthor().getId();
-    }
+data class QuestionDto(
+    val id: Long,
+    val title: String,
+    val content: String,
+    val name: String,
+    val categoryName: String,
+    val createdAt: LocalDateTime,
+    val modifiedAt: LocalDateTime,
+    val recommendCount: Long,
+    val answers: List<AnswerDto> = emptyList(),
+    val selectedAnswer: AnswerDto? = null,
+    val closed: Boolean,
+    val amount: Long,
+    val assetType: AssetType,
+    val authorId: Long
+) {
+    constructor(question: Question) : this(
+        id = question.id,
+        title = question.title,
+        content = question.content,
+        name = question.author.nickname,
+        categoryName = question.category.name,
+        createdAt = question.createdAt,
+        modifiedAt = question.modifiedAt,
+        recommendCount = question.recommends.count().toLong(),
+        answers = question.answers.map { AnswerDto(it) },
+        selectedAnswer = question.selectedAnswer?.let { AnswerDto(it) },
+        closed = question.closed,
+        amount = question.amount,
+        assetType = question.assetType,
+        authorId = question.author.id
+    )
 }
+
