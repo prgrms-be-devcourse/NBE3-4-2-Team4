@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 
 @Controller
 @Tag(name = "GenFileController", description = "파일 -  다운로드 등 다양한 기능 제공 API")
@@ -25,6 +24,7 @@ abstract class GenFileController<P : GenFileParent<G, P>, G : GenFile<P>>(
 ) {
     @GetMapping("/download/{parentId}/{fileName}")
     @Operation(summary = "파일 다운로드")
+    @Transactional
     fun download(
         @PathVariable parentId: Long,
         @PathVariable fileName: String,
