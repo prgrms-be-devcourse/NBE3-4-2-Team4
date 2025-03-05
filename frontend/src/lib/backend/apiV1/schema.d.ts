@@ -620,40 +620,6 @@ export interface paths {
         patch: operations["modify_3"];
         trace?: never;
     };
-    "/question/genFile/download/{parentId}/{fileName}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 파일 다운로드 */
-        get: operations["download"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/product/genFile/download/{parentId}/{fileName}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 파일 다운로드 */
-        get: operations["download_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/questions/{parentId}/genFiles": {
         parameters: {
             query?: never;
@@ -994,23 +960,6 @@ export interface paths {
         };
         /** 다건조회 */
         get: operations["items_4"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/answer/genFile/download/{parentId}/{fileName}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 파일 다운로드 */
-        get: operations["download_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3221,70 +3170,6 @@ export interface operations {
             };
         };
     };
-    download: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                parentId: number;
-                fileName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": string;
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    download_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                parentId: number;
-                fileName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": string;
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     items_1: {
         parameters: {
             query?: never;
@@ -3847,38 +3732,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["GenFileDtoAnswerGenFile"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    download_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                parentId: number;
-                fileName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": string;
                 };
             };
             /** @description Bad Request */
