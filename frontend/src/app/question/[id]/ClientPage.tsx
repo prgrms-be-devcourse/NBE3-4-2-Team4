@@ -112,7 +112,7 @@ export default function ClientPage({
                 {question.categoryName}
               </Badge>
               <span>{question.title}</span>
-              {question.name != nickname && (
+              {question.name != nickname && id && (
                 <Button className="ml-auto bg-gray-400 hover:bg-gray-500"
                 onClick={() => writeMessage(question.name)}>
                   <Link href="/message/write">쪽지 쓰기</Link>
