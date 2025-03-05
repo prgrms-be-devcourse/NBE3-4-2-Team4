@@ -31,15 +31,15 @@ public class AssetHistoryService {
             AssetType assetType,
             String correlationId) {
 
-        AssetHistory assetHistory = AssetHistory.builder()
-                .assetCategory(assetCategory)
-                .adminAssetCategory(adminAssetCategory)
-                .assetType(assetType)
-                .amount(amount)
-                .correlationId(correlationId)
-                .member(member)
-                .counterMember(counterMember)
-                .build();
+        AssetHistory assetHistory =
+                new AssetHistory(
+                        member,
+                        amount,
+                        assetType,
+                        assetCategory,
+                        correlationId,
+                        adminAssetCategory,
+                        counterMember);
 
         assetHistoryRepository.save(assetHistory);
         return assetHistory.getId();
