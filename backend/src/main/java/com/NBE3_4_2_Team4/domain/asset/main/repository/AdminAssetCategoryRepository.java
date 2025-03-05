@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface AdminAssetCategoryRepository extends JpaRepository<AdminAssetCategory, Long> {
     public boolean existsByName(String name);
-    public List<AdminAssetCategory> findAllByDisabledFalse();
+    public List<AdminAssetCategory> findAllByIsDisabledFalse();
     public Optional<AdminAssetCategory> findByName(String name);
 }

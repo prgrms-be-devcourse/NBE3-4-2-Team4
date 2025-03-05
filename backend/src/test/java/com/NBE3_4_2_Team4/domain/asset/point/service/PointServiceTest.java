@@ -12,7 +12,6 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
