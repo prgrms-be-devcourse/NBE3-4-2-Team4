@@ -1066,9 +1066,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1207,9 +1207,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1272,9 +1272,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1309,9 +1309,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;

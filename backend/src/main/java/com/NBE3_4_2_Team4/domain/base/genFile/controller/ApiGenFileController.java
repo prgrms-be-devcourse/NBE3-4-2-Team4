@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @Tag(name = "ApiGenFileController", description = "API 파일 컨트롤러")
-public abstract class ApiGenFileController<P extends GenFileParent, G extends GenFile>  {
+public abstract class ApiGenFileController<P extends GenFileParent, G extends GenFile<P>>  {
     protected final Object service;
     @Autowired
     private EntityManager entityManager;

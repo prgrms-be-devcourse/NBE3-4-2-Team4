@@ -35,7 +35,7 @@ abstract class GenFile<T : BaseEntity> : BaseEntity() {
     lateinit var fileExtTypeCode: String
     lateinit var fileExtType2Code: String
     lateinit var fileName: String
-    var fileSize = 0
+    var fileSize: Int = 0
 
     val modelName: String
         get() {
