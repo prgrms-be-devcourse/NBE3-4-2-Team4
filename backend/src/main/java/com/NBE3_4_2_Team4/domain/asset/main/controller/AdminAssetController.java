@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetTransferReq;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/asset")
-@Tag(name = "AssetAdminController", description = "API 어드민 전용 재화 컨트롤러")
-public class AssetAdminController {
+@Tag(name = "AdminAssetController", description = "API 어드민 전용 재화 컨트롤러")
+public class AdminAssetController {
     private final AssetServiceFactory assetServiceFactory;
 
     @Operation(summary="유저에게 재화를 적립")

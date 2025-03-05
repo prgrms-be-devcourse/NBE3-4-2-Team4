@@ -1,8 +1,6 @@
 package com.NBE3_4_2_Team4.domain.asset.main.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
