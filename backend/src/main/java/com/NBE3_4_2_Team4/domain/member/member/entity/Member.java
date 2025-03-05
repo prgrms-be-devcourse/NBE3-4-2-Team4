@@ -45,10 +45,10 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long id;
+    public Long id;
 
     @Column(nullable = false)
-    private Role role;
+    public Role role;
 
     @Column(nullable = false)
     private OAuth2Provider oAuth2Provider;
@@ -68,7 +68,7 @@ public class Member {
     private boolean emailVerified = false;
 
     @Column(nullable = false, unique = true)
-    private String nickname;
+    public String nickname;
 
     @CreatedDate
     @Setter(AccessLevel.NONE)

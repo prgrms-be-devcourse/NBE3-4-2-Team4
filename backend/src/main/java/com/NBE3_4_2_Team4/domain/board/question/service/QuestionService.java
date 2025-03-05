@@ -238,7 +238,7 @@ public class QuestionService {
 
             for(Answer answer : question.getAnswers()) {
                 //채택된건 아니므로 selected는 false 상태에서 포인트 지급된 날짜만 입력
-                answer.setSelectedAt();
+                answer.setSelectedAt(LocalDateTime.now());
 
                 //분배된 포인트 지급
                 assetService.accumulate(answer.getAuthor().getUsername(), selectedPoint, AssetCategory.EXPIRED_QUESTION);
