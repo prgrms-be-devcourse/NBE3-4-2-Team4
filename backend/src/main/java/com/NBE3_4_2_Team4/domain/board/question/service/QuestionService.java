@@ -46,15 +46,15 @@ public class QuestionService {
                              Member author, long amount, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         AssetService assetService = assetServiceFactory.getService(assetType);
-        Question question = Question.builder()
-                .title(title)
-                .content(content)
-                .author(author)
-                .category(category)
-                .assetType(assetType)
-                .amount(amount)
-                .rankReceived(false)
-                .build();
+        Question question = new Question(
+                title,
+                content,
+                author,
+                category,
+                assetType,
+                amount,
+                false
+        );
 
         //질문글 작성 시 포인트 차감
         assetService.deduct(author.getUsername(), amount, AssetCategory.QUESTION);
