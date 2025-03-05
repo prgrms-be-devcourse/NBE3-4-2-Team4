@@ -47,9 +47,9 @@ class MemberController (
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
-                RsData(
+                RsData.from(
                     "400-2",
-                    e.message
+                    e.message!!
                 )
             )
     }
@@ -62,7 +62,7 @@ class MemberController (
             .status(HttpStatus.FOUND)
             .header("Location", location)
             .body(
-                RsData(
+                RsData.from(
                     "302-1",
                     String.format("already verified email. redirecting to %s ", location)
                 )
@@ -134,7 +134,7 @@ class MemberController (
     ): RsData<Empty> {
         memberService.signUp(tempToken, signupRequestDto!!)
         httpManager.deleteCookie(resp, "tempToken")
-        return RsData("201-1", "sign up complete")
+        return RsData.from("201-1", "sign up complete")
     }
 
 
@@ -165,7 +165,7 @@ class MemberController (
             .status(HttpStatus.FOUND)
             .header("Location", location)
             .body(
-                RsData(
+                RsData.from(
                     "302-1",
                     String.format("email verifying complete. redirecting to %s ", location)
                 )
@@ -190,7 +190,7 @@ class MemberController (
         val emailAddress = member.emailAddress
         memberService.sendAuthenticationMail(memberId, emailAddress)
 
-        return RsData("200-1", "resend verification email complete")
+        return RsData.from("200-1", "resend verification email complete")
     }
 
 
@@ -244,7 +244,7 @@ class MemberController (
     fun getMemberThumbnailInfo(): RsData<*> {
         val member = AuthManager.getMemberFromContext()
         if (member == null) {
-            return RsData<Empty>("204-1", "User not logged in") // 로그인되지 않음
+            return RsData.from("204-1", "User not logged in") // 로그인되지 않음
         } else {
             val responseDto = MemberThumbnailInfoResponseDto(member.id!!, member.role, member.nickname)
             return RsData("200-1", "find member", responseDto)
@@ -331,7 +331,7 @@ class MemberController (
             .status(HttpStatus.FOUND)
             .header("Location", frontDomain)
             .body(
-                RsData(
+                RsData.from(
                     "302-1",
                     String.format("logout complete. redirecting to %s ", frontDomain)
                 )
@@ -355,7 +355,7 @@ class MemberController (
     ): RsData<Empty> {
         val member = AuthManager.getNonNullMember()
         memberService.updateNickname(member, nicknameUpdateRequestDto!!)
-        return RsData(
+        return RsData.from(
             "200-1",
             "nickname updated"
         )
@@ -377,7 +377,7 @@ class MemberController (
         val member = AuthManager.getNonNullMember()
         memberService.withdrawalMembership(member)
         httpManager.expireJwtCookie(resp)
-        return RsData(
+        return RsData.from(
             "204-1",
             "withdrawal membership done"
         )
