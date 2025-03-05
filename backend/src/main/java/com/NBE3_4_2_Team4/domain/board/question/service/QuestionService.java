@@ -171,7 +171,7 @@ public class QuestionService {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         AssetService assetService = assetServiceFactory.getService(assetType);
 
-        if (amount <= question.getAmount()) {
+        if (amount < question.getAmount()) {
             throw new ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.");
         }
         // 기존 포인트/캐시 반환 후 새 포인트/캐시 차감

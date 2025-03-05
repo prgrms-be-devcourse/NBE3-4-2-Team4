@@ -3,6 +3,15 @@ import client from "@/lib/backend/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
 import { Button } from "@/components/ui/button";
@@ -17,6 +26,7 @@ interface ClientPageProps {
 
 export default function ClientPage({ receive, send }: ClientPageProps) {
   const router = useRouter();
+  const currentPath = usePathname();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('received');
   const [viewMessage, setViewMessage] = useState<MessageDto | null>(null);
@@ -44,10 +54,33 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
     }
   };
 
-  // 메시지 클릭 시 상세 보기 설정
+  const readMessage = async (message: MessageDto) => {
+    if (activeTab === "sent" || message.checked) {
+      return true; // 보낸 쪽지, 읽은 쪽지는 읽음 처리 x
+    }
+
+    const messageId = message.id!!;
+    const success = await markMessagesAsRead([messageId]);
+    if (success) {
+      toast({
+        title: "쪽지가 읽음 처리되었습니다.",
+        variant: "default",
+      });
+      router.push(currentPath);
+    } else {
+      toast({
+        title: "쪽지 읽기 실패",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // 상세보기 설정
   const handleViewMessage = (message: MessageDto) => {
     setViewMessage(message);
+    readMessage(message); // 메시지 ID를 넘겨서 읽음 처리
   };
+
 
   // 상세 보기 닫기
   const handleCloseDetail = () => {
@@ -64,7 +97,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
   const handleDeleteMessages = async () => {
     if (selectedMessages.length === 0) {
       toast({
-        title: "삭제할 메시지를 선택해주세요.",
+        title: "삭제할 쪽지를 선택해주세요.",
         variant: "destructive",
       });
       return;
@@ -79,10 +112,6 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         return;
       }
 
-      toast({
-        title: `${selectedMessages.length}개의 쪽지가 삭제되었습니다.`,
-        variant: "default",
-      });
       setSelectedMessages([]);
       window.location.reload();
     } catch (error) {
@@ -90,34 +119,46 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
     }
   };
 
+  const markMessagesAsRead = async (messageIds: number[]) => {    
+    try {
+      const response = await client.PUT("/api/messages", {
+        body: messageIds,
+      });
+      if (response.error) {
+        console.error("쪽지 읽기 실패:", response.error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("쪽지 읽는 중 오류 발생:", error);
+      return false;
+    }
+  };
+
   const handleReadMessages = async () => {
     if (selectedMessages.length === 0) {
       toast({
-        title: "읽을 메시지를 선택해주세요.",
+        title: "읽을 쪽지를 선택해주세요.",
         variant: "destructive",
       });
       return;
     }
 
-    try {
-      const response = await client.PUT("/api/messages", {
-        body: selectedMessages,
-      });
-      if (response.error) {
-        console.error("쪽지 읽기 실패:", response.error);
-        return;
-      }
-
+    const success = await markMessagesAsRead(selectedMessages);
+    if (success) {
+      setSelectedMessages([]);
       toast({
         title: `${selectedMessages.length}개의 쪽지를 읽었습니다.`,
         variant: "default",
       });
-      setSelectedMessages([]);
-      window.location.reload();
-    } catch (error) {
-      console.error("쪽지 읽는 중 오류 발생:", error);
+    } else {
+      toast({
+        title: "쪽지 읽기 실패",
+        variant: "destructive",
+      });
     }
   };
+
 
   useEffect(() => {
     setSelectedMessages([]); // 탭이 변경될 때 선택된 메시지 초기화
@@ -155,8 +196,8 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
 
       <div className="flex justify-between">
         <div className="flex space-x-4">
-          <button
-            className={`py-2 px-4 rounded-t-lg 
+          <Button
+            className={`py-4 px-4 text-black rounded-none hover:bg-gray-300
             ${activeTab === 'received' ? 'bg-gray-300' : 'bg-gray-100'}`}
             onClick={() => {
               setActiveTab('received');
@@ -164,9 +205,9 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
             }}
           >
             받은 쪽지
-          </button>
-          <button
-            className={`py-2 px-4 rounded-t-lg 
+          </Button>
+          <Button
+            className={`py-4 px-4 text-black rounded-none hover:bg-gray-300
             ${activeTab === 'sent' ? 'bg-gray-300' : 'bg-gray-100'}`}
             onClick={() => {
               setActiveTab('sent');
@@ -174,7 +215,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
             }}
           >
             보낸 쪽지
-          </button>
+          </Button>
         </div>
         {selectedMessages.length > 0 && (
           <div className="flex gap-2 items-center">
@@ -188,59 +229,87 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
       </div>
 
       {/* 탭 내용 영역 */}
-      <div className="border border-t-0 rounded-b-lg">
+      <Table className="min-w-[1000px] w-full">
 
         {/* 헤더 부분 */}
-        <div className="flex py-2 border-b font-semibold justify-between px-4 bg-gray-300">
-          <input type="checkbox" checked={allChecked} onChange={handleAllCheckboxChange} />
-          <span className="flex-3 text-center">제목</span>
-          <span className="flex-2 text-center">{activeTab === 'received' ? "보낸 사람" : "받는 사람"}</span>
-          <span className="flex-2 text-center">작성 일시</span>
-          <span className="flex-2 text-center">수신 여부</span>
-        </div>
+        <TableHeader className="bg-gray-300">
+          <TableRow>
+            <TableHead className="w-[50px] text-center">
+              <input
+                type="checkbox"
+                checked={allChecked}
+                onChange={handleAllCheckboxChange}
+              />
+            </TableHead>
+            <TableHead className="w-[400px] text-center">제목</TableHead>
+            <TableHead className="w-[150px] text-center">
+              {activeTab === 'received' ? "보낸 사람" : "받는 사람"}
+            </TableHead>
+            <TableHead className="w-[200px] text-center">작성 일시</TableHead>
+            <TableHead className="w-[150px] text-center">수신 여부</TableHead>
+          </TableRow>
+        </TableHeader>
 
         {/* 받은 쪽지 목록 */}
         {activeTab === 'received' ? (
-          <div>
+          <TableBody>
             {receive.map((message) => (
-              <div key={message.id} className="flex px-4 py-2 border-b w-full justify-between">
-                <input
-                  type="checkbox"
-                  checked={selectedMessages.includes(message.id!!)}
-                  onChange={() => handleCheckboxChange(message.id!!)}
-                  className="mr-4"
-                />
-                <Link href="" onClick={() => handleViewMessage(message)} className="flex gap-[200px] mx-2">
-                  <h3 className="flex-3 font-medium text-center">{message.title}</h3>
-                  <p className="flex-2 text-sm text-gray-500 text-center">{message.senderName}</p>
-                  <p className="flex-2 text-sm text-gray-400 text-center">{formatDate(message.createdAt!!)}</p>
-                  <p className="flex-2 text-sm text-gray-500 text-center">{message.checked ? "읽음" : "읽지않음"}</p>
-                </Link>
-              </div>
+              <TableRow key={message.id} className="px-4 py-1">
+                <TableCell className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedMessages.includes(message.id!!)}
+                    onChange={() => handleCheckboxChange(message.id!!)}
+                  />
+                </TableCell>
+                <TableCell className="w-[400px] font-medium text-center">
+                  <Link href="" onClick={() => handleViewMessage(message)} className="text-blue-500">
+                    {message.title}
+                  </Link>
+                </TableCell>
+                <TableCell className="w-[150px] text-center">
+                  {message.senderName}
+                </TableCell>
+                <TableCell className="w-[200px] text-center">
+                  {formatDate(message.createdAt!!)}
+                </TableCell>
+                <TableCell className="w-[150px] text-center">
+                  {message.checked ? "읽음" : "읽지않음"}
+                </TableCell>
+              </TableRow>
             ))}
-          </div>
+          </TableBody>
         ) : (
-          <div>
+          <TableBody>
             {/* 보낸 쪽지 목록 */}
             {send.map((message) => (
-              <div key={message.id} className="flex px-4 py-2 border-b w-full justify-between">
-                <input
-                  type="checkbox"
-                  checked={selectedMessages.includes(message.id!!)}
-                  onChange={() => handleCheckboxChange(message.id!!)}
-                  className="mr-4"
-                />
-                <Link href="" onClick={() => handleViewMessage(message)} className="flex gap-[200px] mx-2">
-                  <h3 className="flex-3 font-medium text-center">{message.title}</h3>
-                  <p className="flex-2 text-sm text-gray-500 text-center">{message.receiverName}</p>
-                  <p className="flex-2 text-sm text-gray-400 text-center">{formatDate(message.createdAt!!)}</p>
-                  <p className="flex-2 text-sm text-gray-500 text-center">{message.checked ? "읽음" : "읽지않음"}</p>
-                </Link>
-              </div>
+              <TableRow key={message.id} className="px-4 py-1">
+                <TableCell className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedMessages.includes(message.id!!)}
+                    onChange={() => handleCheckboxChange(message.id!!)}
+                  />
+                </TableCell>
+                <TableCell className="w-[400px] font-medium text-center">
+                  <Link href="" onClick={() => handleViewMessage(message)} className="text-blue-500">
+                    {message.title}
+                  </Link>
+                </TableCell>
+                <TableCell className="w-[150px] text-center">
+                  {message.receiverName}
+                </TableCell>
+                <TableCell className="w-[200px] text-center">
+                  {formatDate(message.createdAt!!)}
+                </TableCell>
+                <TableCell className="w-[150px] text-center">
+                  {message.checked ? "읽음" : "읽지않음"}
+                </TableCell>
+              </TableRow>
             ))}
-          </div>
+          </TableBody>
         )}
-      </div>
+      </Table>
     </div>
   );
 }
