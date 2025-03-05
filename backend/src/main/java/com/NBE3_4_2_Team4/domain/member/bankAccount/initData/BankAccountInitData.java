@@ -3,30 +3,33 @@ package com.NBE3_4_2_Team4.domain.member.bankAccount.initData;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.GenerateBankAccount;
 import com.NBE3_4_2_Team4.domain.member.bankAccount.service.BankAccountService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.service.MemberService;
+import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
+@Order(3)
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class BankAccountInitData {
 
-    @Autowired
-    private BankAccountService bankAccountService;
+    @Value("${custom.initData.member.member1.username}")
+    private String member1Username;
 
-    @Autowired
-    private MemberService memberService;
+    private final BankAccountService bankAccountService;
+    private final MemberInitData memberInitData;
+    private final MemberRepository memberRepository;
 
     @Autowired
     @Lazy
@@ -35,6 +38,7 @@ public class BankAccountInitData {
     @Bean
     public ApplicationRunner bankAccountInitDataApplicationRunner() {
         return _ -> {
+            memberInitData.work();
             self.createInitBankAccounts();
         };
     }
@@ -42,17 +46,11 @@ public class BankAccountInitData {
     @Transactional
     public void createInitBankAccounts() {
 
-        // 테스트 유저 로그인
-        Optional<Member> opMember = memberService.signIn("test@test.com");
+        // 테스트 유저 조회 + 로그인
+        Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
 
-        if (opMember.isEmpty()) {
-            return;
-        }
-
-        Member member = opMember.get();
         AuthManager authManager = new AuthManager();
-
-        authManager.setLogin(member);
+        authManager.setLogin(testUser);
 
         // 기존에 생성된 계좌가 있는지 확인
         if (!bankAccountService.findAllBankAccount().isEmpty()) {
