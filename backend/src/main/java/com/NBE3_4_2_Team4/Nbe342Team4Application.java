@@ -8,5 +8,4 @@ public class Nbe342Team4Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Nbe342Team4Application.class, args);
 	}
-
 }

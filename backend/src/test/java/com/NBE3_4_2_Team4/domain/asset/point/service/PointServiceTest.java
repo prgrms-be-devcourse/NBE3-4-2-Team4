@@ -1,12 +1,12 @@
 package com.NBE3_4_2_Team4.domain.asset.point.service;
 
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.AssetHistoryRes;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
@@ -43,6 +43,9 @@ public class PointServiceTest {
     @Autowired
     private AssetHistoryService assetHistoryService;
 
+    @Autowired
+    private AdminAssetCategoryRepository adminAssetCategoryRepository;
+
     private Member member1;
     private Member member2;
     private Long member1Id;
@@ -71,10 +74,10 @@ public class PointServiceTest {
         memberRepository.save(member1);
         memberRepository.save(member2);
 
-        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, AssetType.POINT, "a");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.ANSWER, AssetType.POINT, "b");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, AssetType.POINT, "b");
-        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, AssetType.POINT, "c");
+        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "a");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.ANSWER, null, AssetType.POINT, "b");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.POINT, "b");
+        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "c");
 
         member1Id = member1.getId();
         member2Id = member2.getId();
@@ -115,28 +118,21 @@ public class PointServiceTest {
     @Test
     @DisplayName("history creation test")
     void t4() {
-        long id = assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, AssetType.POINT, "a");
-        AssetHistory assetHistory = assetHistoryRepository.findById(id).orElseThrow(() -> new RuntimeException("히스토리 없음"));
+        AdminAssetCategory adminAssetCategory = adminAssetCategoryRepository.findByName("ABUSE_RESPONSE").orElseThrow(RuntimeException::new);
+
+        long id1 = assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "a");
+        long id2 = assetHistoryService.createHistory(member1, null, 10, AssetCategory.ADMIN, adminAssetCategory, AssetType.POINT, "a");
+
+        AssetHistory assetHistory = assetHistoryRepository.findById(id1).orElseThrow(() -> new RuntimeException("히스토리 없음"));
         assertEquals(member1.getId(), assetHistory.getMember().getId());
+
+        AssetHistory assetHistory2 = assetHistoryRepository.findById(id2).orElseThrow(RuntimeException::new);
+        assertEquals("ABUSE_RESPONSE", assetHistory2.getAdminAssetCategory().getName());
 
         LocalDateTime createdAt = LocalDateTime.now();
         assertTrue(Duration.between(assetHistory.getCreatedAt(), createdAt).getSeconds() < 5);
-    }
 
-//    @Test
-//    @DisplayName("history page")
-//    void t5() {
-//        LocalDate today = LocalDate.now();
-//
-//        AssetHistoryReq dto = new AssetHistoryReq();
-//        dto.setPage(1);
-//        dto.setAssetCategory(AssetCategory.ANSWER);
-//        dto.setStartDate(today.minusDays(30));
-//        dto.setEndDate(today);
-//
-//        PageDto<AssetHistoryRes> res = assetHistoryService.getHistoryPageWithFilter(member1, 10, dto);
-//        assertEquals(2, res.getTotalItems());
-//    }
+    }
 
     @Test
     @DisplayName("출석 테스트")
@@ -156,5 +152,23 @@ public class PointServiceTest {
         assertThrows(PointClientException.class, () -> {
             pointService.attend(member1Id);
         });
+    }
+
+    @Test
+    @DisplayName("adminAccumulate 테스트")
+    void t8() {
+        Long historyId = pointService.adminAccumulate(member1.getUsername(), 10, 1);
+        String name = assetHistoryRepository
+                .findById(historyId).get().getAdminAssetCategory().getName();
+        assertEquals("SYSTEM_COMPENSATION", name);
+    }
+
+    @Test
+    @DisplayName("adminDeduct 서비스 테스트")
+    void t9() {
+        Long historyId = pointService.adminDeduct(member1.getUsername(), 10, 1);
+        String name = assetHistoryRepository
+                .findById(historyId).get().getAdminAssetCategory().getName();
+        assertEquals("SYSTEM_COMPENSATION", name);
     }
 }

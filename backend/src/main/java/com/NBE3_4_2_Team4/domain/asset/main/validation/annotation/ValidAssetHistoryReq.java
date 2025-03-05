@@ -1,16 +1,16 @@
-package com.NBE3_4_2_Team4.domain.asset.point.validation.annotation;
+package com.NBE3_4_2_Team4.domain.asset.main.validation.annotation;
 
-import com.NBE3_4_2_Team4.domain.asset.point.validation.validator.PointHistoryReqValidator;
+import com.NBE3_4_2_Team4.domain.asset.main.validation.validator.AssetHistoryReqValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = PointHistoryReqValidator.class)
+@Constraint(validatedBy = AssetHistoryReqValidator.class)
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidPointHistoryReq {
+public @interface ValidAssetHistoryReq {
     String message() default "Invalid date range";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
