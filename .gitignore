@@ -45,3 +45,4 @@ src/main/generated/
 src/main/resources/application-secret.yml
 backend/src/main/resources/application-secret.yml
 *.tmp
+backend/c:
