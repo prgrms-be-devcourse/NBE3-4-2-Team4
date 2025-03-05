@@ -27,7 +27,7 @@ public class CashService implements AssetService {
 
     @Transactional
     private Pair<Member, Member> transferWithoutHistory(String fromUsername, String toUsername, long amount) {
-        Cash.validateAmount(amount);
+
         if (fromUsername.equals(toUsername)) throw new ServiceException("401-1", "자기 자신에게 송금할 수 없습니다");
 
         //보낸이 받는이 조회 & 락
@@ -65,7 +65,7 @@ public class CashService implements AssetService {
 
     @Transactional
     private Member deductWithoutHistory(String from, long amount) {
-        Cash.validateAmount(amount);
+
         Member member = memberRepository.findByUsernameWithLock(from)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", from)));
 
@@ -85,7 +85,7 @@ public class CashService implements AssetService {
 
     @Transactional
     private Member accumulateWithoutHistory(String to, long amount) {
-        Cash.validateAmount(amount);
+
         Member member = memberRepository.findByUsernameWithLock(to)
                 .orElseThrow(() -> new MemberNotFoundException(String.format("%s는 존재하지 않는 유저입니다", to)));
 
