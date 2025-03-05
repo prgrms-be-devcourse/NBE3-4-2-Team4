@@ -1,15 +1,13 @@
-package com.NBE3_4_2_Team4.domain.board.question.dto;
+package com.NBE3_4_2_Team4.domain.board.question.dto
 
-import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
-import lombok.Getter;
+import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory
 
-@Getter
-public class QuestionCategoryDto {
-    private final Long id;
-    private final String name;
-
-    public QuestionCategoryDto(QuestionCategory category) {
-        this.id = category.getId();
-        this.name = category.getName();
-    }
+class QuestionCategoryDto(
+        val id: Long,
+        val name: String
+) {
+    constructor(category: QuestionCategory) : this(
+            id = category.id,
+            name = category.name
+    )
 }
