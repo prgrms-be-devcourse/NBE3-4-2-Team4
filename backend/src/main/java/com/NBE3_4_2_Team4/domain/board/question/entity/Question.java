@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.board.question.entity;
 
-import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile;
 import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
@@ -10,7 +10,6 @@ import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.standard.base.Empty;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 @Entity
 @Getter
-@Builder
 public class Question extends GenFileParent<QuestionGenFile> {
     @ManyToOne
     public Member author;
@@ -70,6 +68,17 @@ public class Question extends GenFileParent<QuestionGenFile> {
         this.amount = amount;
         this.assetType = assetType;
         this.rankReceived = rankReceived;
+    }
+
+    public Question(String title, String content, Member author, QuestionCategory category, AssetType assetType, long amount, boolean b) {
+        super(QuestionGenFile.class);
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.category = category;
+        this.assetType = assetType;
+        this.amount = amount;
+        this.closed = b;
     }
 
     public long getRecommendCount() { // 추천 수 반환
