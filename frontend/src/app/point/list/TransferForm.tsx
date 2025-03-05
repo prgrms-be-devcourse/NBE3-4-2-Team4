@@ -66,9 +66,6 @@ export default function TransferForm({
         amount: Number(amount),
         assetType: selectedType,
       },
-      //                 headers: {
-      //                   cookie: cookies,
-      //                 },
       credentials: "include",
     });
 

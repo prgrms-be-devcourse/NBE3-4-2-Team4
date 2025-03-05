@@ -39,22 +39,8 @@ export default async function Page({
                                  try {
 
     const { page = 1, startDate, endDate, assetCategory, assetType } = await searchParams;
-//             const stringCookies = await cookies().toString();
-//             console.log(stringCookies, " cookie")
+
         const cookieHeader = await cookies();
-//         const response = await client.GET("/api/points", {
-//           params: {
-//             query: {
-//               page: Number(page),
-//               startDate,
-//               endDate,
-//               pointCategory
-//             },
-//           },
-//           headers: {
-//             cookie: cookieHeader.toString(),
-//           },
-//         });
 
         const response = await client.GET("/api/asset", {
           params: {
