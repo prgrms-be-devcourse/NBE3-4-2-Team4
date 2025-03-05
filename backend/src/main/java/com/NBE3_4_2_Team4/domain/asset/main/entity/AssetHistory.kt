@@ -10,7 +10,31 @@ import java.time.LocalDateTime
 @EntityListeners(
     AuditingEntityListener::class
 )
-class AssetHistory {
+class AssetHistory(
+    @ManyToOne
+    val member: Member,
+
+    @Column(nullable = false)
+    val amount: Long,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val assetType: AssetType,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val assetCategory: AssetCategory,
+
+    @Column(nullable = false)
+    val correlationId: String, // 연관 그룹 ID
+
+    @ManyToOne
+    val adminAssetCategory: AdminAssetCategory? = null,
+
+    @ManyToOne
+    @JoinColumn
+    val counterMember: Member? = null
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -18,46 +42,4 @@ class AssetHistory {
     @CreatedDate
     @Column(updatable = false)
     lateinit var createdAt: LocalDateTime
-
-    @ManyToOne
-    val member: Member
-
-    @Column(nullable = false)
-    val amount: Long
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    val assetType: AssetType
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    val assetCategory: AssetCategory
-
-    @Column(nullable = false)
-    val correlationId: String // 연관 그룹 ID
-
-    @ManyToOne
-    val adminAssetCategory: AdminAssetCategory?
-
-    @ManyToOne
-    @JoinColumn
-    val counterMember: Member?
-
-    constructor(
-        member: Member,
-        amount: Long,
-        assetType: AssetType,
-        assetCategory: AssetCategory,
-        correlationId: String,
-        adminAssetCategory: AdminAssetCategory? = null,
-        counterMember: Member? = null
-    ) {
-        this.member = member
-        this.amount = amount
-        this.assetType = assetType
-        this.assetCategory = assetCategory
-        this.correlationId = correlationId
-        this.adminAssetCategory = adminAssetCategory
-        this.counterMember = counterMember
-    }
 }
