@@ -7,14 +7,19 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
 
-class AdminAssetTransferReq {
-    val username: @NotBlank(message = "username은 필수 입력 값 입니다.") String? = null
+class AdminAssetTransferReq(
+    @field:NotBlank(message = "username은 필수 입력 값 입니다.")
+    val username: String,
 
-    val amount: @NotNull(message = "amount는 필수 입력 값 입니다.") @Min(value = 1, message = "금액은 1 이상이어야 합니다.") Long? = null
+    @field:NotNull(message = "amount는 필수 입력 값 입니다.")
+    @field:Min(value = 1, message = "금액은 1 이상이어야 합니다.")
+    val amount: Long,
 
-    @JsonProperty("assetType")
-    val assetType: @NotNull(message = "assetType은 필수 값 입니다") AssetType? = null
+    @field:JsonProperty("assetType")
+    @field:NotNull(message = "assetType은 필수 값 입니다")
+    val assetType: AssetType,
 
-    @JsonProperty("adminAssetCategoryId")
-    val adminAssetCategoryId: @NotNull(message = "adminAssetCategoryId는 필수 값 입니다") Long? = null
-}
+    @field:JsonProperty("adminAssetCategoryId")
+    @field:NotNull(message = "adminAssetCategoryId는 필수 값 입니다")
+    val adminAssetCategoryId: Long
+)

@@ -27,10 +27,7 @@ public class AssetServiceTest extends BaseAssetTestSetup {
     @Test
     @DisplayName("Asset 히스토리 리스트 출력")
     void t1() {
-        AssetHistoryReq assetHistoryReq = new AssetHistoryReq();
-        assetHistoryReq.setAssetCategory(AssetCategory.PURCHASE);
-        assetHistoryReq.setAssetType(AssetType.CASH);
-        assetHistoryReq.setPage(1);
+        AssetHistoryReq assetHistoryReq = new AssetHistoryReq(1, AssetType.CASH, AssetCategory.PURCHASE, null, null);
 
         PageDto<AssetHistoryRes> res = assetHistoryService.getHistoryPageWithFilter(member1, 10, assetHistoryReq);
         Assertions.assertEquals(1, res.getTotalItems());

@@ -38,16 +38,8 @@ public class AdminAssetCategoryControllerTest {
     @Test
     public void t1() throws Exception{
         List<AdminAssetCategoryRes> categories = List.of(
-                AdminAssetCategoryRes
-                        .builder()
-                        .id(1L)
-                        .name("Category 1")
-                        .build(),
-                AdminAssetCategoryRes
-                        .builder()
-                        .id(2L)
-                        .name("Category 2")
-                        .build()
+                new AdminAssetCategoryRes(1L, "Category 1"),
+                new AdminAssetCategoryRes(2L, "Category 2")
         );
 
         given(adminAssetCategoryService.findAll()).willReturn(categories);
