@@ -65,16 +65,22 @@ public class AppConfig {
         this.genFileDirPath = genFileDirPath;
     }
 
-    @Getter
     private static String springServletMultipartMaxFileSize;
+
+    public static String getSpringServletMultipartMaxFileSize() {
+        return springServletMultipartMaxFileSize;
+    }
 
     @Value("${spring.servlet.multipart.max-file-size}")
     public void setSpringServletMultipartMaxFileSize(String springServletMultipartMaxFileSize) {
         this.springServletMultipartMaxFileSize = springServletMultipartMaxFileSize;
     }
 
-    @Getter
     private static String springServletMultipartMaxRequestSize;
+
+    public static String getSpringServletMultipartMaxRequestSize() {
+        return springServletMultipartMaxRequestSize;
+    }
 
     @Value("${spring.servlet.multipart.max-request-size}")
     public void setSpringServletMultipartMaxRequestSize(String springServletMultipartMaxRequestSize) {
