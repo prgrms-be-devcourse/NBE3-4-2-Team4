@@ -1,30 +1,25 @@
-package com.NBE3_4_2_Team4.domain.board.recommend.entity;
+package com.NBE3_4_2_Team4.domain.board.recommend.entity
 
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.ManyToOne
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@EntityListeners(AuditingEntityListener.class)
-public class Recommend extends BaseEntity {
-    @ManyToOne
-    private Question question;
+@EntityListeners(AuditingEntityListener::class)
+class Recommend(
+    @ManyToOne(fetch = FetchType.LAZY)
+    var question: Question,
 
-    @ManyToOne
-    private Member member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    var member: Member,
 
     @CreatedDate
-    private LocalDateTime recommendAt;
-}
+    var recommendAt: LocalDateTime = LocalDateTime.now()
+) : BaseEntity()
