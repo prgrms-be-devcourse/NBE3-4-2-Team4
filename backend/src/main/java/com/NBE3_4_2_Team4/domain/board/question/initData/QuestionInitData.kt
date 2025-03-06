@@ -22,45 +22,44 @@ import java.util.List;
 
 @Order(1)
 @Configuration
-@RequiredArgsConstructor
-public class QuestionInitData {
-    private final QuestionService questionService;
-    private final MemberRepository memberRepository;
-    private final MemberInitData memberInitData;
-    private final RecommendService recommendService;
-    private final QuestionCategoryService questionCategoryService;
+class QuestionInitData(
+    private val questionService: QuestionService,
+    private val memberRepository: MemberRepository,
+    private val memberInitData: MemberInitData,
+    private val recommendService: RecommendService,
+    private val questionCategoryService: QuestionCategoryService
+) {
+    @Value("\${custom.initData.member.admin.username}")
+    lateinit var adminUsername: String
 
-    @Value("${custom.initData.member.admin.username}")
-    private String adminUsername;
-
-    @Value("${custom.initData.member.member1.username}")
-    private String member1Username;
+    @Value("\${custom.initData.member.member1.username}")
+    lateinit var member1Username: String
 
     @Autowired
     @Lazy
-    private QuestionInitData self;
+    lateinit var self: QuestionInitData
 
     @Bean
-    public ApplicationRunner questionInitDataApplicationRunner() {
-        return ignored -> {
-            memberInitData.work(); // admin이 먼저 생성되도록 하기 위해 호출
-            self.initData();
-        };
+    fun questionInitDataApplicationRunner(): ApplicationRunner {
+        return ApplicationRunner {
+            memberInitData.work() // admin이 먼저 생성되도록 하기 위해 호출
+            self.initData()
+        }
     }
 
     @Transactional
-    public void initData() {
-        if (questionService.count() > 0) return;
+    fun initData() {
+        if (questionService.count() > 0) return
 
-        Member admin = memberRepository.findByUsername(adminUsername).orElseThrow();
-        Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
+        val admin = memberRepository.findByUsername(adminUsername).orElseThrow()
+        val testUser = memberRepository.findByUsername(member1Username).orElseThrow()
 
-        List<String> categories = List.of("연애", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타");
-        for (String category : categories) {
-            questionCategoryService.createCategory(admin, category);
+        val categories = listOf("연애", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타")
+        for (category in categories) {
+            questionCategoryService.createCategory(admin, category)
         }
 
-        List<QuestionWriteReqDto> questionDataList = List.of(
+        val questionDataList = listOf(
                 createQuestion("성격 차이 극복 방법", "이 사람에게 어떻게 다가가야 할까요?", 1L, 100, AssetType.POINT),
                 createQuestion("운동 후 단백질 섭취 시점", "운동 후 몇 분 내에 단백질을 먹는 게 가장 좋은가요?", 2L, 80, AssetType.POINT),
                 createQuestion("주식 초보인데 어디서 시작해야 하나요?", "ETF랑 개별주 중에서 고민됩니다.", 3L, 200, AssetType.CASH),
@@ -79,17 +78,17 @@ public class QuestionInitData {
         );
 
         // 질문 생성
-        for (int i = 0; i < questionDataList.size(); i++) {
-            Member author = (i % 2 == 0) ? admin : testUser;
-            QuestionWriteReqDto q = questionDataList.get(i);
-            questionService.write(q.title(), q.content(), q.categoryId(), author, q.amount(), q.assetType());
+        for (i in questionDataList.indices) {
+            val author = if (i % 2 == 0) admin else testUser
+            val q = questionDataList[i]
+            questionService.write(q.title, q.content, q.categoryId, author, q.amount, q.assetType)
         }
 
-        recommendService.recommend(1L, testUser);
-        recommendService.recommend(12L, admin);
+        recommendService.recommend(1L, testUser)
+        recommendService.recommend(12L, admin)
     }
 
-    private static QuestionWriteReqDto createQuestion(String title, String content, long userId, int points, AssetType assetType) {
-        return new QuestionWriteReqDto(title, content, userId, points, assetType);
+    private fun createQuestion(title: String, content: String, userId: Long, amounts: Long, assetType: AssetType): QuestionWriteReqDto {
+        return QuestionWriteReqDto(title, content, userId, amounts, assetType)
     }
 }
