@@ -1,17 +1,29 @@
 package com.NBE3_4_2_Team4.domain.payment.payment.service;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.CancelPayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.UpdatePayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.VerifyPayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.WritePayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.CanceledPayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.GetPaymentInfo;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.VerifiedPayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.Payment;
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
+import com.NBE3_4_2_Team4.domain.payment.payment.repository.PaymentRepository;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.CancelHistory;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +35,8 @@ import static com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember;
 public class PaymentService {
 
     private final IamportService iamportService;
+    private final PaymentRepository paymentRepository;
+    private final AssetHistoryRepository assetHistoryRepository;
 
     @Transactional
     public VerifiedPayment verifyPayment(VerifyPayment verifyPayment) {
@@ -92,7 +106,100 @@ public class PaymentService {
                 .build();
     }
 
-    private void checkPaymentValid(GetPayment getPayment, Member member, VerifyPayment verifyPayment) {
+    @Transactional(readOnly = true)
+    public PageDto<GetPaymentInfo> getPayments(
+            int page,
+            int pageSize,
+            PaymentStatus paymentStatus
+    ) {
+
+        Member member = getNonNullMember();
+        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+
+        Page<Payment> payments = paymentRepository.findByMemberIdAndStatusKeyword(
+                member.getId(),
+                paymentStatus,
+                pageable
+        );
+
+        log.info("[{}] Payments are found with paging by Status keyword [{}].",
+                payments.getContent().size(), paymentStatus);
+
+        return new PageDto<>(
+                payments.map(payment ->
+                        GetPaymentInfo.builder()
+                                    .paymentId(payment.getId())
+                                    .impUid(payment.getImpUid())
+                                    .merchantUid(payment.getMerchantUid())
+                                    .status(payment.getStatus())
+                                    .createAt(payment.getCreatedAt())
+                                .build()));
+    }
+
+    @Transactional
+    public GetPaymentInfo writePayment(WritePayment writePayment) {
+
+        AssetHistory assetHistory = assetHistoryRepository.findById(writePayment.assetHistoryId())
+                .orElseThrow(() -> new ServiceException(
+                        "404-1",
+                        "[%d]번에 해당하는 재화 내역이 존재하지 않습니다."
+                                .formatted(writePayment.assetHistoryId()))
+                );
+
+        Payment saved = paymentRepository.save(
+                Payment.builder()
+                        .impUid(writePayment.impUid())
+                        .merchantUid(writePayment.merchantUid())
+                        .amount(writePayment.amount())
+                        .assetHistory(assetHistory)
+                        .build());
+
+        log.info("Payment Id [{}] is saved.", saved.getId());
+
+        return GetPaymentInfo.builder()
+                    .paymentId(saved.getId())
+                    .impUid(saved.getImpUid())
+                    .merchantUid(saved.getMerchantUid())
+                    .status(saved.getStatus())
+                    .createAt(saved.getCreatedAt())
+                .build();
+    }
+
+    @Transactional
+    public GetPaymentInfo updatePayment(Long paymentId, UpdatePayment updatePayment) {
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ServiceException(
+                        "404-1",
+                        "[%d]번에 해당하는 재화 내역이 존재하지 않습니다.".formatted(paymentId))
+                );
+
+        if (updatePayment.status() == null) {
+            throw new ServiceException("400-1", "변경할 결제 상태가 존재하지 않습니다.");
+        }
+
+        log.debug("Payment Status [{}] is update target.", updatePayment.status());
+
+        payment.updatePaymentStatus(updatePayment.status());
+
+        Payment updated = paymentRepository.save(payment);
+
+        log.info("Payment Id [{}] is updated.", updated.getId());
+
+        return GetPaymentInfo.builder()
+                .paymentId(updated.getId())
+                .impUid(updated.getImpUid())
+                .merchantUid(updated.getMerchantUid())
+                .status(updated.getStatus())
+                .createAt(updated.getCreatedAt())
+                .build();
+    }
+
+    private void checkPaymentValid(
+            GetPayment getPayment,
+            Member member,
+            VerifyPayment verifyPayment
+    ) {
 
         // imp_uid 검증
         if (!getPayment.impUid().equals(verifyPayment.impUid())) {
