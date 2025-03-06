@@ -59,6 +59,7 @@ export function UseImportPayment() {
             console.log("결제 응답 데이터:", response);
 
             try {
+                // 결제 승인 검증
                 const verifyResponse = await client.POST("/api/payments/verify", {
                    body: {
                        imp_uid: response.imp_uid,
@@ -68,10 +69,11 @@ export function UseImportPayment() {
 
                 console.log("검증 결과:", verifyResponse);
 
-                if (verifyResponse.response.status === 200) {
+                if (verifyResponse.response.ok) {
 
                     const verifiedData = verifyResponse.data.data;
 
+                    // 캐시 충전 처리
                     const depositCashResponse = await client.PATCH("/api/asset/deposit", {
                         body: {
                             amount,
@@ -80,14 +82,40 @@ export function UseImportPayment() {
                         },
                     });
 
+                    console.log("캐시 충전 결과:", depositCashResponse);
+
                     if (depositCashResponse.response.ok) {
-                        toast({
-                            title: "결제가 정상적으로 처리되었습니다!",
-                            description: `결제 금액: ${verifiedData.amount}원`
+
+                        const assetHistoryId = Number(depositCashResponse?.data?.data) || 0;
+
+                        // 결제 내역 저장
+                        const writePaymentResponse = await client.POST("/api/payments", {
+                            body: {
+                                asset_history_id: assetHistoryId,
+                                imp_uid: verifiedData.imp_uid,
+                                merchant_uid: verifiedData.merchant_uid,
+                                amount: verifiedData.amount,
+                                status: verifiedData.status.toUpperCase()
+                            },
                         });
 
-                        router.push("/point/list");
-                        router.refresh();
+                        console.log("결제 내역 저장 결과:", writePaymentResponse);
+
+                        if (writePaymentResponse.response.ok) {
+                            toast({
+                                title: "결제가 정상적으로 처리되었습니다!",
+                                description: `결제 금액: ${verifiedData.amount}원`
+                            });
+
+                            router.push("/point/list");
+                            router.refresh();
+
+                        } else {
+                            toast({
+                                title: "결제 내역 저장 실패!",
+                                description: "결제 내역 저장에 실패했습니다. 관리자에게 문의하세요."
+                            });
+                        }
 
                     } else {
                         toast({

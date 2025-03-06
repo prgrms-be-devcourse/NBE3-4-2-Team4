@@ -56,33 +56,33 @@ public class AssetController {
 
     @PatchMapping("/deposit")
     @Operation(summary = "재화 적립 신청")
-    public RsData<Empty> deposit(@RequestBody AssetDepositReq reqDto) {
+    public RsData<Long> deposit(@RequestBody AssetDepositReq reqDto) {
 
         Member member = getNonNullMember();
 
         AssetService service = assetServiceFactory.getService(reqDto.getAssetType());
-        service.accumulate(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
+        Long assetHistoryId = service.accumulate(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
 
         return new RsData<>(
                 "200-1",
                 "OK",
-                new Empty()
+                assetHistoryId
         );
     }
     
     @PatchMapping("/refund")
     @Operation(summary = "재화 반환 신청")
-    public RsData<Empty> refund(@RequestBody AssetRefundReq reqDto) {
+    public RsData<Long> refund(@RequestBody AssetRefundReq reqDto) {
 
         Member member = getNonNullMember();
 
         AssetService service = assetServiceFactory.getService(reqDto.getAssetType());
-        service.deduct(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
+        Long assetHistoryId = service.deduct(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
 
         return new RsData<>(
                 "200-1",
                 "OK",
-                new Empty()
+                assetHistoryId
         );
     }
 }

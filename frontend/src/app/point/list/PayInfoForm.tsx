@@ -1,10 +1,11 @@
 "use client";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import {Coins, Wallet} from "lucide-react";
+import {CircleDollarSign, Coins} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {CashTopupModal} from "@/app/cash/topup/CashTopupModal";
 import {useState} from "react";
+import {RefundModal} from "@/app/cash/refund/RefundModal";
 
 export default function PayInfoForm({
                                         user
@@ -26,6 +27,7 @@ export default function PayInfoForm({
 
     // 캐시 충전 모달 이동
     const [isCashTopupModalOpen, setIsCashTopupModalOpen] = useState(false);
+    const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
 
     return (
         <div className="flex justify-center gap-5 w-full mx-auto">
@@ -51,7 +53,7 @@ export default function PayInfoForm({
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <span className="flex items-center gap-2">
-                            <Wallet size={35}/> 캐시
+                            <CircleDollarSign size={35}/> 캐시
                         </span>
                     </CardTitle>
                 </CardHeader>
@@ -64,7 +66,7 @@ export default function PayInfoForm({
                         <Button className="w-1/2" onClick={() => setIsCashTopupModalOpen(true)}>
                             충전하기
                         </Button>
-                        <Button className="w-1/2" onClick={withdrawPoint}>
+                        <Button className="w-1/2" onClick={() => setIsRefundModalOpen(true)}>
                             환불하기
                         </Button>
                     </div>
@@ -78,6 +80,12 @@ export default function PayInfoForm({
                 user={user}
             />
 
+            {/* 환불 모달 */}
+            <RefundModal
+                isOpen={isRefundModalOpen}
+                onClose={() => setIsRefundModalOpen(false)}
+                user={user}
+            />
         </div>
     );
 }

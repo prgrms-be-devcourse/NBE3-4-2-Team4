@@ -7,32 +7,44 @@ public class PaymentRequestDto {
 
     @Builder
     public record VerifyPayment(
+
             String impUid,
+
             long amount
     ){
     }
 
     @Builder
     public record CancelPayment(
+
             String impUid,
+
             String merchantUid,
+
             long amount,
+
             String reason
     ) {
     }
 
     @Builder
     public record WritePayment(
-            Long assetHistoryId,
+
+            long assetHistoryId,
+
             String impUid,
+
             String merchantUid,
+
             Long amount,
+
             PaymentStatus status
     ) {
     }
 
     @Builder
     public record UpdatePayment(
+
             PaymentStatus status
     ) {
     }

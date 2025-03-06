@@ -131,8 +131,9 @@ public class PaymentService {
                                     .paymentId(payment.getId())
                                     .impUid(payment.getImpUid())
                                     .merchantUid(payment.getMerchantUid())
+                                    .amount(payment.getAmount())
                                     .status(payment.getStatus())
-                                    .createAt(payment.getCreatedAt())
+                                    .createdAt(payment.getCreatedAt())
                                 .build()));
     }
 
@@ -151,6 +152,7 @@ public class PaymentService {
                         .impUid(writePayment.impUid())
                         .merchantUid(writePayment.merchantUid())
                         .amount(writePayment.amount())
+                        .status(writePayment.status())
                         .assetHistory(assetHistory)
                         .build());
 
@@ -160,8 +162,9 @@ public class PaymentService {
                     .paymentId(saved.getId())
                     .impUid(saved.getImpUid())
                     .merchantUid(saved.getMerchantUid())
+                    .amount(saved.getAmount())
                     .status(saved.getStatus())
-                    .createAt(saved.getCreatedAt())
+                    .createdAt(saved.getCreatedAt())
                 .build();
     }
 
@@ -190,8 +193,9 @@ public class PaymentService {
                 .paymentId(updated.getId())
                 .impUid(updated.getImpUid())
                 .merchantUid(updated.getMerchantUid())
+                .amount(updated.getAmount())
                 .status(updated.getStatus())
-                .createAt(updated.getCreatedAt())
+                .createdAt(updated.getCreatedAt())
                 .build();
     }
 

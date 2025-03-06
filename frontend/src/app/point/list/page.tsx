@@ -34,9 +34,9 @@ export default async function Page({
     };
 }) {
     try {
-        const { page = "1", startDate, endDate, assetCategory, assetType } = searchParams;
+        const { page = "1", startDate, endDate, assetCategory, assetType } = await searchParams;
 
-        const cookieHeader = cookies();
+        const cookieHeader = await cookies();
 
         const response = await client.GET("/api/asset", {
             params: {
