@@ -31,12 +31,15 @@ function formatDate(date: string) {
 
 export default function ClientPage({
   body,
-  point,
-  cash,
+  user
 }: {
   body: PageDtoPointHistoryRes;
-  point: number;
-  cash: number;
+  user: {
+    username: string;
+    emailAddress: string;
+    point: number;
+    cash: number;
+  };
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -152,8 +155,8 @@ export default function ClientPage({
           <AttendanceButton />
         </div>
       </div>
-      <PayInfoForm point={point} cash={cash} />
-      <TransferForm point={point} cash={cash} />
+      <PayInfoForm user={user} />
+      <TransferForm point={user.point} cash={user.cash} />
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

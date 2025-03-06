@@ -3,14 +3,29 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Coins, Wallet} from "lucide-react";
 import {useRouter} from "next/navigation";
+import {CashTopupModal} from "@/app/cash/topup/CashTopupModal";
+import {useState} from "react";
 
-export default function PayInfoForm({point, cash}: { point: number, cash: number }) {
+export default function PayInfoForm({
+                                        user
+}: {
+    user: {
+        username: string;
+        emailAddress: string;
+        point: number;
+        cash: number;
+    };
+}) {
 
     const router = useRouter();
 
+    // 포인트 환불 관리 페이지 이동
     const withdrawPoint = () => {
         router.push("/point/withdrawal");
     };
+
+    // 캐시 충전 모달 이동
+    const [isCashTopupModalOpen, setIsCashTopupModalOpen] = useState(false);
 
     return (
         <div className="flex justify-center gap-5 w-full mx-auto">
@@ -24,7 +39,7 @@ export default function PayInfoForm({point, cash}: { point: number, cash: number
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
                     <div className="text-left pb-3">
-                        <span className="font-semibold text-2xl">{point.toLocaleString()} POINT</span>
+                        <span className="font-semibold text-2xl">{user.point.toLocaleString()} POINT</span>
                     </div>
 
                     <div className="flex flex-row justify-normal gap-3">
@@ -42,15 +57,26 @@ export default function PayInfoForm({point, cash}: { point: number, cash: number
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
                     <div className="text-left pb-3">
-                        <span className="font-semibold text-2xl">{cash.toLocaleString()} CASH</span>
+                        <span className="font-semibold text-2xl">{user.cash.toLocaleString()} CASH</span>
                     </div>
 
                     <div className="flex flex-row justify-normal gap-3">
-                        <Button className="w-1/2" onClick={"#"}>충전하기</Button>
-                        <Button className="w-1/2" onClick={"#"}>환불하기</Button>
+                        <Button className="w-1/2" onClick={() => setIsCashTopupModalOpen(true)}>
+                            충전하기
+                        </Button>
+                        <Button className="w-1/2" onClick={withdrawPoint}>
+                            환불하기
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
+
+            {/* 캐시 충전 모달 */}
+            <CashTopupModal
+                isOpen={isCashTopupModalOpen}
+                onClose={() => setIsCashTopupModalOpen(false)}
+                user={user}
+            />
 
         </div>
     );

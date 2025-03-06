@@ -95,8 +95,12 @@ export function WithdrawRequestModal({
         try {
             setLoading(true);
 
-            const response = await client.PATCH("/api/points/withdrawal", {
-                body: { amount },
+            const response = await client.PATCH("/api/asset/refund", {
+                body: {
+                    amount,
+                    assetType: "포인트",
+                    assetCategory: "POINT_DEPOSIT"
+                },
             });
 
             console.log(response);
@@ -161,7 +165,7 @@ export function WithdrawRequestModal({
                                         </SelectItem>
                                     ))
                                 ) : (
-                                    <SelectItem value="" disabled>
+                                    <SelectItem value="NotExist" disabled>
                                         등록된 계좌가 없습니다.
                                     </SelectItem>
                                 )}
@@ -184,7 +188,7 @@ export function WithdrawRequestModal({
                     {/* 수수료 및 최종 환급 금액 */}
                     {isValidAmount && (
                         <div className="text-sm text-gray-500">
-                            <p>수수료: {fee.toLocaleString()}P</p>
+                            <p>수수료: {fee.toLocaleString()}원</p>
                         </div>
                     )}
 

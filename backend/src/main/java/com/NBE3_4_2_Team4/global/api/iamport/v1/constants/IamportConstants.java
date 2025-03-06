@@ -13,6 +13,10 @@ public class IamportConstants {
 
     public static final String IAMPORT_FIND_BANK_NAME_URL = IAMPORT_BASE_URL + "/banks/{bankCode}";
 
+    public static final String IAMPORT_GET_PAYMENT_HISTORY_URL = IAMPORT_BASE_URL + "/payments/{impUid}";
+
+    public static final String IAMPORT_CANCEL_PAYMENT_URL = IAMPORT_BASE_URL + "/payments/cancel";
+
     /* Token */
     public static final String IAMPORT_TOKEN_REDIS_KEY = "iamport:access_token:";
 }

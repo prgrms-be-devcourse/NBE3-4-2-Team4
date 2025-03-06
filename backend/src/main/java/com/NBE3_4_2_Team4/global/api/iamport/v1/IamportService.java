@@ -1,5 +1,8 @@
 package com.NBE3_4_2_Team4.global.api.iamport.v1;
 
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo;
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,15 +28,25 @@ public interface IamportService {
     /**
      * @apiNote 아임포트 V1 예금주 조회
      */
-    Optional<String> validateBankAccount(String accessToken, BankAccountValidator bankAccount);
+    Optional<String> validateBankAccount(String impAccessToken, BankAccountValidator bankAccount);
 
     /**
      * @apiNote 아임포트 V1 은행 코드 전체 검색
      */
-    List<BankInfo> getBankCodes(String accessToken);
+    List<BankInfo> getBankCodes(String impAccessToken);
 
     /**
      * @apiNote 아임포트 V1 은행명 조회
      */
-    Optional<BankInfo> findBankNameByBankCode(String accessToken, String bankCode);
+    Optional<BankInfo> findBankNameByBankCode(String impAccessToken, String bankCode);
+
+    /**
+     * @apiNote 아임포트 V1 결제내역 단건 조회
+     */
+    Optional<GetPayment> getPaymentHistory(String impAccessToken, String impUid);
+
+    /**
+     * @apiNote 아임포트 V1 결제 취소
+     */
+    Optional<GetPayment> cancelPayment(String impAccessToken, CancelPaymentInfo cancelPaymentInfo);
 }
