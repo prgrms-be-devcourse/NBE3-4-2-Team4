@@ -16,7 +16,7 @@ public enum AssetCategory {
         ATTENDANCE("출석"),
         CASH_DEPOSIT("캐시충전"),
         CASH_REFUND("캐시반환"),
-        POINT_DEPOSIT("포인트현금화");
+        POINT_WITHDRAWAL("포인트현금화");
 
         private final String displayName;
 

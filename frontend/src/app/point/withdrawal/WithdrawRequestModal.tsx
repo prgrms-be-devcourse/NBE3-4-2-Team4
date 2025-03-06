@@ -99,7 +99,7 @@ export function WithdrawRequestModal({
                 body: {
                     amount,
                     assetType: "포인트",
-                    assetCategory: "POINT_DEPOSIT"
+                    assetCategory: "POINT_WITHDRAWAL"
                 },
             });
 
