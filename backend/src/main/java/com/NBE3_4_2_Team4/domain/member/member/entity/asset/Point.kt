@@ -5,15 +5,10 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-class Point(amount: Long = 0L) {
-
+class Point(
     @Column(name = "point", nullable = false)
     private var _amount: Long = 0L
-
-    init {
-        this._amount = amount
-        validateInitialAmount()  // 유효성 검사 추가 가능
-    }
+) {
 
     fun getAmount(): Long{
         return _amount

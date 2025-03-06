@@ -6,14 +6,13 @@ import jakarta.persistence.Embeddable
 
 
 @Embeddable
-class Cash(amount: Long = 0L) {
-
+class Cash(
     @Column(name = "cash", nullable = false)
     private var _amount: Long = 0L
+) {
 
     init {
-        this._amount = amount
-        validateInitialAmount()  // 유효성 검사 추가 가능
+        validateInitialAmount()
     }
 
     fun getAmount(): Long{
