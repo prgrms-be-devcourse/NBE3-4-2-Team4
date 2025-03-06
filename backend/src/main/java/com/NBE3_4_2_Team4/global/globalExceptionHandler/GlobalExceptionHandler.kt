@@ -38,7 +38,7 @@ class GlobalExceptionHandler {
             .body(
                 RsData(
                     "400-1",
-                    e.message // 커스텀 메시지 사용
+                    e.message!! // 커스텀 메시지 사용
                 )
             )
     }
@@ -83,7 +83,7 @@ class GlobalExceptionHandler {
             .body(
                 RsData(
                     "404-1",
-                    e.message
+                    e.message!!
                 )
             )
     }
@@ -95,7 +95,7 @@ class GlobalExceptionHandler {
             .body(
                 RsData(
                     "400-1",
-                    e.message
+                    e.message!!
                 )
             )
     }
