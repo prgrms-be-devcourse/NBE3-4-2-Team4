@@ -13,6 +13,7 @@ import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.querydsl.core.types.Expression
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.support.PageableExecutionUtils
@@ -72,24 +73,14 @@ class QuestionRepositoryImpl(
 
     private fun applySorting(pageable: Pageable, questionsQuery: JPAQuery<Question>) {
         for (o in pageable.sort) {
-            val path = when (o.property) {
-                "title" -> question.title
-                "content" -> question.questionContent
-                "author" -> question.author.nickname
-                "answer_content" -> question.answers.any().answerContent
-                else -> question.title
-            }
-
-            val orderSpecifier = OrderSpecifier(
-                if (o.isAscending) Order.ASC else Order.DESC,
-                path
+            val pathBuilder: PathBuilder<*> = PathBuilder<Any?>(question.type, question.metadata)
+            questionsQuery.orderBy(
+                OrderSpecifier(
+                    if (o.isAscending) Order.ASC else Order.DESC,
+                    pathBuilder[o.property] as Expression<Comparable<*>>
+                )
             )
-            questionsQuery.orderBy(orderSpecifier)
         }
-//        for(o in pageable.sort) {
-//            val pathBuilder = PathBuilder(question.type, question.metadata)
-//            questionsQuery.orderBy(OrderSpecifier(if (o.isAscending) Order.ASC else Order.DESC, pathBuilder.get(o.property)))
-//        }
     }
 
     private fun createTotalQuery(builder: BooleanBuilder): JPAQuery<Long> {
