@@ -1,96 +1,105 @@
-package com.NBE3_4_2_Team4.domain.board.question.repository;
+package com.NBE3_4_2_Team4.domain.board.question.repository
 
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
+import com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer.answer
+import com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.question
+import com.NBE3_4_2_Team4.domain.board.question.entity.Question
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType
+import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Order
+import com.querydsl.core.types.OrderSpecifier
+import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.PathBuilder
+import com.querydsl.jpa.JPAExpressions
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.support.PageableExecutionUtils
 
-import static com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer.answer;
-import static com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.question;
+class QuestionRepositoryImpl(
+        private val jpaQueryFactory: JPAQueryFactory
+) : QuestionRepositoryCustom {
 
-@RequiredArgsConstructor
-public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
-    private final JPAQueryFactory jpaQueryFactory;
+    override fun findByKw(kwType: QuestionSearchKeywordType, kw: String, pageable: Pageable): Page<Question> {
+        val builder = BooleanBuilder()
 
-    @Override
-    public Page<Question> findByKw(QuestionSearchKeywordType kwType, String kw, Pageable pageable) {
-        BooleanBuilder builder = new BooleanBuilder();
+        if(kw.isNotBlank())
+            applyKeywordFilter(kwType, kw, builder)
 
-        if(kw != null && !kw.isBlank())
-            applyKeywordFilter(kwType, kw, builder);
-
-        return getQuestions(builder, pageable);
+        return getQuestions(builder, pageable)
     }
 
-    @Override
-    public Page<Question> findByAnswerAuthor(Member author, Pageable pageable) {
-        BooleanBuilder builder = new BooleanBuilder();
+    override fun findByAnswerAuthor(author: Member, pageable: Pageable): Page<Question> {
+        val builder = BooleanBuilder()
 
-        if(author != null)
-            answerAuthorFilter(author, builder);
+        answerAuthorFilter(author, builder)
 
-        return getQuestions(builder, pageable);
+        return getQuestions(builder, pageable)
     }
 
-    private void applyKeywordFilter(QuestionSearchKeywordType kwType, String kw, BooleanBuilder builder) {
-        switch(kwType) {
-            case kwType.TITLE -> builder.and(question.title.containsIgnoreCase(kw));
-            case kwType.CONTENT -> builder.and(question.content.containsIgnoreCase(kw));
-            case kwType.AUTHOR -> builder.and(question.author.nickname.containsIgnoreCase(kw));
-            case kwType.ANSWER_CONTENT -> builder.and(hasAnswerContainingKeyword(kw));
-            default -> builder.and(
+    private fun applyKeywordFilter(kwType: QuestionSearchKeywordType, kw: String, builder: BooleanBuilder) {
+        when (kwType) {
+            QuestionSearchKeywordType.TITLE -> builder.and(question.title.containsIgnoreCase(kw))
+            QuestionSearchKeywordType.CONTENT -> builder.and(question.content.containsIgnoreCase(kw))
+            QuestionSearchKeywordType.AUTHOR -> builder.and(question.author.nickname.containsIgnoreCase(kw))
+            QuestionSearchKeywordType.ANSWER_CONTENT -> builder.and(hasAnswerContainingKeyword(kw))
+            else -> builder.and(
                     question.title.containsIgnoreCase(kw)
                             .or(question.content.containsIgnoreCase(kw))
                             .or(question.author.nickname.containsIgnoreCase(kw))
                             .or(hasAnswerContainingKeyword(kw))
-            );
+            )
         }
     }
 
     //answer content 내에 kw가 포함된 행이 하나라도 존재할 경우 true
-    private BooleanExpression hasAnswerContainingKeyword(String kw) {
+    private fun hasAnswerContainingKeyword(kw: String): BooleanExpression {
         return JPAExpressions
                 .selectOne()
                 .from(answer)
                 .where(answer.question.eq(question)
                         .and(answer.answerContent.containsIgnoreCase(kw)))
-                .exists();
+                .exists()
     }
 
-    private JPAQuery<Question> createPostsQuery(BooleanBuilder builder) {
+    private fun createPostsQuery(builder: BooleanBuilder): JPAQuery<Question> {
         return jpaQueryFactory
                 .select(question)
                 .from(question)
-                .where(builder);
+                .where(builder)
     }
 
-    private void applySorting(Pageable pageable, JPAQuery<Question> questionsQuery) {
-        for(Sort.Order o : pageable.getSort()) {
-            PathBuilder pathBuilder = new PathBuilder(question.getType(), question.getMetadata());
-            questionsQuery.orderBy(new OrderSpecifier(o.isAscending() ? Order.ASC : Order.DESC, pathBuilder.get(o.getProperty())));
+    private fun applySorting(pageable: Pageable, questionsQuery: JPAQuery<Question>) {
+        for (o in pageable.sort) {
+            val path = when (o.property) {
+                "title" -> question.title
+                "content" -> question.content
+                "author" -> question.author.nickname
+                "answer_content" -> question.answers.any().answerContent
+                else -> question.title
+            }
+
+            val orderSpecifier = OrderSpecifier(
+                if (o.isAscending) Order.ASC else Order.DESC,
+                path
+            )
+            questionsQuery.orderBy(orderSpecifier)
         }
+//        for(o in pageable.sort) {
+//            val pathBuilder = PathBuilder(question.type, question.metadata)
+//            questionsQuery.orderBy(OrderSpecifier(if (o.isAscending) Order.ASC else Order.DESC, pathBuilder.get(o.property)))
+//        }
     }
 
-    private JPAQuery<Long> createTotalQuery(BooleanBuilder builder) {
+    private fun createTotalQuery(builder: BooleanBuilder): JPAQuery<Long> {
         return jpaQueryFactory
                 .select(question.count())
                 .from(question)
-                .where(builder);
+                .where(builder)
     }
 
-    private void answerAuthorFilter(Member author, BooleanBuilder builder) {
+    private fun answerAuthorFilter(author: Member, builder: BooleanBuilder) {
         builder.and(
                 JPAExpressions
                         .selectOne()
@@ -98,17 +107,19 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                         .where(answer.question.eq(question)
                                 .and(answer.author.eq(author)))
                         .exists()
-        );
+        )
     }
 
-    public Page<Question> getQuestions(BooleanBuilder builder, Pageable pageable) {
-        JPAQuery<Question> questionsQuery = createPostsQuery(builder);
-        applySorting(pageable, questionsQuery);
+    fun getQuestions(builder: BooleanBuilder, pageable: Pageable): Page<Question> {
+        val questionsQuery = createPostsQuery(builder)
+        applySorting(pageable, questionsQuery)
 
-        questionsQuery.offset(pageable.getOffset()).limit(pageable.getPageSize());
+        questionsQuery.offset(pageable.offset).limit(pageable.pageSize.toLong())
 
-        JPAQuery<Long> totalQuery = createTotalQuery(builder);
+        val totalQuery = createTotalQuery(builder)
 
-        return PageableExecutionUtils.getPage(questionsQuery.fetch(), pageable, totalQuery::fetchOne);
+        return PageableExecutionUtils.getPage(questionsQuery.fetch(), pageable) {
+            totalQuery.fetchOne() ?: 0L
+        }
     }
 }
