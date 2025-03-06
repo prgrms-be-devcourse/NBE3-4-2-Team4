@@ -96,7 +96,7 @@ public class MemberInitData {
                                 "d",
                                 null,
                                 null));
-        member.setCash(new Cash(10000L));
+        member.setCash(new Cash(1000L));
     }
 
     @Transactional
