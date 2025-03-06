@@ -110,23 +110,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/points/transfer": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 포인트 송금 기능 */
-        put: operations["transfer"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/points/attendance": {
         parameters: {
             query?: never;
@@ -176,7 +159,7 @@ export interface paths {
         };
         get?: never;
         /** 재화 송금 기능 */
-        put: operations["transfer_1"];
+        put: operations["transfer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -203,40 +186,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/points/deduct": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 유저에게서 포인트를 차감 */
-        put: operations["deductFromMember"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/points/accumulate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 유저에게 포인트를 적립 */
-        put: operations["accumulateForMember"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/asset/deduct": {
         parameters: {
             query?: never;
@@ -246,7 +195,7 @@ export interface paths {
         };
         get?: never;
         /** 유저에게서 재화를 차감 */
-        put: operations["deductFromMember_1"];
+        put: operations["deductFromMember"];
         post?: never;
         delete?: never;
         options?: never;
@@ -263,9 +212,25 @@ export interface paths {
         };
         get?: never;
         /** 유저에게 재화를 적립 */
-        put: operations["accumulateForMember_1"];
+        put: operations["accumulateForMember"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/adminAssetCategory/{categoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["update_1"];
+        post?: never;
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         patch?: never;
@@ -563,6 +528,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/adminAssetCategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAdminAssetCategoryList"];
+        put?: never;
+        post: operations["create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/{product_id}": {
         parameters: {
             query?: never;
@@ -629,7 +610,7 @@ export interface paths {
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         /**
@@ -879,23 +860,6 @@ export interface paths {
          * @description 전체 상품을 조회합니다.
          */
         get: operations["getAllProducts"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/points": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 포인트 기록 조회(날짜 & 카테고리 필터포함) */
-        get: operations["getPointHistories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1173,11 +1137,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["QuestionDto"];
         };
-        PointTransferReq: {
-            username: string;
-            /** Format: int64 */
-            amount: number;
-        };
         PurchaseDetails: {
             username: string;
             /** Format: int64 */
@@ -1205,6 +1164,18 @@ export interface components {
             amount: number;
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
+        };
+        AdminAssetTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+            /** Format: int64 */
+            adminAssetCategoryId: number;
+        };
+        AdminAssetCategoryUpdateReq: {
+            name: string;
         };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
@@ -1257,15 +1228,15 @@ export interface components {
         };
         PageDtoQuestionDto: {
             /** Format: int32 */
-            currentPageNumber?: number;
+            currentPageNumber: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int64 */
-            totalPages?: number;
+            totalPages: number;
             /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["QuestionDto"][];
+            totalItems: number;
+            hasMore: boolean;
+            items: components["schemas"]["QuestionDto"][];
         };
         QuestionCategoryReqDto: {
             name: string;
@@ -1370,6 +1341,9 @@ export interface components {
             msg: string;
             data: components["schemas"]["MemberThumbnailInfoResponseDto"];
         };
+        AdminAssetCategoryCreateReq: {
+            name: string;
+        };
         updateItem: {
             productName?: string;
             /** Format: int32 */
@@ -1384,27 +1358,27 @@ export interface components {
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
-            currentPageNumber?: number;
+            currentPageNumber: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int64 */
-            totalPages?: number;
+            totalPages: number;
             /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["AnswerDto"][];
+            totalItems: number;
+            hasMore: boolean;
+            items: components["schemas"]["AnswerDto"][];
         };
         PageDtoGetItem: {
             /** Format: int32 */
-            currentPageNumber?: number;
+            currentPageNumber: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int64 */
-            totalPages?: number;
+            totalPages: number;
             /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["GetItem"][];
+            totalItems: number;
+            hasMore: boolean;
+            items: components["schemas"]["GetItem"][];
         };
         RsDataPageDtoGetItem: {
             resultCode: string;
@@ -1429,48 +1403,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItem"][];
-        };
-        AssetHistoryReq: {
-            /** Format: int32 */
-            page: number;
-            /** Format: date */
-            startDate?: string;
-            /** Format: date */
-            endDate?: string;
-            /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
-            /** @enum {string} */
-            assetType?: "캐시" | "포인트" | "전체";
-            /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
-            startDateTime?: string;
-        };
-        AssetHistoryRes: {
-            /** Format: int64 */
-            amount?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            counterAccountUsername?: string;
-            assetCategory?: string;
-            assetType?: string;
-        };
-        PageDtoAssetHistoryRes: {
-            /** Format: int32 */
-            currentPageNumber?: number;
-            /** Format: int32 */
-            pageSize?: number;
-            /** Format: int64 */
-            totalPages?: number;
-            /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["AssetHistoryRes"][];
-        };
-        RsDataPageDtoAssetHistoryRes: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["PageDtoAssetHistoryRes"];
         };
         RsDataObject: {
             resultCode: string;
@@ -1501,6 +1433,59 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["MemberDetailInfoResponseDto"];
+        };
+        AssetHistoryReq: {
+            /** Format: int32 */
+            page: number;
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** @enum {string} */
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
+            /** Format: date-time */
+            startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
+        };
+        AssetHistoryRes: {
+            /** Format: int64 */
+            amount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            counterAccountUsername?: string;
+            assetCategory?: string;
+            adminAssetCategory?: string;
+            assetType?: string;
+        };
+        PageDtoAssetHistoryRes: {
+            /** Format: int32 */
+            currentPageNumber: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int64 */
+            totalPages: number;
+            /** Format: int64 */
+            totalItems: number;
+            hasMore: boolean;
+            items: components["schemas"]["AssetHistoryRes"][];
+        };
+        RsDataPageDtoAssetHistoryRes: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["PageDtoAssetHistoryRes"];
+        };
+        AdminAssetCategoryRes: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+        };
+        RsDataListAdminAssetCategoryRes: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["AdminAssetCategoryRes"][];
         };
     };
     responses: never;
@@ -1877,39 +1862,6 @@ export interface operations {
             };
         };
     };
-    transfer: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PointTransferReq"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     attendance: {
         parameters: {
             query?: never;
@@ -1974,7 +1926,7 @@ export interface operations {
             };
         };
     };
-    transfer_1: {
+    transfer: {
         parameters: {
             query?: never;
             header?: never;
@@ -2119,7 +2071,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PointTransferReq"];
+                "application/json": components["schemas"]["AdminAssetTransferReq"];
             };
         };
         responses: {
@@ -2152,7 +2104,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PointTransferReq"];
+                "application/json": components["schemas"]["AdminAssetTransferReq"];
             };
         };
         responses: {
@@ -2176,16 +2128,18 @@ export interface operations {
             };
         };
     };
-    deductFromMember_1: {
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                categoryId: number;
+            };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AssetTransferReq"];
+                "application/json": components["schemas"]["AdminAssetCategoryUpdateReq"];
             };
         };
         responses: {
@@ -2209,18 +2163,16 @@ export interface operations {
             };
         };
     };
-    accumulateForMember_1: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                categoryId: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssetTransferReq"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2962,6 +2914,68 @@ export interface operations {
             };
         };
     };
+    getAdminAssetCategoryList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListAdminAssetCategoryRes"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetCategoryCreateReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getProduct: {
         parameters: {
             query?: never;
@@ -3141,7 +3155,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -3601,37 +3615,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getPointHistories: {
-        parameters: {
-            query: {
-                assetHistoryReq: components["schemas"]["AssetHistoryReq"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */
