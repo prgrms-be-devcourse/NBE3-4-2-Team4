@@ -19,8 +19,7 @@ class AssetHistoryRes (
 
         @JvmStatic
         fun from(assetHistory: AssetHistory): AssetHistoryRes {
-            //TODO: 추후 수정 getUsername 안됨
-            val counterMemberUsername = ""
+            val counterMemberUsername = assetHistory.counterMember?.username ?: ""
             val adminAssetCategory = assetHistory.adminAssetCategory?.name ?: ""
 
             return AssetHistoryRes(

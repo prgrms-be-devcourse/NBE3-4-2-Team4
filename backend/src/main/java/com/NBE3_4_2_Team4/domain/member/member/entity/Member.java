@@ -41,6 +41,7 @@ public class Member {
         return Objects.hash(this.id);
     }
 
+    //id getter을 코틀린에서 사용할수 있도록 public 으로 바꿨습니다
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -52,9 +53,10 @@ public class Member {
     @Column(nullable = false)
     private OAuth2Provider oAuth2Provider;
 
+    //username getter을 코틀린에서 사용할수 있도록 public 으로 바꿨습니다
     @Column(nullable = false, unique = true)
     @Setter(AccessLevel.NONE)
-    private String username;
+    public String username;
 
     @Column(nullable = false)
     private String password;
