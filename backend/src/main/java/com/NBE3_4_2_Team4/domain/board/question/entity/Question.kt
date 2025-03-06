@@ -26,13 +26,13 @@ class Question(
     var category: QuestionCategory,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL]) // 질문 삭제 시 답변 삭제
-    val answers: MutableList<Answer>,
+    val answers: List<Answer>,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
-    val recommends: MutableList<Recommend>,
+    val recommends: List<Recommend>,
 
     @OneToOne
-    val selectedAnswer: Answer? = null,
+    var selectedAnswer: Answer? = null,
 
     var closed: Boolean, // 질문 상태(답변 추가 가능 여부)
 
@@ -43,6 +43,20 @@ class Question(
 
     var rankReceived: Boolean // 랭킹 포인트 지급 여부
 ) : GenFileParent<QuestionGenFile>(QuestionGenFile::class.java) {
+    constructor(title: String, content: String, author: Member, category: QuestionCategory, assetType: AssetType, amount: Long, b: Boolean) : this(
+        author = author,
+        title = title,
+        questionContent = content,
+        category = category,
+        answers = listOf(),
+        recommends = listOf(),
+        selectedAnswer = null,
+        closed = b,
+        amount = amount,
+        assetType = assetType,
+        rankReceived = false
+    )
+
     fun getRecommendCount(): Long = recommends.size.toLong() // 추천 수 반환
 
     fun modify(title: String, content: String, amount: Long, category: QuestionCategory) {
