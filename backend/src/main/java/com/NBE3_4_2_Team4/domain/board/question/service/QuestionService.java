@@ -16,6 +16,7 @@ import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -90,12 +91,8 @@ public class QuestionService {
         return getQuestionsByCategoryAndAssetType(categoryId, page, pageSize, assetType);
     }
 
-    private PageRequest createPageRequest(int page, int pageSize) {
-        return PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-    }
-
     private Page<QuestionDto> findByListed(int page, int pageSize, String searchKeyword, QuestionSearchKeywordType searchKeywordType) {
-        return questionRepository.findByKw(searchKeywordType, searchKeyword, createPageRequest(page, pageSize))
+        return questionRepository.findByKw(searchKeywordType, searchKeyword, Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
@@ -105,26 +102,26 @@ public class QuestionService {
                 () -> new ServiceException("404-1", "존재하지 않는 회원입니다.")
         );
 
-        return questionRepository.findByAnswerAuthor(author, createPageRequest(page, pageSize))
+        return questionRepository.findByAnswerAuthor(author, Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByCategoryAndAssetType(long categoryId, int page, int pageSize, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
-        return questionRepository.findByCategoryAndAssetType(category, assetType, createPageRequest(page, pageSize))
+        return questionRepository.findByCategoryAndAssetType(category, assetType, Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByCategory(long categoryId, int page, int pageSize) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).get();
 
-        return questionRepository.findByCategory(category, createPageRequest(page, pageSize))
+        return questionRepository.findByCategory(category, Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
     private Page<QuestionDto> getQuestionsByAssetType(AssetType assetType, int page, int pageSize) {
-       return questionRepository.findByAssetType(assetType, createPageRequest(page, pageSize))
+       return questionRepository.findByAssetType(assetType, Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
@@ -132,12 +129,12 @@ public class QuestionService {
     public Page<QuestionDto> findByUserListed(int page, int pageSize, String username) {
         Member actor = memberRepository.findByUsername(username).get();
 
-        return questionRepository.findByAuthor(actor, createPageRequest(page, pageSize)).map(QuestionDto::new);
+        return questionRepository.findByAuthor(actor, Ut.pageable.makePageable(page, pageSize)).map(QuestionDto::new);
     }
 
     @Transactional(readOnly = true)
     public Page<QuestionDto> findByRecommends(int page, int pageSize) {
-        return questionRepository.findRecommendedQuestions(createPageRequest(page, pageSize))
+        return questionRepository.findRecommendedQuestions(Ut.pageable.makePageable(page, pageSize))
                 .map(QuestionDto::new);
     }
 
@@ -165,17 +162,24 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionDto update(long id, String title, String content, Member actor, long amount, long categoryId) {
+    public QuestionDto update(long id, String title, String content, Member actor,
+                              long amount, long categoryId, AssetType assetType) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
         question.checkActorCanModify(actor);
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
+        AssetService assetService = assetServiceFactory.getService(assetType);
 
         if (amount < question.getAmount()) {
             throw new ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.");
         }
+        // 기존 포인트/캐시 반환 후 새 포인트/캐시 차감
+        assetService.accumulate(question.getAuthor().getUsername(), question.getAmount(), AssetCategory.REFUND);
+
         question.modify(title, content, amount, category);
+        assetService.deduct(actor.getUsername(), amount, AssetCategory.QUESTION_MODIFY);
+
         return new QuestionDto(question);
     }
 
