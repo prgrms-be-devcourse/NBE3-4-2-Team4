@@ -9,7 +9,6 @@ import com.NBE3_4_2_Team4.global.rsData.RsData
 import com.NBE3_4_2_Team4.global.security.AuthManager
 import com.NBE3_4_2_Team4.global.security.HttpManager
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager
-import com.NBE3_4_2_Team4.global.security.oauth2.disconnectService.impl.GoogleDisconnectService
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService
 import com.NBE3_4_2_Team4.standard.base.Empty
 import io.swagger.v3.oas.annotations.Operation
