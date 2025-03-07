@@ -219,8 +219,8 @@ public class BankAccountService {
 
         // 예금주명 체크
         if (!accountHolder.equals(holder)) {
-            throw new ServiceException("400-1", "해당 계좌의 예금주가 다릅니다. [기대값: %s, 결과값: %s]"
-                    .formatted(holder, accountHolder));
+            throw new ServiceException("400-1", "해당 계좌의 예금주가 다릅니다. [%s]"
+                    .formatted(accountHolder));
         }
 
         return true;
