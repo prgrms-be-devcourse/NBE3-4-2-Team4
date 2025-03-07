@@ -77,11 +77,11 @@ public class Member {
 
     @Embedded
     @Builder.Default
-    private Point point = new Point();
+    public Point point = new Point();
 
     @Embedded
     @Builder.Default
-    private Cash cash = new Cash();
+    public Cash cash = new Cash();
 
     @OneToMany(mappedBy = "author")
     private List<Question> questions = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private OAuth2RefreshToken oauth2RefreshToken = null;
 
-    private LocalDate lastAttendanceDate;
+    public LocalDate lastAttendanceDate;
 
     public boolean isFirstLoginToday(){
         LocalDate today = LocalDate.now();
