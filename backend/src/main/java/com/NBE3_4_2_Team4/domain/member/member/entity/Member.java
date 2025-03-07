@@ -54,7 +54,7 @@ public class Member {
 
     @Column(nullable = false, unique = true)
     @Setter(AccessLevel.NONE)
-    private String username;
+    public String username;
 
     @Column(nullable = false)
     private String password;
