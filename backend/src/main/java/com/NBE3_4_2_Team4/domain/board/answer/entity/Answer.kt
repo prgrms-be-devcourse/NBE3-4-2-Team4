@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Entity
-class Answer : GenFileParent<AnswerGenFile> {
+class Answer : GenFileParent<AnswerGenFile, Answer> {
     @ManyToOne //Todo : (fetch = FetchType.LAZY)
     lateinit var question: Question
 
@@ -23,7 +23,7 @@ class Answer : GenFileParent<AnswerGenFile> {
     lateinit var author: Member
 
     @Column(columnDefinition = "TEXT")
-    lateinit var answerContent: String
+    override lateinit var content: String
 
     var selected = false
 
@@ -40,7 +40,7 @@ class Answer : GenFileParent<AnswerGenFile> {
     ) {
         this.question = question
         this.author = author
-        this.answerContent = content
+        this.content = content
     }
 
     fun checkActorCanModify(actor: Member) {
@@ -55,11 +55,7 @@ class Answer : GenFileParent<AnswerGenFile> {
     }
 
     override fun modify(content: String) {
-        this.answerContent = content
-    }
-
-    override fun getContent(): String {
-        return answerContent
+        this.content = content
     }
 
     fun isSelected(): Boolean {

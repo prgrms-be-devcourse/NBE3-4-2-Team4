@@ -20,7 +20,7 @@ import java.util.Optional;
 @Entity
 @Getter
 @Builder
-public class Question extends GenFileParent<QuestionGenFile> {
+public class Question extends GenFileParent<QuestionGenFile, Question> {
     @ManyToOne
     public Member author;
 
