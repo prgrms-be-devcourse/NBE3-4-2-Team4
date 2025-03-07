@@ -1,22 +1,18 @@
 package com.NBE3_4_2_Team4.domain.board.question.controller;
 
-import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
-import com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.question
-import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
-import org.springframework.web.bind.annotation.*;
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService
+import com.NBE3_4_2_Team4.global.rsData.RsData
+import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.dto.PageDto
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @Tag(name = "지식인 질문 관리", description = "지식인 질문 관련 API")

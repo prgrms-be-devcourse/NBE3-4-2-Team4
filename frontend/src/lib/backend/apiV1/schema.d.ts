@@ -1268,7 +1268,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["AnswerDto"];
         };
-        GenFileDtoQuestionGenFile: {
         GenFileDtoAnswerGenFile: {
             /** Format: int64 */
             id: number;
@@ -1337,15 +1336,15 @@ export interface components {
         };
         PageDtoQuestionDto: {
             /** Format: int32 */
-            currentPageNumber: number;
+            currentPageNumber?: number;
             /** Format: int32 */
-            pageSize: number;
+            pageSize?: number;
             /** Format: int64 */
-            totalPages: number;
+            totalPages?: number;
             /** Format: int64 */
-            totalItems: number;
-            hasMore: boolean;
-            items: components["schemas"]["QuestionDto"][];
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["QuestionDto"][];
         };
         QuestionCategoryReqDto: {
             name: string;
@@ -1421,27 +1420,27 @@ export interface components {
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
-            currentPageNumber: number;
+            currentPageNumber?: number;
             /** Format: int32 */
-            pageSize: number;
+            pageSize?: number;
             /** Format: int64 */
-            totalPages: number;
+            totalPages?: number;
             /** Format: int64 */
-            totalItems: number;
-            hasMore: boolean;
-            items: components["schemas"]["AnswerDto"][];
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["AnswerDto"][];
         };
         PageDtoGetItem: {
             /** Format: int32 */
-            currentPageNumber: number;
+            currentPageNumber?: number;
             /** Format: int32 */
-            pageSize: number;
+            pageSize?: number;
             /** Format: int64 */
-            totalPages: number;
+            totalPages?: number;
             /** Format: int64 */
-            totalItems: number;
-            hasMore: boolean;
-            items: components["schemas"]["GetItem"][];
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["GetItem"][];
         };
         RsDataPageDtoGetItem: {
             resultCode: string;
@@ -1509,9 +1508,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
@@ -1525,15 +1524,15 @@ export interface components {
         };
         PageDtoAssetHistoryRes: {
             /** Format: int32 */
-            currentPageNumber: number;
+            currentPageNumber?: number;
             /** Format: int32 */
-            pageSize: number;
+            pageSize?: number;
             /** Format: int64 */
-            totalPages: number;
+            totalPages?: number;
             /** Format: int64 */
-            totalItems: number;
-            hasMore: boolean;
-            items: components["schemas"]["AssetHistoryRes"][];
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["AssetHistoryRes"][];
         };
         RsDataPageDtoAssetHistoryRes: {
             resultCode: string;
