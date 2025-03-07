@@ -66,7 +66,7 @@ class MemberService (
     }
 
 
-    fun isNicknameAvailable(nickname: String?): Boolean {
+    fun isNicknameAvailable(nickname: String): Boolean {
         return !memberRepository.existsByUsername(nickname)
     }
 
@@ -195,7 +195,7 @@ class MemberService (
     }
 
 
-    fun findByUsername(username: String?): Member? {
+    fun findByUsername(username: String): Member? {
         return memberRepository.findByUsername(username)
     }
 

@@ -89,7 +89,7 @@ class MemberController (
         )]
     )
     fun checkNicknameIsAvailable(
-        @RequestParam(name = "nickname") nickname: String?
+        @RequestParam(name = "nickname") nickname: String
     ): RsData<Boolean> {
         return RsData<Boolean>("200-1", "", memberService.isNicknameAvailable(nickname))
     }
@@ -113,7 +113,7 @@ class MemberController (
     fun tempTokenCheck(
         @CookieValue(name = "tempToken", required = false) tempToken: String?
     ): RsData<Boolean> {
-        val tempTokenExists = tempToken != null && !tempToken.isBlank()
+        val tempTokenExists = !tempToken.isNullOrBlank()
         return RsData<Boolean>("200-1", "tempToken exists?", tempTokenExists)
     }
 

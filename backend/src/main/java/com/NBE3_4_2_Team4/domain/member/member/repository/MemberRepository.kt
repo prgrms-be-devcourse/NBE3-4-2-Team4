@@ -9,15 +9,15 @@ import org.springframework.data.repository.query.Param
 
 
 interface MemberRepository : JpaRepository<Member, Long> {
-    fun findByUsername(username: String?): Member?
+    fun findByUsername(username: String): Member?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT m FROM Member m WHERE m.username = :username")
-    fun findByUsernameWithLock(@Param("username") username: String?): Member?
+    fun findByUsernameWithLock(@Param("username") username: String): Member?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT m FROM Member m WHERE m.id = :id")
-    fun findByIdWithLock(@Param("id") id: Long?): Member?
+    fun findByIdWithLock(@Param("id") id: Long): Member?
 
-    fun existsByUsername(username: String?): Boolean
+    fun existsByUsername(username: String): Boolean
 }
