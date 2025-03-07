@@ -41,6 +41,7 @@ public class Member {
         return Objects.hash(this.id);
     }
 
+    //id getter을 코틀린에서 사용할수 있도록 public 으로 바꿨습니다
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -52,9 +53,10 @@ public class Member {
     @Column(nullable = false)
     private OAuth2Provider oAuth2Provider;
 
+    //username getter을 코틀린에서 사용할수 있도록 public 으로 바꿨습니다
     @Column(nullable = false, unique = true)
     @Setter(AccessLevel.NONE)
-    private String username;
+    public String username;
 
     @Column(nullable = false)
     private String password;
@@ -75,11 +77,11 @@ public class Member {
 
     @Embedded
     @Builder.Default
-    private Point point = new Point();
+    public Point point = new Point();
 
     @Embedded
     @Builder.Default
-    private Cash cash = new Cash();
+    public Cash cash = new Cash();
 
     @OneToMany(mappedBy = "author")
     private List<Question> questions = new ArrayList<>();
@@ -90,7 +92,7 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private OAuth2RefreshToken oauth2RefreshToken = null;
 
-    private LocalDate lastAttendanceDate;
+    public LocalDate lastAttendanceDate;
 
     public boolean isFirstLoginToday(){
         LocalDate today = LocalDate.now();

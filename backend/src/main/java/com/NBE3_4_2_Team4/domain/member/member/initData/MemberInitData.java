@@ -73,25 +73,30 @@ public class MemberInitData {
     }
 
     private void saveSignUpPoint(Member member) {
-        assetHistoryRepository.save(AssetHistory.builder()
-                .member(member)
-                .amount(PointConstants.INITIAL_POINT)
-                .assetCategory(AssetCategory.SIGN_UP)
-                .assetType(AssetType.POINT)
-                .correlationId("asdsaaddasasddsa")
-                .build());
+        assetHistoryRepository.save(
+                new AssetHistory(
+                        member,
+                        PointConstants.INITIAL_POINT,
+                        AssetType.POINT,
+                        AssetCategory.SIGN_UP,
+                        "d",
+                        null,
+                        null));
+
         member.setPoint(new Point(PointConstants.INITIAL_POINT));
     }
 
     private void saveSignUpCash(Member member) {
-        assetHistoryRepository.save(AssetHistory.builder()
-                .member(member)
-                .amount(PointConstants.INITIAL_POINT)
-                .assetCategory(AssetCategory.SIGN_UP)
-                .assetType(AssetType.CASH)
-                .correlationId("asdsaaddasasddsadd")
-                .build());
-        member.setCash(new Cash(10000L));
+                assetHistoryRepository.save(
+                        new AssetHistory(
+                                member,
+                                PointConstants.INITIAL_POINT,
+                                AssetType.CASH,
+                                AssetCategory.SIGN_UP,
+                                "d",
+                                null,
+                                null));
+        member.setCash(new Cash(1000L));
     }
 
     @Transactional

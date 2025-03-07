@@ -1,21 +1,15 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
-import com.NBE3_4_2_Team4.domain.asset.main.controller.AdminAssetCategoryController;
 import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetCategoryRes;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AdminAssetCategoryService;
 import com.NBE3_4_2_Team4.global.security.filter.CustomJwtFilter;
 import org.junit.jupiter.api.Test;
 
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,16 +38,8 @@ public class AdminAssetCategoryControllerTest {
     @Test
     public void t1() throws Exception{
         List<AdminAssetCategoryRes> categories = List.of(
-                AdminAssetCategoryRes
-                        .builder()
-                        .id(1L)
-                        .name("Category 1")
-                        .build(),
-                AdminAssetCategoryRes
-                        .builder()
-                        .id(2L)
-                        .name("Category 2")
-                        .build()
+                new AdminAssetCategoryRes(1L, "Category 1"),
+                new AdminAssetCategoryRes(2L, "Category 2")
         );
 
         given(adminAssetCategoryService.findAll()).willReturn(categories);
