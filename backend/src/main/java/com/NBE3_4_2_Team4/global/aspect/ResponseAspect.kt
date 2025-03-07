@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.global.aspect
 
 import com.NBE3_4_2_Team4.global.rsData.RsData
 import jakarta.servlet.http.HttpServletResponse
-import lombok.RequiredArgsConstructor
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect

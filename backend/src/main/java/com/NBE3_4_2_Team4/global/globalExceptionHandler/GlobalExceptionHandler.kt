@@ -102,8 +102,6 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException::class)
     fun handle(ex: MaxUploadSizeExceededException): ResponseEntity<RsData<Empty>> {
-        if (AppConfig.isNotProd()) ex.printStackTrace()
-
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
