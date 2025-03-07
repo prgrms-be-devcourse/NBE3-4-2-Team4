@@ -22,7 +22,7 @@ class AnswerDto(
         questionId = answer.question.id,
         authorId = answer.author.id,
         authorName = answer.author.nickname,
-        content = answer.answerContent,
+        content = answer.content,
         selected = answer.selected,
         selectedAt = answer.selectedAt
     )

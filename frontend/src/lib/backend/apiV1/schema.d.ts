@@ -31,12 +31,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete"];
         options?: never;
         head?: never;
@@ -98,12 +107,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item_1"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify_1"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete_2"];
         options?: never;
         head?: never;
@@ -174,12 +192,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item_2"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify_2"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete_3"];
         options?: never;
         head?: never;
@@ -310,7 +337,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems"];
         delete?: never;
         options?: never;
@@ -395,7 +425,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems_1"];
         delete?: never;
         options?: never;
@@ -500,7 +533,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems_2"];
         delete?: never;
         options?: never;
@@ -661,7 +697,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_1"];
         put?: never;
         post?: never;
@@ -718,7 +757,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_2"];
         put?: never;
         post?: never;
@@ -992,7 +1034,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_4"];
         put?: never;
         post?: never;
@@ -1054,7 +1099,7 @@ export interface components {
             msg: string;
             data: Record<string, never>;
         };
-        GenFileDto: {
+        GenFileDtoQuestionGenFile: {
             /** Format: int64 */
             id: number;
             /** Format: date-time */
@@ -1066,9 +1111,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1077,10 +1122,10 @@ export interface components {
             publicUrl: string;
             fileType: string;
         };
-        RsDataGenFileDto: {
+        RsDataGenFileDtoQuestionGenFile: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["GenFileDto"];
+            data: components["schemas"]["GenFileDtoQuestionGenFile"];
         };
         QuestionWriteReqDto: {
             title: string;
@@ -1136,6 +1181,34 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionDto"];
+        };
+        GenFileDtoProductGenFile: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int32 */
+            fileSize: number;
+            /** Format: int32 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataGenFileDtoProductGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoProductGenFile"];
         };
         PurchaseDetails: {
             username: string;
@@ -1196,6 +1269,7 @@ export interface components {
             data: components["schemas"]["AnswerDto"];
         };
         GenFileDtoQuestionGenFile: {
+        GenFileDtoAnswerGenFile: {
             /** Format: int64 */
             id: number;
             /** Format: date-time */
@@ -1207,9 +1281,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1217,6 +1291,41 @@ export interface components {
             downloadUrl: string;
             publicUrl: string;
             fileType: string;
+        };
+        RsDataGenFileDtoAnswerGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoAnswerGenFile"];
+        };
+        AdminAssetTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+            /** Format: int64 */
+            adminAssetCategoryId: number;
+        };
+        AdminAssetCategoryUpdateReq: {
+            name: string;
+        };
+        QuestionWriteResDto: {
+            item?: components["schemas"]["QuestionDto"];
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        RsDataQuestionWriteResDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["QuestionWriteResDto"];
+        };
+        AnswerRequestDto: {
+            content: string;
+        };
+        RsDataAnswerDto: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["AnswerDto"];
         };
         RsDataListGenFileDtoQuestionGenFile: {
             resultCode: string;
@@ -1260,29 +1369,6 @@ export interface components {
             productCategory: string;
             productSaleState: string;
         };
-        GenFileDtoProductGenFile: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            parentId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-            fileType: string;
-        };
         RsDataListGenFileDtoProductGenFile: {
             resultCode: string;
             msg: string;
@@ -1296,29 +1382,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
-        };
-        GenFileDtoAnswerGenFile: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            parentId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-            fileType: string;
         };
         RsDataListGenFileDtoAnswerGenFile: {
             resultCode: string;
@@ -1545,7 +1608,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoQuestionGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1584,7 +1647,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoQuestionGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1777,7 +1840,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoProductGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1816,7 +1879,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoProductGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1977,7 +2040,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoAnswerGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -2016,7 +2079,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoAnswerGenFile"];
                 };
             };
             /** @description Bad Request */

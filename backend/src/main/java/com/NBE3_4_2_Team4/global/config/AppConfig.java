@@ -16,8 +16,11 @@ public class AppConfig {
         AppConfig.environment = environment;
     }
 
-    @Getter
     private static String siteBackUrl;
+
+    public static String getSiteBackUrl() {
+        return siteBackUrl;
+    }
 
     @Value("${custom.domain.backend}")
     public void setSiteBackUrl(String siteBackUrl) {
@@ -51,8 +54,11 @@ public class AppConfig {
         AppConfig.tika = tika;
     }
 
-    @Getter
     public static String genFileDirPath;
+
+    public static String getGenFileDirPath() {
+        return genFileDirPath;
+    }
 
     @Value("${custom.genFile.dirPath}")
     public void setGenFileDirPath(String genFileDirPath) {
