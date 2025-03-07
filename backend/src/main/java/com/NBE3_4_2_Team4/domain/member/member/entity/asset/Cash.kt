@@ -8,29 +8,29 @@ import jakarta.persistence.Embeddable
 @Embeddable
 class Cash(
     @Column(name = "cash", nullable = false)
-    private var _amount: Long = 0L
+    var amount: Long = 0L
 ) {
 
     init {
         validateInitialAmount()
     }
 
-    fun getAmount(): Long{
-        return _amount
-    }
+//    fun getAmount(): Long{
+//        return amount
+//    }
 
     fun add(value: Long) {
         validateAmount(value)
-        this._amount += value
+        this.amount += value
     }
 
     fun subtract(value: Long) {
         validateAmount(value)
 
-        if (this._amount < value) {
+        if (this.amount < value) {
             throw PointClientException("캐시가 부족합니다.")
         }
-        this._amount -= value
+        this.amount -= value
     }
 
     private final fun validateAmount(inputAmount: Long) {
@@ -38,6 +38,6 @@ class Cash(
     }
 
     private final fun validateInitialAmount() {
-        if (_amount < 0) throw PointClientException("최초 잔고 금액이 음수가 될 수 없습니다")
+        if (amount < 0) throw PointClientException("최초 잔고 금액이 음수가 될 수 없습니다")
     }
 }
