@@ -31,12 +31,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete"];
         options?: never;
         head?: never;
@@ -98,30 +107,22 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item_1"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify_1"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete_2"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/points/transfer": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 포인트 송금 기능 */
-        put: operations["transfer"];
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -176,7 +177,7 @@ export interface paths {
         };
         get?: never;
         /** 재화 송금 기능 */
-        put: operations["transfer_1"];
+        put: operations["transfer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -191,47 +192,22 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 단건조회 */
+        /**
+         * 단건조회
+         * @description id를 기준으로 특정 파일 정보를 가져옵니다.
+         */
         get: operations["item_2"];
-        /** 수정 */
+        /**
+         * 수정
+         * @description 등록된 파일을 수정합니다.
+         */
         put: operations["modify_2"];
         post?: never;
-        /** 삭제 */
+        /**
+         * 삭제
+         * @description 등록된 파일을 삭제합니다.
+         */
         delete: operations["delete_3"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/points/deduct": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 유저에게서 포인트를 차감 */
-        put: operations["deductFromMember"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/points/accumulate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 유저에게 포인트를 적립 */
-        put: operations["accumulateForMember"];
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -246,7 +222,7 @@ export interface paths {
         };
         get?: never;
         /** 유저에게서 재화를 차감 */
-        put: operations["deductFromMember_1"];
+        put: operations["deductFromMember"];
         post?: never;
         delete?: never;
         options?: never;
@@ -263,9 +239,25 @@ export interface paths {
         };
         get?: never;
         /** 유저에게 재화를 적립 */
-        put: operations["accumulateForMember_1"];
+        put: operations["accumulateForMember"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/adminAssetCategory/{categoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["update_1"];
+        post?: never;
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         patch?: never;
@@ -345,7 +337,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems"];
         delete?: never;
         options?: never;
@@ -430,7 +425,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems_1"];
         delete?: never;
         options?: never;
@@ -535,7 +533,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 다건등록 */
+        /**
+         * 다건등록
+         * @description 파일을 한꺼번에 여러개 업로드 합니다.
+         */
         post: operations["makeNewItems_2"];
         delete?: never;
         options?: never;
@@ -557,6 +558,22 @@ export interface paths {
          * @description 관리자 회원의 로그인 요청을 처리합니다
          */
         post: operations["adminLogin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/adminAssetCategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAdminAssetCategoryList"];
+        put?: never;
+        post: operations["create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -629,7 +646,7 @@ export interface paths {
          * 답변 삭제
          * @description 답변을 삭제합니다.
          */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         /**
@@ -680,7 +697,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_1"];
         put?: never;
         post?: never;
@@ -737,7 +757,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_2"];
         put?: never;
         post?: never;
@@ -887,23 +910,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/points": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 포인트 기록 조회(날짜 & 카테고리 필터포함) */
-        get: operations["getPointHistories"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/members/thumbnail": {
         parameters: {
             query?: never;
@@ -1028,7 +1034,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 다건조회 */
+        /**
+         * 다건조회
+         * @description 해당 게시글의 파일 목록을 조회합니다.
+         */
         get: operations["items_4"];
         put?: never;
         post?: never;
@@ -1090,7 +1099,7 @@ export interface components {
             msg: string;
             data: Record<string, never>;
         };
-        GenFileDto: {
+        GenFileDtoQuestionGenFile: {
             /** Format: int64 */
             id: number;
             /** Format: date-time */
@@ -1102,9 +1111,9 @@ export interface components {
             typeCode: "attachment" | "body";
             fileExtTypeCode: string;
             fileExtType2Code: string;
-            /** Format: int64 */
+            /** Format: int32 */
             fileSize: number;
-            /** Format: int64 */
+            /** Format: int32 */
             fileNo: number;
             fileExt: string;
             fileDateDir: string;
@@ -1113,10 +1122,10 @@ export interface components {
             publicUrl: string;
             fileType: string;
         };
-        RsDataGenFileDto: {
+        RsDataGenFileDtoQuestionGenFile: {
             resultCode: string;
             msg: string;
-            data: components["schemas"]["GenFileDto"];
+            data: components["schemas"]["GenFileDtoQuestionGenFile"];
         };
         QuestionWriteReqDto: {
             title: string;
@@ -1173,10 +1182,33 @@ export interface components {
             msg: string;
             data: components["schemas"]["QuestionDto"];
         };
-        PointTransferReq: {
-            username: string;
+        GenFileDtoProductGenFile: {
             /** Format: int64 */
-            amount: number;
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int32 */
+            fileSize: number;
+            /** Format: int32 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataGenFileDtoProductGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoProductGenFile"];
         };
         PurchaseDetails: {
             username: string;
@@ -1206,6 +1238,46 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
         };
+        GenFileDtoAnswerGenFile: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            parentId: number;
+            fileName: string;
+            /** @enum {string} */
+            typeCode: "attachment" | "body";
+            fileExtTypeCode: string;
+            fileExtType2Code: string;
+            /** Format: int32 */
+            fileSize: number;
+            /** Format: int32 */
+            fileNo: number;
+            fileExt: string;
+            fileDateDir: string;
+            originalFileName: string;
+            downloadUrl: string;
+            publicUrl: string;
+            fileType: string;
+        };
+        RsDataGenFileDtoAnswerGenFile: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GenFileDtoAnswerGenFile"];
+        };
+        AdminAssetTransferReq: {
+            username: string;
+            /** Format: int64 */
+            amount: number;
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+            /** Format: int64 */
+            adminAssetCategoryId: number;
+        };
+        AdminAssetCategoryUpdateReq: {
+            name: string;
+        };
         QuestionWriteResDto: {
             item?: components["schemas"]["QuestionDto"];
             /** Format: int64 */
@@ -1223,29 +1295,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["AnswerDto"];
-        };
-        GenFileDtoQuestionGenFile: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            parentId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-            fileType: string;
         };
         RsDataListGenFileDtoQuestionGenFile: {
             resultCode: string;
@@ -1289,29 +1338,6 @@ export interface components {
             productCategory: string;
             productSaleState: string;
         };
-        GenFileDtoProductGenFile: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            parentId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-            fileType: string;
-        };
         RsDataListGenFileDtoProductGenFile: {
             resultCode: string;
             msg: string;
@@ -1325,29 +1351,6 @@ export interface components {
             resultCode: string;
             msg: string;
             data: string;
-        };
-        GenFileDtoAnswerGenFile: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: int64 */
-            parentId: number;
-            fileName: string;
-            /** @enum {string} */
-            typeCode: "attachment" | "body";
-            fileExtTypeCode: string;
-            fileExtType2Code: string;
-            /** Format: int64 */
-            fileSize: number;
-            /** Format: int64 */
-            fileNo: number;
-            fileExt: string;
-            fileDateDir: string;
-            originalFileName: string;
-            downloadUrl: string;
-            publicUrl: string;
-            fileType: string;
         };
         RsDataListGenFileDtoAnswerGenFile: {
             resultCode: string;
@@ -1369,6 +1372,9 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["MemberThumbnailInfoResponseDto"];
+        };
+        AdminAssetCategoryCreateReq: {
+            name: string;
         };
         updateItem: {
             productName?: string;
@@ -1430,48 +1436,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["GetItem"][];
         };
-        AssetHistoryReq: {
-            /** Format: int32 */
-            page: number;
-            /** Format: date */
-            startDate?: string;
-            /** Format: date */
-            endDate?: string;
-            /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
-            /** @enum {string} */
-            assetType?: "캐시" | "포인트" | "전체";
-            /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
-            startDateTime?: string;
-        };
-        AssetHistoryRes: {
-            /** Format: int64 */
-            amount?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            counterAccountUsername?: string;
-            assetCategory?: string;
-            assetType?: string;
-        };
-        PageDtoAssetHistoryRes: {
-            /** Format: int32 */
-            currentPageNumber?: number;
-            /** Format: int32 */
-            pageSize?: number;
-            /** Format: int64 */
-            totalPages?: number;
-            /** Format: int64 */
-            totalItems?: number;
-            hasMore?: boolean;
-            items?: components["schemas"]["AssetHistoryRes"][];
-        };
-        RsDataPageDtoAssetHistoryRes: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["PageDtoAssetHistoryRes"];
-        };
         RsDataObject: {
             resultCode: string;
             msg: string;
@@ -1501,6 +1465,59 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["MemberDetailInfoResponseDto"];
+        };
+        AssetHistoryReq: {
+            /** Format: int32 */
+            page: number;
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** @enum {string} */
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석";
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
+            /** Format: date-time */
+            endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
+        };
+        AssetHistoryRes: {
+            /** Format: int64 */
+            amount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            counterAccountUsername?: string;
+            assetCategory?: string;
+            adminAssetCategory?: string;
+            assetType?: string;
+        };
+        PageDtoAssetHistoryRes: {
+            /** Format: int32 */
+            currentPageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalItems?: number;
+            hasMore?: boolean;
+            items?: components["schemas"]["AssetHistoryRes"][];
+        };
+        RsDataPageDtoAssetHistoryRes: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["PageDtoAssetHistoryRes"];
+        };
+        AdminAssetCategoryRes: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+        };
+        RsDataListAdminAssetCategoryRes: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["AdminAssetCategoryRes"][];
         };
     };
     responses: never;
@@ -1560,7 +1577,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoQuestionGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1599,7 +1616,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoQuestionGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1792,7 +1809,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoProductGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1831,7 +1848,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoProductGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -1856,39 +1873,6 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    transfer: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PointTransferReq"];
-            };
-        };
         responses: {
             /** @description OK */
             200: {
@@ -1974,7 +1958,7 @@ export interface operations {
             };
         };
     };
-    transfer_1: {
+    transfer: {
         parameters: {
             query?: never;
             header?: never;
@@ -2025,7 +2009,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["GenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["GenFileDtoAnswerGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -2064,7 +2048,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDto"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataGenFileDtoAnswerGenFile"];
                 };
             };
             /** @description Bad Request */
@@ -2119,7 +2103,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PointTransferReq"];
+                "application/json": components["schemas"]["AdminAssetTransferReq"];
             };
         };
         responses: {
@@ -2152,7 +2136,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PointTransferReq"];
+                "application/json": components["schemas"]["AdminAssetTransferReq"];
             };
         };
         responses: {
@@ -2176,16 +2160,18 @@ export interface operations {
             };
         };
     };
-    deductFromMember_1: {
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                categoryId: number;
+            };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AssetTransferReq"];
+                "application/json": components["schemas"]["AdminAssetCategoryUpdateReq"];
             };
         };
         responses: {
@@ -2209,18 +2195,16 @@ export interface operations {
             };
         };
     };
-    accumulateForMember_1: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                categoryId: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssetTransferReq"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2962,6 +2946,68 @@ export interface operations {
             };
         };
     };
+    getAdminAssetCategoryList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataListAdminAssetCategoryRes"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetCategoryCreateReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
     getProduct: {
         parameters: {
             query?: never;
@@ -3141,7 +3187,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -3601,37 +3647,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    getPointHistories: {
-        parameters: {
-            query: {
-                assetHistoryReq: components["schemas"]["AssetHistoryReq"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoAssetHistoryRes"];
                 };
             };
             /** @description Bad Request */
