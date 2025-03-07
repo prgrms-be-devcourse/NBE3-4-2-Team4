@@ -30,7 +30,7 @@ class Message(
     @CreatedDate
     var createdAt: LocalDateTime = LocalDateTime.now(),
 
-    var isChecked: Boolean = false,
+    var checked: Boolean = false,
 
     var deletedBySender: Boolean = false,
 
