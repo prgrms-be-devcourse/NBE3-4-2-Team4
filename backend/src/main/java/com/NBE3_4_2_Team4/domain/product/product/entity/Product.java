@@ -21,7 +21,7 @@ import java.util.Optional;
 @Builder
 //@NoArgsConstructor
 //@AllArgsConstructor
-public class Product extends GenFileParent<ProductGenFile> {
+public class Product extends GenFileParent<ProductGenFile, Product> {
 
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
