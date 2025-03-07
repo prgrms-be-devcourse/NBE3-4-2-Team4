@@ -63,10 +63,10 @@ public abstract class BaseAssetTestSetup {
         memberRepository.save(member1);
         memberRepository.save(member2);
 
-        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, AssetType.POINT, "a");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, AssetType.CASH, "b");
-        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, AssetType.POINT, "b");
-        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, AssetType.CASH, "c");
+        assetHistoryService.createHistory(member1, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "a");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.CASH, "b");
+        assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.POINT, "b");
+        assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.CASH, "c");
 
         member1Id = member1.getId();
         member2Id = member2.getId();

@@ -1,9 +1,10 @@
 package com.NBE3_4_2_Team4.global.security.filter;
 
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AdminAssetTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetTransferReq;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.asset.point.dto.PointTransferReq;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
 import com.NBE3_4_2_Team4.global.security.jwt.JwtManager;
 import com.NBE3_4_2_Team4.global.security.oauth2.logoutService.OAuth2LogoutService;
@@ -197,10 +198,10 @@ public class CustomJwtFilterTest {
         String jwtToken = jwtManager.generateAccessToken(admin);
         Cookie accessToken = new Cookie("accessToken", jwtToken);
 
-        PointTransferReq pointTransferReq = new PointTransferReq("test@test.com", 1L);
+        AdminAssetTransferReq pointTransferReq = new AdminAssetTransferReq("test@test.com", 1L, AssetType.POINT, 1L);
         String body = objectMapper.writeValueAsString(pointTransferReq);
 
-        mockMvc.perform(put("/api/admin/points/accumulate")
+        mockMvc.perform(put("/api/admin/asset/accumulate")
                         .header("Authorization", String.format("Bearer %s", jwtToken))
                         .cookie(accessToken)
                         .with(csrf())
