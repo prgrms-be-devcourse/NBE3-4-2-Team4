@@ -36,7 +36,7 @@ public class MessageInitData {
 
     @Bean
     public ApplicationRunner messageInitDataApplicationRunner() {
-        return _ -> {
+        return ignore -> {
             memberInitData.work();
             self.work1();
         };
