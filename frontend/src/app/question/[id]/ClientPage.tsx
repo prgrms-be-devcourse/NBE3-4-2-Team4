@@ -80,6 +80,13 @@ export default function ClientPage({
     }
   };
 
+  const writeMessage = (senderName: string) => {
+    if (senderName) {
+      localStorage.setItem('senderName', senderName);
+    }
+    router.push("/message/write");
+  }
+
   return (
     <div className="container mx-auto px-4">
       <div className="mt-20 mb-10 text-center">
@@ -105,6 +112,12 @@ export default function ClientPage({
                 {question.categoryName}
               </Badge>
               <span>{question.title}</span>
+              {question.name != nickname && id && (
+                <Button className="ml-auto bg-gray-400 hover:bg-gray-500"
+                onClick={() => writeMessage(question.name)}>
+                  <Link href="/message/write">쪽지 쓰기</Link>
+                </Button>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>

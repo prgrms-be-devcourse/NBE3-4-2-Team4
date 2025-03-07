@@ -98,7 +98,7 @@ public class QuestionController {
     public RsData<QuestionDto> update(@PathVariable long id, @RequestBody @Valid QuestionWriteReqDto reqBody) {
         Member actor = AuthManager.getMemberFromContext();
         QuestionDto question = questionService.update(id, reqBody.title(), reqBody.content(),
-                actor, reqBody.amount(), reqBody.categoryId());
+                actor, reqBody.amount(), reqBody.categoryId(), reqBody.assetType());
 
         return new RsData<>(
                 "200-2",

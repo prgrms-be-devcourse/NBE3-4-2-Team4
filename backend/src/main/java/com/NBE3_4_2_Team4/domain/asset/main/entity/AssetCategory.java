@@ -8,6 +8,7 @@ public enum AssetCategory {
         TRANSFER("송금"),
         PURCHASE("상품구매"),
         QUESTION("질문등록"),
+        QUESTION_MODIFY("질문수정"),
         ANSWER("답변채택"),
         EXPIRED_QUESTION ("만료된질문"),
         REFUND("포인트반환"),

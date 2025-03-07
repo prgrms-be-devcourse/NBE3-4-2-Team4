@@ -50,6 +50,7 @@ public class SecurityConfig{
                     needAuthenticated(req, "/api/products/**");
                     needAuthenticated(req, "/api/points/**");
                     needAuthenticated(req, "/api/banks/**");
+                    needAuthenticated(req, "/api/messages/**");
 
                     needEmailVerified(req, "/api/test");
                     req.anyRequest().permitAll();
