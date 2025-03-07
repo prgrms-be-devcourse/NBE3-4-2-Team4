@@ -1,59 +1,51 @@
-package com.NBE3_4_2_Team4.domain.board.message.entity;
+package com.NBE3_4_2_Team4.domain.board.message.entity
 
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
-import com.NBE3_4_2_Team4.global.jpa.entity.BaseTime;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.ManyToOne
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
-import java.time.LocalDateTime;
+import java.time.LocalDateTime
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@EntityListeners(AuditingEntityListener.class)
-public class Message extends BaseEntity {
+@EntityListeners(AuditingEntityListener::class)
+class Message(
     @ManyToOne
-    private Member sender;
+    var sender: Member,
 
     @ManyToOne
-    private Member receiver;
+    var receiver: Member,
 
     @Column(length = 100)
-    private String title;
+    var title: String,
 
     @Column(columnDefinition = "TEXT")
-    private String content;
+    var content: String,
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
-    @Setter
-    private boolean isChecked;
+    var isChecked: Boolean = false,
 
-    @Setter
-    private boolean deletedBySender;
+    var deletedBySender: Boolean = false,
 
-    @Setter
-    private boolean deletedByReceiver;
+    var deletedByReceiver: Boolean = false
+) : BaseEntity() {
 
-    public void checkSenderCanRead(Member actor) {
-        if (!sender.equals(actor)) {
-            throw new ServiceException("403-1", "작성자만 쪽지를 읽을 수 있습니다.");
+    fun checkSenderCanRead(actor: Member) {
+        if (sender != actor) {
+            throw ServiceException("403-1", "작성자만 쪽지를 읽을 수 있습니다.")
         }
     }
 
-    public void checkReceiverCanRead(Member actor) {
-        if (!receiver.equals(actor)) {
-            throw new ServiceException("403-2", "수신자만 쪽지를 읽을 수 있습니다.");
+    fun checkReceiverCanRead(actor: Member) {
+        if (receiver != actor) {
+            throw ServiceException("403-2", "수신자만 쪽지를 읽을 수 있습니다.")
         }
     }
 }
