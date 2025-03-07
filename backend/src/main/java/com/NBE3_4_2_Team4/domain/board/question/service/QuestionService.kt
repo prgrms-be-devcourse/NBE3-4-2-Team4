@@ -148,18 +148,24 @@ class QuestionService(
 
     @Transactional
     fun update(
-        id: Long, title: String, content: String, actor: Member, amount: Long, categoryId: Long
+        id: Long, title: String, content: String, actor: Member, amount: Long, categoryId: Long, assetType: AssetType
     ): QuestionDto {
         val question = questionRepository.findById(id).orElseThrow {
             ServiceException("404-1", "게시글이 존재하지 않습니다.")
         }
         question.checkActorCanModify(actor)
         val category = questionCategoryRepository.findById(categoryId).orElseThrow()
+        val assetService = assetServiceFactory.getService(assetType)
 
         if (amount < question.amount) {
             throw ServiceException("400-1", "포인트/캐시는 기존보다 낮게 설정할 수 없습니다.")
         }
+        // 기존 포인트/캐시 반환 후 새 포인트/캐시 차감
+        assetService.accumulate(question.author.username, question.amount, AssetCategory.REFUND)
+
         question.modify(title, content, amount, category)
+        assetService.deduct(actor.username, amount, AssetCategory.QUESTION_MODIFY)
+
         return QuestionDto(question)
     }
 

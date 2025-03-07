@@ -1,22 +1,18 @@
-package com.NBE3_4_2_Team4.domain.board.question.controller;
+package com.NBE3_4_2_Team4.domain.board.question.controller
 
-import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto;
-import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto;
-import com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.question
-import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
-import org.springframework.web.bind.annotation.*;
+import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.request.QuestionWriteReqDto
+import com.NBE3_4_2_Team4.domain.board.question.dto.response.QuestionWriteResDto
+import com.NBE3_4_2_Team4.domain.board.question.service.QuestionService
+import com.NBE3_4_2_Team4.global.rsData.RsData
+import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.dto.PageDto
+import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @Tag(name = "지식인 질문 관리", description = "지식인 질문 관련 API")
@@ -94,7 +90,7 @@ class QuestionController(
                         question,
                         questionService.count()
                 )
-        );
+        )
     }
 
     @PutMapping("/{id}")
@@ -102,13 +98,13 @@ class QuestionController(
     fun update(@PathVariable id: Long, @RequestBody @Valid reqBody: QuestionWriteReqDto): RsData<QuestionDto> {
         val actor = AuthManager.getMemberFromContext()
         val question = questionService.update(id, reqBody.title, reqBody.content,
-                actor, reqBody.amount, reqBody.categoryId)
+                actor, reqBody.amount, reqBody.categoryId, reqBody.assetType)
 
         return RsData(
                 "200-2",
                 "${id}번 게시글 수정이 완료되었습니다.",
                 question
-        );
+        )
     }
 
     @PutMapping("/{id}/select/{answerId}")
@@ -133,6 +129,6 @@ class QuestionController(
             @RequestParam(defaultValue = "10") pageSize: Int,
             @RequestBody @Valid reqBody: MyQuestionReqDto
             ): PageDto<QuestionDto> {
-        return PageDto(questionService.findByUserListed(page, pageSize, reqBody.username));
+        return PageDto(questionService.findByUserListed(page, pageSize, reqBody.username))
     }
 }
