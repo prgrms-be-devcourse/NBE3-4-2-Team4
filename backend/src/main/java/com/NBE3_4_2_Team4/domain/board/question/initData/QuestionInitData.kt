@@ -71,7 +71,7 @@ class QuestionInitData(
                 createQuestion("면접에서 자주 나오는 질문", "IT 기업 면접에서 어떤 질문을 준비해야 할까요?", 8L, 150, AssetType.CASH),
                 createQuestion("노트북 추천 부탁드립니다.", "개발 용도로 사용할 예정입니다.", 9L, 120, AssetType.POINT),
                 createQuestion("개발 공부를 시작하려는데 어떤 언어가 좋을까요?", "초보자가 입문하기 쉬운 언어가 궁금합니다.", 9L, 130, AssetType.POINT)
-        );
+        )
 
         // 질문 생성
         for (i in questionDataList.indices) {
