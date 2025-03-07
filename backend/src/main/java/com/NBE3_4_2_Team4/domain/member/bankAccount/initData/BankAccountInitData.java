@@ -37,7 +37,7 @@ public class BankAccountInitData {
 
     @Bean
     public ApplicationRunner bankAccountInitDataApplicationRunner() {
-        return _ -> {
+        return ignore -> {
             memberInitData.work();
             self.createInitBankAccounts();
         };
