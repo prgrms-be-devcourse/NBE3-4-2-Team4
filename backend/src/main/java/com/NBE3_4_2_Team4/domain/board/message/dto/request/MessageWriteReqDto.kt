@@ -4,11 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
-public record MessageWriteReqDto(
-        @NotNull @Length(min = 2)
-        String title,
-        @NotNull @Length(min = 2)
-        String content,
-        @NotNull @JsonProperty("receiverName")
-        String receiverName
-) {}
+data class MessageWriteReqDto(
+        @field:NotNull
+        @field:Length(min = 2)
+        val title: String,
+
+        @field:NotNull
+        @field:Length(min = 2)
+        val content: String,
+
+        @field:NotNull
+        @field:JsonProperty("receiverName")
+        val receiverName: String
+)
