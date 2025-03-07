@@ -1,20 +1,19 @@
-package com.NBE3_4_2_Team4.global.aspect;
+package com.NBE3_4_2_Team4.global.aspect
 
-import com.NBE3_4_2_Team4.global.rsData.RsData;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
+import com.NBE3_4_2_Team4.global.rsData.RsData
+import jakarta.servlet.http.HttpServletResponse
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.Around
+import org.aspectj.lang.annotation.Aspect
+import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-@RequiredArgsConstructor
-public class ResponseAspect {
-    private final HttpServletResponse response;
-
-    @Around("""
+class ResponseAspect(
+    private val response: HttpServletResponse
+) {
+    @Around(
+        """
             (
                 within
                 (
@@ -35,15 +34,15 @@ public class ResponseAspect {
             )
             ||
             @annotation(org.springframework.web.bind.annotation.ResponseBody)
-            """)
-    public Object handleResponse(ProceedingJoinPoint joinPoint) throws Throwable {
-        Object proceed = joinPoint.proceed();
+            """
+    )
 
-        if (proceed instanceof RsData<?>) {
-            RsData<?> rsData = (RsData<?>) proceed;
-            response.setStatus(rsData.getStatusCode());
-        }
+    fun handleResponse(joinPoint: ProceedingJoinPoint): Any {
+        val proceed = joinPoint.proceed()
 
-        return proceed;
+        if (proceed is RsData<*>)
+            response.status = proceed.statusCode
+
+        return proceed
     }
 }

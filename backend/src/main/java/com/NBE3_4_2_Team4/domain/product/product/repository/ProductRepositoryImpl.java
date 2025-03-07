@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.NBE3_4_2_Team4.domain.product.product.entity.QProduct.product;
@@ -68,7 +67,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<Product> products = queryFactory
                 .selectFrom(product)
                 .where(builder)
-                .orderBy(product.id.desc())
+                .orderBy(product._id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
