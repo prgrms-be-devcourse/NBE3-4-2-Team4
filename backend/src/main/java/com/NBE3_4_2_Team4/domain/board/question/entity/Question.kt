@@ -12,56 +12,60 @@ import com.NBE3_4_2_Team4.standard.base.Empty
 import jakarta.persistence.*
 
 @Entity
-class Question(
+class Question : GenFileParent<QuestionGenFile, Question> {
     @ManyToOne
-    val author: Member,
+    lateinit var author: Member
 
     @Column(length = 100)
-    var title: String,
+    lateinit var title: String
 
     @Column(columnDefinition = "TEXT")
-    var questionContent: String,
+    override lateinit var content: String
 
     @ManyToOne
-    var category: QuestionCategory,
+    lateinit var category: QuestionCategory
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL]) // 질문 삭제 시 답변 삭제
-    val answers: List<Answer>,
+    var answers: MutableList<Answer> = mutableListOf()
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
-    val recommends: List<Recommend>,
+    var recommends: MutableList<Recommend> = mutableListOf()
 
     @OneToOne
-    var selectedAnswer: Answer? = null,
+    var selectedAnswer: Answer? = null
 
-    var closed: Boolean, // 질문 상태(답변 추가 가능 여부)
+    var closed: Boolean = false // 질문 상태(답변 추가 가능 여부)
 
-    var amount: Long,
+    var amount: Long = 0
 
     @Enumerated(EnumType.STRING) // 포인트/캐시 여부
-    val assetType: AssetType,
+    lateinit var assetType: AssetType
 
-    var rankReceived: Boolean // 랭킹 포인트 지급 여부
-) : GenFileParent<QuestionGenFile>(QuestionGenFile::class.java) {
-    constructor(title: String, content: String, author: Member, category: QuestionCategory, assetType: AssetType, amount: Long, b: Boolean) : this(
-        author = author,
-        title = title,
-        questionContent = content,
-        category = category,
-        answers = listOf(),
-        recommends = listOf(),
-        selectedAnswer = null,
-        closed = b,
-        amount = amount,
-        assetType = assetType,
-        rankReceived = false
-    )
+    var rankReceived: Boolean = false // 랭킹 포인트 지급 여부
+
+    constructor() : super(QuestionGenFile::class.java)
+
+    constructor(
+        title: String,
+        content: String,
+        author: Member,
+        category: QuestionCategory,
+        assetType: AssetType,
+        amount: Long
+    ) : super(QuestionGenFile::class.java) {
+        this.title = title
+        this.content = content
+        this.author = author
+        this.category = category
+        this.assetType = assetType
+        this.amount = amount
+    }
 
     fun getRecommendCount(): Long = recommends.size.toLong() // 추천 수 반환
 
     fun modify(title: String, content: String, amount: Long, category: QuestionCategory) {
         this.title = title
-        this.questionContent = content
+        this.content = content
         this.amount = amount
         this.category = category
     }
@@ -77,11 +81,7 @@ class Question(
     }
 
     override fun modify(content: String) {
-        this.questionContent = content
-    }
-
-    override fun getContent(): String {
-        return questionContent
+        this.content = content
     }
 
     override fun checkActorCanMakeNewGenFile(actor: Member) {
@@ -90,7 +90,7 @@ class Question(
         }
     }
 
-    override fun getCheckActorCanMakeNewGenFileRs(actor: Member?): RsData<Empty> {
+    override fun getCheckActorCanMakeNewGenFileRs(actor: Member): RsData<Empty> {
         return when (actor) {
             null -> RsData("401-1", "로그인 후 이용해주세요.")
             author -> RsData.OK
