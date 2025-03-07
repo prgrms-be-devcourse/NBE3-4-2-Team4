@@ -10,10 +10,10 @@ class OAuth2RefreshToken(
     val id: Long? = null,
 
     @OneToOne(fetch = FetchType.EAGER)
-    private val member: Member,
+    val member: Member,
 
-    private val oAuth2Id: String,
+    val oAuth2Id: String,
 
-    private var refreshToken: String
+    var refreshToken: String
 ) {
 }
