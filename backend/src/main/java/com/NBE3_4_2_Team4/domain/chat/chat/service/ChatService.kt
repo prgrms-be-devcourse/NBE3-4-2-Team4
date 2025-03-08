@@ -1,7 +1,6 @@
 package com.NBE3_4_2_Team4.domain.chat.chat.service
 
 import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatDto
-import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatRoomDto
 import com.NBE3_4_2_Team4.domain.chat.chat.entity.Chat
 import com.NBE3_4_2_Team4.domain.chat.chat.repository.ChatRepository
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.entity.ChatRoom
@@ -49,5 +48,13 @@ class ChatService(
         )
 
         return chatRepository.save(chat)
+    }
+
+    @Transactional(readOnly = true)
+    fun items(chatRoomId: Long): List<ChatDto> {
+        val chatRoom = chatRoomService.findById(chatRoomId)
+
+        return chatRepository.findByChatRoom(chatRoom)
+            .map { ChatDto(it) }
     }
 }
