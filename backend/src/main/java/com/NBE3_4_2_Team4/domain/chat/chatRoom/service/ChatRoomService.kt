@@ -1,22 +1,23 @@
 package com.NBE3_4_2_Team4.domain.chat.chatRoom.service
 
-import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer
-import com.NBE3_4_2_Team4.domain.board.answer.entity.QAnswer.answer
-import com.NBE3_4_2_Team4.domain.board.question.entity.QQuestion.question
-import com.NBE3_4_2_Team4.domain.board.question.entity.Question
 import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatRoomDto
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.entity.ChatRoom
+import com.NBE3_4_2_Team4.domain.chat.chatRoom.entity.ChatRoomMember
+import com.NBE3_4_2_Team4.domain.chat.chatRoom.repository.ChatRoomMemberRepository
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.repository.ChatRoomRepsitory
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
 import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.util.Ut
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ChatRoomService(
     private val chatRoomRepository: ChatRoomRepsitory,
+    private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val memberService: MemberService
 ) {
     fun count(): Long {
@@ -34,26 +35,72 @@ class ChatRoomService(
 
     @Transactional
     fun create(
-        recipientNickname: String,
+        recipientUsername: String,
         name: String
     ): ChatRoomDto {
-        val recipient = memberService.findByUsername(recipientNickname).orElseThrow {
+        val recipient = memberService.findByUsername(recipientUsername).orElseThrow {
             ServiceException(
                 "404-2",
                 "존재하지 않는 회원입니다."
             )
         }
-        val actor = AuthManager.getNonNullMember()
 
-        return ChatRoomDto(save(recipient, actor, name))
+        val actor = AuthManager.getNonNullMember()
+        val chatRoom = save(recipient, actor, name)
+
+        val memberList = chatRoomMemberRepository.findByChatRoom(chatRoom)
+            .map { it.member.nickname }
+
+        return ChatRoomDto(chatRoom, memberList)
     }
 
     fun save(member1: Member, member2: Member, name: String): ChatRoom {
         val chatRoom = ChatRoom(name)
 
-        chatRoom.member.add(member1)
-        chatRoom.member.add(member2)
+        chatRoomMemberRepository.save(ChatRoomMember(chatRoom, member1))
+        chatRoomMemberRepository.save(ChatRoomMember(chatRoom, member2))
 
         return chatRoomRepository.save(chatRoom)
+    }
+
+    @Transactional(readOnly = true)
+    fun itemsAll(page: Int, pageSize: Int): Page<ChatRoomDto>{
+        val chatRooms = chatRoomRepository.findAll(Ut.pageable.makePageable(page, pageSize))
+
+        return chatRooms.map {
+            val memberList = chatRoomMemberRepository.findByChatRoom(it)
+                .map { chatRoomMember -> chatRoomMember.member.nickname }
+
+            ChatRoomDto(
+                it,
+                memberList
+            )
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun myChatRooms(page: Int, pageSize: Int, me: Member =  AuthManager.getNonNullMember()): Page<ChatRoomDto> {
+        val chatRoomMember = chatRoomMemberRepository.findByMember(me, Ut.pageable.makePageable(page, pageSize))
+
+        return chatRoomMember.map { member ->
+            val chatRoom = member.chatRoom
+            val memberList = chatRoomMemberRepository.findByChatRoom(chatRoom)
+                .map { it.member.nickname }
+
+            ChatRoomDto(
+                chatRoom,
+                memberList
+            )
+        }
+    }
+
+    @Transactional
+    fun exitChatRoom(id: Long) {
+        val actor =  AuthManager.getNonNullMember()
+        val chatRoom =  chatRoomMemberRepository.findByChatRoom(findById(id))
+            .first { it.member == actor }
+
+        chatRoomMemberRepository.delete(chatRoom)
+        findById(id).isClosed = true
     }
 }
