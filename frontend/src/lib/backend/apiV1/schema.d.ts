@@ -1238,36 +1238,6 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
         };
-        AdminAssetTransferReq: {
-            username: string;
-            /** Format: int64 */
-            amount: number;
-            /** @enum {string} */
-            assetType: "캐시" | "포인트" | "전체";
-            /** Format: int64 */
-            adminAssetCategoryId: number;
-        };
-        AdminAssetCategoryUpdateReq: {
-            name: string;
-        };
-        QuestionWriteResDto: {
-            item?: components["schemas"]["QuestionDto"];
-            /** Format: int64 */
-            totalCount?: number;
-        };
-        RsDataQuestionWriteResDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["QuestionWriteResDto"];
-        };
-        AnswerRequestDto: {
-            content: string;
-        };
-        RsDataAnswerDto: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["AnswerDto"];
-        };
         GenFileDtoAnswerGenFile: {
             /** Format: int64 */
             id: number;

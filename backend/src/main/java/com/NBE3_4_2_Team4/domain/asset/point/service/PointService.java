@@ -2,7 +2,6 @@ package com.NBE3_4_2_Team4.domain.asset.point.service;
 
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AdminAssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryRepository;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;

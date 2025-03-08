@@ -1,9 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller;
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryReq;
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryRes;
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetTransferReq;
+import com.NBE3_4_2_Team4.domain.asset.main.dto.*;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService;
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
@@ -53,6 +51,38 @@ public class AssetController {
                 "200-1",
                 "OK",
                 assetHistories
+        );
+    }
+
+    @PatchMapping("/deposit")
+    @Operation(summary = "재화 적립 신청")
+    public RsData<Long> deposit(@RequestBody AssetDepositReq reqDto) {
+
+        Member member = getNonNullMember();
+
+        AssetService service = assetServiceFactory.getService(reqDto.getAssetType());
+        Long assetHistoryId = service.accumulate(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
+
+        return new RsData<>(
+                "200-1",
+                "OK",
+                assetHistoryId
+        );
+    }
+    
+    @PatchMapping("/refund")
+    @Operation(summary = "재화 반환 신청")
+    public RsData<Long> refund(@RequestBody AssetRefundReq reqDto) {
+
+        Member member = getNonNullMember();
+
+        AssetService service = assetServiceFactory.getService(reqDto.getAssetType());
+        Long assetHistoryId = service.deduct(member.getUsername(), reqDto.getAmount(), reqDto.getAssetCategory());
+
+        return new RsData<>(
+                "200-1",
+                "OK",
+                assetHistoryId
         );
     }
 }
