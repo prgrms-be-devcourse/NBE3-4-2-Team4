@@ -8,11 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    @Query("SELECT m FROM Message m WHERE m.receiver.id = :receiverId AND m.deletedByReceiver = false ORDER BY m.createdAt DESC")
-    List<Message> findReceivedMessages(Long receiverId);
+    List<Message> findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Long receiverId);
 
-    @Query("SELECT m FROM Message m WHERE m.sender.id = :senderId AND m.deletedBySender = false ORDER BY m.createdAt DESC")
-    List<Message> findSentMessages(Long senderId);
+    List<Message> findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Long senderId);
 
     List<Message> findAllByReceiverAndIsChecked(Member actor, boolean checked);
 }

@@ -39,9 +39,9 @@ public class MessageService {
         List<Message> messages;
 
         if (type == MessageType.RECEIVED) {
-            messages = messageRepository.findReceivedMessages(actor.getId());
+            messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(actor.getId());
         } else {
-            messages = messageRepository.findSentMessages(actor.getId());
+            messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(actor.getId());
         }
 
         return messages.stream().map(MessageDto::new).toList();
@@ -66,8 +66,10 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageDto write(Member sender, String receiverName, String title, String content) {
+    public MessageDto write(String receiverName, String title, String content) {
+        Member sender = AuthManager.getNonNullMember();
         Member receiver = memberRepository.findByNickname(receiverName).get();
+
         Message message = Message.builder()
                 .sender(sender)
                 .receiver(receiver)

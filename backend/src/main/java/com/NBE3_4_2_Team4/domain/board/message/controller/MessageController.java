@@ -47,11 +47,10 @@ public class MessageController {
     @PostMapping
     @Operation(summary = "쪽지 작성", description = "쪽지 작성")
     public RsData<MessageDto> write(@RequestBody MessageWriteReqDto reqBody) {
-        Member sender = AuthManager.getNonNullMember();
         return new RsData<>(
                 "201-1",
                 "쪽지를 성공적으로 보냈습니다.",
-                messageService.write(sender, reqBody.receiverName(), reqBody.title(), reqBody.content())
+                messageService.write(reqBody.receiverName(), reqBody.title(), reqBody.content())
         );
     }
 
