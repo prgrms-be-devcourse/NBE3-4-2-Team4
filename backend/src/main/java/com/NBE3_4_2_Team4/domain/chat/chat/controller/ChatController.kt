@@ -1,7 +1,7 @@
 package com.NBE3_4_2_Team4.domain.chat.chatRoom.controller
 
 import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatDto
-import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatRequstDto
+import com.NBE3_4_2_Team4.domain.chat.chat.dto.ChatRequestDto
 import com.NBE3_4_2_Team4.domain.chat.chat.service.ChatService
 import com.NBE3_4_2_Team4.global.rsData.RsData
 import io.swagger.v3.oas.annotations.Operation
@@ -19,7 +19,7 @@ class ChatController(
     @Operation(summary = "채팅 쓰기", description = "새로운 채팅 메세지를 작성합니다")
     fun write(
         @PathVariable chatRoomId: Long,
-        @RequestBody @Valid reqBody: ChatRequstDto,
+        @RequestBody @Valid reqBody: ChatRequestDto,
     ): RsData<ChatDto> {
         val chat = chatService.write(chatRoomId, reqBody.content)
 

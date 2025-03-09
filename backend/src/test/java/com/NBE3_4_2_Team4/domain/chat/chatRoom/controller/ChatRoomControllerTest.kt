@@ -56,7 +56,7 @@ class ChatRoomControllerTest {
         val lastChatRoom = chatRoomService.itemsAll(1, 1).content[0]
 
         resultActions
-            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatController::class.java))
+            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatRoomController::class.java))
             .andExpect(MockMvcResultMatchers.handler().methodName("create"))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.result_code").value("201-1"))
@@ -85,7 +85,7 @@ class ChatRoomControllerTest {
             .myChatRooms(1, 10, member)
 
         resultActions
-            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatController::class.java))
+            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatRoomController::class.java))
             .andExpect(MockMvcResultMatchers.handler().methodName("myChatRooms"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.current_page_number").value(1))
@@ -122,7 +122,7 @@ class ChatRoomControllerTest {
             .andDo(MockMvcResultHandlers.print())
 
         resultActions
-            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatController::class.java))
+            .andExpect(MockMvcResultMatchers.handler().handlerType(ChatRoomController::class.java))
             .andExpect(MockMvcResultMatchers.handler().methodName("exitChatRoom"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.result_code").value("200-2"))

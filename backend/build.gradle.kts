@@ -66,6 +66,9 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	implementation("org.springframework:spring-websocket-stomp")
 }
 
 kotlin {
