@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -168,6 +168,7 @@ export function RefundModal({ isOpen, onClose, user, refreshCash }: {
             <DialogContent className="max-w-lg p-6">
                 <DialogHeader>
                     <DialogTitle className="text-center text-xl font-bold mb-3">캐시 환불 요청</DialogTitle>
+                    <DialogDescription></DialogDescription>
                 </DialogHeader>
 
                 {/* 환불할 결제 선택 */}
