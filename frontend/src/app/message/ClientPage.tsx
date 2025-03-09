@@ -16,12 +16,14 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Pagination2 from "@/lib/business/components/Pagination2";
 
+type PageDtoMessageDto = components["schemas"]["PageDtoMessageDto"];
 type MessageDto = components["schemas"]["MessageDto"];
 
 interface ClientPageProps {
-  receive: MessageDto[];
-  send: MessageDto[];
+  receive: PageDtoMessageDto;
+  send: PageDtoMessageDto;
 }
 
 export default function ClientPage({ receive, send }: ClientPageProps) {
@@ -36,7 +38,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
   const messages = activeTab === "received" ? receive : send;
 
   // 전체 선택 체크박스 상태
-  const allChecked = messages.length > 0 && messages.every((msg) => selectedMessages.includes(msg.id!!));
+  const allChecked = messages.items!!.length > 0 && messages.items!!.every((msg) => selectedMessages.includes(msg.id!!));
 
   // 개별 체크박스 상태 변경 핸들러
   const handleCheckboxChange = (id: number) => {
@@ -50,7 +52,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
     if (allChecked) {
       setSelectedMessages([]); // 전체 해제
     } else {
-      setSelectedMessages(messages.map((msg) => msg.id!!)); // 전체 선택
+      setSelectedMessages(messages.items!!.map((msg) => msg.id!!)); // 전체 선택
     }
   };
 
@@ -253,7 +255,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         {/* 받은 쪽지 목록 */}
         {activeTab === 'received' ? (
           <TableBody>
-            {receive.map((message) => (
+            {receive.items?.map((message) => (
               <TableRow key={message.id} className="px-4 py-1">
                 <TableCell className="text-center">
                   <input
@@ -282,7 +284,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
         ) : (
           <TableBody>
             {/* 보낸 쪽지 목록 */}
-            {send.map((message) => (
+            {send.items?.map((message) => (
               <TableRow key={message.id} className="px-4 py-1">
                 <TableCell className="text-center">
                   <input
@@ -310,6 +312,10 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
           </TableBody>
         )}
       </Table>
+
+      {/* 페이지 이동 버튼 */}
+      {activeTab === 'received' && <Pagination2 totalPages={receive.totalPages ?? 0} />}
+      {activeTab === 'sent' && <Pagination2 totalPages={send.totalPages ?? 0} />}
     </div>
   );
 }
