@@ -1,18 +1,20 @@
 package com.NBE3_4_2_Team4.domain.payment.payment.service;
 
+import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.CancelPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.UpdatePayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.VerifyPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.WritePayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.ChargePayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.CanceledPayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.GetPaymentInfo;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.VerifiedPayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.entity.Payment;
 import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
 import com.NBE3_4_2_Team4.domain.payment.payment.repository.PaymentRepository;
+import com.NBE3_4_2_Team4.domain.payment.paymentCancel.entity.PaymentCancel;
+import com.NBE3_4_2_Team4.domain.payment.paymentCancel.repository.PaymentCancelRepository;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.CancelHistory;
@@ -36,10 +38,12 @@ public class PaymentService {
 
     private final IamportService iamportService;
     private final PaymentRepository paymentRepository;
+    private final AssetServiceFactory assetServiceFactory;
     private final AssetHistoryRepository assetHistoryRepository;
+    private final PaymentCancelRepository paymentCancelRepository;
 
     @Transactional
-    public VerifiedPayment verifyPayment(VerifyPayment verifyPayment) {
+    public VerifiedPayment chargePayment(ChargePayment chargePayment) {
 
         // 회원 확인
         Member member = getNonNullMember();
@@ -51,20 +55,41 @@ public class PaymentService {
                 );
 
         // 결제이력 단건 조회
-        GetPayment getPayment = iamportService.getPaymentHistory(accessToken, verifyPayment.impUid())
+        GetPayment getPayment = iamportService.getPaymentHistory(accessToken, chargePayment.impUid())
                 .orElseThrow(() -> new ServiceException("500-2", "[%s] 결제 이력을 조회하는 과정에서 문제가 발생했습니다."
-                        .formatted(verifyPayment.impUid())));
+                        .formatted(chargePayment.impUid())));
 
         // 결제 검증
-        checkPaymentValid(getPayment, member, verifyPayment);
+        checkPaymentValid(getPayment, member, chargePayment);
+
+        // 캐시 내역 저장 + 캐시 적립
+        AssetService assetService = assetServiceFactory.getService(chargePayment.assetType());
+        Long assetHistoryId = assetService.accumulate(
+                member.getUsername(),
+                getPayment.amount(),
+                chargePayment.assetCategory());
+
+        AssetHistory assetHistory = assetHistoryRepository.findById(assetHistoryId)
+                .orElseThrow(() -> new ServiceException(
+                        "404-1",
+                        "[%d]번에 해당하는 캐시 내역을 찾을 수 없습니다.".formatted(assetHistoryId))
+                );
+
+        // 결제 내역 저장
+        Payment savedPayment = paymentRepository.save(Payment.builder()
+                .impUid(getPayment.impUid())
+                .merchantUid(getPayment.merchantUid())
+                .amount(getPayment.amount())
+                .status(PaymentStatus.PAID)
+                .assetHistory(assetHistory)
+                .build());
+
+        log.info("Payment Id [{}] is saved.", savedPayment.getId());
 
         return VerifiedPayment.builder()
+                    .buderName(member.getUsername())
                     .amount(getPayment.amount())
                     .status(getPayment.status())
-                    .buyerName(getPayment.buyerName())
-                    .buyerEmail(getPayment.buyerEmail())
-                    .impUid(getPayment.impUid())
-                    .merchantUid(getPayment.merchantUid())
                 .build();
     }
 
@@ -74,31 +99,82 @@ public class PaymentService {
         // 회원 확인
         Member member = getNonNullMember();
 
+        // 결제 내역 확인
+        Payment updatedPayment = paymentRepository.findById(cancelPayment.paymentId())
+                .orElseThrow(() -> new ServiceException(
+                        "404-1",
+                        "[%d]번에 해당하는 결제 내역이 존재하지 않습니다.".formatted(cancelPayment.paymentId()))
+                );
+
+        // 결제 내역에 저장된 금액과 취소 요청 금액이 일치하지 않을 경우
+        if (cancelPayment.amount() != updatedPayment.getAmount()) {
+            throw new ServiceException(
+                    "400-1",
+                    "결제 내역의 금액과 취소 요청 금액이 일치하지 않습니다."
+            );
+        }
+
         // Iamport 액세스 토큰 발급
         String accessToken = iamportService.getAccessToken(member.getId())
                 .orElse(iamportService.generateAccessToken(member.getId())
-                        .orElseThrow(() -> new ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다."))
+                        .orElseThrow(() -> new ServiceException(
+                                "500-1",
+                                "Iamport 액세스 토큰 발급을 실패했습니다."))
                 );
 
         // 결제 취소
         GetPayment getPayment = iamportService.cancelPayment(
                         accessToken,
                         CancelPaymentInfo.builder()
-                                    .impUid(cancelPayment.impUid())
-                                    .merchantUid(cancelPayment.merchantUid())
-                                    .amount(cancelPayment.amount())
-                                    .reason(cancelPayment.reason())
+                                .impUid(updatedPayment.getImpUid())
+                                .merchantUid(updatedPayment.getMerchantUid())
+                                .amount(cancelPayment.amount())
+                                .reason(cancelPayment.reason())
                                 .build())
-                .orElseThrow(() -> new ServiceException("500-2", "[%s] 결제 취소 과정에서 문제가 발생했습니다."
-                        .formatted(cancelPayment.impUid())));
+                .orElseThrow(() -> new ServiceException(
+                        "500-2",
+                        "결제 취소 과정에서 문제가 발생했습니다.")
+                );
 
         // 취소 이력이 없을 경우
         if (getPayment.cancelHistory().isEmpty()) {
-            throw new ServiceException("404-1", "[%s] 결제 취소 이력이 존재하지 않습니다."
-                    .formatted(cancelPayment.impUid()));
+            throw new ServiceException(
+                    "404-2",
+                    "결제 취소 이력을 찾을 수 없습니다."
+            );
         }
 
         CancelHistory cancelHistory = getPayment.cancelHistory().getFirst();
+
+        // 결제 상태 변경
+        if (updatedPayment.getStatus() == null) {
+            throw new ServiceException("400-1", "변경할 결제 상태가 존재하지 않습니다.");
+        }
+
+        log.debug("Payment Status [{}] is update target.", updatedPayment.getStatus());
+
+        updatedPayment.updatePaymentStatus(PaymentStatus.CANCELED);
+        Payment updated = paymentRepository.save(updatedPayment);
+
+        log.info("Payment Id [{}] is updated.", updated.getId());
+
+
+        // 결제 취소 이력 생성
+        paymentCancelRepository.save(
+                PaymentCancel.builder()
+                            .cancelAmount(cancelHistory.amount())
+                            .cancelReason(cancelHistory.reason())
+                            .cancelDate(cancelHistory.convertCancelledAtFormat())
+                            .payment(updated)
+                        .build());
+
+        // 캐시 반환 내역 저장 + 캐시 반환
+        AssetService assetService = assetServiceFactory.getService(cancelPayment.assetType());
+        assetService.deduct(
+                member.getUsername(),
+                getPayment.amount(),
+                cancelPayment.assetCategory()
+        );
 
         return CanceledPayment.builder()
                 .cancelAmount(cancelHistory.amount())
@@ -128,92 +204,34 @@ public class PaymentService {
         return new PageDto<>(
                 payments.map(payment ->
                         GetPaymentInfo.builder()
-                                    .paymentId(payment.getId())
-                                    .impUid(payment.getImpUid())
-                                    .merchantUid(payment.getMerchantUid())
-                                    .amount(payment.getAmount())
-                                    .status(payment.getStatus())
-                                    .createdAt(payment.getCreatedAt())
+                                .paymentId(payment.getId())
+                                .impUid(payment.getImpUid())
+                                .merchantUid(payment.getMerchantUid())
+                                .amount(payment.getAmount())
+                                .status(payment.getStatus())
+                                .createdAt(payment.getCreatedAt())
                                 .build()));
-    }
-
-    @Transactional
-    public GetPaymentInfo writePayment(WritePayment writePayment) {
-
-        AssetHistory assetHistory = assetHistoryRepository.findById(writePayment.assetHistoryId())
-                .orElseThrow(() -> new ServiceException(
-                        "404-1",
-                        "[%d]번에 해당하는 재화 내역이 존재하지 않습니다."
-                                .formatted(writePayment.assetHistoryId()))
-                );
-
-        Payment saved = paymentRepository.save(
-                Payment.builder()
-                        .impUid(writePayment.impUid())
-                        .merchantUid(writePayment.merchantUid())
-                        .amount(writePayment.amount())
-                        .status(writePayment.status())
-                        .assetHistory(assetHistory)
-                        .build());
-
-        log.info("Payment Id [{}] is saved.", saved.getId());
-
-        return GetPaymentInfo.builder()
-                    .paymentId(saved.getId())
-                    .impUid(saved.getImpUid())
-                    .merchantUid(saved.getMerchantUid())
-                    .amount(saved.getAmount())
-                    .status(saved.getStatus())
-                    .createdAt(saved.getCreatedAt())
-                .build();
-    }
-
-    @Transactional
-    public GetPaymentInfo updatePayment(Long paymentId, UpdatePayment updatePayment) {
-
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ServiceException(
-                        "404-1",
-                        "[%d]번에 해당하는 재화 내역이 존재하지 않습니다.".formatted(paymentId))
-                );
-
-        if (updatePayment.status() == null) {
-            throw new ServiceException("400-1", "변경할 결제 상태가 존재하지 않습니다.");
-        }
-
-        log.debug("Payment Status [{}] is update target.", updatePayment.status());
-
-        payment.updatePaymentStatus(updatePayment.status());
-
-        Payment updated = paymentRepository.save(payment);
-
-        log.info("Payment Id [{}] is updated.", updated.getId());
-
-        return GetPaymentInfo.builder()
-                .paymentId(updated.getId())
-                .impUid(updated.getImpUid())
-                .merchantUid(updated.getMerchantUid())
-                .amount(updated.getAmount())
-                .status(updated.getStatus())
-                .createdAt(updated.getCreatedAt())
-                .build();
     }
 
     private void checkPaymentValid(
             GetPayment getPayment,
             Member member,
-            VerifyPayment verifyPayment
+            ChargePayment chargePayment
     ) {
 
         // imp_uid 검증
-        if (!getPayment.impUid().equals(verifyPayment.impUid())) {
-            throw new ServiceException("", "결제 고유 ID가 일치하지 않습니다. (요청 ID : %s, 결제 ID : %s)"
-                    .formatted(verifyPayment.impUid(), getPayment.impUid()));
+        if (!getPayment.impUid().equals(chargePayment.impUid())) {
+            throw new ServiceException(
+                    "400-1",
+                    "결제 고유 ID가 일치하지 않습니다. (요청 ID : %s, 결제 ID : %s)"
+                    .formatted(chargePayment.impUid(), getPayment.impUid()));
         }
 
         // 결제자 이름 검증
         if (!getPayment.buyerName().equals(member.getUsername())) {
-            throw new ServiceException("", "결제자 이름이 일치하지 않습니다. (요청 이름 : %s, 결제 이름 : %s)"
+            throw new ServiceException(
+                    "400-2",
+                    "결제자 이름이 일치하지 않습니다. (요청 이름 : %s, 결제 이름 : %s)"
                     .formatted(member.getUsername(), getPayment.buyerName()));
         }
 
@@ -229,15 +247,19 @@ public class PaymentService {
 
             if (!frontBuyerEmail.equals(frontRequestEmail)
                     || !buyerEmailSplit[1].equals(requestEmailSplit[1])) {
-                throw new ServiceException("", "결제자 이메일이 일치하지 않습니다. (요청 이메일 : %s, 결제 이메일 : %s)"
+                throw new ServiceException(
+                        "400-3",
+                        "결제자 이메일이 일치하지 않습니다. (요청 이메일 : %s, 결제 이메일 : %s)"
                         .formatted(member.getEmailAddress(), getPayment.buyerEmail()));
             }
         }
 
         // 결제 금액 검증
-        if (getPayment.amount() != verifyPayment.amount()) {
-            throw new ServiceException("", "결제 금액이 일치하지 않습니다. (요청 금액 : %s, 결제 금액 : %s)"
-                    .formatted(verifyPayment.amount(), getPayment.amount()));
+        if (getPayment.amount() != chargePayment.amount()) {
+            throw new ServiceException(
+                    "400-4",
+                    "결제 금액이 일치하지 않습니다. (요청 금액 : %s, 결제 금액 : %s)"
+                    .formatted(chargePayment.amount(), getPayment.amount()));
         }
     }
 }

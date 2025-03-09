@@ -37,7 +37,14 @@ export default function ClientPage({
 
             if (userResponse.response.ok) {
                 const userData = userResponse?.data?.data ?? [];
-                setUser(userData);
+
+                const formattedUser = {
+                    username: userData.username,
+                    emailAddress: userData.email_address,
+                    cash: userData.cash.amount,
+                }
+
+                setUser(formattedUser);
             }
 
         } catch (error) {

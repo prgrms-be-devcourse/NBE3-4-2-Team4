@@ -94,13 +94,12 @@ export function CashTopupModal({
         });
 
         // 결제 연동 (아임포트 API)
-        requestPay(amount, paymentMethod, user);
+        requestPay(amount, paymentMethod, user, refreshCash);
 
         // 입력 상태 초기화
         setAmount(0);
         setPaymentMethod(null);
         setAgreement(false);
-        refreshCash();
 
         // 모달 닫기
         onClose();
