@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import useSSE from "@/lib/hooks/useSSE";
+import AlertDialog from "@/lib/business/components/AlertDialog";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -51,7 +53,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const { nickname } = useNickname();
   const { setNickname } = useNickname();
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
-  const { setId } = useId();
+  const { id, setId } = useId();
   const { role, setRole } = useRole();
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/adm") && pathname !== "/adm/login";
@@ -62,6 +64,14 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const attendanceMessage = searchParams.get("attendanceMessage");
   const router = useRouter();
   const { toast } = useToast();
+  const { events, closeSSE } = useSSE(id ?? null);
+  const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (events.length > 0) {
+      setNotification(events[events.length - 1]); // 마지막 알림을 사용
+    }
+  }, [events]);
 
   useEffect(() => {
     if (attendanceMessage) {
@@ -155,6 +165,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
           setRole(null);
           setNickname(null);
           setId(null);
+          closeSSE();
           window.location.href = data.data;
         }
       } else {
@@ -312,6 +323,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
+      {notification && <AlertDialog message={notification} />}
       <footer className="p-2 flex justify-center items-center">
         <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
         {/* {role === "ADMIN" && (
