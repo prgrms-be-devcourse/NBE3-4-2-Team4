@@ -50,7 +50,7 @@ public class MessageService {
     @Transactional(readOnly = true)
     public Long getUnreadMessages() {
         Member actor = AuthManager.getNonNullMember();
-        List<Message> messages = messageRepository.findAllByReceiverAndIsChecked(actor, false);
+        List<Message> messages = messageRepository.findAllByReceiverAndChecked(actor, false);
 
         return (long) messages.stream().map(MessageDto::new).toList().size();
     }
@@ -75,7 +75,7 @@ public class MessageService {
                 .receiver(receiver)
                 .title(title)
                 .content(content)
-                .isChecked(false)
+                .checked(false)
                 .build();
 
         messageRepository.save(message);

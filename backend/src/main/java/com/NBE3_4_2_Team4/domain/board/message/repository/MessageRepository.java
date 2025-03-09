@@ -12,5 +12,5 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     List<Message> findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Long senderId);
 
-    List<Message> findAllByReceiverAndIsChecked(Member actor, boolean checked);
+    List<Message> findAllByReceiverAndChecked(Member actor, boolean checked);
 }
