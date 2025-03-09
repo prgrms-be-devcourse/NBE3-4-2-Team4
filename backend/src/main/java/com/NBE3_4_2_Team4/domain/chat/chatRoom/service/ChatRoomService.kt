@@ -7,6 +7,7 @@ import com.NBE3_4_2_Team4.domain.chat.chatRoom.repository.ChatRoomMemberReposito
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.repository.ChatRoomRepsitory
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.domain.member.member.service.MemberService
+import com.NBE3_4_2_Team4.domain.sse.service.NotificationService
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
 import com.NBE3_4_2_Team4.global.security.AuthManager
 import com.NBE3_4_2_Team4.standard.util.Ut
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class ChatRoomService(
     private val chatRoomRepository: ChatRoomRepsitory,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
+    private val notificationService: NotificationService,
     private val memberService: MemberService
 ) {
     fun count(): Long {
