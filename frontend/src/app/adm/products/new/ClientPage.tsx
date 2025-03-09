@@ -12,7 +12,6 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import client from "@/lib/backend/client";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -27,9 +26,6 @@ import MyEditor from "@/lib/business/components/MyEditor";
 import { useForm } from "react-hook-form";
 
 const saleStates = [
-  // { value: "ONSALE", label: "판매 중" },
-  // { value: "SOLDOUT", label: "품절" },
-  // { value: "COMINGSOON", label: "곧 출시 예정" },
   { value: "AVAILABLE", label: "판매 중" },
   { value: "UNAVAILABLE", label: "품절" },
   { value: "UPCOMING", label: "곧 출시 예정" },
@@ -40,10 +36,9 @@ export default function ClientPage() {
   const [formData, setFormData] = useState({
     product_name: "",
     product_price: 0,
-    //product_description: "",
     product_image: "",
     product_category: "",
-    product_sale_state: "ONSALE",
+    product_sale_state: "",
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -65,27 +60,27 @@ export default function ClientPage() {
 
   const { uploadFiles } = useFileUploader({ entityType: "products" });
 
+  // 입력값에 따른 formData 변경 함수
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 판매 상태 선택 함수
   const handleSelectChange = (value: string) => {
     setFormData((prev) => ({ ...prev, product_sale_state: value }));
   };
-
+  
+  // 상품 등록 함수
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      console.log(formData.product_sale_state);
-
       const response = await client.POST("/api/products", {
         body: {
           product_name: formData.product_name,
           product_price: formData.product_price,
-          //product_description: formData.product_description,
           product_description: form.getValues("product_description"),
           product_image_url: formData.product_image,
           product_category: formData.product_category,
