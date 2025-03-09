@@ -27,8 +27,8 @@ class MessageService(
     private fun getMessagesByType(type: MessageType): List<MessageDto> {
         val actor = AuthManager.getNonNullMember()
         val messages = when (type) {
-            MessageType.RECEIVED -> messageRepository.findReceivedMessages(actor.id)
-            MessageType.SENT -> messageRepository.findSentMessages(actor.id)
+            MessageType.RECEIVED -> messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(actor.id)
+            MessageType.SENT -> messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(actor.id)
         }
 
         return messages.map(::MessageDto)
@@ -53,8 +53,10 @@ class MessageService(
     }
 
     @Transactional
-    fun write(sender: Member, receiverName: String, title: String, content: String): MessageDto {
+    fun write(receiverName: String, title: String, content: String): MessageDto {
+        val sender = AuthManager.getNonNullMember()
         val receiver = memberRepository.findByNickname(receiverName).get()
+
         val message = Message(
                 sender = sender,
                 receiver = receiver,
