@@ -100,7 +100,6 @@ export function CashTopupModal({
         setAmount(0);
         setPaymentMethod(null);
         setAgreement(false);
-        refreshCash();
 
         // 모달 닫기
         onClose();
