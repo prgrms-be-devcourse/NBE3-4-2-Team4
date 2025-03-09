@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash;
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
+import com.NBE3_4_2_Team4.domain.member.bankAccount.entity.BankAccount;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -54,7 +55,7 @@ public class Member {
 
     @Column(nullable = false, unique = true)
     @Setter(AccessLevel.NONE)
-    private String username;
+    public String username;
 
     @Column(nullable = false)
     private String password;
@@ -86,6 +87,10 @@ public class Member {
 
     @OneToMany(mappedBy = "author")
     private List<Answer> answers = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<BankAccount> bankAccounts = new ArrayList<>();
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private OAuth2RefreshToken oauth2RefreshToken = null;

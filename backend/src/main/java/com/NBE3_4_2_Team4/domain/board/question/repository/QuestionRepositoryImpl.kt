@@ -42,12 +42,12 @@ class QuestionRepositoryImpl(
     private fun applyKeywordFilter(kwType: QuestionSearchKeywordType, kw: String, builder: BooleanBuilder) {
         when (kwType) {
             QuestionSearchKeywordType.TITLE -> builder.and(question.title.containsIgnoreCase(kw))
-            QuestionSearchKeywordType.CONTENT -> builder.and(question.questionContent.containsIgnoreCase(kw))
+            QuestionSearchKeywordType.CONTENT -> builder.and(question.content.containsIgnoreCase(kw))
             QuestionSearchKeywordType.AUTHOR -> builder.and(question.author.nickname.containsIgnoreCase(kw))
             QuestionSearchKeywordType.ANSWER_CONTENT -> builder.and(hasAnswerContainingKeyword(kw))
             else -> builder.and(
                     question.title.containsIgnoreCase(kw)
-                            .or(question.questionContent.containsIgnoreCase(kw))
+                            .or(question.content.containsIgnoreCase(kw))
                             .or(question.author.nickname.containsIgnoreCase(kw))
                             .or(hasAnswerContainingKeyword(kw))
             )
@@ -60,7 +60,7 @@ class QuestionRepositoryImpl(
                 .selectOne()
                 .from(answer)
                 .where(answer.question.eq(question)
-                        .and(answer.answerContent.containsIgnoreCase(kw)))
+                    .and(answer.content.containsIgnoreCase(kw)))
                 .exists()
     }
 

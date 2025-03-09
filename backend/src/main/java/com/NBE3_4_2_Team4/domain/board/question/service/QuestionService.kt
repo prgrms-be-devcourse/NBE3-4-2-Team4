@@ -41,8 +41,7 @@ class QuestionService(
                 author,
                 category,
                 assetType,
-                amount,
-                false
+                amount
         )
 
         //질문글 작성 시 포인트 차감
