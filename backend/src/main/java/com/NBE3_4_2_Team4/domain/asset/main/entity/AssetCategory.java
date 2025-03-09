@@ -8,12 +8,16 @@ public enum AssetCategory {
         TRANSFER("송금"),
         PURCHASE("상품구매"),
         QUESTION("질문등록"),
+        QUESTION_MODIFY("질문수정"),
         ANSWER("답변채택"),
         EXPIRED_QUESTION ("만료된질문"),
         REFUND("포인트반환"),
         RANKING("랭킹"),
         ADMIN("관리자"),
-        ATTENDANCE("출석");
+        ATTENDANCE("출석"),
+        CASH_DEPOSIT("캐시충전"),
+        CASH_REFUND("캐시반환"),
+        POINT_WITHDRAWAL("포인트현금화");
 
         private final String displayName;
 
