@@ -48,7 +48,7 @@ export function RefundModal({ isOpen, onClose, user, refreshCash }: {
                     query: {
                         page: pageNumber,
                         page_size: 5,
-                        paymentStatus: "PAID"
+                        payment_status_keyword: "PAID"
                     },
                 },
             });
@@ -123,7 +123,7 @@ export function RefundModal({ isOpen, onClose, user, refreshCash }: {
                 },
             });
 
-            console.log("검증 결과:", refundResponse);
+            console.log("환불 결과:", refundResponse);
 
             if (refundResponse.response.ok) {
 
