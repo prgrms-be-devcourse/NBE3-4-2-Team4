@@ -39,9 +39,9 @@ public class MessageService {
         List<Message> messages;
 
         if (type == MessageType.RECEIVED) {
-            messages = messageRepository.findReceivedMessages(actor.getId());
+            messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(actor.getId());
         } else {
-            messages = messageRepository.findSentMessages(actor.getId());
+            messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(actor.getId());
         }
 
         return messages.stream().map(MessageDto::new).toList();
