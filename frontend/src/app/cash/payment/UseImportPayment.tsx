@@ -107,7 +107,7 @@ export function UseImportPayment() {
                                 description: `결제 금액: ${verifiedData.amount}원`
                             });
 
-                            router.push("/point/list");
+                            router.push("/cash");
                             router.refresh();
 
                         } else {

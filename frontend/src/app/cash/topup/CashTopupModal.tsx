@@ -11,7 +11,12 @@ import { TriangleAlert } from 'lucide-react';
 import { UseImportPayment } from "../../cash/payment/UseImportPayment";
 
 
-export function CashTopupModal({ isOpen, onClose, user }: {
+export function CashTopupModal({
+                                   isOpen,
+                                   onClose,
+                                   user,
+                                   refreshCash,
+                               }: {
     isOpen: boolean;
     onClose: () => void;
     user: {
@@ -19,6 +24,7 @@ export function CashTopupModal({ isOpen, onClose, user }: {
         emailAddress: string;
         cash: number;
     };
+    refreshCash: () => void;
 }) {
     const { toast } = useToast();
     const [amount, setAmount] = useState<number>(0);
@@ -94,6 +100,7 @@ export function CashTopupModal({ isOpen, onClose, user }: {
         setAmount(0);
         setPaymentMethod(null);
         setAgreement(false);
+        refreshCash();
 
         // 모달 닫기
         onClose();
@@ -165,12 +172,10 @@ export function CashTopupModal({ isOpen, onClose, user }: {
                             <SelectValue placeholder="결제 수단을 선택하세요" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="mobile">휴대폰</SelectItem>
                             <SelectItem value="card">신용/체크카드</SelectItem>
-                            <SelectItem value="giftcard">문화상품권</SelectItem>
-                            <SelectItem value="virtual">가상계좌</SelectItem>
-                            <SelectItem value="transfer">계좌이체</SelectItem>
-                            <SelectItem value="etc">기타</SelectItem>
+                            {/*<SelectItem value="trans">계좌이체</SelectItem>*/}
+                            {/*<SelectItem value="vbank">가상계좌</SelectItem>*/}
+                            {/*<SelectItem value="phone">휴대폰 소액결제</SelectItem>*/}
                         </SelectContent>
                     </Select>
                 </div>

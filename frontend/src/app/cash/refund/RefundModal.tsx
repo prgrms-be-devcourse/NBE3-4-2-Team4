@@ -160,7 +160,7 @@ export function RefundModal({ isOpen, onClose, user }: {
                         setHasMore(true);
 
                         onClose();
-                        router.push("/point/list");
+                        router.push("/cash");
                         router.refresh();
 
                     } else {
@@ -212,12 +212,12 @@ export function RefundModal({ isOpen, onClose, user }: {
                             {paymentHistory.length > 0 ? (
                                 <>
                                     {paymentHistory.map((payment) => (
-                                        payment.payment_id ? ( // ✅ payment_id 검증 추가
+                                        payment.payment_id ? ( // payment_id 검증 추가
                                             <SelectItem key={payment.payment_id} value={payment.payment_id}>
                                                 [ {payment.created_at} ] - {payment.amount.toLocaleString()}원 결제
                                             </SelectItem>
                                         ) : (
-                                            console.error("❌ 잘못된 결제 데이터:", payment)
+                                            console.error("잘못된 결제 데이터:", payment)
                                         )
                                     ))}
                                     {/* 더보기 버튼 추가 (데이터가 더 있을 때만 표시) */}
