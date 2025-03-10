@@ -79,7 +79,7 @@ class MemberService (
 
         val oAuth2LogoutService = oAuth2Manager.getOAuth2LogoutService(oAuthProvider)
             ?: throw RuntimeException("Logout service not found")
-        return oAuth2LogoutService.logoutUrl
+        return oAuth2LogoutService.getLogoutUrl()
     }
 
 
@@ -121,12 +121,12 @@ class MemberService (
             Member(
                 id = null,
                 role = Member.Role.USER,
-                oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.providerTypeCode),
+                oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()),
                 username = tempUser.username,
                 password = passwordEncoder.encode(tempUser.password),
                 nickname = signupRequestDto.nickname,
                 emailAddress = signupRequestDto.email,
-                realName = tempUser.realName
+                realName = tempUser.getRealName()
             )
         )
     }
@@ -135,9 +135,9 @@ class MemberService (
     private fun saveOAuth2RefreshToken(member: Member, tempUser: TempUserBeforeSignUp) {
         oAuth2RefreshTokenRepository.save(
             OAuth2RefreshToken(
-                oAuth2Id = tempUser.oAuth2Id,
+                oAuth2Id = tempUser.getOAuth2Id(),
                 member = member,
-                refreshToken = tempUser.refreshToken
+                refreshToken = tempUser.getRefreshToken()
             )
         )
     }
@@ -161,7 +161,7 @@ class MemberService (
     }
 
 
-    fun verifyEmail(memberId: Long, authCode: String?): Boolean {
+    fun verifyEmail(memberId: Long, authCode: String): Boolean {
         checkIfMemberExists(memberId)
 
         val member = memberRepository.findById(memberId).orElseThrow()
@@ -181,7 +181,7 @@ class MemberService (
 
     fun getMemberDetailInfo(member: Member): MemberDetailInfoResponseDto {
         checkIfMemberExists(member.id)
-        return memberQuerydsl.getMemberDetailInfo(member)
+        return memberQuerydsl.getMemberDetailInfo(member)!!
     }
 
 

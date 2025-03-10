@@ -18,12 +18,18 @@ class TempUserBeforeSignUp @JsonCreator constructor(
     ) {
         attributes["providerTypeCode"] = providerTypeCode
         attributes["refreshToken"] = refreshToken
-        attributes["realName"] = oAuth2UserInfo.realName
+        attributes[AuthConstants.REAL_NAME] = oAuth2UserInfo.realName
         attributes[AuthConstants.OAUTH2_ID] = oAuth2UserInfo.oAuth2Id
     }
 
     override fun getAttributes(): Map<String, Any> = attributes
     override fun getName(): String = username
 
-    fun getOAuth2Id(): String? = attributes[AuthConstants.OAUTH2_ID] as? String
+    fun getOAuth2Id(): String = attributes[AuthConstants.OAUTH2_ID] as String
+
+    fun getRealName(): String = attributes[AuthConstants.REAL_NAME] as String
+
+    fun getProviderTypeCode(): String = attributes["providerTypeCode"] as String
+
+    fun getRefreshToken(): String = attributes["refreshToken"] as String
 }

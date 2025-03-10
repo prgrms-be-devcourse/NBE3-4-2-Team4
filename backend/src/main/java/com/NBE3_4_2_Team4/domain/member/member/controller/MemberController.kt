@@ -127,11 +127,11 @@ class MemberController (
         ), ApiResponse(responseCode = "409", description = "이미 존재하는 닉네임으로 회원가입을 시도하였을 때.")]
     )
     fun signup(
-        @CookieValue(name = "tempToken") tempToken: String?,
-        @RequestBody signupRequestDto: @Valid SignupRequestDto?,
-        resp: HttpServletResponse?
+        @CookieValue(name = "tempToken") tempToken: String,
+        @RequestBody signupRequestDto: @Valid SignupRequestDto,
+        resp: HttpServletResponse
     ): RsData<Empty> {
-        memberService.signUp(tempToken, signupRequestDto!!)
+        memberService.signUp(tempToken, signupRequestDto)
         httpManager.deleteCookie(resp, "tempToken")
         return RsData.from("201-1", "sign up complete")
     }
@@ -152,7 +152,7 @@ class MemberController (
     fun verifyEmail(
         @RequestParam("memberId") memberId: Long,
         @RequestParam("authCode") authCode: String?,
-        resp: HttpServletResponse?
+        resp: HttpServletResponse
     ): ResponseEntity<RsData<Empty>> {
         val isEmailVerified = memberService.verifyEmail(memberId, authCode)
         val result = if (isEmailVerified) "success" else "fail"
@@ -205,10 +205,10 @@ class MemberController (
         )]
     )
     fun adminLogin(
-        @RequestBody adminLoginRequestDto: @Valid AdminLoginRequestDto?,
-        resp: HttpServletResponse?
+        @RequestBody adminLoginRequestDto: @Valid AdminLoginRequestDto,
+        resp: HttpServletResponse
     ): RsData<MemberThumbnailInfoResponseDto> {
-        val member = memberService.adminLogin(adminLoginRequestDto!!)
+        val member = memberService.adminLogin(adminLoginRequestDto)
         val accessToken = jwtManager.generateAccessToken(member)
         val accessTokenValidMinute = jwtManager.accessTokenValidMinute
 
@@ -315,7 +315,7 @@ class MemberController (
         summary = "logout complete",
         description = "로그아웃 요청이 성공적으로 실행되었을 때 도착합니다. Cookie 에 담긴 JWT 를 파기하고 프론트의 메인 페이지로 이동합니다."
     )
-    fun logoutComplete(req: HttpServletRequest, resp: HttpServletResponse?): ResponseEntity<RsData<Empty>> {
+    fun logoutComplete(req: HttpServletRequest, resp: HttpServletResponse): ResponseEntity<RsData<Empty>> {
         val logoutRequested = req.session.getAttribute("logoutRequested") as Boolean?
 
         if (logoutRequested == null || !logoutRequested) {
@@ -372,7 +372,7 @@ class MemberController (
             description = "존재하지 않는 회원. (JWT 필드에 있는 id에 해당하는 회원이 존재하지 않음)"
         )]
     )
-    fun withdrawalMembership(resp: HttpServletResponse?): RsData<Empty> {
+    fun withdrawalMembership(resp: HttpServletResponse): RsData<Empty> {
         val member = AuthManager.getNonNullMember()
         memberService.withdrawalMembership(member)
         httpManager.expireJwtCookie(resp)
