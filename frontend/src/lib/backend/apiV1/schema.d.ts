@@ -1438,7 +1438,7 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
         };
         AssetTransferReq: {
             username: string;
@@ -1594,7 +1594,7 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
         };
         RsDataVerifiedPayment: {
             resultCode: string;
@@ -1616,7 +1616,7 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
         };
         CanceledPayment: {
             cancelerName?: string;
@@ -1753,7 +1753,7 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
         };
         RsDataLong: {
             resultCode: string;
@@ -1767,7 +1767,7 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
@@ -1898,7 +1898,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시출금";
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
