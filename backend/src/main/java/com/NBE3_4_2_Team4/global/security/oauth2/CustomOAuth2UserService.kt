@@ -37,7 +37,7 @@ class CustomOAuth2UserService(
 
 
         val oAuth2UserInfoService = oAuth2Manager.getOAuth2UserInfoService(oAuth2Provider)
-        val oAuth2UserInfo = oAuth2UserInfoService.getOAuth2UserInfo(oAuth2User)
+        val oAuth2UserInfo = oAuth2UserInfoService!!.getOAuth2UserInfo(oAuth2User)
 
 
         val oAuth2Id = oAuth2UserInfo.oAuth2Id
