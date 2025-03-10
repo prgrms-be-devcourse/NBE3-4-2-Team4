@@ -199,12 +199,15 @@ export default function ClientPage({
           </CardHeader>
           <CardContent>
             {question.articles?.map((article, index) => (
-              <div key={index}>
-                <h3>{decodeHtml(article.title!!.replace(/<[^>]+>/g, ''))}</h3>
-                <p>{decodeHtml(article.description!!.replace(/<[^>]+>/g, ''))}</p>
-                <Link href={article.link!!} target="_blank" rel="noopener noreferrer" style={{ color: 'blue' }}>
-                  {article.link}
-                </Link>
+              <div key={index} style={{ marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0' }}>
+                  <Link href={article.link!!} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'none' }}>
+                    {decodeHtml(article.title!!.replace(/<[^>]+>/g, ''))}
+                  </Link>
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                  {decodeHtml(article.description!!.replace(/<[^>]+>/g, ''))}
+                </p>
               </div>
             ))}
           </CardContent>

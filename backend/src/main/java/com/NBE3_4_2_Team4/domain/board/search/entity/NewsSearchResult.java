@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchResult {
+public class NewsSearchResult {
     private String title;
     private String link;
     private String description;

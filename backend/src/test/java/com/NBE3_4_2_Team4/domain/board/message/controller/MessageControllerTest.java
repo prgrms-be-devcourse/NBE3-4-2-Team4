@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.message.repository.MessageRepository;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,8 +50,7 @@ public class MessageControllerTest {
                 get("/api/messages/send")
         ).andDo(print());
 
-        List<MessageDto> messages = messageRepository.findSentMessages(author.getId())
-                .stream()
+        List<MessageDto> messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(1, 10), author.getId())
                 .map(MessageDto::new)
                 .toList();
 
@@ -83,8 +83,7 @@ public class MessageControllerTest {
                 get("/api/messages/receive")
         ).andDo(print());
 
-        List<MessageDto> messages = messageRepository.findReceivedMessages(author.getId())
-                .stream()
+        List<MessageDto> messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(1, 10), author.getId())
                 .map(MessageDto::new)
                 .toList();
 
