@@ -1,4 +1,4 @@
-package com.NBE3_4_2_Team4.domain.board.question.controller;
+package com.NBE3_4_2_Team4.domain.board.question.controller
 
 import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto
 import com.NBE3_4_2_Team4.domain.board.question.dto.request.MyQuestionReqDto
@@ -90,7 +90,7 @@ class QuestionController(
                         question,
                         questionService.count()
                 )
-        );
+        )
     }
 
     @PutMapping("/{id}")
@@ -98,13 +98,13 @@ class QuestionController(
     fun update(@PathVariable id: Long, @RequestBody @Valid reqBody: QuestionWriteReqDto): RsData<QuestionDto> {
         val actor = AuthManager.getMemberFromContext()
         val question = questionService.update(id, reqBody.title, reqBody.content,
-                actor, reqBody.amount, reqBody.categoryId)
+                actor, reqBody.amount, reqBody.categoryId, reqBody.assetType)
 
         return RsData(
                 "200-2",
                 "${id}번 게시글 수정이 완료되었습니다.",
                 question
-        );
+        )
     }
 
     @PutMapping("/{id}/select/{answerId}")
@@ -129,6 +129,6 @@ class QuestionController(
             @RequestParam(defaultValue = "10") pageSize: Int,
             @RequestBody @Valid reqBody: MyQuestionReqDto
             ): PageDto<QuestionDto> {
-        return PageDto(questionService.findByUserListed(page, pageSize, reqBody.username));
+        return PageDto(questionService.findByUserListed(page, pageSize, reqBody.username))
     }
 }

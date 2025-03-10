@@ -402,11 +402,8 @@ class QuestionControllerTest {
     @DisplayName("답변 채택, 이미 채택이 완료된 질문")
     @WithUserDetails("admin@test.com")
     fun t14_1() {
-        mvc.perform(
-                put("/api/questions/1/select/1")).andDo { print() }
-
         val resultActions = mvc.perform(
-            put("/api/questions/1/select/1")).andDo { print() }
+                put("/api/questions/1/select/1")).andDo { print() }
 
         resultActions.andExpect(handler().handlerType(QuestionController::class.java))
                 .andExpect(handler().methodName("select"))

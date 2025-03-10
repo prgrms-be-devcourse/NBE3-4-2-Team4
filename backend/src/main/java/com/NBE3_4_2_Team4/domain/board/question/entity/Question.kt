@@ -60,7 +60,6 @@ class Question : GenFileParent<QuestionGenFile, Question> {
         this.assetType = assetType
         this.amount = amount
     }
-
     fun getRecommendCount(): Long = recommends.size.toLong() // 추천 수 반환
 
     fun modify(title: String, content: String, amount: Long, category: QuestionCategory) {

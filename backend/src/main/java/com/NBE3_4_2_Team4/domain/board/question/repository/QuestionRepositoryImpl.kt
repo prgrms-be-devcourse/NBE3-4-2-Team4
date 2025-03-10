@@ -60,7 +60,7 @@ class QuestionRepositoryImpl(
                 .selectOne()
                 .from(answer)
                 .where(answer.question.eq(question)
-                        .and(answer.content.containsIgnoreCase(kw)))
+                    .and(answer.content.containsIgnoreCase(kw)))
                 .exists()
     }
 

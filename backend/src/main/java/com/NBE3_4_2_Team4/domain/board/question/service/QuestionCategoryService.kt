@@ -6,12 +6,10 @@ import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepos
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
 class QuestionCategoryService(
     private val questionCategoryRepository: QuestionCategoryRepository,
     private val questionRepository: QuestionRepository
