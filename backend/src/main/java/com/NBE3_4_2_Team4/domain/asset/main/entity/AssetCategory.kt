@@ -11,7 +11,10 @@ enum class AssetCategory(val displayName: String) {
     REFUND("포인트반환"),
     RANKING("랭킹"),
     ADMIN("관리자"),
-    ATTENDANCE("출석");
+    ATTENDANCE("출석"),
+    CASH_DEPOSIT("캐시충전"),
+    CASH_REFUND("캐시반환"),
+    POINT_WITHDRAWAL("포인트현금화");
 
     override fun toString(): String {
         return this.displayName

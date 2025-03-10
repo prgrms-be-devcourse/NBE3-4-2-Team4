@@ -1,9 +1,7 @@
 package com.NBE3_4_2_Team4.domain.asset.main.controller
 
 import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryReq
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetHistoryRes
-import com.NBE3_4_2_Team4.domain.asset.main.dto.AssetTransferReq
+import com.NBE3_4_2_Team4.domain.asset.main.dto.*
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService
 import com.NBE3_4_2_Team4.global.rsData.RsData
@@ -13,7 +11,6 @@ import com.NBE3_4_2_Team4.standard.dto.PageDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import lombok.RequiredArgsConstructor
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -53,6 +50,36 @@ class AssetController (
             "200-1",
             "OK",
             assetHistories
+        )
+    }
+
+    @PatchMapping("/deposit")
+    @Operation(summary = "재화 적립 신청")
+    fun deposit(@RequestBody reqDto: AssetDepositReq): RsData<Long> {
+        val member = AuthManager.getNonNullMember()
+
+        val service = assetServiceFactory.getService(reqDto.assetType)
+        val assetHistoryId = service.accumulate(member.username, reqDto.amount, reqDto.assetCategory)
+
+        return RsData(
+            "200-1",
+            "OK",
+            assetHistoryId
+        )
+    }
+
+    @PatchMapping("/refund")
+    @Operation(summary = "재화 반환 신청")
+    fun refund(@RequestBody reqDto: AssetRefundReq): RsData<Long> {
+        val member = AuthManager.getNonNullMember()
+
+        val service = assetServiceFactory.getService(reqDto.assetType)
+        val assetHistoryId = service.deduct(member.username, reqDto.amount, reqDto.assetCategory)
+
+        return RsData(
+            "200-1",
+            "OK",
+            assetHistoryId
         )
     }
 }

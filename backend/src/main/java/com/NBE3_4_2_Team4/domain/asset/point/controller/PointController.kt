@@ -20,10 +20,6 @@ class PointController (
     private val pointService: PointService,
 ){
 
-    companion object {
-        private const val POINT_HISTORY_SIZE = 10
-    }
-
     @PutMapping("/attendance")
     @Operation(summary = "출석요청", description = "출석요청이 이미 완료이면 에러")
     fun attendance(): RsData<Empty> {
