@@ -45,11 +45,7 @@ class KakaoTokenService(
             )
             return objectMapper.readTree(response.body)["access_token"].asText()
         }  catch (e: Exception) {
-            when (e) {
-                is HttpClientErrorException, is JsonProcessingException ->
-                    log.error("error occurred while getting accessToken for kakao. msg: {}", e.message)
-                else -> throw e
-            }
+            log.error("error occurred while getting accessToken for google. msg: {}", e.message)
             return null
         }
     }
