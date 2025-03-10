@@ -56,6 +56,7 @@ class ChatRoomService(
         return ChatRoomDto(chatRoom, memberList)
     }
 
+    @Transactional
     fun save(member1: Member, member2: Member, name: String): ChatRoom {
         val chatRoom = ChatRoom(name)
 
@@ -104,5 +105,14 @@ class ChatRoomService(
 
         chatRoomMemberRepository.delete(chatRoom)
         findById(id).isClosed = true
+    }
+
+    @Transactional(readOnly = true)
+    fun getChatRoom(chatRoomId: Long): ChatRoomDto {
+        val chatRoom = findById(chatRoomId)
+        val memberList = chatRoomMemberRepository.findByChatRoom(chatRoom)
+            .map { it.member.nickname }
+
+        return ChatRoomDto(chatRoom, memberList)
     }
 }

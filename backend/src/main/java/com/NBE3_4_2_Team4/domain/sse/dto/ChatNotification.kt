@@ -4,5 +4,6 @@ data class ChatNotification(
     val message: String,
     val senderName: String,
     val senderUsername: String,
-    val senderId: Long
+    val senderId: Long,
+    val chatRoomId: Long
 )

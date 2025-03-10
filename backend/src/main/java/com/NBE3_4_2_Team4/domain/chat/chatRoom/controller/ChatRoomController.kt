@@ -54,4 +54,12 @@ class ChatRoomController(
             "${id}번 채팅방에서 나갔습니다."
         )
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "채팅방 단건 조회", description = "채팅방 Id를 기준으로 채팅방을 찾습니다.")
+    fun getChatRoom(
+        @PathVariable id: Long
+    ): ChatRoomDto {
+        return chatRoomService.getChatRoom(id)
+    }
 }

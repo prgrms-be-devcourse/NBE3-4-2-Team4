@@ -2,6 +2,7 @@ package com.NBE3_4_2_Team4.domain.sse.service
 
 import com.NBE3_4_2_Team4.domain.sse.dto.ChatNotification
 import com.NBE3_4_2_Team4.domain.sse.dto.RejectNotificationRequest
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
 import com.NBE3_4_2_Team4.global.security.AuthManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
@@ -33,7 +34,8 @@ class NotificationService(
             message = "새로운 채팅 요청이 있습니다.",
             senderName = actor.nickname,
             senderUsername = actor.username,
-            senderId = actor.id
+            senderId = actor.id,
+            chatRoomId = 0
         )
         sendNotification(recipientId, notification)
     }
@@ -66,6 +68,37 @@ class NotificationService(
             // 에러 발생 시 해당 emitter 제거
             emitterMap.remove(recipientId)
             throw e
+        }
+    }
+
+    fun sendChatNotification(
+        recipientId: Long,
+        message: String,
+        senderName: String,
+        senderUsername: String,
+        senderId: Long,
+        chatRoomId: Long
+    ) {
+        val notification = mapOf(
+            "message" to message,
+            "sender_name" to senderName,
+            "sender_username" to senderUsername,
+            "sender_id" to senderId,
+            "chat_room_id" to chatRoomId
+        )
+
+        val emitter = emitterMap[recipientId] ?: throw ServiceException("404-1", "알림 정보를 찾을 수 없습니다.")
+
+        try {
+            emitter.send(
+                SseEmitter.event()
+                    .data(objectMapper.writeValueAsString(notification))
+            )
+        } catch (e: Exception) {
+            emitterMap.remove(recipientId)
+            emitter.completeWithError(e)
+
+            throw ServiceException("400-1", "알림 전송에 실패했습니다.")
         }
     }
 }

@@ -54,7 +54,8 @@ class NotificationControllerTest {
             message = "새로운 채팅 요청이 있습니다.",
             senderName = senderName,
             senderUsername = senderUserName,
-            senderId = 2L
+            senderId = 2L,
+            chatRoomId = 0
         )
 
         // 알림을 보내는 서비스 호출을 검증

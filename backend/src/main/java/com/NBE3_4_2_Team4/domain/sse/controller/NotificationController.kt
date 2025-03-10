@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.sse.controller
 
+import com.NBE3_4_2_Team4.domain.sse.dto.ChatNotification
 import com.NBE3_4_2_Team4.domain.sse.dto.RejectNotificationRequest
 import com.NBE3_4_2_Team4.domain.sse.service.NotificationService
 import com.NBE3_4_2_Team4.global.rsData.RsData
@@ -47,13 +48,29 @@ class NotificationController(
         @PathVariable recipientId: Long,
         @RequestBody request: RejectNotificationRequest
     ): RsData<Empty> {
-        notificationService.sendRejectNotification(
-            recipientId = recipientId,
-            message = request.message
-        )
+        notificationService.sendRejectNotification(recipientId, request.message)
         return RsData(
             "200-2",
             "거절 알림이 전송되었습니다."
+        )
+    }
+
+    @PostMapping("/accept/{recipientId}") //채팅 알람 수락
+    fun sendAcceptNotification(
+        @PathVariable recipientId: Long,
+        @RequestBody reqBody: ChatNotification
+    ): RsData<Empty> {
+        notificationService.sendChatNotification(
+            recipientId,
+            reqBody.message,
+            reqBody.senderName,
+            reqBody.senderUsername,
+            reqBody.senderId,
+            reqBody.chatRoomId
+        )
+        return RsData(
+            "200-3",
+            "수락 알림이 전송되었습니다."
         )
     }
 }

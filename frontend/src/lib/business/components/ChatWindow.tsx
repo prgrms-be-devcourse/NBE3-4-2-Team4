@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import client from "@/lib/backend/client";
 import { useNickname } from "@/context/NicknameContext";
 import { CircleX } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 type ChatMessage = {
   id: number;
@@ -17,28 +18,65 @@ type ChatMessage = {
   readAt: string | null;
 };
 
+interface ChatWindowProps {
+  senderName: string;
+  senderUsername: string;
+  senderId: number;
+  onClose: () => void;
+  onChatRoomCreated: (chatRoomId: number) => void;
+  chatRoomId: number;
+}
+
 const ChatWindow = ({
   senderName,
   senderUsername,
+  senderId,
+  chatRoomId: initialChatRoomId = 0,
   onClose,
-}: {
-  senderName: string;
-  senderUsername: string;
-  onClose: () => void;
-}) => {
-  const [chatRoomId, setChatRoomId] = useState<number | null>(null);
+  onChatRoomCreated,
+}: ChatWindowProps) => {
+  const [chatRoomId, setChatRoomId] = useState<number>(0);
   const [stompClient, setStompClient] = useState<Client | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const { nickname } = useNickname();
-  const currentUsername = localStorage.getItem("username");
+  const [myUsername, setMyUsername] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasInitialized = useRef(false);
+  const hasClosedRoom = useRef(false);
+  const messageQueue = useRef<string[]>([]);
+
+  const handleMessage = useCallback((message: any) => {
+    try {
+      const data = JSON.parse(message.body);
+
+      setMessages((prev) => [...prev, data]);
+    } catch (error) {
+      toast({
+        title: "메시지 처리 오류",
+        description: error?.toString(),
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    // 채팅방 생성
-    const createChatRoom = async () => {
+    const initializeChatRoom = async () => {
+      if (hasInitialized.current || hasClosedRoom.current) {
+        return;
+      }
+
+      hasInitialized.current = true;
+
       try {
+        // 기존 채팅방 ID가 있는 경우
+        if (initialChatRoomId !== 0) {
+          setChatRoomId(initialChatRoomId);
+
+          return;
+        }
+
+        // 새 채팅방 생성
         const response = await client.POST("/api/chatRooms", {
           body: {
             recipient_username: senderUsername,
@@ -47,30 +85,55 @@ const ChatWindow = ({
         });
 
         if (response.error) {
-          console.error("채팅방 생성 실패:", response.error);
+          toast({
+            title: "채팅방 생성 실패",
+            description: response.error.msg,
+          });
+
+          hasInitialized.current = false;
+
           return;
         }
 
-        setChatRoomId(response.data.data.id);
+        const newChatRoomId = response.data.data.id;
+
+        setChatRoomId(newChatRoomId);
+        onChatRoomCreated(newChatRoomId);
       } catch (error) {
-        console.error("채팅방 생성 실패:", error);
+        toast({
+          title: "채팅방 초기화 실패",
+          description: error?.toString(),
+        });
+
+        hasInitialized.current = false;
       }
     };
 
-    createChatRoom();
-  }, [setChatRoomId]);
+    initializeChatRoom();
+  }, [initialChatRoomId, senderUsername, senderName, onChatRoomCreated]);
 
   useEffect(() => {
-    if (!chatRoomId) return;
+    if (
+      !chatRoomId ||
+      chatRoomId === 0 ||
+      stompClient ||
+      hasClosedRoom.current
+    ) {
+      console.log("STOMP 연결 건너뜀:", {
+        chatRoomId,
+        hasStompClient: !!stompClient,
+        hasClosedRoom: hasClosedRoom.current,
+      });
+      return;
+    }
 
+    console.log("STOMP 연결 시도:", chatRoomId);
+
+    const socket = new SockJS("http://localhost:8080/ws");
     const client = new Client({
-      webSocketFactory: () =>
-        new SockJS("http://localhost:8080/ws", null, {
-          transports: ["websocket"],
-        }),
+      webSocketFactory: () => socket,
       connectHeaders: {
-        // JWT 토큰을 헤더에 추가
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${null}`,
       },
       debug: function (str) {
         console.log("STOMP: " + str);
@@ -81,92 +144,173 @@ const ChatWindow = ({
     });
 
     client.onConnect = () => {
-      console.log("웹소켓 연결됨");
-      client.subscribe(`/topic/chatRooms/${chatRoomId}`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        setMessages((prev) => [...prev, receivedMessage]);
-      });
+      if (!hasClosedRoom.current) {
+        client.subscribe(`/topic/chatRooms/${chatRoomId}`, handleMessage);
+      }
     };
 
     client.onStompError = (frame) => {
-      console.error("STOMP error:", frame);
+      //console.error("STOMP 에러:", frame);
+      toast({
+        title: "채팅 연결 오류",
+        description: "채팅 서버와의 연결에 실패했습니다.",
+      });
     };
 
-    client.activate();
-    setStompClient(client);
+    client.onWebSocketError = (event) => {
+      //console.error("WebSocket 에러:", event);
+      toast({
+        title: "채팅 연결 오류",
+        description: "채팅 서버와의 연결에 실패했습니다.",
+      });
+    };
+
+    try {
+      client.activate();
+      setStompClient(client);
+    } catch (error) {
+      //console.error("STOMP 클라이언트 활성화 실패:", error);
+      toast({
+        title: "STOMP 클라이언트 활성화 실패",
+        description: error?.toString(),
+      });
+    }
 
     return () => {
-      client.deactivate();
+      if (client.connected) {
+        client.deactivate();
+      }
     };
-  }, [chatRoomId]);
+  }, [chatRoomId, handleMessage]);
 
-  const sendMessage = () => {
-    if (stompClient && stompClient.connected && inputMessage.trim()) {
+  useEffect(() => {
+    const fetchMyUsername = async () => {
+      try {
+        const response = await client.GET("/api/members/details");
+
+        if (response.error) {
+          toast({
+            title: "사용자 정보 가져오기 실패",
+            description: response.error.msg,
+          });
+
+          return;
+        }
+
+        const username = response.data.username;
+
+        if (username) {
+          setMyUsername(username);
+          localStorage.setItem("username", username);
+        }
+      } catch (error) {
+        //console.error("사용자 정보 가져오기 실패:", error);
+        toast({
+          title: "사용자 정보 가져오기 실패",
+          description: error?.toString(),
+        });
+      }
+    };
+
+    // localStorage에 username이 없을 경우에만 API 요청
+    const storedUsername = localStorage.getItem("username");
+
+    if (!storedUsername) {
+      fetchMyUsername();
+    } else {
+      setMyUsername(storedUsername);
+    }
+  }, []);
+
+  const sendMessage = useCallback(
+    (message: string) => {
+      if (!stompClient?.connected || !chatRoomId) {
+        console.error("메시지 전송 실패: 연결되지 않음", {
+          connected: stompClient?.connected,
+          chatRoomId,
+        });
+        return;
+      }
+
       const messageData = {
         chat_room_id: chatRoomId,
-        sender_username: currentUsername,
-        content: inputMessage,
+        sender_username: myUsername,
+        content: message,
       };
 
-      console.log("Sending message:", messageData);
+      //console.log("메시지 전송 시도:", { messageData, chatRoomId });
 
-      stompClient.publish({
-        destination: "/chat/sendMessage",
-        body: JSON.stringify(messageData),
-      });
-      setInputMessage("");
+      const messageStr = JSON.stringify(messageData);
+
+      if (messageQueue.current.includes(messageStr)) {
+        console.log("중복 메시지 전송 방지:", messageStr);
+        return;
+      }
+
+      try {
+        stompClient.publish({
+          destination: "/chat/sendMessage",
+          body: messageStr,
+        });
+        messageQueue.current.push(messageStr);
+
+        // 메시지 큐 정리 (일정 시간 후)
+        setTimeout(() => {
+          messageQueue.current = messageQueue.current.filter(
+            (m) => m !== messageStr
+          );
+        }, 1000);
+
+        // 입력창 초기화
+        setInputMessage("");
+      } catch (error) {
+        //console.error("메시지 전송 실패:", error);
+        toast({
+          title: "메시지 전송 실패",
+          description: "메시지를 전송하는데 실패했습니다.",
+        });
+      }
+    },
+    [stompClient, chatRoomId, myUsername]
+  );
+
+  const handleClose = useCallback(() => {
+    if (hasClosedRoom.current) {
+      console.log("이미 종료된 채팅방");
+      return;
     }
-  };
 
-  const handleClose = () => {
-    if (stompClient && stompClient.connected && chatRoomId) {
-      // 상대방에게 채팅방 나감 메시지 전송
+    hasClosedRoom.current = true;
+
+    if (stompClient?.connected && chatRoomId) {
       const leaveMessage = {
         chat_room_id: chatRoomId,
-        sender_username: currentUsername,
+        sender_username: myUsername,
         content: `${nickname}님이 채팅방을 나갔습니다.`,
       };
 
-      stompClient.publish({
-        destination: "/chat/sendMessage",
-        body: JSON.stringify(leaveMessage),
-      });
-
-      // 웹소켓 연결 종료
+      sendMessage(leaveMessage.content);
       stompClient.deactivate();
     }
 
-    // 채팅방 상태 초기화
-    setChatRoomId(null);
+    setChatRoomId(0);
     setMessages([]);
     setInputMessage("");
     setStompClient(null);
-
-    // 부모 컴포넌트에 알림
     onClose();
-  };
+  }, [chatRoomId, myUsername, nickname, stompClient, onClose, sendMessage]);
 
-  // 컴포넌트 언마운트 시 정리
+  // cleanup effect
   useEffect(() => {
     return () => {
-      if (stompClient?.connected) {
-        const leaveMessage = {
-          chat_room_id: chatRoomId,
-          sender_username: currentUsername,
-          content: `${nickname}님이 채팅방을 나갔습니다.`,
-        };
-
-        stompClient.publish({
-          destination: "/chat/sendMessage",
-          body: JSON.stringify(leaveMessage),
-        });
-        stompClient.deactivate();
+      if (!hasClosedRoom.current && stompClient?.connected) {
+        handleClose();
       }
     };
-  }, [stompClient, chatRoomId, currentUsername, nickname]);
+  }, [handleClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col border border-gray-200">
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col border border-gray-200 z-[1000]">
       <div className="p-4 border-b flex justify-between items-center text-black">
         <h3 className="font-bold">{senderName}님과의 채팅</h3>
         <CircleX
@@ -177,9 +321,9 @@ const ChatWindow = ({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
-            key={message.id}
+            key={message.id || index}
             className={`mb-2 ${
               message.sender_name === nickname ? "text-right" : "text-left"
             }`}
@@ -205,9 +349,22 @@ const ChatWindow = ({
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           className="flex-1 border rounded-lg px-2 py-1"
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && inputMessage.trim()) {
+              sendMessage(inputMessage);
+            }
+          }}
         />
-        <Button onClick={sendMessage}>전송</Button>
+        <Button
+          onClick={() => {
+            if (inputMessage.trim()) {
+              sendMessage(inputMessage);
+            }
+          }}
+          disabled={!inputMessage.trim()}
+        >
+          전송
+        </Button>
       </div>
     </div>
   );

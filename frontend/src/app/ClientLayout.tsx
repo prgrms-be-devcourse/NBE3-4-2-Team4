@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import ThemeToggleButton from "@/lib/business/components/ThemeToggleButton";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
@@ -57,6 +57,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
     sender_name: string;
     sender_username: string;
     sender_id: number;
+    chat_room_id: number;
   }
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -83,6 +84,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const [showChat, setShowChat] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectMessage, setRejectMessage] = useState("");
+  const [myUsername, setMyUsername] = useState("");
 
   useEffect(() => {
     if (events.length > 0) {
@@ -90,37 +92,55 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       const parsedEvent: NotificationEvent =
         typeof latestEvent === "string" ? JSON.parse(latestEvent) : latestEvent;
 
-      // 채팅 요청 처리
+      // 채팅 요청 이벤트 처리
       if (parsedEvent.sender_username) {
-        console.log(
-          "Current chat state - activeChatUser:",
-          activeChatUser,
-          "showChat:",
-          showChat
-        );
+        // 현재 활성화된 채팅방 ID 확인
+        const currentChatRoomId = notification?.chat_room_id || 0;
+        const newChatRoomId = parsedEvent.chat_room_id || 0;
 
+        // 이미 채팅 중인 경우
         if (showChat || activeChatUser) {
-          // 현재 채팅 중인 사용자와 동일한 사용자의 요청은 무시
-          // if (parsedEvent.sender_username === activeChatUser) {
-          //   clearEvents();
-          //   return;
-          // }
+          // 같은 채팅방에서의 요청인 경우 무시
+          if (currentChatRoomId !== 0 && currentChatRoomId === newChatRoomId) {
+            clearEvents();
 
-          console.log("Sending reject notification - user is in chat");
-          const recipientId = parsedEvent.sender_id;
+            return;
+          }
+
+          // 다른 채팅방에서의 요청인 경우 거절
           client
-            .POST(`/api/notifications/reject/${recipientId}`, {
+            .POST(`/api/notifications/reject/${parsedEvent.sender_id}`, {
               body: {
                 message: `${nickname}님이 현재 다른 채팅에 참여 중입니다.`,
+                current_chat_room_id: currentChatRoomId,
               },
             })
             .then(() => {
               clearEvents();
+            })
+            .catch((error) => {
+              toast({
+                title: "거절 알림 전송 실패",
+                description: error,
+              });
+
+              clearEvents();
             });
         } else {
-          console.log("Opening chat request dialog");
+          // 새로운 채팅 요청 처리
           setNotification(parsedEvent);
           setIsOpen(true);
+          clearEvents();
+        }
+
+        return;
+      }
+
+      // 채팅 수락/거절 응답 처리
+      if (parsedEvent.message?.includes("수락")) {
+        if (!showChat && !activeChatUser) {
+          setShowChat(true);
+          setActiveChatUser(parsedEvent.sender_username);
         }
       } else if (
         parsedEvent.message &&
@@ -129,40 +149,48 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         (parsedEvent.message.includes("거절") ||
           parsedEvent.message.includes("다른 채팅에 참여 중"))
       ) {
-        // 채팅 중이 아닐 때만 거절 메시지 표시
         setRejectMessage(parsedEvent.message);
         setShowRejectDialog(true);
-        clearEvents();
       }
+
+      clearEvents();
     }
-  }, [events, activeChatUser, nickname, id, showChat]);
+  }, [events, activeChatUser, nickname, showChat, notification?.chat_room_id]);
 
-  const handleChatStart = (username: string) => {
-    if (!notification) return;
-    console.log("Starting chat with:", username);
-    console.log("Current notification:", notification);
-    setShowChat(true);
-    setActiveChatUser(username);
-    setIsOpen(false);
-    clearEvents(); // 채팅 시작 시 이벤트 초기화
-  };
+  const handleChatStart = useCallback(
+    (username: string) => {
+      if (!notification) return;
+      setShowChat(true);
+      setActiveChatUser(notification.sender_username);
+      setIsOpen(false);
+    },
+    [notification]
+  );
 
-  const handleChatEnd = () => {
-    console.log("Ending chat");
+  const handleChatEnd = useCallback(() => {
     setActiveChatUser(null);
     setShowChat(false);
     setNotification(null);
-    setIsOpen(false);
     clearEvents();
+  }, []);
+
+  const handleChatRoomCreated = (chatRoomId: number) => {
+    client.POST(`/api/notifications/accept/${notification.sender_id}`, {
+      body: {
+        message: `${nickname}님이 채팅 요청을 수락했습니다.`,
+        sender_name: nickname,
+        sender_username: myUsername,
+        sender_id: id,
+        chat_room_id: chatRoomId,
+      },
+    });
   };
 
-  // notification과 showChat 상태가 변경될 때마다 로그 출력
   useEffect(() => {
     console.log("Notification state:", notification);
     console.log("ShowChat state:", showChat);
   }, [notification, showChat]);
 
-  // 컴포넌트 언마운트 시 정리
   useEffect(() => {
     return () => {
       setActiveChatUser(null);
@@ -177,8 +205,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         title: decodeURIComponent(attendanceMessage),
         variant: "destructive",
       });
-      // alert()
-      router.push("/"); // 파라미터 제거된 URL로 이동
+      router.push("/");
     }
   }, [attendanceMessage]);
 
@@ -246,6 +273,7 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
       setNickname(result.nickname);
       setId(result.id);
       setRole(result.role);
+      setMyUsername(result.nickname || "");
     });
   }, []);
 
@@ -274,7 +302,6 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // AlertDialog의 onCancel 핸들러
   const handleChatReject = () => {
     if (notification) {
       client.POST(`/api/notifications/reject/${notification.sender_id}`, {
@@ -287,7 +314,6 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
     setNotification(null);
   };
 
-  // RejectDialog가 닫힐 때도 이벤트 초기화
   const handleRejectDialogClose = (open: boolean) => {
     setShowRejectDialog(open);
     if (!open) {
@@ -296,7 +322,6 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   if (isAuthenticated === null) {
-    // 로딩 중 상태에서는 레이아웃 깨지지 않도록 유지
     return (
       <NextThemesProvider
         attribute="class"
@@ -442,7 +467,6 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
-      {/* 채팅 요청 AlertDialog 사용 */}
       <AlertDialog
         open={isOpen}
         onOpenChange={setIsOpen}
@@ -452,32 +476,28 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         onCancel={handleChatReject}
       />
 
-      {/* 채팅창 렌더링 */}
       {showChat && notification && (
         <div className="fixed bottom-4 right-4 z-50">
           <ChatWindow
+            key={notification.sender_username}
             senderName={notification.sender_name}
             senderUsername={notification.sender_username}
+            senderId={notification.sender_id}
             onClose={handleChatEnd}
+            onChatRoomCreated={handleChatRoomCreated}
+            chatRoomId={notification.chat_room_id}
           />
         </div>
       )}
 
-      {/* 거절 메시지 다이얼로그 */}
       <RejectDialog
         open={showRejectDialog}
         onOpenChange={handleRejectDialogClose}
         message={rejectMessage}
       />
+
       <footer className="p-2 flex justify-center items-center">
         <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
-        {/* {role === "ADMIN" && (
-          <Button variant="link" asChild>
-            <Link href="/adm">
-              <Settings /> 관리자 홈
-            </Link>
-          </Button>
-        )} */}
       </footer>
     </NextThemesProvider>
   );
