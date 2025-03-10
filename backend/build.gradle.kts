@@ -66,6 +66,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 }
 
 kotlin {
