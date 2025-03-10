@@ -10,6 +10,10 @@ plugins {
 group = "com"
 version = "0.0.1-SNAPSHOT"
 
+kapt {
+	keepJavacAnnotationProcessors = true
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
