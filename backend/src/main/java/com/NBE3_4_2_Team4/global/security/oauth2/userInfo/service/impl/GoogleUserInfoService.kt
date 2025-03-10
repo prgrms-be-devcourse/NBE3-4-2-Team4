@@ -4,7 +4,9 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.OAuth2UserInfo
 import com.NBE3_4_2_Team4.global.security.oauth2.userInfo.service.OAuth2UserInfoService
 import org.springframework.security.oauth2.core.user.OAuth2User
+import org.springframework.stereotype.Service
 
+@Service
 class GoogleUserInfoService(): OAuth2UserInfoService {
     override fun getOAuth2Provider(): Member.OAuth2Provider {
         return Member.OAuth2Provider.GOOGLE
