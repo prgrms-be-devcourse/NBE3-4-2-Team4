@@ -21,7 +21,7 @@ class GoogleDisconnectService(
 
     override fun getProvider(): Member.OAuth2Provider = Member.OAuth2Provider.GOOGLE
 
-    override fun disconnectSuccess(refreshToken: String): Boolean {
+    override fun disconnectSuccess(refreshToken: String?): Boolean {
         val googleDisconnectUrl = "https://oauth2.googleapis.com/revoke"
 
         val accessToken = googleTokenService.getFreshAccessToken(refreshToken) ?: return false
