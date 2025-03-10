@@ -33,18 +33,18 @@ class OAuth2AutoDisconnectScheduler(
                 redisTemplate.opsForValue()[key],
                 TempUserBeforeSignUp::class.java
             )
-            val oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUserBeforeSignUp.providerTypeCode)
+            val oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUserBeforeSignUp.getProviderTypeCode())
 
             val oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuth2Provider)
-            val refreshToken = tempUserBeforeSignUp.refreshToken
+            val refreshToken = tempUserBeforeSignUp.getRefreshToken()
 
-            if (oAuth2DisconnectService.disconnectSuccess(refreshToken)) {
+            if (oAuth2DisconnectService!!.disconnectSuccess(refreshToken)) {
                 redisTemplate.delete(key)
             } else {
                 log.error(
                     "OAuth2 연동 해제 실패. (연동 해제 요청이 실패했습니다.) 해당 서비스에 직접 연결 해제를 시도하세요. OAuth2Provider : {}, OAuth2Id : {}",
                     oAuth2Provider,
-                    tempUserBeforeSignUp.oAuth2Id
+                    tempUserBeforeSignUp.getOAuth2Id()
                 )
             }
         }

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class CustomOAuth2AccessTokenResponseClient(
-    private val tokenResponseClient: RestClientAuthorizationCodeTokenResponseClient
 ): OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>{
+    private val tokenResponseClient: RestClientAuthorizationCodeTokenResponseClient
+    = RestClientAuthorizationCodeTokenResponseClient()
+
     private val log = LoggerFactory.getLogger(CustomOAuth2AccessTokenResponseClient::class.java)
 
     override fun getTokenResponse(authorizationGrantRequest: OAuth2AuthorizationCodeGrantRequest?): OAuth2AccessTokenResponse {
