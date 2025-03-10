@@ -37,29 +37,8 @@ abstract class GenFile<T : BaseEntity> : BaseEntity() {
     lateinit var fileName: String
     var fileSize: Int = 0
 
-    val modelName: String
-        get() {
-            val simpleName = javaClass.simpleName
-            return Ut.str.lcfirst(simpleName)
-        }
-
     val filePath: String
         get() = "${AppConfig.getGenFileDirPath()}/${modelName}/${typeCodeAsStr}/${fileDateDir}/${fileName}"
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || other !is GenFile<*>) return false
-
-        if (id == null || other.id == null) return false
-
-        if (modelName != other.modelName) return false
-
-        return id == other.id
-    }
-
-    override fun hashCode(): Int {
-        return id?.hashCode() ?: 0
-    }
 
     private val ownerModelName: String
         get() = modelName.replace("GenFile", "")
