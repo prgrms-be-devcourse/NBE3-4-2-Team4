@@ -11,10 +11,23 @@ export const UsernameContext = createContext<{
 export const useUsername = () => useContext(UsernameContext);
 
 export const UsernameProvider = ({ children }: { children: ReactNode }) => {
-  const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(
+    () => localStorage.getItem("username") // 초기값으로 localStorage에서 가져옴
+  );
+
+  const handleSetUsername = (value: string | null) => {
+    setUsername(value);
+    if (value) {
+      localStorage.setItem("username", value);
+    } else {
+      localStorage.removeItem("username");
+    }
+  };
 
   return (
-    <UsernameContext.Provider value={{ username, setUsername }}>
+    <UsernameContext.Provider
+      value={{ username, setUsername: handleSetUsername }}
+    >
       {children}
     </UsernameContext.Provider>
   );

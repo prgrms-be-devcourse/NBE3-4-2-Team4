@@ -4,10 +4,19 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import client from "@/lib/backend/client";
 import type { components } from "@/lib/backend/apiV1/schema";
+import { useUsername } from "@/context/UsernameContext";
+import { useNickname } from "@/context/NicknameContext";
+import { CircleX } from "lucide-react";
 
 type ChatMessage = {
+  id: number;
+  createdAt: string;
   chatRoomId: number;
+  senderId: number;
+  senderName: string;
   content: string;
+  isRead: boolean;
+  readAt: string | null;
 };
 
 const ChatWindow = ({
@@ -23,6 +32,11 @@ const ChatWindow = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
+  const { username } = useUsername();
+  const { nickname } = useNickname();
+
+  // localStorage에서 직접 username을 가져옵니다
+  const currentUsername = username || localStorage.getItem("username");
 
   useEffect(() => {
     // 채팅방 생성
@@ -31,7 +45,7 @@ const ChatWindow = ({
         const response = await client.POST("/api/chatRooms", {
           body: {
             recipient_username: senderUsername,
-            name: `${senderName}과의 채팅`,
+            name: `${senderName}님과의 채팅`,
           },
         });
 
@@ -50,10 +64,17 @@ const ChatWindow = ({
   }, [setChatRoomId]);
 
   useEffect(() => {
-    if (!chatRoomId) return; // chatRoomId가 없으면 연결 시도하지 않음
+    if (!chatRoomId) return;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      webSocketFactory: () =>
+        new SockJS("http://localhost:8080/ws", null, {
+          transports: ["websocket"],
+        }),
+      connectHeaders: {
+        // JWT 토큰을 헤더에 추가
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
       debug: function (str) {
         console.log("STOMP: " + str);
       },
@@ -84,24 +105,53 @@ const ChatWindow = ({
 
   const sendMessage = () => {
     if (stompClient && stompClient.connected && inputMessage.trim()) {
+      const messageData = {
+        chat_room_id: chatRoomId,
+        sender_username: currentUsername,
+        content: inputMessage,
+      };
+
+      console.log("Sending message:", messageData);
+
       stompClient.publish({
         destination: "/chat/sendMessage",
-        body: JSON.stringify({
-          chatRoomId: chatRoomId,
-          content: inputMessage,
-        }),
+        body: JSON.stringify(messageData),
       });
       setInputMessage("");
     }
   };
 
+  const handleClose = () => {
+    if (stompClient && stompClient.connected && chatRoomId) {
+      // 상대방에게 채팅방 나감 메시지 전송
+      const leaveMessage = {
+        chat_room_id: chatRoomId,
+        sender_username: currentUsername,
+        content: `${nickname}님이 채팅방을 나갔습니다.`,
+      };
+
+      stompClient.publish({
+        destination: "/chat/sendMessage",
+        body: JSON.stringify(leaveMessage),
+      });
+
+      // 웹소켓 연결 종료
+      stompClient.deactivate();
+    }
+
+    // 채팅방 닫기
+    onClose();
+  };
+
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col">
-      <div className="p-4 border-b flex justify-between items-center">
-        <h3 className="font-bold">{senderName}과의 채팅</h3>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          X
-        </Button>
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col border border-gray-200">
+      <div className="p-4 border-b flex justify-between items-center text-black">
+        <h3 className="font-bold">{senderName}님과의 채팅</h3>
+        <CircleX
+          size={32}
+          className="cursor-pointer hover:text-gray-600"
+          onClick={handleClose}
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
@@ -109,11 +159,19 @@ const ChatWindow = ({
           <div
             key={message.id}
             className={`mb-2 ${
-              message.sender === "user" ? "text-right" : "text-left"
+              message.sender_name === nickname ? "text-right" : "text-left"
             }`}
           >
-            <span className="inline-block p-2 rounded-lg bg-blue-100">
-              {message.text}
+            <span
+              className={`inline-block px-3 py-1 rounded-md text-sm
+              ${
+                message.sender_name === nickname
+                  ? "bg-gray-800 text-white"
+                  : "bg-gray-100 text-black"
+              }
+              `}
+            >
+              {message.content}
             </span>
           </div>
         ))}

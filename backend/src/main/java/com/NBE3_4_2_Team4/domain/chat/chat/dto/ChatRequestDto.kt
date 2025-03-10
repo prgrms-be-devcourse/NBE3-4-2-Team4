@@ -8,6 +8,6 @@ data class ChatRequestDto(
     @field:NotBlank
     @field:Size(min = 1)
     val content: String,
-
+    val senderUsername: String,
     val chatRoomId: Long
 )

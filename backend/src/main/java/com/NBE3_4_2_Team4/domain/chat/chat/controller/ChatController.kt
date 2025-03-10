@@ -21,7 +21,7 @@ class ChatController(
         @PathVariable chatRoomId: Long,
         @RequestBody @Valid reqBody: ChatRequestDto,
     ): RsData<ChatDto> {
-        val chat = chatService.write(chatRoomId, reqBody.content)
+        val chat = chatService.write(chatRoomId, reqBody.senderUsername, reqBody.content)
 
         return RsData(
             "201-1",

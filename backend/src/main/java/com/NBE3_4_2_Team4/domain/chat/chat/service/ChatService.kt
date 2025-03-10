@@ -6,15 +6,16 @@ import com.NBE3_4_2_Team4.domain.chat.chat.repository.ChatRepository
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.entity.ChatRoom
 import com.NBE3_4_2_Team4.domain.chat.chatRoom.service.ChatRoomService
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.domain.member.member.service.MemberService
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
-import com.NBE3_4_2_Team4.global.security.AuthManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ChatService(
     private val chatRepository: ChatRepository,
-    private val chatRoomService: ChatRoomService
+    private val chatRoomService: ChatRoomService,
+    private val memberService: MemberService
 ) {
     fun count(): Long {
         return chatRepository.count()
@@ -32,12 +33,18 @@ class ChatService(
     @Transactional
     fun write(
         chatRoomId: Long,
+        senderUsername: String,
         content: String
     ): ChatDto {
         val chatRoom = chatRoomService.findById(chatRoomId)
-        val actor = AuthManager.getNonNullMember()
+        val sender = memberService.findByUsername(senderUsername).orElseThrow {
+            ServiceException(
+                "404-2",
+                "해당 유저가 존재하지 않습니다."
+            )
+        }
 
-        return ChatDto(save(chatRoom, actor, content))
+        return ChatDto(save(chatRoom, sender, content))
     }
 
     fun save(chatRoom: ChatRoom, sender: Member, content: String): Chat {
