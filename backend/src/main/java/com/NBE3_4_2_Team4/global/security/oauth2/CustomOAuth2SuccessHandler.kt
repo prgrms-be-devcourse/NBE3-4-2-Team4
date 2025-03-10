@@ -54,7 +54,7 @@ class CustomOAuth2SuccessHandler (
         var targetUrl = req.getParameter("state")
 
         if (member.isFirstLoginToday()) {
-            pointService.attend(member.id)
+            pointService.attend(member.id!!)
 
             targetUrl += String.format(
                 "?attendanceMessage=%s",

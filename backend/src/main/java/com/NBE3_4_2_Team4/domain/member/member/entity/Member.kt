@@ -16,7 +16,6 @@ import java.time.LocalDateTime
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 class Member(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -81,11 +80,11 @@ class Member(
     }
 
     override fun hashCode(): Int {
-        return id?.hashCode() ?: 0
+        return id.hashCode()
     }
 
     companion object {
-        fun from(id: Long?, username: String, nickname: String, roleName: String, oAuth2ProviderName: String, emailAddress: String?, emailVerified: Boolean): Member {
+        fun from(id: Long, username: String, nickname: String, roleName: String, oAuth2ProviderName: String, emailAddress: String?, emailVerified: Boolean): Member {
             return Member(
                 id = id,
                 username = username,

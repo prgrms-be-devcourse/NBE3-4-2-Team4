@@ -20,4 +20,6 @@ interface MemberRepository : JpaRepository<Member, Long> {
     fun findByIdWithLock(@Param("id") id: Long): Member?
 
     fun existsByUsername(username: String): Boolean
+
+    fun findByNickname(nickname: String): Member?
 }

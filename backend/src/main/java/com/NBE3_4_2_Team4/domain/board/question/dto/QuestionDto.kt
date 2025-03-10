@@ -36,7 +36,7 @@ data class QuestionDto(
         closed = question.closed,
         amount = question.amount,
         assetType = question.assetType,
-        authorId = question.author.id
+        authorId = question.author.id!!
     )
 }
 

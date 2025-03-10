@@ -60,7 +60,7 @@ class AssetHistoryService (
         val pageable: Pageable = PageRequest.of(assetHistoryReq.page - 1, size, Sort.by("createdAt").descending())
         return PageDto(assetHistoryRepository
             .findByFilters(
-                member.id,
+                member.id!!,
                 assetHistoryReq.assetCategory,
                 assetHistoryReq.assetType,
                 assetHistoryReq.startDateTime,

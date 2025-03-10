@@ -24,7 +24,7 @@ class QuestionCategoryController(
     @PostMapping
     @Operation(summary = "카테고리 추가", description = "카테고리 추가하기")
     fun createCategory(@RequestBody reqBody: QuestionCategoryReqDto): RsData<QuestionCategoryDto> {
-        val actor = AuthManager.getMemberFromContext()
+        val actor = AuthManager.getNonNullMember()
         return RsData(
             "201-1",
             "카테고리 추가 성공",
@@ -35,7 +35,7 @@ class QuestionCategoryController(
     @DeleteMapping("/{id}")
     @Operation(summary = "카테고리 삭제", description = "카테고리 삭제하기")
     fun deleteCategory(@PathVariable id: Long): RsData<Void> {
-        val actor = AuthManager.getMemberFromContext()
+        val actor = AuthManager.getNonNullMember()
         questionCategoryService.deleteCategory(actor, id)
 
         return RsData(

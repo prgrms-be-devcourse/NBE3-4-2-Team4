@@ -24,7 +24,7 @@ class PointController (
     @Operation(summary = "출석요청", description = "출석요청이 이미 완료이면 에러")
     fun attendance(): RsData<Empty> {
         val member = AuthManager.getNonNullMember()
-        pointService.attend(member.id)
+        pointService.attend(member.id!!)
 
         return RsData(
             "200-1",

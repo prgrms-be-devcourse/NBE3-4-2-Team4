@@ -146,13 +146,13 @@ class MemberService (
     private fun saveSignupPoints(member: Member) {
         try {
             assetHistoryRepository.save(
-                AssetHistory.builder()
-                    .member(member)
-                    .amount(PointConstants.INITIAL_POINT)
-                    .assetCategory(AssetCategory.SIGN_UP)
-                    .assetType(AssetType.POINT)
-                    .correlationId("asdsaaddasasddsa")
-                    .build()
+                AssetHistory(
+                    member = member,
+                    amount = PointConstants.INITIAL_POINT,
+                    assetCategory = AssetCategory.SIGN_UP,
+                    assetType = AssetType.POINT,
+                    correlationId = "asdsaaddasasddsa"
+                )
             )
             member.point = Point(PointConstants.INITIAL_POINT)
         } catch (e: Exception) {
