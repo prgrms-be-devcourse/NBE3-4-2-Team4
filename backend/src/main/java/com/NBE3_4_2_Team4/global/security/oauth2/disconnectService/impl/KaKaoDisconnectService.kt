@@ -16,7 +16,7 @@ class KaKaoDisconnectService (
     private val kakaoTokenService: KakaoTokenService,
     private val restTemplate: RestTemplate
 ) : OAuth2DisconnectService {
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(KaKaoDisconnectService::class.java)
     private final val KAKAO_UNLINK_URL: String = "https://kapi.kakao.com/v1/user/unlink"
 
     override fun getProvider(): Member.OAuth2Provider {
