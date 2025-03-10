@@ -35,7 +35,9 @@ class ChatControllerTest {
                     .content(
                         """
                         {
-                            "content": "새로운 채팅"
+                            "content": "새로운 채팅",
+                            "sender_username": "admin@test.com",
+                            "chat_room_id": "1"
                         }
                         """.trimIndent()
                     )
