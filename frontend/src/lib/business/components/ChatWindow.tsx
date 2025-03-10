@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import client from "@/lib/backend/client";
-import type { components } from "@/lib/backend/apiV1/schema";
-import { useUsername } from "@/context/UsernameContext";
 import { useNickname } from "@/context/NicknameContext";
 import { CircleX } from "lucide-react";
 
@@ -28,15 +26,14 @@ const ChatWindow = ({
   senderUsername: string;
   onClose: () => void;
 }) => {
+  const [chatRoomId, setChatRoomId] = useState<number | null>(null);
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [chatRoomId, setChatRoomId] = useState<number | null>(null);
-  const { username } = useUsername();
   const { nickname } = useNickname();
+  const currentUsername = localStorage.getItem("username");
 
-  // localStorage에서 직접 username을 가져옵니다
-  const currentUsername = username || localStorage.getItem("username");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 채팅방 생성
@@ -139,9 +136,34 @@ const ChatWindow = ({
       stompClient.deactivate();
     }
 
-    // 채팅방 닫기
+    // 채팅방 상태 초기화
+    setChatRoomId(null);
+    setMessages([]);
+    setInputMessage("");
+    setStompClient(null);
+
+    // 부모 컴포넌트에 알림
     onClose();
   };
+
+  // 컴포넌트 언마운트 시 정리
+  useEffect(() => {
+    return () => {
+      if (stompClient?.connected) {
+        const leaveMessage = {
+          chat_room_id: chatRoomId,
+          sender_username: currentUsername,
+          content: `${nickname}님이 채팅방을 나갔습니다.`,
+        };
+
+        stompClient.publish({
+          destination: "/chat/sendMessage",
+          body: JSON.stringify(leaveMessage),
+        });
+        stompClient.deactivate();
+      }
+    };
+  }, [stompClient, chatRoomId, currentUsername, nickname]);
 
   return (
     <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col border border-gray-200">

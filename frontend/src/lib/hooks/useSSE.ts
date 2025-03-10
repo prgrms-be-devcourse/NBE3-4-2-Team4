@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface NotificationEvent {
   message: string;
   sender_name: string;
   sender_username: string;
+  sender_id: number;
 }
 
 
@@ -11,8 +12,18 @@ const useSSE = (userId: number | null) => {
   const [events, setEvents] = useState<NotificationEvent[]>([]);
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
 
-  const connectSSE = () => {
-    if (!userId) return null; // userId가 없으면 연결하지 않음
+  const clearEvents = () => {
+    setEvents([]);
+  };
+
+  useEffect(() => {
+    if (!userId) {
+      if (eventSource) {
+        eventSource.close();
+        setEventSource(null);
+      }
+      return;
+    }
 
     const es = new EventSource(`http://localhost:8080/api/notifications/${userId}`);
     setEventSource(es);
@@ -27,20 +38,14 @@ const useSSE = (userId: number | null) => {
       es.close();
       setEventSource(null);
       
-      // userId가 있을 때만 재연결 시도
       if (userId) {
         console.log("재연결 시도...");
         setTimeout(() => {
-          connectSSE();
+          const newEs = new EventSource(`http://localhost:8080/api/notifications/${userId}`);
+          setEventSource(newEs);
         }, 1000);
       }
     };
-
-    return es;
-  };
-
-  useEffect(() => {
-    const es = connectSSE();
 
     return () => {
       if (es) {
@@ -50,18 +55,16 @@ const useSSE = (userId: number | null) => {
     };
   }, [userId]);
 
-  // 🔹 외부에서 SSE 종료할 수 있도록 함수 반환
   const closeSSE = () => {
     if (eventSource) {
       eventSource.close();
-
       setEventSource(null);
-
+      setEvents([]);
       console.log("SSE 연결 종료");
     }
   };
 
-  return { events, closeSSE };
+  return { events, closeSSE, clearEvents };
 };
 
 export default useSSE;

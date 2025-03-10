@@ -1,5 +1,6 @@
 package com.NBE3_4_2_Team4.domain.sse.controller
 
+import com.NBE3_4_2_Team4.domain.sse.dto.RejectNotificationRequest
 import com.NBE3_4_2_Team4.domain.sse.service.NotificationService
 import com.NBE3_4_2_Team4.global.rsData.RsData
 import com.NBE3_4_2_Team4.standard.base.Empty
@@ -38,6 +39,21 @@ class NotificationController(
         return RsData(
             "200-1",
             "채팅 참여 요청이 전송되었습니다."
+        )
+    }
+
+    @PostMapping("/reject/{recipientId}")  // 채팅 거절 알림
+    fun sendRejectNotification(
+        @PathVariable recipientId: Long,
+        @RequestBody request: RejectNotificationRequest
+    ): RsData<Empty> {
+        notificationService.sendRejectNotification(
+            recipientId = recipientId,
+            message = request.message
+        )
+        return RsData(
+            "200-2",
+            "거절 알림이 전송되었습니다."
         )
     }
 }

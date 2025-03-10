@@ -1,6 +1,7 @@
 package com.NBE3_4_2_Team4.domain.sse.service
 
 import com.NBE3_4_2_Team4.domain.sse.dto.ChatNotification
+import com.NBE3_4_2_Team4.domain.sse.dto.RejectNotificationRequest
 import com.NBE3_4_2_Team4.global.security.AuthManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
@@ -31,7 +32,8 @@ class NotificationService(
         val notification = ChatNotification(
             message = "새로운 채팅 요청이 있습니다.",
             senderName = actor.nickname,
-            senderUsername = actor.username
+            senderUsername = actor.username,
+            senderId = actor.id
         )
         sendNotification(recipientId, notification)
     }
@@ -45,6 +47,25 @@ class NotificationService(
             // 연결이 끊어졌거나 타임아웃 발생 시 예외 처리
             emitterMap[recipientId]?.completeWithError(e)
             emitterMap.remove(recipientId)  // 오류가 발생한 클라이언트는 제거
+        }
+    }
+
+    fun sendRejectNotification(recipientId: Long, message: String) {
+        try {
+            val notification = RejectNotificationRequest(
+                message = message
+            )
+
+            val emitter = emitterMap[recipientId]
+            emitter?.send(
+                SseEmitter.event()
+                    .data(notification)
+                    .build()
+            )
+        } catch (e: Exception) {
+            // 에러 발생 시 해당 emitter 제거
+            emitterMap.remove(recipientId)
+            throw e
         }
     }
 }

@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,49 +6,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ChatWindow from "./ChatWindow";
+import { Button } from "@/components/ui/button";
+
+interface AlertDialogProps {
+  title: string;
+  description?: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
 const AlertDialog = ({
-  message,
-  senderName,
-  senderUsername,
+  title,
+  description,
   open,
-  onClose,
-}: {
-  message: string;
-  senderName: string;
-  senderUsername: string;
-  open: boolean;
-  onClose: () => void;
-}) => {
-  const [showChat, setShowChat] = useState(false);
-
-  const onClick = () => {
-    setShowChat(true);
-    onClose();
-  };
-
+  onOpenChange,
+  onConfirm,
+  onCancel,
+}: AlertDialogProps) => {
   return (
-    <>
-      <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>알림</DialogTitle>
-          </DialogHeader>
-          <DialogDescription>{message}</DialogDescription>
-          <DialogFooter>
-            <Button onClick={onClick}>채팅하기</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {showChat && (
-        <ChatWindow
-          onClose={() => setShowChat(false)}
-          senderName={senderName}
-          senderUsername={senderUsername}
-        />
-      )}
-    </>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>{description}</DialogDescription>
+        <DialogFooter>
+          <Button onClick={onConfirm}>수락</Button>
+          <Button variant="outline" onClick={onCancel}>
+            거절
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
