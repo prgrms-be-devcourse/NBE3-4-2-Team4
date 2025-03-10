@@ -49,9 +49,11 @@ class NotificationControllerTest {
     fun `알림 전송 테스트`() {
         val recipientId = 1L
         val senderName = "Sender"
+        val senderUserName = "SenderUsername"
         val notification = ChatNotification(
             message = "새로운 채팅 요청이 있습니다.",
-            senderName = senderName
+            senderName = senderName,
+            senderUsername = senderUserName
         )
 
         // 알림을 보내는 서비스 호출을 검증

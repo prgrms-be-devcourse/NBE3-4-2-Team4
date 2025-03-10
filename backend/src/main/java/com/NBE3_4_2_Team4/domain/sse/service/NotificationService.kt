@@ -30,7 +30,8 @@ class NotificationService(
 
         val notification = ChatNotification(
             message = "새로운 채팅 요청이 있습니다.",
-            senderName = actor.nickname
+            senderName = actor.nickname,
+            senderUsername = actor.username
         )
         sendNotification(recipientId, notification)
     }

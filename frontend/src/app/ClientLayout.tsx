@@ -49,6 +49,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 }
 
 function ClientLayoutContent({ children }: { children: React.ReactNode }) {
+  interface NotificationEvent {
+    message: string;
+    sender_name: string;
+    sender_username: string;
+  }
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { nickname } = useNickname();
   const { setNickname } = useNickname();
@@ -65,11 +71,21 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { toast } = useToast();
   const { events, closeSSE } = useSSE(id ?? null);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [notification, setNotification] = useState<NotificationEvent | null>(
+    null
+  );
 
   useEffect(() => {
     if (events.length > 0) {
-      setNotification(events[events.length - 1]); // 마지막 알림을 사용
+      const latestEvent = events[events.length - 1];
+      const parsedEvent =
+        typeof latestEvent === "string" ? JSON.parse(latestEvent) : latestEvent;
+
+      setNotification(parsedEvent);
+      setIsOpen(true);
     }
   }, [events]);
 
@@ -323,7 +339,15 @@ function ClientLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
-      {notification && <AlertDialog message={notification} />}
+      {notification && (
+        <AlertDialog
+          message={notification.message}
+          senderName={notification.sender_name}
+          senderUsername={notification.sender_username}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
       <footer className="p-2 flex justify-center items-center">
         <Copyright className="w-4 h-4 mr-1" /> 2025 WikiPoint
         {/* {role === "ADMIN" && (

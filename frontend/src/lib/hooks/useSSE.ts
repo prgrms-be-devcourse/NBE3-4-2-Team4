@@ -1,34 +1,52 @@
 import { useEffect, useState } from "react";
 
-const useSSE = (userId: number | null) => {
-  const [events, setEvents] = useState<string[]>([]);
-  const [eventSource, setEventSource] = useState<EventSource | null>(null); // 상태로 관리
+interface NotificationEvent {
+  message: string;
+  sender_name: string;
+  sender_username: string;
+}
 
-  useEffect(() => {
-    if (!userId) return; // userId가 없으면 SSE 실행 X
+
+const useSSE = (userId: number | null) => {
+  const [events, setEvents] = useState<NotificationEvent[]>([]);
+  const [eventSource, setEventSource] = useState<EventSource | null>(null);
+
+  const connectSSE = () => {
+    if (!userId) return null; // userId가 없으면 연결하지 않음
 
     const es = new EventSource(`http://localhost:8080/api/notifications/${userId}`);
-
-    setEventSource(es); // 현재 SSE 인스턴스를 저장
+    setEventSource(es);
 
     es.onmessage = (event) => {
       console.log("받은 알림:", event.data);
-
       setEvents((prev) => [...prev, event.data]);
     };
 
     es.onerror = () => {
-      console.log("SSE 연결 오류 발생, 연결 종료");
-
+      console.log("SSE 연결 오류 발생");
       es.close();
-
-      setEventSource(null); // 종료 후 상태 초기화
+      setEventSource(null);
+      
+      // userId가 있을 때만 재연결 시도
+      if (userId) {
+        console.log("재연결 시도...");
+        setTimeout(() => {
+          connectSSE();
+        }, 1000);
+      }
     };
 
-    return () => {
-      es.close();
+    return es;
+  };
 
-      setEventSource(null); // 언마운트 시 정리
+  useEffect(() => {
+    const es = connectSSE();
+
+    return () => {
+      if (es) {
+        es.close();
+        setEventSource(null);
+      }
     };
   }, [userId]);
 

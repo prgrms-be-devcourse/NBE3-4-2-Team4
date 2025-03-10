@@ -28,6 +28,7 @@ import Pagination1 from "@/lib/business/components/Pagination1";
 import client from "@/lib/backend/client";
 import { AttachmentFiles } from "@/lib/business/components/AttachmentFiles";
 import { useRole } from "@/context/RoleContext";
+import NameButton from "@/lib/business/components/NameButton";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -82,10 +83,10 @@ export default function ClientPage({
 
   const writeMessage = (senderName: string) => {
     if (senderName) {
-      localStorage.setItem('senderName', senderName);
+      localStorage.setItem("senderName", senderName);
     }
     router.push("/message/write");
-  }
+  };
 
   return (
     <div className="container mx-auto px-4">
@@ -113,8 +114,10 @@ export default function ClientPage({
               </Badge>
               <span>{question.title}</span>
               {question.name != nickname && id && (
-                <Button className="ml-auto bg-gray-400 hover:bg-gray-500"
-                onClick={() => writeMessage(question.name)}>
+                <Button
+                  className="ml-auto bg-gray-400 hover:bg-gray-500"
+                  onClick={() => writeMessage(question.name)}
+                >
                   <Link href="/message/write">쪽지 쓰기</Link>
                 </Button>
               )}
@@ -144,10 +147,22 @@ export default function ClientPage({
                   <Coins size={16} />
                   {question.amount}
                 </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Pencil width={14} height={14} />
-                  {question.name}
-                </Badge>
+                {nickname != question.name ? (
+                  <NameButton
+                    recipientId={question.authorId}
+                    name={question.name}
+                    variant="secondary"
+                    icon={Pencil}
+                  />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    <Pencil width={14} height={14} />
+                    {question.name}
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-400 mt-2">
                 <Clock width={14} height={14} />
