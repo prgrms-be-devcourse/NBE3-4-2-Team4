@@ -1,69 +1,59 @@
-package com.NBE3_4_2_Team4.domain.product.product.dto;
+package com.NBE3_4_2_Team4.domain.product.product.dto
 
-import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory
+import com.NBE3_4_2_Team4.domain.product.product.entity.Product
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState
+import com.fasterxml.jackson.annotation.JsonInclude
+import jakarta.validation.constraints.NotBlank
 
-public class ProductRequestDto {
+class ProductRequestDto {
 
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class writeItem {
+    data class WriteItem(
 
-        @NotBlank(message = "상품 이름은 필수 입력 값입니다.")
-        private String productName;
+        @field:NotBlank(message = "상품 이름은 필수 입력 값입니다.")
+        val productName: String,
 
-        @NotBlank(message = "상품 가격은 필수 입력 값입니다.")
-        private int productPrice;
+        @field:NotBlank(message = "상품 가격은 필수 입력 값입니다.")
+        val productPrice: Int,
 
-        @NotBlank(message = "상품 설명은 필수 입력 값입니다.")
-        private String productDescription;
+        @field:NotBlank(message = "상품 설명은 필수 입력 값입니다.")
+        val productDescription: String,
 
-        @NotBlank(message = "상품 이미지는 필수 입력 값입니다.")
-        private String productImageUrl;
+        @field:NotBlank(message = "상품 이미지는 필수 입력 값입니다.")
+        val productImageUrl: String,
 
-        @NotBlank(message = "상품 카테고리는 필수 입력 값입니다.")
-        private String productCategory;
+        @field:NotBlank(message = "상품 카테고리는 필수 입력 값입니다.")
+        val productCategory: String,
 
-        @NotBlank(message = "상품 판매 상태는 필수 입력 값입니다.")
-        private String productSaleState;
+        @field:NotBlank(message = "상품 판매 상태는 필수 입력 값입니다.")
+        val productSaleState: String
+    ) {
 
-        public Product toProduct(ProductCategory productCategory, ProductSaleState productSaleState) {
-            return Product.builder()
-                    .name(productName)
-                    .price(productPrice)
-                    .description(productDescription)
-                    .imageUrl(productImageUrl)
-                    .category(productCategory)
-                    .saleState(productSaleState)
-                    .build();
+        fun toProduct(category: ProductCategory, saleState: ProductSaleState): Product {
+            return Product(
+                name = productName,
+                price = productPrice,
+                description = productDescription,
+                imageUrl = productImageUrl,
+                category = category,
+                saleState = saleState
+            )
         }
     }
 
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)  // Not Null인 필드만 Json에 추가되도록 설정
-    public static class updateItem {
+    @JsonInclude(JsonInclude.Include.NON_NULL)  // Null이 아닌 필드만 JSON에 포함
+    data class UpdateItem(
 
-        private String productName;
+        val productName: String? = null,
 
-        private Integer productPrice;
+        val productPrice: Int? = null,
 
-        private String productDescription;
+        val productDescription: String? = null,
 
-        private String productImageUrl;
+        val productImageUrl: String? = null,
 
-        private String productCategory;
+        val productCategory: String? = null,
 
-        private String productSaleState;
-    }
+        val productSaleState: String? = null
+    )
 }
