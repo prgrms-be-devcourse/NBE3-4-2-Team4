@@ -3,8 +3,10 @@ package com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.service
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+@Service
 @Transactional
 class OAuth2RefreshTokenService(
     val oAuth2RefreshTokenRepository: OAuth2RefreshTokenRepository
