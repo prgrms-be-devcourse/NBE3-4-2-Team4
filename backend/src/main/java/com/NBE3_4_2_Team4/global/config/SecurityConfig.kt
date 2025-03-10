@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.authorization.AuthorizationManager
+import org.springframework.security.authorization.AuthorizationResult
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.*
@@ -29,6 +30,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -39,8 +41,8 @@ class SecurityConfig(
     val customJwtFilter: CustomJwtFilter,
     val oAuth2RequestResolver: CustomOAuth2RequestResolver,
     val oAuth2SuccessHandler: CustomOAuth2SuccessHandler,
-    val authenticationEntryPoint: CustomAuthenticationEntryPoint,
-    val accessDeniedHandler: CustomAccessDeniedHandler,
+    val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    val customAccessDeniedHandler: CustomAccessDeniedHandler,
     val accessTokenResponseClient: CustomOAuth2AccessTokenResponseClient
 ) {
     @Bean
@@ -68,7 +70,8 @@ class SecurityConfig(
                     authorize(HttpMethod.GET, "/api/points/**", permitAll)
                     authorize("/api/points/**", authenticated)
 
-                    authorize("/api/test", access =  )
+                    authorize(HttpMethod.GET, "/api/test", permitAll)
+                    authorize("/api/test", needEmailVerified())
                     authorize(anyRequest, permitAll)
                 }
                 sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
@@ -79,8 +82,8 @@ class SecurityConfig(
                     }
                 }
                 exceptionHandling {
-                    authenticationEntryPoint
-                    accessDeniedHandler
+                    customAuthenticationEntryPoint
+                    customAccessDeniedHandler
                 }
                 oauth2Login {
                     oAuth2SuccessHandler
@@ -110,29 +113,21 @@ class SecurityConfig(
         return AuthorizationDecision(isEmailVerified(auth))
     }
 
-    private fun needEmailVerified(
-        req: AuthorizeHttpRequestsConfigurer<*>.AuthorizationManagerRequestMatcherRegistry,
-        pattern: String
-    ) {
-        req.requestMatchers(HttpMethod.POST, pattern).access { auth: Supplier<Authentication>, _: RequestAuthorizationContext? ->
-            authDecisionByEmailVerified(
-                auth.get()
-            )
-        }
-        req.requestMatchers(HttpMethod.PUT, pattern).access { auth: Supplier<Authentication>, _: RequestAuthorizationContext? ->
-            authDecisionByEmailVerified(
-                auth.get()
-            )
-        }
-        req.requestMatchers(HttpMethod.PATCH, pattern).access { auth: Supplier<Authentication>, _: RequestAuthorizationContext? ->
-            authDecisionByEmailVerified(
-                auth.get()
-            )
-        }
-        req.requestMatchers(HttpMethod.DELETE, pattern).access { auth: Supplier<Authentication>, _: RequestAuthorizationContext? ->
-            authDecisionByEmailVerified(
-                auth.get()
-            )
+    private fun needEmailVerified() : AuthorizationManager<RequestAuthorizationContext> {
+        return object : AuthorizationManager<RequestAuthorizationContext> {
+            override fun authorize(
+                authentication: Supplier<Authentication>,
+                `object`: RequestAuthorizationContext?
+            ): AuthorizationResult {
+                return authDecisionByEmailVerified(authentication.get())
+            }
+
+            override fun check(
+                authentication: Supplier<Authentication>?,
+                `object`: RequestAuthorizationContext?
+            ): AuthorizationDecision? {
+                TODO("Not implemented because this method is deprecated")
+            }
         }
     }
 
