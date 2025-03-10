@@ -44,7 +44,7 @@ class MessageControllerTest {
                 get("/api/messages/send")
         ).andDo { print() }
 
-        val messages = messageRepository.findSentMessages(author.id).map(::MessageDto)
+        val messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(author.id).map(::MessageDto)
 
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("getSentMessages"))
@@ -75,7 +75,7 @@ class MessageControllerTest {
                 get("/api/messages/receive")
         ).andDo { print() }
 
-        val messages = messageRepository.findReceivedMessages(author.getId()).map(::MessageDto)
+        val messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(author.getId()).map(::MessageDto)
 
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("getReceivedMessages"))
