@@ -185,8 +185,8 @@ class MemberController (
     )
     fun resendVerificationEmail(): RsData<Empty> {
         val member = AuthManager.getNonNullMember()
-        val memberId = member.id
-        val emailAddress = member.emailAddress
+        val memberId = member.id!!
+        val emailAddress = member.emailAddress!!
         memberService.sendAuthenticationMail(memberId, emailAddress)
 
         return RsData.from("200-1", "resend verification email complete")
