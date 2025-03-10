@@ -64,10 +64,8 @@ class CustomJwtFilter(
         if (claims != null) {
             val member = jwtObjectMapper.getMemberByJwtClaims(claims)
 
-            if (member != null) {
-                authManager.setLogin(member)
-                httpManager.setAccessTokenCookie(response, accessToken, accessTokenValidMinute)
-            }
+            authManager.setLogin(member)
+            httpManager.setAccessTokenCookie(response, accessToken, accessTokenValidMinute)
         }
     }
 

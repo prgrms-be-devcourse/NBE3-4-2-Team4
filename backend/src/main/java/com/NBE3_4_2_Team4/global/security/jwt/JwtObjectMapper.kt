@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class JwtObjectMapper {
-    fun getMemberByJwtClaims(claims: Map<String?, Any?>): Member {
+    fun getMemberByJwtClaims(claims: Map<String, Any>): Member {
         val id = claims[AuthConstants.ID] as Int?
         val username = claims[AuthConstants.USERNAME] as String?
         val nickname = claims[AuthConstants.NICKNAME] as String?
