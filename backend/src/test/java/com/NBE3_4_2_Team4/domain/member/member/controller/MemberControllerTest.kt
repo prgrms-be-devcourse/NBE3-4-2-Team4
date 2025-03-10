@@ -22,7 +22,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 @AutoConfigureMockMvc
 @Transactional
 class MemberControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
