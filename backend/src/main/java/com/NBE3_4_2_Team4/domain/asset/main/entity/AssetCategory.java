@@ -16,8 +16,7 @@ public enum AssetCategory {
         ADMIN("관리자"),
         ATTENDANCE("출석"),
         CASH_DEPOSIT("캐시충전"),
-        CASH_REFUND("캐시반환"),
-        POINT_WITHDRAWAL("포인트현금화");
+        CASH_REFUND("캐시출금");
 
         private final String displayName;
 

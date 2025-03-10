@@ -2,6 +2,9 @@ package com.NBE3_4_2_Team4.global.api.iamport.v1.payment;
 
 import lombok.Builder;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 public class IamportPaymentResponseDto {
@@ -75,5 +78,22 @@ public class IamportPaymentResponseDto {
             String reason,                      // 취소 사유
             String receiptUrl,                  // 취소 영수증 URL
             String cancellationId               // 취소 고유 ID (아임포트에서 제공)
-    ) {}
+    ) {
+
+        public LocalDateTime convertCancelledAtFormat() {
+
+            if (cancelledAt <= 0) {
+                throw new IllegalArgumentException(
+                        "취소된 시간이 올바르지 않습니다. (cancelledAt: " + cancelledAt + ")"
+                );
+            }
+
+            try {
+                return LocalDateTime.ofInstant(Instant.ofEpochSecond(cancelledAt), ZoneId.systemDefault());
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "취소된 시간의 포맷 변환 중 오류 발생: " + e.getMessage(), e);
+            }
+        }
+    }
 }

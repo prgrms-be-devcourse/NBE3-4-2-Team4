@@ -70,10 +70,14 @@ export default function ProductList({itemPage}: ProductListProps) {
                       </CardTitle>
 
                       {/* product_price 추가 */}
-                      <p className="text-2xl font-bold">
-                        {item.product_price.toLocaleString()} 원
-                      </p>
-
+                      <div className="flex justify-between">
+                        <p className="text-2xl font-bold">
+                          {item.product_price.toLocaleString()} C
+                        </p>
+                        <p className="text-2xl font-bold">
+                          {(item.product_price * 5).toLocaleString()} P
+                        </p>
+                      </div>
                     </div>
                   </CardHeader>
                 </Card>

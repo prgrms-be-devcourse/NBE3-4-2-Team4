@@ -62,10 +62,11 @@ export default function ClientPage({
   );
 
   // 삭제 관련 상태
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
-  // 필터(카테고리, 판매 상태)가 변경되면 URL의 page 파라미터를 1로 초기화 --
+  // 필터 (카테고리, 판매 상태)가 변경되면 URL의 page 파라미터를 1로 초기화 --
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", "1");
@@ -182,6 +183,12 @@ export default function ClientPage({
       [searchParams, router]
   );
 
+  // 삭제 버튼 클릭 시 Dialog 열기
+  const handleDeleteClick = (productId: number) => {
+    setSelectedProductId(productId);
+    setIsDialogOpen(true);
+  };
+  
   // 삭제 기능
   const handleDelete = async () => {
     if (!selectedProductId) return;
@@ -189,8 +196,14 @@ export default function ClientPage({
     try {
       const response = await client.DELETE(`/api/products/${selectedProductId}`);
       if (response.error) throw new Error("상품 삭제 실패");
+
       toast({ title: "상품이 성공적으로 삭제되었습니다!" });
+
+      setIsDialogOpen(false);
+
+      router.push("/adm/products/list")
       router.refresh();
+
     } catch (error) {
       toast({ title: "상품 삭제 중 오류가 발생했습니다.", variant: "destructive" });
     } finally {
@@ -312,7 +325,8 @@ export default function ClientPage({
               <TableRow>
                 <TableHead className="w-[70px] text-center">ID</TableHead>
                 <TableHead className="w-[250px] text-center">상품명</TableHead>
-                <TableHead className="w-[120px] text-center">가격</TableHead>
+                <TableHead className="w-[120px] text-center">포인트가격</TableHead>
+                <TableHead className="w-[120px] text-center">캐시가격</TableHead>
                 <TableHead className="text-center">설명</TableHead>
                 <TableHead className="w-[120px] text-center">카테고리</TableHead>
                 <TableHead className="w-[100px] text-center">판매 상태</TableHead>
@@ -326,7 +340,10 @@ export default function ClientPage({
                         <TableCell className="text-center">{item.product_id}</TableCell>
                         <TableCell className="text-center">{item.product_name}</TableCell>
                         <TableCell className="text-center">
-                          {item.product_price.toLocaleString()}원
+                          {(item.product_price * 5).toLocaleString()} P
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.product_price.toLocaleString()} C
                         </TableCell>
                         <TableCell>
                           <div className="line-clamp-5">{item.product_description}</div>
@@ -338,12 +355,9 @@ export default function ClientPage({
                             <Button variant="outline" asChild>
                               <Link href={`/adm/products/edit/${item.product_id}`}>수정</Link>
                             </Button>
-                            <Dialog>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                               <DialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    onClick={() => setSelectedProductId(item.product_id)}
-                                >
+                                <Button variant="destructive" onClick={() => handleDeleteClick(item.product_id)}>
                                   삭제
                                 </Button>
                               </DialogTrigger>
@@ -353,14 +367,10 @@ export default function ClientPage({
                                   해당 상품을 삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?
                                 </DialogDescription>
                                 <div className="flex justify-end gap-4 mt-4">
-                                  <Button variant="outline" onClick={() => setSelectedProductId(null)}>
+                                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                                     취소
                                   </Button>
-                                  <Button
-                                      variant="destructive"
-                                      onClick={handleDelete}
-                                      disabled={isDeleting}
-                                  >
+                                  <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
                                     {isDeleting ? "삭제 중..." : "삭제"}
                                   </Button>
                                 </div>

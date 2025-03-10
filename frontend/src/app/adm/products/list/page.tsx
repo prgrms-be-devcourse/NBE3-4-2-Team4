@@ -35,7 +35,7 @@ export default async function Page({
                     search_keyword_type: searchKeywordType as "ALL" | "NAME" | "CATEGORY" | undefined,
                     search_keyword: searchKeyword,
                     category_keyword: categoryKeyword,
-                    sale_state: saleStateKeyword,
+                    sale_state_keyword: saleStateKeyword,
                 },
             },
             headers: {
