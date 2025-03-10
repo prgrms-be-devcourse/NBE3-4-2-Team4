@@ -1427,6 +1427,11 @@ export interface components {
             /** Format: date-time */
             selectedAt?: string;
         };
+        NewsSearchResult: {
+            title?: string;
+            link?: string;
+            description?: string;
+        };
         QuestionDto: {
             /** Format: int64 */
             id: number;
@@ -1449,17 +1454,12 @@ export interface components {
             assetType: "캐시" | "포인트" | "전체";
             /** Format: int64 */
             authorId: number;
-            articles: components["schemas"]["SearchResult"][];
+            articles: components["schemas"]["NewsSearchResult"][];
         };
         RsDataQuestionDto: {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionDto"];
-        };
-        SearchResult: {
-            title?: string;
-            link?: string;
-            description?: string;
         };
         PurchaseDetails: {
             username: string;

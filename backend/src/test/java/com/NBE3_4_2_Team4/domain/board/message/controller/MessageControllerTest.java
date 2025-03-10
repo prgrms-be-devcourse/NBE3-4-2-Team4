@@ -57,19 +57,19 @@ public class MessageControllerTest {
         resultActions.andExpect(handler().handlerType(MessageController.class))
                 .andExpect(handler().methodName("getSentMessages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.length()").value(6))
                 .andExpect(jsonPath("$[*].sender_name").value(everyItem(is("테스트 유저"))));
 
         for(int i = 0; i < messages.size(); i++) {
             MessageDto message = messages.get(i);
 
             resultActions
-                    .andExpect(jsonPath("$[%d].created_at".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].title".formatted(i)).value(message.getTitle()))
-                    .andExpect(jsonPath("$[%d].content".formatted(i)).value(message.getContent()))
-                    .andExpect(jsonPath("$[%d].sender_name".formatted(i)).value(message.getSenderName()))
-                    .andExpect(jsonPath("$[%d].receiver_name".formatted(i)).value(message.getReceiverName()))
-                    .andExpect(jsonPath("$[%d].checked".formatted(i)).value(message.isChecked()));
+                    .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(message.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(message.getContent()))
+                    .andExpect(jsonPath("$.items[%d].sender_name".formatted(i)).value(message.getSenderName()))
+                    .andExpect(jsonPath("$.items[%d].receiver_name".formatted(i)).value(message.getReceiverName()))
+                    .andExpect(jsonPath("$.items[%d].checked".formatted(i)).value(message.isChecked()));
         }
     }
 
@@ -90,19 +90,19 @@ public class MessageControllerTest {
         resultActions.andExpect(handler().handlerType(MessageController.class))
                 .andExpect(handler().methodName("getReceivedMessages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.length()").value(6))
                 .andExpect(jsonPath("$[*].receiver_name").value(everyItem(is("테스트 유저"))));
 
         for(int i = 0; i < messages.size(); i++) {
             MessageDto message = messages.get(i);
 
             resultActions
-                    .andExpect(jsonPath("$[%d].title".formatted(i)).value(message.getTitle()))
-                    .andExpect(jsonPath("$[%d].content".formatted(i)).value(message.getContent()))
-                    .andExpect(jsonPath("$[%d].sender_name".formatted(i)).value(message.getSenderName()))
-                    .andExpect(jsonPath("$[%d].receiver_name".formatted(i)).value(message.getReceiverName()))
-                    .andExpect(jsonPath("$[%d].created_at".formatted(i)).exists())
-                    .andExpect(jsonPath("$[%d].checked".formatted(i)).value(message.isChecked()));
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(message.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).value(message.getContent()))
+                    .andExpect(jsonPath("$.items[%d].sender_name".formatted(i)).value(message.getSenderName()))
+                    .andExpect(jsonPath("$.items[%d].receiver_name".formatted(i)).value(message.getReceiverName()))
+                    .andExpect(jsonPath("$.items[%d].created_at".formatted(i)).exists())
+                    .andExpect(jsonPath("$.items[%d].checked".formatted(i)).value(message.isChecked()));
         }
     }
 
