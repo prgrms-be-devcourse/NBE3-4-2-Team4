@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class DefaultLogoutService: OAuth2LogoutService() {
-    override fun getOAuth2Provider(): Member.OAuth2Provider? {
+    override fun getOAuth2Provider(): Member.OAuth2Provider {
         return Member.OAuth2Provider.NONE
     }
 }

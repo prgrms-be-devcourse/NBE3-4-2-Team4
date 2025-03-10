@@ -11,13 +11,13 @@ abstract class OAuth2LogoutService {
         const val LOGOUT_COMPLETE_URL: String = "/api/logout/complete"
     }
 
-    abstract fun getOAuth2Provider(): Member.OAuth2Provider?
+    abstract fun getOAuth2Provider(): Member.OAuth2Provider
 
     fun getLogoutRedirectUrl(): String {
         return backendDomain + LOGOUT_COMPLETE_URL
     }
 
-    open fun getLogoutUrl(): String? {
+    open fun getLogoutUrl(): String {
         return getLogoutRedirectUrl()
     };
 }
