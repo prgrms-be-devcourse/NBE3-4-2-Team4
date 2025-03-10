@@ -140,7 +140,7 @@ export interface paths {
         get?: never;
         /**
          * 상품 구매 확정
-         * @description 상품의 구매를 확정하고 상품을 구매한 유저의 포인트를 착감합니다.
+         * @description 상품의 구매를 확정하고 상품을 구매한 유저의 재화를 착감합니다.
          */
         put: operations["confirm"];
         post?: never;
@@ -1435,22 +1435,10 @@ export interface components {
             username: string;
             /** Format: int64 */
             amount: number;
-        };
-        GetItem: {
-            /** Format: int64 */
-            productId?: number;
-            productName?: string;
-            /** Format: int32 */
-            productPrice?: number;
-            productDescription?: string;
-            productImageUrl?: string;
-            productCategory?: string;
-            productSaleState?: string;
-        };
-        RsDataGetItem: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["GetItem"];
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+            /** @enum {string} */
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불";
         };
         AssetTransferReq: {
             username: string;
@@ -1553,6 +1541,22 @@ export interface components {
             productImageUrl: string;
             productCategory: string;
             productSaleState: string;
+        };
+        GetItem: {
+            /** Format: int64 */
+            productId?: number;
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
+        RsDataGetItem: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetItem"];
         };
         GenFileDtoProductGenFile: {
             /** Format: int64 */
@@ -1898,9 +1902,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
@@ -2364,7 +2368,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */

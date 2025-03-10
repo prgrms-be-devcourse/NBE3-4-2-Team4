@@ -325,7 +325,8 @@ export default function ClientPage({
               <TableRow>
                 <TableHead className="w-[70px] text-center">ID</TableHead>
                 <TableHead className="w-[250px] text-center">상품명</TableHead>
-                <TableHead className="w-[120px] text-center">가격</TableHead>
+                <TableHead className="w-[120px] text-center">포인트가격</TableHead>
+                <TableHead className="w-[120px] text-center">캐시가격</TableHead>
                 <TableHead className="text-center">설명</TableHead>
                 <TableHead className="w-[120px] text-center">카테고리</TableHead>
                 <TableHead className="w-[100px] text-center">판매 상태</TableHead>
@@ -339,7 +340,10 @@ export default function ClientPage({
                         <TableCell className="text-center">{item.product_id}</TableCell>
                         <TableCell className="text-center">{item.product_name}</TableCell>
                         <TableCell className="text-center">
-                          {item.product_price.toLocaleString()}원
+                          {(item.product_price * 5).toLocaleString()} P
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.product_price.toLocaleString()} C
                         </TableCell>
                         <TableCell>
                           <div className="line-clamp-5">{item.product_description}</div>
