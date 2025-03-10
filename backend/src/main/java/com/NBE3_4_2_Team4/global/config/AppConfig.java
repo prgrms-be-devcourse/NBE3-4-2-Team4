@@ -43,8 +43,11 @@ public class AppConfig {
         return !isProd();
     }
 
-    @Getter
     private static Tika tika;
+
+    public static Tika getTika() {
+        return tika;
+    }
 
     @Autowired
     public void setTika(Tika tika) {

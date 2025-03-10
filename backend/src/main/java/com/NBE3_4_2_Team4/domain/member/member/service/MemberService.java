@@ -1,6 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
@@ -9,7 +9,6 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberQuerydsl;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.global.exceptions.EmailAlreadyVerifiedException;
 import com.NBE3_4_2_Team4.global.exceptions.InValidPasswordException;
@@ -146,13 +145,16 @@ public class MemberService {
 
     private void saveSignupPoints(Member member) {
         try {
-            assetHistoryRepository.save(AssetHistory.builder()
-                    .member(member)
-                    .amount(PointConstants.INITIAL_POINT)
-                    .assetCategory(AssetCategory.SIGN_UP)
-                    .assetType(AssetType.POINT)
-                    .correlationId("asdsaaddasasddsa")
-                    .build());
+            assetHistoryRepository.save(
+                    new AssetHistory(
+                            member,
+                            PointConstants.INITIAL_POINT,
+                            AssetType.POINT,
+                            AssetCategory.SIGN_UP,
+                            "d",
+                            null,
+                            null
+                    ));
             member.setPoint(new Point(PointConstants.INITIAL_POINT));
         } catch (Exception e) {
             log.error("포인트 저장 실패: {}", e.getMessage());

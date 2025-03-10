@@ -1,7 +1,6 @@
 package com.NBE3_4_2_Team4.domain.member.member.service;
 
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.entity.OAuth2RefreshToken;
 import com.NBE3_4_2_Team4.domain.member.OAuth2RefreshToken.repository.OAuth2RefreshTokenRepository;
@@ -29,7 +28,6 @@ import com.NBE3_4_2_Team4.global.security.user.tempUserBeforeSignUp.TempUserBefo
 import com.NBE3_4_2_Team4.standard.constants.PointConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

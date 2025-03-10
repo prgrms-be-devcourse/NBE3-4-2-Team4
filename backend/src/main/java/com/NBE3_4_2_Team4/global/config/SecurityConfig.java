@@ -49,6 +49,7 @@ public class SecurityConfig{
                     needAuthenticated(req, "/api/answers/**");
                     needAuthenticated(req, "/api/products/**");
                     needAuthenticated(req, "/api/points/**");
+                    needAuthenticated(req, "/api/asset/**");
                     needAuthenticated(req, "/api/banks/**");
                     needAuthenticated(req, "/api/messages/**");
 
