@@ -225,10 +225,19 @@ export default function ClientPage({
                       <Crown width={15} height={15} className="mr-2" />
                       채택된 답변
                     </Badge>
-                    <Badge variant="secondary" className="flex items-center">
-                      <Pencil width={14} height={14} className="mr-2" />
-                      {question.selectedAnswer.authorName}
-                    </Badge>
+                    {nickname != question.selectedAnswer.authorName ? (
+                      <NameButton
+                        recipientId={question.selectedAnswer.id}
+                        name={question.selectedAnswer.authorName}
+                        variant="secondary"
+                        icon={Pencil}
+                      />
+                    ) : (
+                      <Badge variant="secondary" className="flex items-center">
+                        <Pencil width={14} height={14} className="mr-2" />
+                        {question.selectedAnswer.authorName}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 font-light flex justify-end items-center">
                     <Clock width={14} height={14} className="mr-2" />
@@ -259,10 +268,19 @@ export default function ClientPage({
             <Card key={answer.id}>
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
-                  <Badge variant="secondary">
-                    <Pencil width={14} height={14} className="mr-2" />
-                    {answer.authorName}
-                  </Badge>
+                  {nickname != answer.authorName ? (
+                    <NameButton
+                      recipientId={answer.id}
+                      name={answer.authorName}
+                      variant="secondary"
+                      icon={Pencil}
+                    />
+                  ) : (
+                    <Badge variant="secondary">
+                      <Pencil width={14} height={14} className="mr-2" />
+                      {answer.authorName}
+                    </Badge>
+                  )}
                   <p className="text-sm text-gray-400 font-light flex justify-end items-center">
                     <Clock width={14} height={14} className="mr-2" />
                     {formatDate(answer.createdAt)}
