@@ -1,36 +1,14 @@
 package com.NBE3_4_2_Team4.domain.payment.payment.dto;
 
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
 import lombok.Builder;
 
 public class PaymentRequestDto {
 
     @Builder
-    public record VerifyPayment(
-
-            String impUid,
-
-            long amount
-    ){
-    }
-
-    @Builder
-    public record CancelPayment(
-
-            String impUid,
-
-            String merchantUid,
-
-            long amount,
-
-            String reason
-    ) {
-    }
-
-    @Builder
-    public record WritePayment(
-
-            long assetHistoryId,
+    public record ChargePayment(
 
             String impUid,
 
@@ -38,7 +16,24 @@ public class PaymentRequestDto {
 
             Long amount,
 
-            PaymentStatus status
+            AssetType assetType,
+
+            AssetCategory assetCategory
+    ){
+    }
+
+    @Builder
+    public record CancelPayment(
+
+            Long paymentId,
+
+            long amount,
+
+            String reason,
+
+            AssetType assetType,
+
+            AssetCategory assetCategory
     ) {
     }
 

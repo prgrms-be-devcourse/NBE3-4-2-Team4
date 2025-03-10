@@ -1,13 +1,8 @@
 package com.NBE3_4_2_Team4.domain.product.order.controller;
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
 import com.NBE3_4_2_Team4.domain.product.order.service.ProductOrderService;
-import com.NBE3_4_2_Team4.domain.asset.point.service.PointService;
-import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto;
-import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto;
-import com.NBE3_4_2_Team4.domain.product.product.service.ProductService;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
+import com.NBE3_4_2_Team4.standard.base.Empty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,39 +17,25 @@ import static com.NBE3_4_2_Team4.domain.product.order.dto.ProductOrderRequestDto
 @Tag(name = "포인트 상품 주문 관리", description = "상품 주문 API")
 public class ProductOrderController {
 
-    private final ProductService productService;
-    private final PointService pointService;
     private final ProductOrderService productOrderService;
 
     @PutMapping("/{product_id}")
-    @Operation(summary = "상품 구매 확정", description = "상품의 구매를 확정하고 상품을 구매한 유저의 포인트를 착감합니다.")
-    public RsData<ProductResponseDto.GetItem> confirm(
+    @Operation(summary = "상품 구매 확정", description = "상품의 구매를 확정하고 상품을 구매한 유저의 재화를 착감합니다.")
+    public RsData<Empty> confirm(
             @PathVariable(name = "product_id") Long productId,
             @RequestBody @Validated PurchaseDetails request
     ) {
 
-        // 해당하는 유저의 포인트를 상품 가격만큼 착감
-        Long pointHistoryId = pointService.deduct(
-                request.getUsername(),
-                request.getAmount(),
-                AssetCategory.PURCHASE
-        );
-
-        // 상품 상태 변경
-        productService.updateProduct(
-                productId,
-                ProductRequestDto.updateItem.builder()
-                        .productSaleState(SaleState.UNAVAILABLE.name())
-                        .build()
-        );
-
-        // 주문 생성
-        productOrderService.createOrder(productId, pointHistoryId);
+        productOrderService.createOrder(productId, request);
 
         return new RsData<>(
                 "200-1",
-                "%s의 포인트가 %d번 상품 가격 (%d) 만큼 착감되었습니다."
-                        .formatted(request.getUsername(), productId, request.getAmount())
+                "상품 구매가 완료되었습니다. %s의 %s가 %d번 상품 가격 (%d) 만큼 착감되었습니다."
+                        .formatted(
+                                request.getUsername(),
+                                request.getAssetType().toString(),
+                                productId,
+                                request.getAmount())
         );
     }
 }
