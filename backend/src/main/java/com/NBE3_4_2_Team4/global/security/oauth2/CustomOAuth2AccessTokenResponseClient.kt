@@ -5,7 +5,9 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResp
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest
 import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse
+import org.springframework.stereotype.Component
 
+@Component
 class CustomOAuth2AccessTokenResponseClient(
     private val tokenResponseClient: RestClientAuthorizationCodeTokenResponseClient
 ): OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>{
