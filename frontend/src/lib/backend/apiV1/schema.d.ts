@@ -872,6 +872,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/trend-search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getInfoSearch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions/{parentId}/genFiles": {
         parameters: {
             query?: never;
@@ -1449,11 +1465,17 @@ export interface components {
             assetType: "캐시" | "포인트" | "전체";
             /** Format: int64 */
             authorId: number;
+            articles: components["schemas"]["SearchResult"][];
         };
         RsDataQuestionDto: {
             resultCode: string;
             msg: string;
             data: components["schemas"]["QuestionDto"];
+        };
+        SearchResult: {
+            title?: string;
+            link?: string;
+            description?: string;
         };
         PurchaseDetails: {
             username: string;
@@ -1945,9 +1967,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date-time */
             endDateTime?: string;
+            /** Format: date-time */
+            startDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
@@ -4284,6 +4306,39 @@ export interface operations {
                 parentId: number;
                 fileName: string;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getInfoSearch: {
+        parameters: {
+            query?: {
+                query?: string;
+                pageSize?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;

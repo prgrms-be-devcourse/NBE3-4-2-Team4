@@ -87,6 +87,13 @@ export default function ClientPage({
     router.push("/message/write");
   }
 
+  // HTML 엔티티를 실제 문자로 변환하는 함수
+  function decodeHtml(html: string): string {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
   return (
     <div className="container mx-auto px-4">
       <div className="mt-20 mb-10 text-center">
@@ -114,7 +121,7 @@ export default function ClientPage({
               <span>{question.title}</span>
               {question.name != nickname && id && (
                 <Button className="ml-auto bg-gray-400 hover:bg-gray-500"
-                onClick={() => writeMessage(question.name)}>
+                  onClick={() => writeMessage(question.name)}>
                   <Link href="/message/write">쪽지 쓰기</Link>
                 </Button>
               )}
@@ -179,6 +186,28 @@ export default function ClientPage({
               )}
             </div>
           </CardFooter>
+        </Card>
+      </div>
+
+      {/* 연관 기사 */}
+      <div className="mt-8">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              연관 기사
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {question.articles?.map((article, index) => (
+              <div key={index}>
+                <h3>{decodeHtml(article.title!!.replace(/<[^>]+>/g, ''))}</h3>
+                <p>{decodeHtml(article.description!!.replace(/<[^>]+>/g, ''))}</p>
+                <Link href={article.link!!} target="_blank" rel="noopener noreferrer" style={{ color: 'blue' }}>
+                  {article.link}
+                </Link>
+              </div>
+            ))}
+          </CardContent>
         </Card>
       </div>
 
