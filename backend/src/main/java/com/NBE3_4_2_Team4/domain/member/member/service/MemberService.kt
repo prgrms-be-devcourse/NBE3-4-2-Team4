@@ -29,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.NoSuchElementException
 
 @Service
 @Transactional
@@ -94,14 +95,14 @@ class MemberService (
 
         tempUserBeforeSignUpService.deleteTempUserFromRedis(tempToken)
 
-        val memberId = member.id
-        val emailAddress = member.emailAddress
+        val memberId = member.id!!
+        val emailAddress = member.emailAddress!!
 
         sendAuthenticationMail(memberId, emailAddress)
     }
 
 
-    fun sendAuthenticationMail(memberId: Long?, emailAddress: String?) {
+    fun sendAuthenticationMail(memberId: Long, emailAddress: String) {
         checkIfMemberExists(memberId)
 
         val authCode = UUID.randomUUID().toString()
@@ -133,11 +134,11 @@ class MemberService (
 
     private fun saveOAuth2RefreshToken(member: Member, tempUser: TempUserBeforeSignUp) {
         oAuth2RefreshTokenRepository.save(
-            OAuth2RefreshToken.builder()
-                .oAuth2Id(tempUser.oAuth2Id)
-                .member(member)
-                .refreshToken(tempUser.refreshToken)
-                .build()
+            OAuth2RefreshToken(
+                oAuth2Id = tempUser.oAuth2Id,
+                member = member,
+                refreshToken = tempUser.refreshToken
+            )
         )
     }
 
@@ -210,7 +211,7 @@ class MemberService (
         if (oAuth2Provider != Member.OAuth2Provider.NONE) {
             val oAuth2RefreshToken = oAuth2RefreshTokenRepository
                 .findByMember(member)
-                .orElseThrow()
+                ?:throw NoSuchElementException()
             val refreshToken = oAuth2RefreshToken.refreshToken
 
             val oAuth2DisconnectService = oAuth2Manager.getOAuth2DisconnectService(oAuth2Provider)
