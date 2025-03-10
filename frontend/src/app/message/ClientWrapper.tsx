@@ -13,8 +13,8 @@ interface ClientWrapperProps {
 
 export default function ClientWrapper({ page }: ClientWrapperProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [receiveData, setReceiveData] = useState<any>(null);
-  const [sendData, setSendData] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const { toast } = useToast();
   const router = useRouter();
 
@@ -57,19 +57,16 @@ export default function ClientWrapper({ page }: ClientWrapperProps) {
       if (!isLoggedIn || !isMounted) return;
 
       try {
-        const responseReceive = await client.GET("/api/messages/receive", {
-          params: { query: { page } },
-        });
-        const responseSend = await client.GET("/api/messages/send", {
+        const endpoint = activeTab === 'received' ? "/api/messages/receive" : "/api/messages/send";
+        const response = await client.GET(endpoint, {
           params: { query: { page } },
         });
 
-        if (!responseReceive?.data || !responseSend?.data) {
+        if (!response?.data) {
           throw new Error("API 응답이 유효하지 않습니다.");
         }
 
-        setReceiveData(convertSnakeToCamel(responseReceive.data));
-        setSendData(convertSnakeToCamel(responseSend.data));
+        setData(convertSnakeToCamel(response.data));
       } catch (error) {
         console.error("쪽지 목록 가져오기 실패:", error);
         toast({ title: "쪽지 목록을 불러오는 중 오류가 발생했습니다.", variant: "destructive" });
@@ -81,7 +78,7 @@ export default function ClientWrapper({ page }: ClientWrapperProps) {
     return () => {
       isMounted = false;
     };
-  }, [page]); // page 변경 시만 호출
+  }, [page, activeTab]); // page와 activeTab 변경 시만 호출
 
   if (isAuthenticated === null) {
     return <div className="flex justify-center items-center h-96">로딩 중...</div>;
@@ -91,8 +88,14 @@ export default function ClientWrapper({ page }: ClientWrapperProps) {
     return <div className="flex justify-center items-center h-96">로그인이 필요합니다.</div>;
   }
 
-  if (receiveData && sendData) {
-    return <ClientPage receive={receiveData} send={sendData} />;
+  if (data) {
+    return (
+      <ClientPage
+        data={data}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+    );
   }
 
   return <div className="flex justify-center items-center h-96">데이터를 불러오는 중 오류가 발생했습니다.</div>;

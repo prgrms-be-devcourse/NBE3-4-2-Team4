@@ -1945,9 +1945,9 @@ export interface components {
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
-            endDateTime?: string;
-            /** Format: date-time */
             startDateTime?: string;
+            /** Format: date-time */
+            endDateTime?: string;
         };
         AssetHistoryRes: {
             /** Format: int64 */
