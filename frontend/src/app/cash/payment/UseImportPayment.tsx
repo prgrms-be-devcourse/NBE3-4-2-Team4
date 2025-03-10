@@ -27,7 +27,8 @@ export function UseImportPayment() {
         user: {
             username: string;
             emailAddress: string;
-        }
+        },
+        refreshCash: () => void
     ) => {
         if (!window.IMP) {
             console.error("아임포트 모듈 로딩 실패");
@@ -56,83 +57,40 @@ export function UseImportPayment() {
         console.log("결제 요청 데이터:", paymentData);
 
         IMP.request_pay(paymentData, async (response: any) => {
-            console.log("결제 응답 데이터:", response);
 
             try {
                 // 결제 승인 검증
-                const verifyResponse = await client.POST("/api/payments/verify", {
-                   body: {
-                       imp_uid: response.imp_uid,
-                       amount: amount
-                   }
+                const verifyResponse = await client.POST("/api/payments/charge", {
+                    body: {
+                        imp_uid: response.imp_uid,
+                        merchant_uid: response.merchant_uid,
+                        amount: amount,
+                        asset_type: "CASH",
+                        asset_category: "CASH_DEPOSIT"
+                    }
                 });
 
                 console.log("검증 결과:", verifyResponse);
 
                 if (verifyResponse.response.ok) {
-
-                    const verifiedData = verifyResponse.data.data;
-
-                    // 캐시 충전 처리
-                    const depositCashResponse = await client.PATCH("/api/asset/deposit", {
-                        body: {
-                            amount,
-                            assetType: "캐시",
-                            assetCategory: "CASH_DEPOSIT"
-                        },
+                    toast({
+                        title: "결제가 정상적으로 처리되었습니다!",
+                        description: `결제 금액: ${verifyResponse?.data?.data?.amount}원`
                     });
 
-                    console.log("캐시 충전 결과:", depositCashResponse);
+                    refreshCash();
 
-                    if (depositCashResponse.response.ok) {
-
-                        const assetHistoryId = Number(depositCashResponse?.data?.data) || 0;
-
-                        // 결제 내역 저장
-                        const writePaymentResponse = await client.POST("/api/payments", {
-                            body: {
-                                asset_history_id: assetHistoryId,
-                                imp_uid: verifiedData.imp_uid,
-                                merchant_uid: verifiedData.merchant_uid,
-                                amount: verifiedData.amount,
-                                status: verifiedData.status.toUpperCase()
-                            },
-                        });
-
-                        console.log("결제 내역 저장 결과:", writePaymentResponse);
-
-                        if (writePaymentResponse.response.ok) {
-                            toast({
-                                title: "결제가 정상적으로 처리되었습니다!",
-                                description: `결제 금액: ${verifiedData.amount}원`
-                            });
-
-                            router.push("/point/list");
-                            router.refresh();
-
-                        } else {
-                            toast({
-                                title: "결제 내역 저장 실패!",
-                                description: "결제 내역 저장에 실패했습니다. 관리자에게 문의하세요."
-                            });
-                        }
-
-                    } else {
-                        toast({
-                            title: "캐시 적립 실패!",
-                            description: "캐시 적립에 실패했습니다. 관리자에게 문의하세요."
-                        });
-                    }
+                    router.push("/cash");
+                    router.refresh();
 
                 } else {
                     toast({
                         title: "결제 실패!",
-                        description: "결제 검증에 실패했습니다. 관리자에게 문의하세요."
+                        description: "결제가 실패했습니다. 관리자에게 문의하세요."
                     });
                 }
-
             } catch (error) {
-                console.error("검증 요청 실패:", error);
+                console.error("결제 실패:", error);
                 toast({
                     title: "결제 실패!",
                     description: `결제가 실패했습니다. 관리자에게 문의하세요.`

@@ -2,8 +2,7 @@ package com.NBE3_4_2_Team4.domain.payment.payment.controller;
 
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.CancelPayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.UpdatePayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.VerifyPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.WritePayment;
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.ChargePayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.CanceledPayment;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.GetPaymentInfo;
 import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.VerifiedPayment;
@@ -24,23 +23,27 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/verify")
-    @Operation(summary = "결제 승인 검증", description = "요청 온 결제가 정상적으로 승인되었는지 검증합니다.")
-    RsData<VerifiedPayment> verifyPayment(
-            @RequestBody VerifyPayment request
+    @PostMapping("/charge")
+    @Operation(summary = "결제 승인 검증 + 결제 내역 생성 + 캐시 적립",
+            description = "요청 온 결제를 승인 검증하고 승인된 결제 내역을 생성 후 해당 유저에게 캐시를 적립합니다.")
+    RsData<VerifiedPayment> chargePayment(
+            @RequestBody ChargePayment chargePayment
     ) {
 
-        VerifiedPayment verifiedPayment = paymentService.verifyPayment(request);
+        VerifiedPayment verifiedPayment = paymentService.chargePayment(chargePayment);
 
         return new RsData<>(
                 "200-1",
-                "[%s] 결제가 정상적으로 승인되었습니다.".formatted(request.impUid()),
+                "[%s] 유저의 캐시가 %d 적립되었습니다.".formatted(
+                        verifiedPayment.buderName(),
+                        verifiedPayment.amount()),
                 verifiedPayment
         );
     }
 
     @PostMapping("/cancel")
-    @Operation(summary = "결제 취소", description = "결제를 취소합니다.")
+    @Operation(summary = "결제 취소 + 결제 상태 변경 + 캐시 반환",
+            description = "요청 온 결제 취소를 하고 결제 상태를 변경한 후 해당 유저의 캐시를 반환합니다.")
     RsData<CanceledPayment> cancelPayment(
             @RequestBody CancelPayment request
     ) {
@@ -49,7 +52,10 @@ public class PaymentController {
 
         return new RsData<>(
                 "200-1",
-                "[%s] 결제가 정상적으로 취소되었습니다.".formatted(request.impUid()),
+                "[%s] 유저의 [%d]번 결제가 정상적으로 취소되었습니다."
+                        .formatted(
+                                canceledPayment.cancelerName(),
+                                request.paymentId()),
                 canceledPayment
         );
     }
@@ -68,37 +74,6 @@ public class PaymentController {
                 "200-1",
                 "[%s] 건의 결제 내역이 조회되었습니다.".formatted(payments.getItems().size()),
                 payments
-        );
-    }
-
-    @PostMapping
-    @Operation(summary = "해당 유저의 결제 내역 생성", description = "해당 유저가 결제한 내역을 생성합니다.")
-    RsData<GetPaymentInfo> writePayment(
-            @RequestBody WritePayment writePayment
-    ) {
-
-        GetPaymentInfo payment = paymentService.writePayment(writePayment);
-
-        return new RsData<>(
-                "200-1",
-                "%d번 결제 내역이 생성되었습니다.".formatted(payment.paymentId()),
-                payment
-        );
-    }
-
-    @PatchMapping("/{payment_id}")
-    @Operation(summary = "해당 유저의 결제 상태 변경", description = "해당 유저가 결제한 내역의 상태를 변경합니다.")
-    RsData<GetPaymentInfo> updatePayment(
-            @PathVariable(name = "payment_id") Long paymentId,
-            @RequestBody UpdatePayment updatePayment
-    ) {
-
-        GetPaymentInfo payment = paymentService.updatePayment(paymentId, updatePayment);
-
-        return new RsData<>(
-                "200-1",
-                "%d번 결제 내역의 결제 상태가 수정되었습니다.".formatted(payment.paymentId()),
-                payment
         );
     }
 }

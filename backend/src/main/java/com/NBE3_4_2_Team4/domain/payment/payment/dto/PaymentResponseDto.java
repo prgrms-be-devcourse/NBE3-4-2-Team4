@@ -11,15 +11,9 @@ public class PaymentResponseDto {
     @Builder
     public record VerifiedPayment(
 
+            String buderName,
+
             long amount,
-
-            String buyerName,
-
-            String buyerEmail,
-
-            String impUid,
-
-            String merchantUid,
 
             String status
     ) {
@@ -28,9 +22,13 @@ public class PaymentResponseDto {
     @Builder
     public record CanceledPayment(
 
+            String cancelerName,
+
             long cancelAmount,
 
-            long canceledAt
+            long canceledAt,
+
+            String status
     ) {
     }
 
