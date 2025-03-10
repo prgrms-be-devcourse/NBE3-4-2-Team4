@@ -1,118 +1,109 @@
-package com.NBE3_4_2_Team4.domain.product.product.entity;
+package com.NBE3_4_2_Team4.domain.product.product.entity
 
-import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
-import com.NBE3_4_2_Team4.domain.product.genFile.entity.ProductGenFile;
-import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.standard.base.Empty;
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.List;
-import java.util.Optional;
+import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory
+import com.NBE3_4_2_Team4.domain.product.genFile.entity.ProductGenFile
+import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.global.rsData.RsData
+import com.NBE3_4_2_Team4.standard.base.Empty
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
+import java.util.*
 
 @Entity
-@Getter
-@Builder
-//@NoArgsConstructor
-//@AllArgsConstructor
-public class Product extends GenFileParent<ProductGenFile, Product> {
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;                        // 상품 아이디
+class Product : GenFileParent<ProductGenFile, Product> {
 
     @Column(nullable = false)
-    private String name;                    // 상품명
+    lateinit var name: String                                       // 상품명
 
     @Column(nullable = false)
-    private int price;                      // 상품 가격
+    var price: Int = 0                                              // 상품 가격
 
-    @Column(columnDefinition = "text")
-    private String description;             // 상품 설명
+    @Column(columnDefinition = "TEXT")
+    lateinit var description: String                                // 상품 설명
 
     @Column(nullable = false)
-    private String imageUrl;                // 상품 이미지 URL
+    lateinit var imageUrl: String                                   // 상품 이미지 URL
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductCategory category;       // 상품 카테고리
+    lateinit var category: ProductCategory                          // 상품 카테고리
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductSaleState saleState;     // 상품 판매 상태
+    lateinit var saleState: ProductSaleState                        // 상품 판매 상태
 
-    @OneToMany(mappedBy = "product")        // 주문 리스트
-    private List<ProductOrder> productOrders;
+    @OneToMany(mappedBy = "product")
+    val productOrders: MutableList<ProductOrder> = mutableListOf()  // 주문 리스트
 
-    public Product() {
-        super(ProductGenFile.class);
+    constructor() : super(ProductGenFile::class.java)
+
+    constructor(
+        name: String,
+        price: Int,
+        description: String,
+        imageUrl: String,
+        category: ProductCategory,
+        saleState: ProductSaleState,
+        productOrders: MutableList<ProductOrder> = mutableListOf()
+    ) : super(ProductGenFile::class.java) {
+        this.name = name
+        this.price = price
+        this.description = description
+        this.imageUrl = imageUrl
+        this.category = category
+        this.saleState = saleState
+        this.productOrders.addAll(productOrders)
     }
 
-    public Product(String name, int price, String description, String imageUrl, ProductCategory category, ProductSaleState saleState, List<ProductOrder> productOrders) {
-        super(ProductGenFile.class);
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.category = category;
-        this.saleState = saleState;
-        this.productOrders = productOrders;
+    fun updateName(name: String) {
+        this.name = name
     }
 
-
-    public void updateName(String name) {
-        this.name = name;
+    fun updatePrice(price: Int) {
+        this.price = price
     }
 
-    public void updatePrice(int price) {
-        this.price = price;
+    fun updateDescription(description: String) {
+        this.description = description
     }
 
-    public void updateDescription(String description) {
-        this.description = description;
+    fun updateImageUrl(imageUrl: String) {
+        this.imageUrl = imageUrl
     }
 
-    public void updateImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    fun updateCategory(category: ProductCategory) {
+        this.category = category
     }
 
-    public void updateCategory(ProductCategory category) {
-        this.category = category;
+    fun updateSaleState(saleState: ProductSaleState) {
+        this.saleState = saleState
     }
 
-    public void updateSaleState(ProductSaleState saleState) {
-        this.saleState = saleState;
+    override fun modify(content: String) {
+        updateDescription(content)
     }
 
-    @Override
-    public void modify(String description) {
-        updateDescription(description);
-    }
+    override val content: String
+        get() = this.description
 
-    @Override
-    public String getContent() {
-        return this.description;
-    }
-
-    @Override
-    public void checkActorCanMakeNewGenFile(Member actor) {
+    override fun checkActorCanMakeNewGenFile(actor: Member) {
         Optional.of(
-                        getCheckActorCanMakeNewGenFileRs(actor)
-                )
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new ServiceException(rsData.getResultCode(), rsData.getMsg());
-                });
+            getCheckActorCanMakeNewGenFileRs(actor)
+        )
+            .filter { obj: RsData<Empty> -> obj.isFail }
+            .ifPresent { rsData: RsData<Empty> ->
+                throw ServiceException(rsData.resultCode, rsData.msg)
+            }
     }
 
-    @Override
-    protected RsData<Empty> getCheckActorCanMakeNewGenFileRs(Member actor) {
-        if (actor == null) return new RsData<>("401-1", "로그인 후 이용해주세요.");
-        if (actor.getRole() == Member.Role.ADMIN) return RsData.OK;
-        return new RsData<>("403-1", "관리자만 파일을 업로드할 수 있습니다.");
+    override fun getCheckActorCanMakeNewGenFileRs(actor: Member): RsData<Empty> {
+        if (actor == null) return RsData("401-1", "로그인 후 이용해주세요.")
+        if (actor.role == Member.Role.ADMIN) return RsData.OK
+        return RsData("403-1", "작성자만 파일을 업로드할 수 있습니다.")
     }
 }

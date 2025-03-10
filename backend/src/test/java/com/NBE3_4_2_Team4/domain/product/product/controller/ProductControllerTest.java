@@ -76,7 +76,7 @@ class ProductControllerTest {
         ).andDo(print());
 
         int dataSize = PRODUCT_LIST.size();
-        ProductRequestDto.writeItem expectedProduct = PRODUCT_LIST.get(dataSize - 1);
+        ProductRequestDto.WriteItem expectedProduct = PRODUCT_LIST.get(dataSize - 1);
         // then
         resultActions
                 .andExpect(handler().handlerType(ProductController.class))
@@ -249,7 +249,7 @@ class ProductControllerTest {
 
         // given
         String url = "/api/products";
-        ProductRequestDto.writeItem saved = ProductRequestDto.writeItem.builder()
+        ProductRequestDto.WriteItem saved = ProductRequestDto.WriteItem.builder()
                 .productName("테스트용 상품")
                 .productPrice(1)
                 .productDescription("테스트용 상품입니다.")
@@ -284,7 +284,7 @@ class ProductControllerTest {
 
         // given
         String url = "/api/products/5";
-        ProductRequestDto.updateItem updated = new ProductRequestDto.updateItem(
+        ProductRequestDto.UpdateItem updated = new ProductRequestDto.UpdateItem(
                 "테스트용 상품 (수정)",
                 2,
                 "테스트용 상품 수정본 입니다.",

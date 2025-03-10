@@ -1,433 +1,378 @@
-package com.NBE3_4_2_Team4.domain.product.product.service;
+package com.NBE3_4_2_Team4.domain.product.product.service
 
-import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
-import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository;
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
-import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import com.NBE3_4_2_Team4.standard.search.ProductSearchKeywordType;
-import com.NBE3_4_2_Team4.standard.util.Ut;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory
+import com.NBE3_4_2_Team4.domain.product.category.repository.ProductCategoryRepository
+import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.UpdateItem
+import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.WriteItem
+import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*
+import com.NBE3_4_2_Team4.domain.product.product.entity.Product
+import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.ProductSaleState
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState
+import com.NBE3_4_2_Team4.domain.product.saleState.repository.ProductSaleStateRepository
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.standard.dto.PageDto
+import com.NBE3_4_2_Team4.standard.search.ProductSearchKeywordType
+import com.NBE3_4_2_Team4.standard.util.Ut
+import mu.KotlinLogging
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.updateItem;
-import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.writeItem;
-import static com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.*;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class ProductService {
+class ProductService(
 
-    private final ProductRepository productRepository;
-    private final ProductCategoryRepository productCategoryRepository;
-    private final ProductSaleStateRepository productSaleStateRepository;
+    private val productRepository: ProductRepository,
+    private val productCategoryRepository: ProductCategoryRepository,
+    private val productSaleStateRepository: ProductSaleStateRepository
+) {
 
-    @Transactional(readOnly = true)
-    public long countProducts() {
-        return productRepository.count();
-    }
-
+    private val logger = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
-    public List<GetItem> getProducts() {
-
-        List<Product> products = productRepository.findAll();
-
-        log.info("[{}] Products are found.", products.size());
-
-        return products.stream()
-                .map(product -> new GetItem(
-                        product,
-                        makeFullCategory(product),
-                        product.getSaleState().getName()))
-                .toList();
-
-    }
+    fun countProducts(): Long = productRepository.count()
 
     @Transactional(readOnly = true)
-    public PageDto<GetItem> getProducts(
-            int page,
-            int pageSize,
-            ProductSearchKeywordType searchKeywordType,
-            String searchKeyword,
-            String categoryKeyword,
-            String saleStateKeyword
-            ) {
+    fun getProducts(
+    ): List<GetItem> {
 
-        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
-        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
-                .orElse(SaleState.ALL);
+        val products = productRepository.findAll()
 
-        Page<Product> products = productRepository.findByKeyword(
-                searchKeywordType,
-                searchKeyword,
-                categoryKeyword,
-                saleState,
-                pageable
-        );
+        logger.info { "[${products.size}] Products are found." }
 
-        log.info("[{}] Products are found with paging.", products.getContent().size());
-
-        return new PageDto<>(products.map(product -> new GetItem(
-                product,
-                makeFullCategory(product),
-                product.getSaleState().getName()
-        )));
+        return products.map {
+            GetItem(
+                it, makeFullCategory(it), it.saleState.name
+            )
+        }
     }
 
     @Transactional(readOnly = true)
-    public GetItemsByKeyword getProductsByCategoryKeyword(String categoryKeyword) {
+    fun getProducts(
+        page: Int,
+        pageSize: Int,
+        searchKeywordType: ProductSearchKeywordType,
+        searchKeyword: String,
+        categoryKeyword: String,
+        saleStateKeyword: String
+    ): PageDto<GetItem> {
+
+        val pageable: Pageable = Ut.pageable.makePageable(page, pageSize)
+        val saleState = SaleState.fromString(saleStateKeyword.uppercase())
+
+        val products = productRepository.findByKeyword(
+            searchKeywordType, searchKeyword, categoryKeyword, saleState, pageable
+        )
+
+        logger.info { "[${products.content.size}] Products are found with paging." }
+
+        return PageDto(products.map {
+            GetItem(
+                it, makeFullCategory(it), it.saleState.name
+            )
+        })
+    }
+
+    @Transactional(readOnly = true)
+    fun getProductsByCategoryKeyword(
+        categoryKeyword: String
+    ): GetItemsByKeyword {
 
         // keyword 포함되는 categories 가져오기
-        List<ProductCategory> categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword);
+        val categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword)
         if (categories.isEmpty()) {
-            log.warn("Category keyword [{}] not found.", categoryKeyword);
-            return new GetItemsByKeyword(categoryKeyword, Collections.emptyList());
+            logger.warn { "Category keyword [$categoryKeyword] not found." }
+            return GetItemsByKeyword(categoryKeyword, emptyList())
         }
 
         // categories 내 최하위 카테고리를 모두 찾아서 TreeMap에 저장
-        Set<Long> leafCategories = new TreeSet<>();
-        for (ProductCategory productCategory : categories) {
-            saveChildCategories(productCategory, leafCategories);
+        val leafCategories = mutableSetOf<Long>()
+        categories.forEach {
+            saveChildCategories(it, leafCategories)
         }
 
         // 최하위 카테고리에 해당하는 상품 조회
-        List<Product> products = productRepository.findByCategoryIdIn(leafCategories);
+        val products = productRepository.findByCategoryIdIn(leafCategories)
 
-        log.info("[{}] Products are found by category keyword [{}].",
-                products.size(), categoryKeyword);
+        logger.info { "[${products.size}] Products are found by category keyword [$categoryKeyword]." }
 
-        return new GetItemsByKeyword(categoryKeyword,
-                products.stream()
-                        .map(product -> new GetItem(
-                                product,
-                                makeFullCategory(product),
-                                product.getSaleState().getName()
-                        ))
-                        .toList());
+        return GetItemsByKeyword(categoryKeyword, products.map {
+            GetItem(
+                it, makeFullCategory(it), it.saleState.name
+            )
+        })
     }
 
     @Transactional(readOnly = true)
-    public PageDtoWithKeyword<GetItem> getProductsByCategoryKeyword(String categoryKeyword, int page, int pageSize) {
+    fun getProductsByCategoryKeyword(
+        categoryKeyword: String, page: Int, pageSize: Int
+    ): PageDtoWithKeyword<GetItem> {
 
         // keyword 포함되는 categories 가져오기
-        List<ProductCategory> categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword);
+        val categories = productCategoryRepository.findByNameContainingOrderByIdAsc(categoryKeyword)
         if (categories.isEmpty()) {
-            log.warn("Category keyword [{}] not found.", categoryKeyword);
-            return new PageDtoWithKeyword<>(Page.empty(), categoryKeyword);
+            logger.warn { "Category keyword [$categoryKeyword] not found." }
+            return PageDtoWithKeyword(Page.empty(), categoryKeyword)
         }
 
         // categories 내 최하위 카테고리를 모두 찾아서 TreeMap에 저장
-        Set<Long> leafCategories = new TreeSet<>();
-        for (ProductCategory productCategory : categories) {
-            saveChildCategories(productCategory, leafCategories);
+        val leafCategories = mutableSetOf<Long>()
+        categories.forEach {
+            saveChildCategories(it, leafCategories)
         }
 
-        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+        val pageable = Ut.pageable.makePageable(page, pageSize)
 
-        // 최하위 카테고리에 해당하는 상품들 페이징 처리하여 조회
-        Page<Product> products = productRepository.findByCategoryIdIn(leafCategories, pageable);
+        // 최하위 카테고리에 해당하는 상품 조회
+        val products = productRepository.findByCategoryIdIn(leafCategories, pageable)
 
-        log.info("[{}] Products are found with paging by category keyword [{}].",
-                products.getContent().size(), categoryKeyword);
+        logger.info { "[${products.content.size}] Products are found with paging by category keyword [$categoryKeyword]." }
 
-        return new PageDtoWithKeyword<>(
-                products.map(product -> new GetItem(
-                        product,
-                        makeFullCategory(product),
-                        product.getSaleState().getName()
-                )),
-                categoryKeyword
-        );
+        return PageDtoWithKeyword(
+            products.map {
+                GetItem(
+                    it, makeFullCategory(it), it.saleState.name
+                )
+            }, categoryKeyword
+        )
     }
 
     @Transactional(readOnly = true)
-    public GetItemsByKeyword getProductsBySaleStateKeyword(String saleStateKeyword) {
+    fun getProductsBySaleStateKeyword(
+        saleStateKeyword: String
+    ): GetItemsByKeyword {
 
         // 판매 상태 파라미터 유효성 체크
-        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
-                .orElseThrow(() -> new ServiceException("404-1", "유효하지 않는 판매 상태 키워드 입니다."));
+        val saleState = SaleState.fromString(saleStateKeyword.uppercase())
 
-        List<Product> products = productRepository.findBySaleStateLike(saleState);
+        val products = productRepository.findBySaleStateLike(saleState)
 
-        log.info("[{}] Products are found by Sale State keyword [{}].",
-                products.size(), saleStateKeyword);
+        logger.info { "[${products.size}] Products are found by Sale State keyword [$saleStateKeyword]." }
 
-        return new GetItemsByKeyword(saleStateKeyword,
-                products.stream()
-                        .map(product -> new GetItem(
-                                product,
-                                makeFullCategory(product),
-                                product.getSaleState().getName()
-                        ))
-                        .toList());
+        return GetItemsByKeyword(
+            saleStateKeyword, products.map {
+                GetItem(
+                    it, makeFullCategory(it), it.saleState.name
+                )
+            })
     }
 
     @Transactional(readOnly = true)
-    public PageDtoWithKeyword<GetItem> getProductsBySaleStateKeyword(String saleStateKeyword, int page, int pageSize) {
+    fun getProductsBySaleStateKeyword(
+        saleStateKeyword: String, page: Int, pageSize: Int
+    ): PageDtoWithKeyword<GetItem> {
 
         // 판매 상태 파라미터 유효성 체크
-        SaleState saleState = SaleState.fromString(saleStateKeyword.toUpperCase())
-                .orElseThrow(() -> new ServiceException("404-1", "유효하지 않는 판매 상태 키워드 입니다."));
+        val saleState = SaleState.fromString(saleStateKeyword.uppercase())
 
-        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+        val pageable: Pageable = Ut.pageable.makePageable(page, pageSize)
 
-        Page<Product> products = productRepository.findBySaleStateLike(saleState, pageable);
+        val products = productRepository.findBySaleStateLike(saleState, pageable)
 
-        log.info("[{}] Products are found with paging by Sale State keyword [{}].",
-                products.getContent().size(), saleStateKeyword);
+        logger.info { "[${products.content.size}] Products are found with paging by Sale State keyword [$saleStateKeyword]." }
 
-        return new PageDtoWithKeyword<>(
-                products.map(product -> new GetItem(
-                        product,
-                        makeFullCategory(product),
-                        product.getSaleState().getName()
-                )),
-                saleStateKeyword
-        );
+        return PageDtoWithKeyword(
+            products.map {
+                GetItem(
+                    it, makeFullCategory(it), it.saleState.name
+                )
+            }, saleStateKeyword
+        )
     }
 
     @Transactional(readOnly = true)
-    public GetItem getProduct(Long productId) {
-        Product product = findById(productId);
+    fun getProduct(
+        productId: Long
+    ): GetItem {
 
-        return new GetItem(
-                product,
-                makeFullCategory(product),
-                product.getSaleState().getName()
-        );
+        val product = findById(productId)
+
+        return GetItem(
+            product, makeFullCategory(product), product.saleState.name
+        )
     }
 
     @Transactional(readOnly = true)
-    public Product findById(Long productId) {
+    fun findById(
+        productId: Long
+    ): Product {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ServiceException("404-2", "해당 상품이 존재하지 않습니다."));
-
-        log.info("Product Id [{}] is found.", productId);
-
-        return product;
+        return productRepository.findById(productId).orElseThrow { ServiceException("404-2", "해당 상품이 존재하지 않습니다.") }
+            .also { logger.info { "Product Id [$productId] is found." } }
     }
 
     @Transactional
-    public GetItem writeProduct(writeItem request) {
+    fun writeProduct(
+        request: WriteItem
+    ): GetItem {
 
-        List<ProductCategory> categories = splitAndSaveByFullCategory(request.getProductCategory());
+        val categories = splitAndSaveByFullCategory(request.productCategory)
 
-        ProductSaleState saleState = findAndSaveBySaleState(request.getProductSaleState())
-                .orElseThrow(() -> new ServiceException("404-1", "유효하지 않는 판매 상태 키워드 입니다."));
+        val saleState = findAndSaveBySaleState(request.productSaleState) ?: throw ServiceException(
+            "404-1", "유효하지 않는 판매 상태 키워드 입니다."
+        )
 
-        Product product = productRepository.save(request.toProduct(categories.getLast(), saleState));
+        val product = productRepository.save(request.toProduct(categories.last(), saleState))
 
-        log.info("Product Id [{}] is saved.", product.getId());
+        logger.info { "Product Id [${product.id}] is saved." }
 
-        return new GetItem(
-                product,
-                makeFullCategory(product),
-                product.getSaleState().getName()
-        );
+        return GetItem(
+            product, makeFullCategory(product), product.saleState.name
+        )
     }
 
     @Transactional
-    public GetItem updateProduct(Long productId, updateItem request) {
+    fun updateProduct(
+        productId: Long, request: UpdateItem
+    ): GetItem {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ServiceException("404-2", "해당 상품이 존재하지 않습니다."));
+        val product =
+            productRepository.findById(productId).orElseThrow { ServiceException("404-2", "해당 상품이 존재하지 않습니다.") }
 
-        if (request.getProductName() != null) {
-            log.debug("Product Name [{}] is update target.", request.getProductName());
-            product.updateName(request.getProductName());
+        request.productName?.let {
+            logger.debug { "Product Name [$it] is update target." }
+            product.updateName(it)
         }
 
-        if (request.getProductPrice() != null) {
-            log.debug("Product Price [{}] is update target.", request.getProductPrice());
-            product.updatePrice(request.getProductPrice());
+        request.productPrice?.let {
+            logger.debug { "Product Price [$it] is update target." }
+            product.updatePrice(it)
         }
 
-        if (request.getProductDescription() != null) {
-            log.debug("Product Description [{}] is update target.", request.getProductDescription());
-            product.updateDescription(request.getProductDescription());
+        request.productDescription?.let {
+            logger.debug { "Product Description [$it] is update target." }
+            product.updateDescription(it)
         }
 
-        if (request.getProductImageUrl() != null) {
-            log.debug("Product Image Url [{}] is update target.", request.getProductImageUrl());
-            product.updateImageUrl(request.getProductImageUrl());
+        request.productImageUrl?.let {
+            logger.debug { "Product Image Url [$it] is update target." }
+            product.updateImageUrl(it)
         }
 
-        if (request.getProductCategory() != null) {
-            log.debug("Product Category [{}] is update target.", request.getProductCategory());
-            List<ProductCategory> categories = splitAndSaveByFullCategory(request.getProductCategory());
-
-            product.updateCategory(categories.getLast());
+        request.productCategory?.let {
+            logger.debug { "Product Category [$it] is update target." }
+            val categories = splitAndSaveByFullCategory(it)
+            product.updateCategory(categories.lastOrNull() ?: throw ServiceException("404-3", "유효하지 않은 카테고리입니다."))
         }
 
-        if (request.getProductSaleState() != null) {
-            log.debug("Product Sale State [{}] is update target.", request.getProductSaleState());
-            ProductSaleState saleState = findAndSaveBySaleState(request.getProductSaleState())
-                    .orElseThrow(() -> new ServiceException("404-1", "유효하지 않는 판매 상태 키워드 입니다."));
-
-            product.updateSaleState(saleState);
+        request.productSaleState?.let {
+            logger.debug { "Product Sale State [$it] is update target." }
+            val saleState = findAndSaveBySaleState(it) ?: throw ServiceException("404-1", "유효하지 않는 판매 상태 키워드 입니다.")
+            product.updateSaleState(saleState)
         }
 
-        Product updateProduct = productRepository.save(product);
+        val updatedProduct = productRepository.save(product)
 
-        log.info("Product Id [{}] is updated.", updateProduct.getId());
+        logger.info { "Product Id [${updatedProduct.id}] is updated." }
 
-        return new GetItem(
-                updateProduct,
-                makeFullCategory(updateProduct),
-                product.getSaleState().getName()
-        );
+        return GetItem(
+            updatedProduct, makeFullCategory(updatedProduct), updatedProduct.saleState.name
+        )
     }
 
     @Transactional
-    public void deleteProduct(Long productId) {
+    fun deleteProduct(
+        productId: Long
+    ) {
 
-        Product deleteProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new ServiceException("404-2", "해당 상품이 존재하지 않습니다."));
+        val deleteProduct =
+            productRepository.findById(productId).orElseThrow { ServiceException("404-2", "해당 상품이 존재하지 않습니다.") }
 
-        productRepository.delete(deleteProduct);
-
-        log.info("Product Id [{}] is deleted.", deleteProduct.getId());
+        productRepository.delete(deleteProduct)
+        logger.info { "Product Id [${deleteProduct.id}] is deleted." }
     }
 
     @Transactional(readOnly = true)
-    public List<String> findCategoriesName() {
+    fun findCategoriesName(): List<String> {
 
-        List<ProductCategory> categories = productCategoryRepository.findAll();
+        val categories = productCategoryRepository.findAll()
+        val categoriesName = mutableSetOf<String>()
 
-        Set<String> categoriesName = new HashSet<>();
-        categories.forEach(category ->
-                saveParentCategoriesName(category, categoriesName));
+        categories.forEach { saveParentCategoriesName(it, categoriesName) }
 
-        return new ArrayList<>(categoriesName);
+        return categoriesName.toList()
     }
 
     @Transactional(readOnly = true)
-    public List<String> findSaleStateNames() {
+    fun findSaleStateNames(): List<String> {
 
-        List<ProductSaleState> saleStates = productSaleStateRepository.findAll();
-
-        return saleStates.stream()
-                .map(saleState ->
-                        saleState.getName().name())
-                .toList();
+        return productSaleStateRepository.findAll().map { it.name.name }
     }
 
-    private String makeFullCategory(Product product) {
+    private fun makeFullCategory(
+        product: Product
+    ): String {
 
-        StringBuilder sb = new StringBuilder();
-
-        ProductCategory category = product.getCategory();
+        val categories = mutableListOf<String>()
+        var category: ProductCategory? = product.category
 
         // 상위 카테고리가 없을 때까지 카테고리 추가
         while (category != null) {
-            sb.insert(0, category.getName() + "/");
-            category = category.getParent();
+            categories.add(0, category.name)
+            category = category.parent
         }
 
         // 마지막 '/' 문자 제거
-        if (!sb.isEmpty() && sb.charAt(sb.length() - 1) == '/') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        return sb.toString();
+        return categories.joinToString("/")
     }
 
-    private void saveChildCategories(ProductCategory productCategory, Set<Long> leafCategories) {
+    private fun saveChildCategories(
+        productCategory: ProductCategory, leafCategories: MutableSet<Long>
+    ) {
 
-        List<ProductCategory> children = productCategory.getChildren();
+        val children = productCategory.children
 
-        // 최하위 카테고리만 Map 저장
         if (children.isEmpty()) {
-            log.debug("[{}] is the last category.", productCategory.getName());
-            leafCategories.add(productCategory.getId());
-            return;
-        }
+            logger.debug { "[${productCategory.name}] is the last category." }
+            productCategory.id?.let { leafCategories.add(it) }
 
-        children.forEach(child -> saveChildCategories(child, leafCategories));
+        } else {
+            children.forEach { saveChildCategories(it, leafCategories) }
+        }
     }
 
-    private void saveParentCategoriesName(ProductCategory productCategory, Set<String> parentCategories) {
-
-        ProductCategory parent = productCategory.getParent();
+    private fun saveParentCategoriesName(
+        productCategory: ProductCategory, parentCategories: MutableSet<String>
+    ) {
 
         // 최상위 카테고리만 Map 저장
-        if (parent == null) {
-            log.debug("[{}] is the parent category.", productCategory.getName());
-            parentCategories.add(productCategory.getName());
-            return;
+        parentCategories.add(productCategory.name)
 
-        }
-
-        saveParentCategoriesName(parent, parentCategories);
+        productCategory.parent?.let { saveParentCategoriesName(it, parentCategories) }
     }
 
-    private List<ProductCategory> splitAndSaveByFullCategory(String fullCategory) {
+    private fun splitAndSaveByFullCategory(
+        fullCategory: String
+    ): List<ProductCategory> {
 
-        List<ProductCategory> categories = new ArrayList<>();
-        AtomicReference<ProductCategory> parent = new AtomicReference<>(null);
+        return buildList {
+            var parent: ProductCategory? = null
 
-        StringTokenizer st = new StringTokenizer(fullCategory, "/");
-        while (st.hasMoreTokens()) {
+            fullCategory.split("/").mapNotNull { it.trim().takeIf { it.isNotEmpty() } }.forEach { categoryName ->
+                val category = productCategoryRepository.findByNameAndParent(categoryName, parent)
+                    ?: productCategoryRepository.save(
+                        ProductCategory(
+                            name = categoryName, parent = parent
+                        )
+                    ).also { logger.info { "[$categoryName] category is not exist, so we create new category." } }
 
-            String categoryName = st.nextToken().trim();
-            if (categoryName.isEmpty()) {
-                continue;
+                add(category)
+                parent = category
             }
-
-            // category가 존재하지 않을 경우, 새로 생성 후 저장
-            ProductCategory category = productCategoryRepository.findByNameAndParent(categoryName, parent.get())
-                    .orElseGet(() -> {
-                        log.info("[{}] category is not exist, so we create new category.", categoryName);
-                        ProductCategory saved = ProductCategory.builder()
-                                .name(categoryName)
-                                .parent(parent.get())
-                                .build();
-                        return productCategoryRepository.save(saved);
-                    });
-
-            categories.add(category);
-            parent.set(category);
         }
-
-        return categories;
     }
 
-    private Optional<ProductSaleState> findAndSaveBySaleState(String requestSaleState) {
+    private fun findAndSaveBySaleState(
+        requestSaleState: String
+    ): ProductSaleState? {
 
-        // 판매 상태 파라미터 유효성 체크
-        SaleState saleState = SaleState.fromString(requestSaleState.toUpperCase())
-                .orElse(null);
+        val saleState = SaleState.fromString(requestSaleState.uppercase())
 
-        if (saleState == null) {
-            log.error("[{}] is not valid sale state. we allows [ONSALE / SOLDOUT / RESERVED / COMINGSOON]",
-                    requestSaleState.toUpperCase());
-            return Optional.empty();
-        }
-
-        // 판매 상태가 존재하지 않을 경우,
-        ProductSaleState productSaleState = productSaleStateRepository.findByName(saleState)
-                .orElseGet(() -> {
-                    log.info("[{}] sale state is not exist, so we create new sale state.", saleState.name());
-                    ProductSaleState saved = ProductSaleState.builder()
-                            .name(saleState)
-                            .build();
-                    return productSaleStateRepository.save(saved);
-                });
-
-        return Optional.of(productSaleState);
+        return productSaleStateRepository.findByName(saleState) ?: productSaleStateRepository.save(
+            ProductSaleState(
+                name = saleState
+            )
+        ).also { logger.info { "[$saleState] sale state is not exist, so we create new sale state." } }
     }
 }

@@ -1,16 +1,11 @@
-package com.NBE3_4_2_Team4.domain.product.category.repository;
+package com.NBE3_4_2_Team4.domain.product.category.repository
 
-import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.NBE3_4_2_Team4.domain.product.category.entity.ProductCategory
+import org.springframework.data.jpa.repository.JpaRepository
 
-import java.util.List;
-import java.util.Optional;
+interface ProductCategoryRepository : JpaRepository<ProductCategory, Long> {
 
-@Repository
-public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Long> {
+    fun findByNameContainingOrderByIdAsc(categoryKeyword: String): List<ProductCategory>
 
-    List<ProductCategory> findByNameContainingOrderByIdAsc(String categoryKeyword);
-
-    Optional<ProductCategory> findByNameAndParent(String categoryName, ProductCategory parent);
+    fun findByNameAndParent(categoryName: String, parent: ProductCategory?): ProductCategory?
 }

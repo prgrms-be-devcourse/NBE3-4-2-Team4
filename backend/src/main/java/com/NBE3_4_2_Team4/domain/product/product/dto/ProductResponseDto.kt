@@ -1,62 +1,46 @@
-package com.NBE3_4_2_Team4.domain.product.product.dto;
+package com.NBE3_4_2_Team4.domain.product.product.dto
 
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
+import com.NBE3_4_2_Team4.domain.product.product.entity.Product
+import com.NBE3_4_2_Team4.domain.product.saleState.entity.SaleState
+import com.NBE3_4_2_Team4.standard.dto.PageDto
+import org.springframework.data.domain.Page
 
-import java.util.List;
+class ProductResponseDto {
 
-public class ProductResponseDto {
+    data class GetItem(
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetItem {
+        val productId: Long,
 
-        private Long productId;
+        val productName: String,
 
-        private String productName;
+        val productPrice: Int,
 
-        private int productPrice;
+        val productDescription: String?,
 
-        private String productDescription;
+        val productImageUrl: String,
 
-        private String productImageUrl;
+        val productCategory: String,
 
-        private String productCategory;
-
-        private String productSaleState;
-
-        public GetItem(Product product, String productCategory, SaleState productSaleState) {
-            this.productId = product.getId();
-            this.productName = product.getName();
-            this.productPrice = product.getPrice();
-            this.productDescription = product.getDescription();
-            this.productImageUrl = product.getImageUrl();
-            this.productCategory = productCategory;
-            this.productSaleState = productSaleState.name();
-        }
+        val productSaleState: String
+    ) {
+        constructor(product: Product, productCategory: String, productSaleState: SaleState) : this(
+            productId = product.id!!,
+            productName = product.name,
+            productPrice = product.price,
+            productDescription = product.description,
+            productImageUrl = product.imageUrl,
+            productCategory = productCategory,
+            productSaleState = productSaleState.name
+        )
     }
 
-    @Builder
-    public record GetItemsByKeyword(String keyword, List<GetItem> products) {
+    data class GetItemsByKeyword(
+        val keyword: String,
+        val products: List<GetItem>
+    )
 
-    }
-
-    @Getter
-    public static class PageDtoWithKeyword<T> extends PageDto<T> {
-
-        private final String keyword;
-
-        public PageDtoWithKeyword(Page<T> page, String keyword) {
-            super(page);
-            this.keyword = keyword;
-        }
-    }
+    class PageDtoWithKeyword<T>(
+        page: Page<T>,
+        val keyword: String
+    ) : PageDto<T>(page)
 }

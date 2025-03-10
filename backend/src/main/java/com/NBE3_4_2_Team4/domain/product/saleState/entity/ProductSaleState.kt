@@ -1,30 +1,27 @@
-package com.NBE3_4_2_Team4.domain.product.saleState.entity;
+package com.NBE3_4_2_Team4.domain.product.saleState.entity
 
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.NBE3_4_2_Team4.domain.product.product.entity.Product
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 
 @Entity
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProductSaleState {
+class ProductSaleState(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                                         // 상품 판매 상태 아이디
+    val id: Long? = null,                                   // 상품 판매 상태 아이디
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SaleState name;                                  // 상품 판매 상태명
+    val name: SaleState,                                    // 상품 판매 상태명
 
-    @OneToMany(mappedBy = "saleState", cascade = CascadeType.ALL)
-    private List<Product> products;                          // 상품 리스트
-}
+    @OneToMany(mappedBy = "saleState", cascade = [CascadeType.ALL])
+    val products: MutableList<Product> = mutableListOf()    // 상품 리스트
+)
