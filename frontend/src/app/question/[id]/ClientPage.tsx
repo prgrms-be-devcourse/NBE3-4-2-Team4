@@ -28,6 +28,7 @@ import Pagination1 from "@/lib/business/components/Pagination1";
 import client from "@/lib/backend/client";
 import { AttachmentFiles } from "@/lib/business/components/AttachmentFiles";
 import { useRole } from "@/context/RoleContext";
+import NameButton from "@/lib/business/components/NameButton";
 
 type QuestionDto = components["schemas"]["QuestionDto"];
 
@@ -82,10 +83,10 @@ export default function ClientPage({
 
   const writeMessage = (senderName: string) => {
     if (senderName) {
-      localStorage.setItem('senderName', senderName);
+      localStorage.setItem("senderName", senderName);
     }
     router.push("/message/write");
-  }
+  };
 
   // HTML 엔티티를 실제 문자로 변환하는 함수
   function decodeHtml(html: string): string {
@@ -151,10 +152,22 @@ export default function ClientPage({
                   <Coins size={16} />
                   {question.amount}
                 </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Pencil width={14} height={14} />
-                  {question.name}
-                </Badge>
+                {nickname != question.name ? (
+                  <NameButton
+                    recipientId={question.authorId}
+                    name={question.name}
+                    variant="secondary"
+                    icon={Pencil}
+                  />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    <Pencil width={14} height={14} />
+                    {question.name}
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-400 mt-2">
                 <Clock width={14} height={14} />
@@ -242,10 +255,19 @@ export default function ClientPage({
                       <Crown width={15} height={15} className="mr-2" />
                       채택된 답변
                     </Badge>
-                    <Badge variant="secondary" className="flex items-center">
-                      <Pencil width={14} height={14} className="mr-2" />
-                      {question.selectedAnswer.authorName}
-                    </Badge>
+                    {nickname != question.selectedAnswer.authorName ? (
+                      <NameButton
+                        recipientId={question.selectedAnswer.id}
+                        name={question.selectedAnswer.authorName}
+                        variant="secondary"
+                        icon={Pencil}
+                      />
+                    ) : (
+                      <Badge variant="secondary" className="flex items-center">
+                        <Pencil width={14} height={14} className="mr-2" />
+                        {question.selectedAnswer.authorName}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 font-light flex justify-end items-center">
                     <Clock width={14} height={14} className="mr-2" />
@@ -276,10 +298,19 @@ export default function ClientPage({
             <Card key={answer.id}>
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
-                  <Badge variant="secondary">
-                    <Pencil width={14} height={14} className="mr-2" />
-                    {answer.authorName}
-                  </Badge>
+                  {nickname != answer.authorName ? (
+                    <NameButton
+                      recipientId={answer.id}
+                      name={answer.authorName}
+                      variant="secondary"
+                      icon={Pencil}
+                    />
+                  ) : (
+                    <Badge variant="secondary">
+                      <Pencil width={14} height={14} className="mr-2" />
+                      {answer.authorName}
+                    </Badge>
+                  )}
                   <p className="text-sm text-gray-400 font-light flex justify-end items-center">
                     <Clock width={14} height={14} className="mr-2" />
                     {formatDate(answer.createdAt)}

@@ -116,7 +116,7 @@ class QuestionService(
 
     @Transactional(readOnly = true)
     fun findByUserListed(page: Int, pageSize: Int, username: String): Page<QuestionDto> {
-        val actor = memberRepository.findByUsername(username).get()
+        val actor = memberRepository.findByUsername(username)!!
 
         return questionRepository.findByAuthor(actor, Ut.pageable.makePageable(page, pageSize))
             .map { QuestionDto(it) }

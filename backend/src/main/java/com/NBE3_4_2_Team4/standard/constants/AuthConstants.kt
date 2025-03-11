@@ -9,4 +9,5 @@ object AuthConstants {
     const val EMAIL_ADDRESS = "emailAddress"
     const val EMAIL_VERIFIED = "emailVerified"
     const val NICKNAME = "nickname"
+    const val REAL_NAME = "realName"
 }

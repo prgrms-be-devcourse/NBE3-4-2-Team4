@@ -19,7 +19,7 @@ class RecommendController(
     @PutMapping
     @Operation(summary = "게시글 추천", description = "추천/취소 토글, 중복 추천 불가, 본인 글 추천 불가")
     fun recommend(@PathVariable questionId: Long): RsData<Void> {
-        val member = AuthManager.getMemberFromContext()
+        val member = AuthManager.getNonNullMember()
         val isRecommended = recommendService.toggleRecommend(questionId, member)
 
         return if (isRecommended) {

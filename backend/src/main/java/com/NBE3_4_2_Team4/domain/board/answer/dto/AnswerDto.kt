@@ -20,7 +20,7 @@ class AnswerDto(
         createdAt = answer.createdAt,
         modifiedAt = answer.modifiedAt,
         questionId = answer.question.id,
-        authorId = answer.author.id,
+        authorId = answer.author.id!!,
         authorName = answer.author.nickname,
         content = answer.content,
         selected = answer.selected,

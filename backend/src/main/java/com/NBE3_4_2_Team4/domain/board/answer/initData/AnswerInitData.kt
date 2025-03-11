@@ -48,7 +48,7 @@ class AnswerInitData(
         val question1 = questionRepository.findById(1L).get()
         val question3 = questionRepository.findById(3L).get()
 
-        val author = memberRepository.findByUsername(member1Username).get()
+        val author = memberRepository.findByUsername(member1Username)!!
 
         val answer1 = answerService.save(question1, author, "답변 내용1")
         val answer2 = answerService.save(question1, author, "답변 내용2")

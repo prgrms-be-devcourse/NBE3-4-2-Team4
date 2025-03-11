@@ -20,6 +20,7 @@ import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.CancelHistory;
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
+import com.NBE3_4_2_Team4.global.security.AuthManager;
 import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember;
 
 @Slf4j
 @Service
@@ -189,7 +189,7 @@ public class PaymentService {
             PaymentStatus paymentStatus
     ) {
 
-        Member member = getNonNullMember();
+        Member member =  AuthManager.Companion.getNonNullMember();
         Pageable pageable = Ut.pageable.makePageable(page, pageSize);
 
         Page<Payment> payments = paymentRepository.findByMemberIdAndStatusKeyword(

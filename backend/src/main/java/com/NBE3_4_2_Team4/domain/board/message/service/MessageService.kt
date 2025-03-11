@@ -32,8 +32,8 @@ class MessageService(
     private fun getMessagesByType(type: MessageType, page: Int, pageSize: Int): Page<MessageDto> {
         val actor = AuthManager.getNonNullMember()
         val messages = when (type) {
-            MessageType.RECEIVED -> messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id)
-            MessageType.SENT -> messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id)
+            MessageType.RECEIVED -> messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id!!)
+            MessageType.SENT -> messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id!!)
         }
 
         return messages.map(::MessageDto)
@@ -60,7 +60,7 @@ class MessageService(
     @Transactional
     fun write(receiverName: String, title: String, content: String): MessageDto {
         val sender = AuthManager.getNonNullMember()
-        val receiver = memberRepository.findByNickname(receiverName).get()
+        val receiver = memberRepository.findByNickname(receiverName)!!
 
         val message = Message(
                 sender = sender,
