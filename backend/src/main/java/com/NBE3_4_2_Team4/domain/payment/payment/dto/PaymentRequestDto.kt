@@ -1,46 +1,31 @@
-package com.NBE3_4_2_Team4.domain.payment.payment.dto;
+package com.NBE3_4_2_Team4.domain.payment.payment.dto
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
-import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
-import lombok.Builder;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus
 
-public class PaymentRequestDto {
+class PaymentRequestDto {
 
-    @Builder
-    public record ChargePayment(
+    data class ChargePayment(
 
-            String impUid,
+        val impUid: String,
+        val merchantUid: String,
+        val amount: Long,
+        val assetType: AssetType,
+        val assetCategory: AssetCategory
+    )
 
-            String merchantUid,
+    data class CancelPayment(
 
-            Long amount,
+        val paymentId: Long,
+        val amount: Long,
+        val reason: String,
+        val assetType: AssetType,
+        val assetCategory: AssetCategory
+    )
 
-            AssetType assetType,
+    data class UpdatePayment(
 
-            AssetCategory assetCategory
-    ){
-    }
-
-    @Builder
-    public record CancelPayment(
-
-            Long paymentId,
-
-            long amount,
-
-            String reason,
-
-            AssetType assetType,
-
-            AssetCategory assetCategory
-    ) {
-    }
-
-    @Builder
-    public record UpdatePayment(
-
-            PaymentStatus status
-    ) {
-    }
+        val status: PaymentStatus
+    )
 }

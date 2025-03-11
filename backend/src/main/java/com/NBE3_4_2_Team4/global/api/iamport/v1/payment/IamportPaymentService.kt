@@ -1,13 +1,17 @@
-package com.NBE3_4_2_Team4.global.api.iamport.v1.payment;
+package com.NBE3_4_2_Team4.global.api.iamport.v1.payment
 
-import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment;
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment
 
-import java.util.Optional;
+interface IamportPaymentService {
 
-public interface IamportPaymentService {
+    fun getPaymentHistory(
+        impAccessToken: String,
+        impUid: String
+    ) : GetPayment?
 
-    Optional<GetPayment> getPaymentHistory(String impAccessToken, String impUid);
-
-    Optional<GetPayment> cancelPayment(String impAccessToken, CancelPaymentInfo cancelPaymentInfo);
+    fun cancelPayment(
+        impAccessToken: String,
+        cancelPaymentInfo: CancelPaymentInfo
+    ) : GetPayment?
 }

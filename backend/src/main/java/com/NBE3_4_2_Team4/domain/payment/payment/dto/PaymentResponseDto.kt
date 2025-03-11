@@ -1,52 +1,35 @@
-package com.NBE3_4_2_Team4.domain.payment.payment.dto;
+package com.NBE3_4_2_Team4.domain.payment.payment.dto
 
-import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus
+import com.fasterxml.jackson.annotation.JsonFormat
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+class PaymentResponseDto {
 
-public class PaymentResponseDto {
+    data class VerifiedPayment(
 
-    @Builder
-    public record VerifiedPayment(
+        val buyerName: String,
+        val amount: Long,
+        val status: String
+    )
 
-            String buderName,
+    data class CanceledPayment(
 
-            long amount,
+        val cancelerName: String,
+        val cancelAmount: Long,
+        val canceledAt: Long,
+        val status: String
+    )
 
-            String status
-    ) {
-    }
+    data class GetPaymentInfo(
 
-    @Builder
-    public record CanceledPayment(
+        val paymentId: Long,
+        val impUid: String,
+        val merchantUid: String,
+        val amount: Long,
+        val status: PaymentStatus,
 
-            String cancelerName,
-
-            long cancelAmount,
-
-            long canceledAt,
-
-            String status
-    ) {
-    }
-
-    @Builder
-    public record GetPaymentInfo(
-
-            long paymentId,
-
-            String impUid,
-
-            String merchantUid,
-
-            long amount,
-
-            PaymentStatus status,
-
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-            LocalDateTime createdAt
-    ) {
-    }
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        val createdAt: LocalDateTime
+    )
 }
