@@ -64,7 +64,7 @@ class ProductRepositoryImpl(
         val products: List<Product> = queryFactory
             .selectFrom(product)
             .where(builder)
-            .orderBy(product.id.desc())
+            .orderBy(product._id.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()

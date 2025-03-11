@@ -35,12 +35,12 @@ public class ProductOrderControllerTest {
 
         // given
         String url = "/api/order/1";
-        PurchaseDetails purchaseDetails = PurchaseDetails.builder()
-                .username("test2@test.com")
-                .amount(1L)
-                .assetType(AssetType.POINT)
-                .assetCategory(AssetCategory.PURCHASE)
-                .build();
+        PurchaseDetails purchaseDetails = new PurchaseDetails(
+                "test2@test.com",
+                1L,
+                AssetType.POINT,
+                AssetCategory.PURCHASE
+        );
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -65,12 +65,12 @@ public class ProductOrderControllerTest {
 
         // given
         String url = "/api/order/1";
-        PurchaseDetails purchaseDetails = PurchaseDetails.builder()
-                .username("test2@test.com")
-                .amount(1L)
-                .assetType(AssetType.CASH)
-                .assetCategory(AssetCategory.PURCHASE)
-                .build();
+        PurchaseDetails purchaseDetails = new PurchaseDetails(
+                "test2@test.com",
+                1L,
+                AssetType.CASH,
+                AssetCategory.PURCHASE
+        );
 
         // when
         ResultActions resultActions = mockMvc.perform(

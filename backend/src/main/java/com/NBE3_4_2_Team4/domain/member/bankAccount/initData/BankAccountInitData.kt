@@ -45,8 +45,7 @@ class BankAccountInitData(
     @Transactional
     fun createInitBankAccounts() {
         // 테스트 유저 조회
-        val testUser = memberRepository.findByUsername(member1Username)
-            .orElseThrow { throw IllegalStateException("Test user not found") }
+        val testUser = memberRepository.findByUsername(member1Username) ?: throw IllegalStateException("Test user not found")
 
         // 로그인 설정
         authManager.setLogin(testUser)

@@ -16,7 +16,7 @@ class ProductInitData(
 ) {
 
     companion object {
-        val PRODUCT_LIST = listOf(
+        var PRODUCT_LIST = listOf(
             WriteItem(
                 productName = "딸기라떼",
                 productPrice = 3800,

@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.asset.point.service
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetCategory
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
 import com.NBE3_4_2_Team4.standard.util.test.ConcurrencyTestUtil
@@ -31,29 +32,31 @@ class PointConcurrencyTest {
 
     @BeforeEach
     fun setup() {
-        member1 = Member.builder()
-            .point(Point(300L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("point_test_" + UUID.randomUUID())
-            .nickname("point_test_" + UUID.randomUUID())
-            .password("1234")
-            .build()
+        member1 = Member(
+            point = Point(),
+            cash = Cash(300L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "point_test_${UUID.randomUUID()}",
+            nickname = "point_test_${UUID.randomUUID()}",
+            password = "1234"
+        )
 
-        member2 = Member.builder()
-            .point(Point(0L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("point_test_" + UUID.randomUUID())
-            .nickname("point_test_" + UUID.randomUUID())
-            .password("1234")
-            .build()
+        member2 = Member(
+            point = Point(),
+            cash = Cash(0L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "point_test_${UUID.randomUUID()}",
+            nickname = "point_test_${UUID.randomUUID()}",
+            password = "1234"
+        )
 
         memberRepository.save(member1)
         memberRepository.save(member2)
 
-        member1Id = member1.getId()
-        member2Id = member2.getId()
+        member1Id = member1.id
+        member2Id = member2.id
     }
 
     @AfterEach
@@ -73,7 +76,7 @@ class PointConcurrencyTest {
     @DisplayName("동시성 테스트")
     fun t1() {
         ConcurrencyTestUtil.execute<Any?>(10) {
-            pointService.transfer(member1.getUsername(), member2.getUsername(), 10, AssetCategory.TRANSFER)
+            pointService.transfer(member1.username, member2.username, 10, AssetCategory.TRANSFER)
             null
         }
 
@@ -84,7 +87,7 @@ class PointConcurrencyTest {
             member2Id!!
         ).orElseThrow { RuntimeException("Account not found") }
 
-        Assertions.assertEquals(200L, updatedMember1.getPoint().amount)
-        Assertions.assertEquals(100L, updatedMember2.getPoint().amount)
+        Assertions.assertEquals(200L, updatedMember1.point.amount)
+        Assertions.assertEquals(100L, updatedMember2.point.amount)
     }
 }

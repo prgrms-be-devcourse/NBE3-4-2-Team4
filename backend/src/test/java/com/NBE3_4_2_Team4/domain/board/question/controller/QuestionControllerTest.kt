@@ -498,7 +498,7 @@ class QuestionControllerTest {
     @DisplayName("현재 사용자가 작성한 질문 조회")
     @WithUserDetails("test@test.com")
     fun t16() {
-        val username = AuthManager.getMemberFromContext().username
+        val username = AuthManager.getMemberFromContext()!!.username
         val request = MyQuestionReqDto(username)
         val requestJson = objectMapper.writeValueAsString(request)
 

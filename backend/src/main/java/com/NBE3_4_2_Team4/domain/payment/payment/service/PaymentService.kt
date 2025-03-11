@@ -16,7 +16,7 @@ import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo
 import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
-import com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember
+import com.NBE3_4_2_Team4.global.security.AuthManager.Companion.getNonNullMember
 import com.NBE3_4_2_Team4.standard.dto.PageDto
 import com.NBE3_4_2_Team4.standard.util.Ut
 import mu.KotlinLogging
@@ -46,8 +46,8 @@ class PaymentService(
         val member = getNonNullMember()
 
         // Iamport 액세스 토큰 발급
-        val accessToken = iamportService.getAccessToken(member.id)
-            ?: iamportService.generateAccessToken(member.id)
+        val accessToken = iamportService.getAccessToken(member.id!!)
+            ?: iamportService.generateAccessToken(member.id!!)
             ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
         // 결제이력 단건 조회
@@ -118,8 +118,8 @@ class PaymentService(
         }
 
         // Iamport 액세스 토큰 발급
-        val accessToken = iamportService.getAccessToken(member.id)
-            ?: iamportService.generateAccessToken(member.id)
+        val accessToken = iamportService.getAccessToken(member.id!!)
+            ?: iamportService.generateAccessToken(member.id!!)
             ?: throw ServiceException(
                 "500-1",
                 "Iamport 액세스 토큰 발급을 실패했습니다."
@@ -188,7 +188,7 @@ class PaymentService(
         val pageable: Pageable = Ut.pageable.makePageable(page, pageSize)
 
         val payments: Page<Payment> = paymentRepository.findByMemberIdAndStatusKeyword(
-            member.id,
+            member.id!!,
             paymentStatus,
             pageable
         )
@@ -234,10 +234,10 @@ class PaymentService(
         // 결제자 이메일 검증 (존재할 때만 검증)
         getPayment.buyerEmail?.let { buyerEmail ->
             val frontBuyerEmail = buyerEmail.substringBefore("@").dropLast(3)
-            val frontRequestEmail = member.emailAddress.substringBefore("@").dropLast(3)
+            val frontRequestEmail = member.emailAddress!!.substringBefore("@").dropLast(3)
 
             val domainBuyerEmail = buyerEmail.substringAfter("@")
-            val domainRequestEmail = member.emailAddress.substringAfter("@")
+            val domainRequestEmail = member.emailAddress!!.substringAfter("@")
 
             require(frontBuyerEmail == frontRequestEmail && domainBuyerEmail == domainRequestEmail) {
                 throw ServiceException(

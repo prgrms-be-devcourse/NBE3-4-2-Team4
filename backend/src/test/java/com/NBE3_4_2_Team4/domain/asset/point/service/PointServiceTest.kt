@@ -6,6 +6,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.repository.AdminAssetCategoryReposit
 import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository
 import com.NBE3_4_2_Team4.domain.asset.main.service.AssetHistoryService
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Cash
 import com.NBE3_4_2_Team4.domain.member.member.entity.asset.Point
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
 import com.NBE3_4_2_Team4.global.exceptions.PointClientException
@@ -48,23 +49,25 @@ class PointServiceTest {
 
     @BeforeEach
     fun setup() {
-        member1 = Member.builder()
-            .point(Point(300L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m1")
-            .nickname("n1")
-            .password("1234")
-            .build()
+        member1 = Member(
+            point = Point(),
+            cash = Cash(300L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m1",
+            nickname = "n1",
+            password = "1234"
+        )
 
-        member2 = Member.builder()
-            .point(Point(0L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m2")
-            .nickname("n2")
-            .password("1234")
-            .build()
+        member2 = Member(
+            point = Point(),
+            cash = Cash(0L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m2",
+            nickname = "n2",
+            password = "1234"
+        )
 
         memberRepository.save(member1)
         memberRepository.save(member2)
@@ -74,14 +77,14 @@ class PointServiceTest {
         assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.POINT, "b")
         assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.POINT, "c")
 
-        member1Id = member1.getId()
-        member2Id = member2.getId()
+        member1Id = member1.id
+        member2Id = member2.id
     }
 
     @Test
     @DisplayName("transfer test")
     fun t1() {
-        pointService.transfer(member1.getUsername(), member2.getUsername(), 150L, AssetCategory.TRANSFER)
+        pointService.transfer(member1.username, member2.username, 150L, AssetCategory.TRANSFER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
@@ -90,32 +93,32 @@ class PointServiceTest {
             member2Id!!
         ).orElseThrow { java.lang.RuntimeException("Account not found") }
 
-        Assertions.assertEquals(150L, updatedMember1.getPoint().amount)
-        Assertions.assertEquals(150L, updatedMember2.getPoint().amount)
+        Assertions.assertEquals(150L, updatedMember1.point.amount)
+        Assertions.assertEquals(150L, updatedMember2.point.amount)
     }
 
     @Test
     @DisplayName("accumulation test")
     fun t2() {
-        pointService.accumulate(member1.getUsername(), 150L, AssetCategory.ANSWER)
+        pointService.accumulate(member1.username, 150L, AssetCategory.ANSWER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
         ).orElseThrow { java.lang.RuntimeException("Account not found") }
 
-        Assertions.assertEquals(450, updatedMember1.getPoint().amount)
+        Assertions.assertEquals(450, updatedMember1.point.amount)
     }
 
     @Test
     @DisplayName("deduction test")
     fun t3() {
-        pointService.deduct(member1.getUsername(), 150L, AssetCategory.ANSWER)
+        pointService.deduct(member1.username, 150L, AssetCategory.ANSWER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
         ).orElseThrow { java.lang.RuntimeException("Account not found") }
 
-        Assertions.assertEquals(150, updatedMember1.getPoint().amount)
+        Assertions.assertEquals(150, updatedMember1.point.amount)
     }
 
     @Test
@@ -141,7 +144,7 @@ class PointServiceTest {
                 "히스토리 없음"
             )
         }
-        Assertions.assertEquals(member1.getId(), assetHistory.member.getId())
+        Assertions.assertEquals(member1.id, assetHistory.member.id)
 
         val assetHistory2 = assetHistoryRepository.findById(id2).orElseThrow { RuntimeException() }
         Assertions.assertEquals("ABUSE_RESPONSE", assetHistory2.adminAssetCategory!!.name)
@@ -153,29 +156,29 @@ class PointServiceTest {
     @Test
     @DisplayName("출석 테스트")
     fun t6() {
-        pointService.attend(member1Id)
+        pointService.attend(member1Id!!)
         val updatedMember1 = memberRepository.findById(
             member1Id!!
         ).orElseThrow { java.lang.RuntimeException("Account not found") }
-        Assertions.assertEquals(310, updatedMember1.getPoint().amount)
-        Assertions.assertEquals(LocalDate.now(), updatedMember1.getLastAttendanceDate())
+        Assertions.assertEquals(310, updatedMember1.point.amount)
+        Assertions.assertEquals(LocalDate.now(), updatedMember1.lastAttendanceDate)
     }
 
     @Test
     @DisplayName("출석 실패 테스트")
     fun t7() {
-        member1.setLastAttendanceDate(LocalDate.now())
+        member1.lastAttendanceDate = LocalDate.now()
         memberRepository.flush()
 
         Assertions.assertThrows(PointClientException::class.java) {
-            pointService.attend(member1Id)
+            pointService.attend(member1Id!!)
         }
     }
 
     @Test
     @DisplayName("adminAccumulate 테스트")
     fun t8() {
-        val historyId = pointService.adminAccumulate(member1.getUsername(), 10, 1)
+        val historyId = pointService.adminAccumulate(member1.username, 10, 1)
         val name = assetHistoryRepository
             .findById(historyId).get().adminAssetCategory!!.name
         Assertions.assertEquals("SYSTEM_COMPENSATION", name)
@@ -184,7 +187,7 @@ class PointServiceTest {
     @Test
     @DisplayName("adminDeduct 서비스 테스트")
     fun t9() {
-        val historyId = pointService.adminDeduct(member1.getUsername(), 10, 1)
+        val historyId = pointService.adminDeduct(member1.username, 10, 1)
         val name = assetHistoryRepository
             .findById(historyId).get().adminAssetCategory!!.name
         Assertions.assertEquals("SYSTEM_COMPENSATION", name)

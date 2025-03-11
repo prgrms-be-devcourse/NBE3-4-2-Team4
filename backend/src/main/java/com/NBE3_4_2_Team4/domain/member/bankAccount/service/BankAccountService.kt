@@ -7,7 +7,7 @@ import com.NBE3_4_2_Team4.domain.member.bankAccount.repository.BankAccountReposi
 import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService
 import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.BankAccountValidator
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
-import com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember
+import com.NBE3_4_2_Team4.global.security.AuthManager.Companion.getNonNullMember
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,8 +44,8 @@ class BankAccountService(
 
         val member = getNonNullMember()
 
-        val accessToken = iamportService.getAccessToken(member.id)
-            ?: iamportService.generateAccessToken(member.id)
+        val accessToken = iamportService.getAccessToken(member.id!!)
+            ?: iamportService.generateAccessToken(member.id!!)
             ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
         val bankCodes = iamportService.getBankCodes(accessToken)
@@ -85,8 +85,8 @@ class BankAccountService(
 
         val member = getNonNullMember()
 
-        val accessToken = iamportService.getAccessToken(member.id)
-            ?: iamportService.generateAccessToken(member.id)
+        val accessToken = iamportService.getAccessToken(member.id!!)
+            ?: iamportService.generateAccessToken(member.id!!)
             ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
         verifyBankAccount(accessToken, accountInfo.bankCode, accountInfo.accountNumber, accountInfo.accountHolder)
@@ -160,7 +160,7 @@ class BankAccountService(
         val member = getNonNullMember()
 
         val isExist = bankAccountRepository.existsByMemberIdAndBankCodeAndAccountNumberAndAccountHolder(
-            member.id,
+            member.id!!,
             checkBankAccount.bankCode,
             checkBankAccount.accountNumber,
             checkBankAccount.accountHolder

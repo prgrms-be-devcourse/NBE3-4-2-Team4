@@ -41,25 +41,25 @@ class CashServiceTest {
 
     @BeforeEach
     fun setup() {
-        member1 = Member.builder()
-            .point(Point())
-            .cash(Cash(300L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m1")
-            .nickname("n1")
-            .password("1234")
-            .build()
+        member1 = Member(
+            point = Point(),
+            cash = Cash(300L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m1",
+            nickname = "n1",
+            password = "1234"
+        )
 
-        member2 = Member.builder()
-            .point(Point())
-            .cash(Cash(0L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m2")
-            .nickname("n2")
-            .password("1234")
-            .build()
+        member2 = Member(
+            point = Point(),
+            cash = Cash(0L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m2",
+            nickname = "n2",
+            password = "1234"
+        )
 
         memberRepository.save(member1)
         memberRepository.save(member2)
@@ -69,14 +69,14 @@ class CashServiceTest {
         assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.CASH, "b")
         assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.CASH, "c")
 
-        member1Id = member1.getId()
-        member2Id = member2.getId()
+        member1Id = member1.id
+        member2Id = member2.id
     }
 
     @Test
     @DisplayName("transfer test")
     fun t1() {
-        cashService.transfer(member1.getUsername(), member2.getUsername(), 150L, AssetCategory.TRANSFER)
+        cashService.transfer(member1.username, member2.username, 150L, AssetCategory.TRANSFER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
@@ -85,38 +85,38 @@ class CashServiceTest {
             member2Id!!
         ).orElseThrow { RuntimeException("Account not found") }
 
-        Assertions.assertEquals(150L, updatedMember1.getCash().amount)
-        Assertions.assertEquals(150L, updatedMember2.getCash().amount)
+        Assertions.assertEquals(150L, updatedMember1.cash.amount)
+        Assertions.assertEquals(150L, updatedMember2.cash.amount)
     }
 
     @Test
     @DisplayName("accumulation test")
     fun t2() {
-        cashService.accumulate(member1.getUsername(), 150L, AssetCategory.ANSWER)
+        cashService.accumulate(member1.username, 150L, AssetCategory.ANSWER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
         ).orElseThrow { RuntimeException("Account not found") }
 
-        Assertions.assertEquals(450, updatedMember1.getCash().amount)
+        Assertions.assertEquals(450, updatedMember1.cash.amount)
     }
 
     @Test
     @DisplayName("deduction test")
     fun t3() {
-        cashService.deduct(member1.getUsername(), 150L, AssetCategory.ANSWER)
+        cashService.deduct(member1.username, 150L, AssetCategory.ANSWER)
 
         val updatedMember1 = memberRepository.findById(
             member1Id!!
         ).orElseThrow { RuntimeException("Account not found") }
 
-        Assertions.assertEquals(150, updatedMember1.getCash().amount)
+        Assertions.assertEquals(150, updatedMember1.cash.amount)
     }
 
     @Test
     @DisplayName("adminAccumulate 테스트")
     fun t4() {
-        val historyId = cashService.adminAccumulate(member1.getUsername(), 10, 1)
+        val historyId = cashService.adminAccumulate(member1.username, 10, 1)
         val name = assetHistoryRepository
             .findById(historyId).get().adminAssetCategory!!.name
         Assertions.assertEquals("SYSTEM_COMPENSATION", name)
@@ -125,7 +125,7 @@ class CashServiceTest {
     @Test
     @DisplayName("adminDeduct 서비스 테스트")
     fun t5() {
-        val historyId = cashService.adminDeduct(member1.getUsername(), 10, 1)
+        val historyId = cashService.adminDeduct(member1.username, 10, 1)
         val name = assetHistoryRepository
             .findById(historyId).get().adminAssetCategory!!.name
         Assertions.assertEquals("SYSTEM_COMPENSATION", name)

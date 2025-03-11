@@ -35,7 +35,7 @@ class AssetServiceTest : BaseAssetTestSetup() {
                 "히스토리 없음"
             )
         }
-        Assertions.assertEquals(member1.getId(), assetHistory.member.getId())
+        Assertions.assertEquals(member1.id, assetHistory.member.id)
         val createdAt = LocalDateTime.now()
         Assertions.assertTrue(Duration.between(assetHistory.createdAt, createdAt).seconds < 5)
     }

@@ -41,25 +41,25 @@ abstract class BaseAssetTestSetup {
 
     @BeforeEach
     fun setup() {
-        member1 = Member.builder()
-            .point(Point())
-            .cash(Cash(300L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m1")
-            .nickname("n1")
-            .password("1234")
-            .build()
+        member1 = Member(
+            point = Point(),
+            cash = Cash(300L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m1",
+            nickname = "n1",
+            password = "1234"
+        )
 
-        member2 = Member.builder()
-            .point(Point())
-            .cash(Cash(0L))
-            .role(Member.Role.USER)
-            .oAuth2Provider(Member.OAuth2Provider.NONE)
-            .username("m2")
-            .nickname("n2")
-            .password("1234")
-            .build()
+        member2 = Member(
+            point = Point(),
+            cash = Cash(0L),
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.NONE,
+            username = "m2",
+            nickname = "n2",
+            password = "1234"
+        )
 
         memberRepository.save(member1)
         memberRepository.save(member2)
@@ -69,7 +69,7 @@ abstract class BaseAssetTestSetup {
         assetHistoryService.createHistory(member1, null, 15, AssetCategory.PURCHASE, null, AssetType.POINT, "b")
         assetHistoryService.createHistory(member2, null, 10, AssetCategory.ANSWER, null, AssetType.CASH, "c")
 
-        member1Id = member1.getId()
-        member2Id = member2.getId()
+        member1Id = member1.id
+        member2Id = member2.id
     }
 }
