@@ -3,12 +3,12 @@ package com.NBE3_4_2_Team4.domain.board.message.controller;
 import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto;
 import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto;
 import com.NBE3_4_2_Team4.domain.board.message.service.MessageService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,14 +22,24 @@ public class MessageController {
 
     @GetMapping("/send")
     @Operation(summary = "보낸 쪽지 조회", description = "보낸 쪽지 목록 조회")
-    public List<MessageDto> getSentMessages() {
-        return messageService.getSentMessages();
+    public PageDto<MessageDto> getSentMessages(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                messageService.getSentMessages(page, pageSize)
+        );
     }
 
     @GetMapping("/receive")
     @Operation(summary = "받은 쪽지 조회", description = "받은 쪽지 목록 조회")
-    public List<MessageDto> getReceivedMessages() {
-        return messageService.getReceivedMessages();
+    public PageDto<MessageDto> getReceivedMessages(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return new PageDto<>(
+                messageService.getReceivedMessages(page, pageSize)
+        );
     }
 
     @GetMapping("/receive/unread")
@@ -47,11 +57,10 @@ public class MessageController {
     @PostMapping
     @Operation(summary = "쪽지 작성", description = "쪽지 작성")
     public RsData<MessageDto> write(@RequestBody MessageWriteReqDto reqBody) {
-        Member sender = AuthManager.getNonNullMember();
         return new RsData<>(
                 "201-1",
                 "쪽지를 성공적으로 보냈습니다.",
-                messageService.write(sender, reqBody.receiverName(), reqBody.title(), reqBody.content())
+                messageService.write(reqBody.receiverName(), reqBody.title(), reqBody.content())
         );
     }
 

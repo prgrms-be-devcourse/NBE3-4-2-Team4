@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.board.question.dto;
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto;
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
 
@@ -40,6 +41,8 @@ public class QuestionDto {
     private final AssetType assetType;
     @NonNull
     private final long authorId;
+    @NonNull
+    private final List<NewsSearchResult> articles;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
@@ -61,5 +64,6 @@ public class QuestionDto {
         this.amount = question.getAmount();
         this.assetType = question.getAssetType();
         this.authorId = question.getAuthor().getId();
+        this.articles = question.getArticles();
     }
 }

@@ -37,7 +37,7 @@ public class Message extends BaseEntity {
     private LocalDateTime createdAt;
 
     @Setter
-    private boolean isChecked;
+    private boolean checked;
 
     @Setter
     private boolean deletedBySender;

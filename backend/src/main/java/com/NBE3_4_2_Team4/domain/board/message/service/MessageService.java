@@ -8,7 +8,9 @@ import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.security.AuthManager;
+import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,32 +27,34 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDto> getSentMessages() {
-        return getMessagesByType(MessageType.SENT);
+    public Page<MessageDto> getSentMessages(int page, int pageSize) {
+        return getMessagesByType(MessageType.SENT, page, pageSize);
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDto> getReceivedMessages() {
-        return getMessagesByType(MessageType.RECEIVED);
+    public Page<MessageDto> getReceivedMessages(int page, int pageSize) {
+        return getMessagesByType(MessageType.RECEIVED, page, pageSize);
     }
 
-    private List<MessageDto> getMessagesByType(MessageType type) {
+    private Page<MessageDto> getMessagesByType(MessageType type, int page, int pageSize) {
         Member actor = AuthManager.getNonNullMember();
-        List<Message> messages;
+        Page<Message> messages;
 
         if (type == MessageType.RECEIVED) {
-            messages = messageRepository.findReceivedMessages(actor.getId());
+            messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc
+                    (Ut.pageable.makePageable(page, pageSize), actor.getId());
         } else {
-            messages = messageRepository.findSentMessages(actor.getId());
+            messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc
+                    (Ut.pageable.makePageable(page, pageSize), actor.getId());
         }
 
-        return messages.stream().map(MessageDto::new).toList();
+        return messages.map(MessageDto::new);
     }
 
     @Transactional(readOnly = true)
     public Long getUnreadMessages() {
         Member actor = AuthManager.getNonNullMember();
-        List<Message> messages = messageRepository.findAllByReceiverAndIsChecked(actor, false);
+        List<Message> messages = messageRepository.findAllByReceiverAndChecked(actor, false);
 
         return (long) messages.stream().map(MessageDto::new).toList().size();
     }
@@ -66,14 +70,16 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageDto write(Member sender, String receiverName, String title, String content) {
+    public MessageDto write(String receiverName, String title, String content) {
+        Member sender = AuthManager.getNonNullMember();
         Member receiver = memberRepository.findByNickname(receiverName).get();
+
         Message message = Message.builder()
                 .sender(sender)
                 .receiver(receiver)
                 .title(title)
                 .content(content)
-                .isChecked(false)
+                .checked(false)
                 .build();
 
         messageRepository.save(message);
