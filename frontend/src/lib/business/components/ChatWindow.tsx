@@ -197,7 +197,9 @@ const ChatWindow = ({
           return;
         }
 
-        const username = response.data.username;
+        const username = response.data.data.username;
+
+        console.log("username", response.data);
 
         if (username) {
           setMyUsername(username);
@@ -214,6 +216,8 @@ const ChatWindow = ({
 
     // localStorage에 username이 없을 경우에만 API 요청
     const storedUsername = localStorage.getItem("username");
+
+    console.log("storedUsername", storedUsername);
 
     if (!storedUsername) {
       fetchMyUsername();
@@ -237,6 +241,8 @@ const ChatWindow = ({
         sender_username: myUsername,
         content: message,
       };
+
+      console.log("myUsername", myUsername);
 
       //console.log("메시지 전송 시도:", { messageData, chatRoomId });
 
