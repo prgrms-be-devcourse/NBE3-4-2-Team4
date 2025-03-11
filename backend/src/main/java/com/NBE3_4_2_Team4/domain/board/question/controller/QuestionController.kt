@@ -67,7 +67,7 @@ class QuestionController(
     @DeleteMapping("/{id}")
     @Operation(summary = "질문 삭제", description = "질문 id에 해당하는 글 삭제, 작성자만 삭제 가능")
     fun delete(@PathVariable id: Long): RsData<Void> {
-        val actor = AuthManager.getMemberFromContext()
+        val actor = AuthManager.getNonNullMember()
         questionService.delete(id, actor)
 
         return RsData(
@@ -79,7 +79,7 @@ class QuestionController(
     @PostMapping
     @Operation(summary = "질문 등록")
     fun write(@RequestBody @Valid reqBody: QuestionWriteReqDto): RsData<QuestionWriteResDto> {
-        val author = AuthManager.getMemberFromContext()
+        val author = AuthManager.getNonNullMember()
         val question = questionService.write(reqBody.title, reqBody.content,
                 reqBody.categoryId, author, reqBody.amount, reqBody.assetType)
 
@@ -96,7 +96,7 @@ class QuestionController(
     @PutMapping("/{id}")
     @Operation(summary = "질문 수정", description = "질문 id에 해당하는 글 수정, 작성자만 수정 가능")
     fun update(@PathVariable id: Long, @RequestBody @Valid reqBody: QuestionWriteReqDto): RsData<QuestionDto> {
-        val actor = AuthManager.getMemberFromContext()
+        val actor = AuthManager.getNonNullMember()
         val question = questionService.update(id, reqBody.title, reqBody.content,
                 actor, reqBody.amount, reqBody.categoryId, reqBody.assetType)
 

@@ -29,7 +29,7 @@ class PointService (
 
 
     //기록없이 포인트를 전송하는 메소드
-    @Transactional
+//    @Transactional
     private fun transferWithoutHistory(fromUsername: String, toUsername: String, amount: Long): Pair<Member, Member> {
         if (fromUsername == toUsername) throw PointClientException("자기 자신에게 송금할 수 없습니다")
 
@@ -78,7 +78,7 @@ class PointService (
     }
 
     //포인트 차감 & 기록없음
-    @Transactional
+//    @Transactional
     private fun deductWithoutHistory(from: String, amount: Long): Member {
         val member: Member = memberRepository.findByUsernameWithLock(from)
             ?: throw MemberNotFoundException("${from}는 존재하지 않는 유저입니다")
@@ -103,7 +103,7 @@ class PointService (
     }
 
     //포인트 적립, 기록없음
-    @Transactional
+//    @Transactional
     private fun accumulateWithoutHistory(to: String, amount: Long): Member {
         val member: Member = memberRepository.findByUsernameWithLock(to)
             ?: throw MemberNotFoundException("${to}는 존재하지 않는 유저입니다")
@@ -162,7 +162,7 @@ class PointService (
     }
 
     @Transactional
-    fun attend(memberId: Long?) {
+    fun attend(memberId: Long) {
         val today = LocalDate.now()
 
         //락으로 여러번 출석실행 방지
@@ -170,7 +170,7 @@ class PointService (
             ?: throw MemberNotFoundException("존재하지 않는 유저입니다")
 
         //현재 날짜보다 전이면 포인트지급 & 마지막 출석일 업데이트, 아니면 에러
-        if (!member.isFirstLoginToday) {
+        if (!member.isFirstLoginToday()) {
             throw PointClientException("출석실패: 이미 출석했습니다")
         }
         member.lastAttendanceDate = today

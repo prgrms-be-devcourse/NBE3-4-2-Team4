@@ -47,8 +47,8 @@ class QuestionInitData(
     fun initData() {
         if (questionService.count() > 0) return
 
-        val admin = memberRepository.findByUsername(adminUsername).orElseThrow()
-        val testUser = memberRepository.findByUsername(member1Username).orElseThrow()
+        val admin = memberRepository.findByUsername(adminUsername)!!
+        val testUser = memberRepository.findByUsername(member1Username)!!
 
         val categories = listOf("연애", "건강", "경제", "교육", "스포츠", "여행", "음식", "취업", "IT", "기타")
         for (category in categories) {
