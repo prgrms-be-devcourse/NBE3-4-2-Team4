@@ -39,7 +39,7 @@ class QuestionService(
         val category = questionCategoryRepository.findById(categoryId).orElseThrow()
         val assetService = assetServiceFactory.getService(assetType)
 
-        val articles = newsSearchService.getSearchResults(title, 2, 1)
+        val articles = newsSearchService.getSearchResults(title, 2, 1).toMutableList()
         val question = Question(
                 title,
                 content,

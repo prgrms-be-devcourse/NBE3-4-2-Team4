@@ -1,76 +1,63 @@
-package com.NBE3_4_2_Team4.domain.board.search.service;
+package com.NBE3_4_2_Team4.domain.board.search.service
 
-import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestTemplate
 
 @Service
-public class NewsSearchService {
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
+class NewsSearchService(
+    private val restTemplate: RestTemplate,
+    private val objectMapper: ObjectMapper
+) {
+    @Value("\${custom.naver.api.client-id}")
+    private lateinit var clientId: String
 
-    @Value("${custom.naver.api.client-id}")
-    private String clientId;
+    @Value("\${custom.naver.api.client-secret}")
+    private lateinit var clientSecret: String
 
-    @Value("${custom.naver.api.client-secret}")
-    private String clientSecret;
+    @Value("\${custom.naver.api.trend-url}")
+    private lateinit var trendUrl: String
 
-    @Value("${custom.naver.api.trend-url}")
-    private String trendUrl;
-
-    public NewsSearchService(RestTemplate restTemplate, ObjectMapper objectMapper) {
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
-    }
-
-    public List<NewsSearchResult> getSearchResults(String query, int display, int start) {
-        String url = "%s?display=%d&start=%d&query=%s".formatted(trendUrl, display, start, query);
+    fun getSearchResults(query: String, display: Int, start: Int): List<NewsSearchResult> {
+        val url = "$trendUrl?display=$display&start=$start&query=$query"
         // 요청 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", clientId);
-        headers.set("X-Naver-Client-Secret", clientSecret);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        val headers = HttpHeaders().apply {
+            set("X-Naver-Client-Id", clientId)
+            set("X-Naver-Client-Secret", clientSecret)
+            contentType = MediaType.APPLICATION_JSON
+        }
 
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            return parseSearchResults(response.getBody());
-        } catch (HttpClientErrorException.TooManyRequests e) {
-            // 요청을 실패했을 경우 1초 대기 후 다시 시도
-            try {
-                Thread.sleep(1000);  // 1초 대기
-            } catch (InterruptedException interruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            // 재시도
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            return parseSearchResults(response.getBody());
+        return try {
+            val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Any>(headers), String::class.java)
+            parseSearchResults(response.body!!)
+        } catch (e: HttpClientErrorException.TooManyRequests) {
+            Thread.sleep(1000) // 1초 대기 후 재시도
+            val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Any>(headers), String::class.java)
+            parseSearchResults(response.body!!)
         }
     }
 
-    private List<NewsSearchResult> parseSearchResults(String responseBody) {
-        List<NewsSearchResult> results = new ArrayList<>();
-        try {
-            JsonNode root = objectMapper.readTree(responseBody);
-            JsonNode items = root.path("items"); // "items" 배열 가져오기
+    private fun parseSearchResults(responseBody: String): List<NewsSearchResult> {
+        return try {
+            val root = objectMapper.readTree(responseBody)
+            val items = root.path("items") // "items" 배열 가져오기
 
-            for (JsonNode item : items) {
-                String title = item.path("title").asText();
-                String link = item.path("link").asText();
-                String description = item.path("description").asText();
-
-                results.add(new NewsSearchResult(title, link, description));
+            items.map {
+                NewsSearchResult(
+                    title = it.path("title").asText(),
+                    link = it.path("link").asText(),
+                    description = it.path("description").asText()
+                )
             }
-        } catch (Exception e) {
-            throw new RuntimeException("네이버 검색 API 응답 파싱 실패", e);
+        } catch (e: Exception) {
+            throw RuntimeException("네이버 검색 API 응답 파싱 실패", e)
         }
-        return results;
     }
 }
