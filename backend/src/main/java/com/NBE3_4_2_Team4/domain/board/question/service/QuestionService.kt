@@ -8,6 +8,8 @@ import com.NBE3_4_2_Team4.domain.board.question.dto.QuestionDto
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult
+import com.NBE3_4_2_Team4.domain.board.search.service.NewsSearchService
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
@@ -26,7 +28,8 @@ class QuestionService(
     private val questionCategoryRepository: QuestionCategoryRepository,
     private val assetServiceFactory: AssetServiceFactory,
     private val answerRepository: AnswerRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val newsSearchService: NewsSearchService
 ) {
     fun count(): Long = questionRepository.count()
 
@@ -35,13 +38,16 @@ class QuestionService(
               author: Member, amount: Long, assetType: AssetType): QuestionDto {
         val category = questionCategoryRepository.findById(categoryId).orElseThrow()
         val assetService = assetServiceFactory.getService(assetType)
+
+        val articles = newsSearchService.getSearchResults(title, 2, 1).toMutableList()
         val question = Question(
                 title,
                 content,
                 author,
                 category,
                 assetType,
-                amount
+                amount,
+                articles
         )
 
         //질문글 작성 시 포인트 차감

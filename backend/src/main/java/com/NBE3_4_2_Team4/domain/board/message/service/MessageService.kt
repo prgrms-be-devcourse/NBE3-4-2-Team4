@@ -4,10 +4,11 @@ import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto
 import com.NBE3_4_2_Team4.domain.board.message.entity.Message
 import com.NBE3_4_2_Team4.domain.board.message.entity.MessageType
 import com.NBE3_4_2_Team4.domain.board.message.repository.MessageRepository
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
 import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.util.Ut
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,16 +20,20 @@ class MessageService(
     fun count(): Long = messageRepository.count()
 
     @Transactional(readOnly = true)
-    fun getSentMessages(): List<MessageDto> = getMessagesByType(MessageType.SENT)
+    fun getSentMessages(page: Int, pageSize: Int): Page<MessageDto> {
+        return getMessagesByType(MessageType.SENT, page, pageSize)
+    }
 
     @Transactional(readOnly = true)
-    fun getReceivedMessages(): List<MessageDto> = getMessagesByType(MessageType.RECEIVED)
+    fun getReceivedMessages(page: Int, pageSize: Int): Page<MessageDto> {
+        return getMessagesByType(MessageType.RECEIVED, page, pageSize)
+    }
 
-    private fun getMessagesByType(type: MessageType): List<MessageDto> {
+    private fun getMessagesByType(type: MessageType, page: Int, pageSize: Int): Page<MessageDto> {
         val actor = AuthManager.getNonNullMember()
         val messages = when (type) {
-            MessageType.RECEIVED -> messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(actor.id!!)
-            MessageType.SENT -> messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(actor.id!!)
+            MessageType.RECEIVED -> messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id!!)
+            MessageType.SENT -> messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(page, pageSize), actor.id!!)
         }
 
         return messages.map(::MessageDto)

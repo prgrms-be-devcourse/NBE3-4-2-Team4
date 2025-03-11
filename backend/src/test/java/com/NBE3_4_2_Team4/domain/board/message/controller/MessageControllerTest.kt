@@ -4,6 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto
 import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto
 import com.NBE3_4_2_Team4.domain.board.message.repository.MessageRepository
 import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.util.Ut
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.`is`
@@ -44,7 +45,8 @@ class MessageControllerTest {
                 get("/api/messages/send")
         ).andDo { print() }
 
-        val messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(author.id).map(::MessageDto)
+        val messages = messageRepository.findBySenderIdAndDeletedBySenderFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(1, 10), author.id!!)
+            .map(::MessageDto).toList()
 
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("getSentMessages"))
@@ -56,12 +58,12 @@ class MessageControllerTest {
             val message = messages[i]
 
             resultActions
-                    .andExpect(jsonPath("$[$i].created_at").exists())
-                    .andExpect(jsonPath("$[$i].title").value(message.title))
-                    .andExpect(jsonPath("$[$i].content").value(message.content))
-                    .andExpect(jsonPath("$[$i].sender_name").value(message.senderName))
-                    .andExpect(jsonPath("$[$i].receiver_name").value(message.receiverName))
-                    .andExpect(jsonPath("$[$i].checked").value(message.checked))
+                    .andExpect(jsonPath("$.items[$i].created_at").exists())
+                    .andExpect(jsonPath("$.items[$i].title").value(message.title))
+                    .andExpect(jsonPath("$.items[$i].content").value(message.content))
+                    .andExpect(jsonPath("$.items[$i].sender_name").value(message.senderName))
+                    .andExpect(jsonPath("$.items[$i].receiver_name").value(message.receiverName))
+                    .andExpect(jsonPath("$.items[$i].checked").value(message.checked))
         }
     }
 
@@ -75,23 +77,24 @@ class MessageControllerTest {
                 get("/api/messages/receive")
         ).andDo { print() }
 
-        val messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(author.getId()).map(::MessageDto)
+        val messages = messageRepository.findByReceiverIdAndDeletedByReceiverFalseOrderByCreatedAtDesc(Ut.pageable.makePageable(1, 10), author.id!!)
+            .map(::MessageDto).toList()
 
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("getReceivedMessages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[*].receiver_name").value(everyItem(`is`("테스트 유저"))))
 
         for (i in messages.indices) {
             val message = messages[i]
             resultActions
-                    .andExpect(jsonPath("$[$i].title").value(message.title))
-                    .andExpect(jsonPath("$[$i].content").value(message.content))
-                    .andExpect(jsonPath("$[$i].sender_name").value(message.senderName))
-                    .andExpect(jsonPath("$[$i].receiver_name").value(message.receiverName))
-                    .andExpect(jsonPath("$[$i].created_at").exists())
-                    .andExpect(jsonPath("$[$i].checked").value(message.checked))
+                    .andExpect(jsonPath("$.items[$i].title").value(message.title))
+                    .andExpect(jsonPath("$.items[$i].content").value(message.content))
+                    .andExpect(jsonPath("$.items[$i].sender_name").value(message.senderName))
+                    .andExpect(jsonPath("$.items[$i].receiver_name").value(message.receiverName))
+                    .andExpect(jsonPath("$.items[$i].created_at").exists())
+                    .andExpect(jsonPath("$.items[$i].checked").value(message.checked))
         }
     }
 

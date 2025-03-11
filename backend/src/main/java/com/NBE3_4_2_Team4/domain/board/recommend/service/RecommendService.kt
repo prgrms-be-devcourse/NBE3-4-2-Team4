@@ -39,7 +39,7 @@ class RecommendService(
         if (recommendRepository.existsByQuestionAndMember(question, member)) { // 중복 추천 방지
             throw ServiceException("400-1", "이미 추천한 게시글입니다.")
         }
-        if (question.author != member) { // 본인 글 추천 방지
+        if (question.author == member) { // 본인 글 추천 방지
             throw ServiceException("400-2", "자신의 게시글은 추천할 수 없습니다.")
         }
 
