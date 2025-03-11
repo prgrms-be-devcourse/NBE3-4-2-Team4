@@ -1,70 +1,72 @@
-package com.NBE3_4_2_Team4.domain.member.bankAccount.initData;
+package com.NBE3_4_2_Team4.domain.member.bankAccount.initData
 
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.GenerateBankAccount;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.service.BankAccountService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData;
-import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
-import com.NBE3_4_2_Team4.global.security.AuthManager;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.GenerateBankAccount
+import com.NBE3_4_2_Team4.domain.member.bankAccount.service.BankAccountService
+import com.NBE3_4_2_Team4.domain.member.member.initData.MemberInitData
+import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository
+import com.NBE3_4_2_Team4.global.security.AuthManager
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.ApplicationRunner
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
+import org.springframework.core.annotation.Order
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.transaction.annotation.Transactional
 
 @Order(3)
-@Slf4j
 @Configuration
-@RequiredArgsConstructor
-public class BankAccountInitData {
+class BankAccountInitData(
+    private val bankAccountService: BankAccountService,
+    private val memberInitData: MemberInitData,
+    private val memberRepository: MemberRepository,
+    private val authManager: AuthManager
+) {
 
-    @Value("${custom.initData.member.member1.username}")
-    private String member1Username;
+    private val logger = KotlinLogging.logger {}
 
-    private final BankAccountService bankAccountService;
-    private final MemberInitData memberInitData;
-    private final MemberRepository memberRepository;
+    @Value("\${custom.initData.member.member1.username}")
+    private lateinit var member1Username: String
 
     @Autowired
     @Lazy
-    private BankAccountInitData self;
+    private lateinit var self: BankAccountInitData
 
     @Bean
-    public ApplicationRunner bankAccountInitDataApplicationRunner() {
-        return ignore -> {
-            memberInitData.work();
-            self.createInitBankAccounts();
-        };
+    fun bankAccountInitDataApplicationRunner(): ApplicationRunner {
+        return ApplicationRunner {
+            memberInitData.work()
+            self.createInitBankAccounts()
+        }
     }
 
     @Transactional
-    public void createInitBankAccounts() {
+    fun createInitBankAccounts() {
+        // 테스트 유저 조회
+        val testUser = memberRepository.findByUsername(member1Username)
+            .orElseThrow { throw IllegalStateException("Test user not found") }
 
-        // 테스트 유저 조회 + 로그인
-        Member testUser = memberRepository.findByUsername(member1Username).orElseThrow();
+        // 로그인 설정
+        authManager.setLogin(testUser)
 
-        AuthManager authManager = new AuthManager();
-        authManager.setLogin(testUser);
-
-        // 기존에 생성된 계좌가 있는지 확인
-        if (!bankAccountService.findAllBankAccount().isEmpty()) {
-            return;
+        // 기존 계좌가 존재하는 경우, 초기 데이터 생성 중단
+        if (bankAccountService.findAllBankAccount().isNotEmpty()) {
+            return
         }
 
         // 계좌 생성
         bankAccountService.generateBankAccount(
-                GenerateBankAccount.builder()
-                    .bankCode("031")
-                    .accountNumber("16613084208")
-                    .accountHolder("정성재")
-                .build());
+            GenerateBankAccount(
+                bankCode = "031",
+                accountNumber = "16613084208",
+                accountHolder = "정성재"
+            )
+        )
 
-        SecurityContextHolder.clearContext();
+        // 보안 컨텍스트 초기화
+        SecurityContextHolder.clearContext()
+        logger.info { "BankAccount 초기 데이터가 설정되었습니다." }
     }
 }

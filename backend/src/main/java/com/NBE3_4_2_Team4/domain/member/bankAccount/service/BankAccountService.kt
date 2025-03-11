@@ -1,237 +1,206 @@
-package com.NBE3_4_2_Team4.domain.member.bankAccount.service;
+package com.NBE3_4_2_Team4.domain.member.bankAccount.service
 
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.DuplicateCheckBankAccount;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBanks;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.entity.BankAccount;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.repository.BankAccountRepository;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.GenerateBankAccount;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.UpdateBankAccount;
-import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBankAccount;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.BankAccountValidator;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountResponseDto.BankInfo;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountRequestDto.*
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBankAccount
+import com.NBE3_4_2_Team4.domain.member.bankAccount.dto.BankAccountResponseDto.GetBanks
+import com.NBE3_4_2_Team4.domain.member.bankAccount.repository.BankAccountRepository
+import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService
+import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.BankAccountValidator
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember
+import mu.KotlinLogging
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-import java.util.List;
-
-import static com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class BankAccountService {
+class BankAccountService(
+    private val bankAccountRepository: BankAccountRepository,
+    private val iamportService: IamportService
+) {
 
-    private final BankAccountRepository bankAccountRepository;
-    private final IamportService iamportService;
+    private val logger = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
-    public List<GetBankAccount> findAllBankAccount() {
+    fun findAllBankAccount(): List<GetBankAccount> {
+        val member = getNonNullMember()
 
-        // 회원 확인
-        Member member = getNonNullMember();
+        val bankAccounts = bankAccountRepository.findAllByMember(member)
+        logger.info { "[${bankAccounts.size}] BankAccounts are found." }
 
-        // 회원의 모든 계좌 조회
-        List<BankAccount> bankAccounts = bankAccountRepository.findAllByMember(member);
-
-        log.info("[{}] BankAccounts are found.", bankAccounts.size());
-
-        return bankAccounts.stream()
-                .map(bankAccount -> GetBankAccount.builder()
-                            .bankAccountId(bankAccount.getId())
-                            .bankName(bankAccount.getBankName())
-                            .maskedAccountNumber(bankAccount.getMaskedAccountNumber())
-                            .accountHolder(bankAccount.getAccountHolder())
-                            .nickname(bankAccount.getNickname())
-                        .build())
-                .toList();
+        return bankAccounts.map { bankAccount ->
+            GetBankAccount(
+                bankAccountId = bankAccount.id,
+                bankName = bankAccount.bankName,
+                maskedAccountNumber = bankAccount.maskedAccountNumber,
+                accountHolder = bankAccount.accountHolder,
+                nickname = bankAccount.nickname
+            )
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<GetBanks> getBanks() {
+    fun getBanks(
+    ): List<GetBanks> {
 
-        // 회원 확인
-        Member member = getNonNullMember();
+        val member = getNonNullMember()
 
-        // Iamport 액세스 토큰 발급
-        String accessToken = iamportService.getAccessToken(member.getId())
-                .orElse(iamportService.generateAccessToken(member.getId())
-                        .orElseThrow(() -> new ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다."))
-        );
+        val accessToken = iamportService.getAccessToken(member.id)
+            ?: iamportService.generateAccessToken(member.id)
+            ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
-        // 모든 은행 목록 조회
-        List<BankInfo> bankCodes = iamportService.getBankCodes(accessToken);
+        val bankCodes = iamportService.getBankCodes(accessToken)
+        logger.info { "[${bankCodes.size}] Banks are found." }
 
-        log.info("[{}] Banks are found.", bankCodes.size());
-
-        return bankCodes.stream()
-                .map(bankCode ->
-                    GetBanks.builder()
-                                .bankCode(bankCode.getCode())
-                                .bankName(bankCode.getName())
-                            .build())
-                .toList();
+        return bankCodes.map { bankCode ->
+            GetBanks(
+                bankCode = bankCode.code,
+                bankName = bankCode.name
+            )
+        }
     }
 
     @Transactional(readOnly = true)
-    public GetBankAccount getBankAccount(Long bankAccountId) {
-        
-        // 은행 계좌 조회
-        BankAccount bankAccount = bankAccountRepository.findById(bankAccountId)
-                .orElseThrow(() -> new ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다."));
+    fun getBankAccount(
+        bankAccountId: Long
+    ): GetBankAccount {
 
-        log.info("BankAccount Id [{}] is found.", bankAccountId);
+        val bankAccount = bankAccountRepository.findById(bankAccountId)
+            .orElseThrow { ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다.") }
 
-        return GetBankAccount.builder()
-                    .bankAccountId(bankAccount.getId())
-                    .bankName(bankAccount.getBankName())
-                    .maskedAccountNumber(bankAccount.getMaskedAccountNumber())
-                    .accountHolder(bankAccount.getAccountHolder())
-                    .nickname(bankAccount.getNickname())
-                .build();
+        logger.info { "BankAccount Id [$bankAccountId] is found." }
+
+        return GetBankAccount(
+            bankAccountId = bankAccount.id,
+            bankName = bankAccount.bankName,
+            maskedAccountNumber = bankAccount.maskedAccountNumber,
+            accountHolder = bankAccount.accountHolder,
+            nickname = bankAccount.nickname
+        )
     }
 
     @Transactional
-    public GetBankAccount generateBankAccount(GenerateBankAccount accountInfo) {
+    fun generateBankAccount(
+        accountInfo: GenerateBankAccount
+    ): GetBankAccount {
 
-        // 회원 확인
-        Member member = getNonNullMember();
+        val member = getNonNullMember()
 
-        // Iamport 액세스 토큰 발급
-        String accessToken = iamportService.getAccessToken(member.getId())
-                .orElse(iamportService.generateAccessToken(member.getId())
-                        .orElseThrow(() -> new ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다."))
-                );
+        val accessToken = iamportService.getAccessToken(member.id)
+            ?: iamportService.generateAccessToken(member.id)
+            ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
-        // 은행 계좌 인증
-        verifyBankAccount(accessToken,
-                accountInfo.getBankCode(),
-                accountInfo.getAccountNumber(),
-                accountInfo.getAccountHolder()
-        );
+        verifyBankAccount(accessToken, accountInfo.bankCode, accountInfo.accountNumber, accountInfo.accountHolder)
 
-        // 은행코드로 은행명 조회
-        BankInfo bankInfo = iamportService.findBankNameByBankCode(accessToken, accountInfo.getBankCode())
-                .orElseThrow(() -> new ServiceException("404-1", "은행 코드에 해당하는 은행이 존재하지 않습니다."));
+        val bankInfo = iamportService.findBankNameByBankCode(accessToken, accountInfo.bankCode)
+            ?: throw ServiceException("404-1", "은행 코드에 해당하는 은행이 존재하지 않습니다.")
 
-        // 은행 계좌 저장
-        BankAccount bankAccount = bankAccountRepository.save(
-                accountInfo.toBankAccount(
-                        member,
-                        maskAccountNumber(accountInfo.getAccountNumber()),
-                        bankInfo.getName()
-                )
-        );
+        val bankAccount = bankAccountRepository.save(
+            accountInfo.toBankAccount(
+                member,
+                maskAccountNumber(accountInfo.accountNumber),
+                bankInfo.name
+            )
+        )
 
-        // 별명이 존재하지 않을 경우, 기본 닉네임 생성
-        if (bankAccount.getNickname() == null) {
-            bankAccount.updateNickname(null);
+        if (bankAccount.nickname == null) {
+            bankAccount.updateNickname(null)
         }
 
-        log.info("BankAccount Id [{}] is saved.", bankAccount.getId());
+        logger.info { "BankAccount Id [${bankAccount.id}] is saved." }
 
-        return GetBankAccount.builder()
-                    .bankAccountId(bankAccount.getId())
-                    .bankName(bankAccount.getBankName())
-                    .maskedAccountNumber(bankAccount.getMaskedAccountNumber())
-                    .accountHolder(bankAccount.getAccountHolder())
-                    .nickname(bankAccount.getNickname())
-                .build();
+        return GetBankAccount(
+            bankAccountId = bankAccount.id,
+            bankName = bankAccount.bankName,
+            maskedAccountNumber = bankAccount.maskedAccountNumber,
+            accountHolder = bankAccount.accountHolder,
+            nickname = bankAccount.nickname
+        )
     }
 
     @Transactional
-    public GetBankAccount updateBankAccountNickname(Long bankAccountId, UpdateBankAccount updateAccountInfo) {
+    fun updateBankAccountNickname(
+        bankAccountId: Long,
+        updateAccountInfo: UpdateBankAccount
+    ): GetBankAccount {
 
-        // 은행 계좌 조회
-        BankAccount bankAccount = bankAccountRepository.findById(bankAccountId)
-                .orElseThrow(() -> new ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다."));
+        val bankAccount = bankAccountRepository.findById(bankAccountId)
+            .orElseThrow { ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다.") }
 
-        // 계좌 별칭 수정
-        bankAccount.updateNickname(updateAccountInfo.getNickname());
+        bankAccount.updateNickname(updateAccountInfo.nickname)
+        val updatedBankAccount = bankAccountRepository.save(bankAccount)
 
-        BankAccount updatedBankAccount = bankAccountRepository.save(bankAccount);
+        logger.info { "BankAccount Nickname updated from [${bankAccount.nickname}] to [${updatedBankAccount.nickname}]." }
 
-        log.info("BankAccount Nickname is update [{}] to [{}].",
-                bankAccount.getNickname(), updatedBankAccount.getNickname());
-
-        return GetBankAccount.builder()
-                .bankAccountId(bankAccount.getId())
-                .bankName(bankAccount.getBankName())
-                .maskedAccountNumber(updatedBankAccount.getMaskedAccountNumber())
-                .accountHolder(updatedBankAccount.getAccountHolder())
-                .nickname(updatedBankAccount.getNickname())
-                .build();
+        return GetBankAccount(
+            bankAccountId = bankAccount.id,
+            bankName = bankAccount.bankName,
+            maskedAccountNumber = updatedBankAccount.maskedAccountNumber,
+            accountHolder = updatedBankAccount.accountHolder,
+            nickname = updatedBankAccount.nickname
+        )
     }
 
     @Transactional
-    public void deleteBankAccount(Long bankAccountId) {
-
-        // 은행 계좌 조회
-        BankAccount bankAccount = bankAccountRepository.findById(bankAccountId)
-                .orElseThrow(() -> new ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다."));
-
-        // 은행 계좌 삭제
-        bankAccountRepository.delete(bankAccount);
-
-        log.info("BankAccount Id [{}] is deleted", bankAccount.getId());
-    }
-
-    @Transactional(readOnly = true)
-    public boolean checkBankAccountDuplicated(DuplicateCheckBankAccount checkBankAccount) {
-
-        // 회원 확인
-        Member member = getNonNullMember();
-
-        // 환불 계좌 존재 유무 확인
-        boolean isExist = bankAccountRepository.existsByMemberIdAndBankCodeAndAccountNumberAndAccountHolder(
-                member.getId(),
-                checkBankAccount.getBankCode(),
-                checkBankAccount.getAccountNumber(),
-                checkBankAccount.getAccountHolder()
-        );
-
-        if (isExist) {
-            throw new ServiceException("409-1", "해당 은행 계좌는 이미 등록되었습니다.");
-        }
-
-        return isExist;
-    }
-
-    private boolean verifyBankAccount(
-            String accessToken,
-            String bankCode,
-            String accountNumber,
-            String accountHolder
+    fun deleteBankAccount(
+        bankAccountId: Long
     ) {
 
-        // 은행 계좌 유효성 체크
-        String holder = iamportService.validateBankAccount(
-                accessToken,
-                BankAccountValidator.builder()
-                        .bankCode(bankCode)
-                        .bankAccountNum(accountNumber)
-                        .build()
-        ).orElseThrow(() -> new ServiceException("500-1", "해당 계좌의 유효성을 체크하던 중에 오류가 발생했습니다."));
+        val bankAccount = bankAccountRepository.findById(bankAccountId)
+            .orElseThrow { ServiceException("404-1", "해당 은행 계좌가 존재하지 않습니다.") }
 
-        // 예금주명 체크
-        if (!accountHolder.equals(holder)) {
-            throw new ServiceException("400-1", "해당 계좌의 예금주가 다릅니다. [%s]"
-                    .formatted(accountHolder));
-        }
-
-        return true;
+        bankAccountRepository.delete(bankAccount)
+        logger.info { "BankAccount Id [${bankAccount.id}] is deleted" }
     }
 
-    private String maskAccountNumber(String accountNumber) {
-        if (accountNumber == null) {
-            log.warn("AccountNumber is Null, so we set Default masked Account Number. [****]");
-            return "****";
+    @Transactional(readOnly = true)
+    fun checkBankAccountDuplicated(
+        checkBankAccount: DuplicateCheckBankAccount
+    ): Boolean {
+
+        val member = getNonNullMember()
+
+        val isExist = bankAccountRepository.existsByMemberIdAndBankCodeAndAccountNumberAndAccountHolder(
+            member.id,
+            checkBankAccount.bankCode,
+            checkBankAccount.accountNumber,
+            checkBankAccount.accountHolder
+        )
+
+        if (isExist) {
+            throw ServiceException("409-1", "해당 은행 계좌는 이미 등록되었습니다.")
         }
 
-        return accountNumber.replaceAll("(?<=\\d{3})\\d(?=\\d{3})", "*");
+        return isExist
+    }
+
+    private fun verifyBankAccount(
+        accessToken: String,
+        bankCode: String,
+        accountNumber: String,
+        accountHolder: String
+    ): Boolean {
+
+        val holder = iamportService.validateBankAccount(
+            accessToken,
+            BankAccountValidator(bankCode, accountNumber)
+        ) ?: throw ServiceException("500-1", "해당 계좌의 유효성을 체크하던 중에 오류가 발생했습니다.")
+
+        require(holder == accountHolder) {
+            throw ServiceException("400-1", "해당 계좌의 예금주가 다릅니다. [$accountHolder]")
+        }
+
+        return true
+    }
+
+    private fun maskAccountNumber(
+        accountNumber: String?
+    ): String {
+
+        if (accountNumber == null) {
+            logger.warn { "AccountNumber is Null, setting default masked Account Number. [****]" }
+            return "****"
+        }
+
+        return accountNumber.replace(Regex("(?<=\\d{3})\\d(?=\\d{3})"), "*")
     }
 }
