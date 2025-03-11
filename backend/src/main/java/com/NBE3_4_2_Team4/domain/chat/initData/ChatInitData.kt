@@ -41,8 +41,8 @@ class ChatInitData(
     fun initChatData() {
         if (chatRoomService.count() > 0) return
 
-        val member1 = memberService.findByUsername(adminUsername).get()
-        val member2 = memberService.findByUsername(member1Username).get()
+        val member1 = memberService.findByUsername(adminUsername)!!
+        val member2 = memberService.findByUsername(member1Username)!!
 
         val chatRoom = chatRoomService.save(member1, member2, "채팅방 1")
 

@@ -34,7 +34,7 @@ class NotificationService(
             message = "새로운 채팅 요청이 있습니다.",
             senderName = actor.nickname,
             senderUsername = actor.username,
-            senderId = actor.id,
+            senderId = actor.id!!,
             chatRoomId = 0
         )
         sendNotification(recipientId, notification)

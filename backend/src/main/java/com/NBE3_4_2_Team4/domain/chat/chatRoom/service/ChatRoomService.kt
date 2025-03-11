@@ -40,12 +40,7 @@ class ChatRoomService(
         recipientUsername: String,
         name: String
     ): ChatRoomDto {
-        val recipient = memberService.findByUsername(recipientUsername).orElseThrow {
-            ServiceException(
-                "404-2",
-                "존재하지 않는 회원입니다."
-            )
-        }
+        val recipient = memberService.findByUsername(recipientUsername) ?: throw ServiceException("404-1", "해당 유저를 찾을 수 없습니다.")
 
         val actor = AuthManager.getNonNullMember()
         val chatRoom = save(recipient, actor, name)
