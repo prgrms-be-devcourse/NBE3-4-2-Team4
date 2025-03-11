@@ -44,7 +44,7 @@ class CustomOAuth2RequestResolver(
 
         val redirectUrl = Objects.requireNonNullElse(request.getParameter("redirectUrl"), frontDomain)
         val additionalParameters: MutableMap<String, Any> = HashMap(authorizationRequest.additionalParameters)
-        if (!redirectUrl.isEmpty()) {
+        if (redirectUrl.isNotEmpty()) {
             //이거 주석 풀면 매번 카카오 계정 로그인 해야 함
 //            String prompt = "login";
 //            additionalParameters.put("prompt",prompt);

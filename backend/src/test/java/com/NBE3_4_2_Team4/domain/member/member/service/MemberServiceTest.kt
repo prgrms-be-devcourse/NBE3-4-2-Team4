@@ -36,7 +36,9 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -77,6 +79,7 @@ class MemberServiceTest {
     private val nickname = "test nickname"
     private val role = Member.Role.USER
     private val oAuth2Provider = Member.OAuth2Provider.NONE
+    private val emailAddress = "test email"
 
     private var member: Member? = null
 
@@ -90,6 +93,7 @@ class MemberServiceTest {
             password = password,
             nickname = nickname,
             point = (Point(PointConstants.INITIAL_POINT)),
+            emailAddress = emailAddress,
             questions = (ArrayList<Question>()),
             answers = ArrayList<Answer>())
     }
@@ -276,11 +280,12 @@ class MemberServiceTest {
 
         memberService.withdrawalMembership((member)!!)
 
+        println("member is :$member")
         Mockito.verify(oAuth2RefreshTokenRepository, Mockito.times(0))
-            .findByMember(ArgumentMatchers.any())
+            .findByMember(member!!)
 
         Mockito.verify(oAuth2Manager, Mockito.times(0))
-            .getOAuth2DisconnectService(ArgumentMatchers.any())
+            .getOAuth2DisconnectService(Member.OAuth2Provider.NONE)
 
         Mockito.verify(memberQuerydsl, Mockito.times(1))
             .deleteMember(ArgumentMatchers.anyLong())
@@ -335,9 +340,9 @@ class MemberServiceTest {
         }
 
         Mockito.verify(oAuth2RefreshTokenRepository, Mockito.times(1))
-            .findByMember(ArgumentMatchers.any())
+            .findByMember(testMember)
         Mockito.verify(oAuth2Manager, Mockito.times(1))
-            .getOAuth2DisconnectService(ArgumentMatchers.any())
+            .getOAuth2DisconnectService(provider)
         Mockito.verify(memberQuerydsl, Mockito.times(1))
             .deleteMember(ArgumentMatchers.anyLong())
     }
@@ -375,9 +380,9 @@ class MemberServiceTest {
 
 
         Mockito.verify(oAuth2RefreshTokenRepository, Mockito.times(1))
-            .findByMember(ArgumentMatchers.any())
+            .findByMember(testMember)
         Mockito.verify(oAuth2Manager, Mockito.times(1))
-            .getOAuth2DisconnectService(ArgumentMatchers.any())
+            .getOAuth2DisconnectService(provider)
         Mockito.verify(memberRepository, Mockito.times(0))
             .deleteById(ArgumentMatchers.any())
     }
@@ -431,9 +436,9 @@ class MemberServiceTest {
 
 
         Mockito.verify(oAuth2RefreshTokenRepository, Mockito.times(1))
-            .findByMember(ArgumentMatchers.any())
+            .findByMember(testMember)
         Mockito.verify(oAuth2Manager, Mockito.times(1))
-            .getOAuth2DisconnectService(ArgumentMatchers.any())
+            .getOAuth2DisconnectService(provider)
         Mockito.verify(memberRepository, Mockito.times(0))
             .deleteById(ArgumentMatchers.any())
     }
@@ -470,6 +475,7 @@ class MemberServiceTest {
         )
 
         Mockito.`when`<Any?>(memberRepository.saveAndFlush(ArgumentMatchers.any())).thenReturn(member)
+        Mockito.`when`<Any?>(passwordEncoder.encode(any())).thenReturn("password")
         Mockito.`when`(memberRepository.existsById(1L)).thenReturn(true)
 
         Assertions.assertDoesNotThrow {
@@ -488,6 +494,6 @@ class MemberServiceTest {
         Mockito.verify(memberRepository, Mockito.times(1)).existsById(1L)
 
         Mockito.verify(mailService, Mockito.times(1))
-            .sendAuthenticationMail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            .sendAuthenticationMail(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString())
     }
 }

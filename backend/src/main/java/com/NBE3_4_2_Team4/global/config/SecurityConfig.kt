@@ -12,15 +12,9 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.authorization.AuthorizationManager
-import org.springframework.security.authorization.AuthorizationResult
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configurers.*
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.AuthorizationEndpointConfig
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.TokenEndpointConfig
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.Authentication
@@ -29,13 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import java.util.function.Supplier
 
+@EnableWebSecurity
 @Configuration
 class SecurityConfig(
     val customJwtFilter: CustomJwtFilter,
@@ -46,16 +38,19 @@ class SecurityConfig(
     val accessTokenResponseClient: CustomOAuth2AccessTokenResponseClient
 ) {
     @Bean
+    @Throws(Exception::class)
     fun SecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .invoke {
                 cors {
                     configurationSource = corsConfigurationSource()
                 }
+                formLogin { disable() }
                 csrf {disable()}
                 authorizeHttpRequests {
                     authorize(HttpMethod.POST, "/api/logout", authenticated)
                     authorize(HttpMethod.POST, "/api/login", permitAll)
+                    authorize(HttpMethod.POST, "/api/admin/login", permitAll)
                     authorize("/api/admin/**", hasRole("ADMIN"))
 
                     authorize(HttpMethod.GET, "/api/questions/**", permitAll)
@@ -82,8 +77,8 @@ class SecurityConfig(
                     }
                 }
                 exceptionHandling {
-                    customAuthenticationEntryPoint
-                    customAccessDeniedHandler
+                    authenticationEntryPoint = customAuthenticationEntryPoint
+                    accessDeniedHandler = customAccessDeniedHandler
                 }
                 oauth2Login {
                     oAuth2SuccessHandler
@@ -109,25 +104,9 @@ class SecurityConfig(
         return false
     }
 
-    private fun authDecisionByEmailVerified(auth: Authentication?): AuthorizationDecision {
-        return AuthorizationDecision(isEmailVerified(auth))
-    }
-
-    private fun needEmailVerified() : AuthorizationManager<RequestAuthorizationContext> {
-        return object : AuthorizationManager<RequestAuthorizationContext> {
-            override fun authorize(
-                authentication: Supplier<Authentication>,
-                `object`: RequestAuthorizationContext?
-            ): AuthorizationResult {
-                return authDecisionByEmailVerified(authentication.get())
-            }
-
-            override fun check(
-                authentication: Supplier<Authentication>?,
-                `object`: RequestAuthorizationContext?
-            ): AuthorizationDecision? {
-                TODO("Not implemented because this method is deprecated")
-            }
+    private fun needEmailVerified(): AuthorizationManager<RequestAuthorizationContext> {
+        return AuthorizationManager { authentication, _ ->
+            AuthorizationDecision(isEmailVerified(authentication.get()))
         }
     }
 

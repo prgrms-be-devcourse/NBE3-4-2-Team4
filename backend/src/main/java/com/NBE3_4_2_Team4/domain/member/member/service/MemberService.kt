@@ -113,22 +113,26 @@ class MemberService (
     }
 
 
-    private fun saveMember(tempUser: TempUserBeforeSignUp, signupRequestDto: SignupRequestDto): Member {
+    fun saveMember(tempUser: TempUserBeforeSignUp, signupRequestDto: SignupRequestDto): Member {
         if (memberRepository.existsByUsername(tempUser.username)) {
             throw ServiceException("409-1", String.format("already exists with username %s", tempUser.username))
         }
-        return memberRepository.saveAndFlush(
-            Member(
-                id = null,
-                role = Member.Role.USER,
-                oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()),
-                username = tempUser.username,
-                password = passwordEncoder.encode(tempUser.password),
-                nickname = signupRequestDto.nickname,
-                emailAddress = signupRequestDto.email,
-                realName = tempUser.getRealName()
-            )
+        val member = Member(
+            id = null,
+            role = Member.Role.USER,
+            oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()),
+            username = tempUser.getName(),
+            password = passwordEncoder.encode("dd"),
+            nickname = signupRequestDto.nickname,
+            emailAddress = signupRequestDto.email,
+            realName = tempUser.getRealName()
         )
+//        log.error("member : id {}, role {}, provider {}, username {}, password {}, nickname {}, email {}, realname {}", member.id, member.role, member.oAuth2Provider, member.username, member.password,
+//            member.nickname, member.emailAddress, member.realName)
+        return memberRepository.saveAndFlush(member)
+//        return memberRepository.saveAndFlush(
+//            member
+//        )
     }
 
 

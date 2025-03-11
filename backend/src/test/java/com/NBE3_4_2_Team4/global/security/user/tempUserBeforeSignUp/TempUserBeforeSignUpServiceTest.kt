@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import java.time.Duration
@@ -75,10 +75,7 @@ class TempUserBeforeSignUpServiceTest {
             tempUserBeforeSignUp,
             TempUserBeforeSignUp::class.java
         )
-        Mockito.verify(valueOperations, Mockito.times(1))[ArgumentMatchers.eq(oAuth2Id), ArgumentMatchers.eq(
-            tempUserBeforeSignUp
-        )!!] =
-            ArgumentMatchers.any<Duration>()
+        Mockito.verify(valueOperations, Mockito.times(1)).get(oAuth2Id)
     }
 
     @Test
@@ -97,10 +94,8 @@ class TempUserBeforeSignUpServiceTest {
             tempUserBeforeSignUp,
             TempUserBeforeSignUp::class.java
         )
-        Mockito.verify(valueOperations, Mockito.times(1))[ArgumentMatchers.eq(oAuth2Id), ArgumentMatchers.eq(
-            tempUserBeforeSignUp
-        )!!] =
-            ArgumentMatchers.any<Duration>()
+        Mockito.verify(valueOperations, Mockito.times(1))
+            .set(ArgumentMatchers.eq(oAuth2Id), any(), any(Duration::class.java))
     }
 
     @Test

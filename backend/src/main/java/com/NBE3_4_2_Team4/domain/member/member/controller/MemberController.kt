@@ -30,7 +30,6 @@ import java.util.*
 
 @RestController
 @Tag(name = "Member", description = "Member API")
-@RequestMapping("/api/members")
 class MemberController (
     private val memberService: MemberService,
     private val httpManager: HttpManager,
