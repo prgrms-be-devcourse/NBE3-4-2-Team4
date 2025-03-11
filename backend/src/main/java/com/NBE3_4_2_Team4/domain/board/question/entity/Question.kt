@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.base.genFile.entity.GenFileParent
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile
 import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException
 import com.NBE3_4_2_Team4.global.rsData.RsData
@@ -43,6 +44,10 @@ class Question : GenFileParent<QuestionGenFile, Question> {
 
     var rankReceived: Boolean = false // 랭킹 포인트 지급 여부
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "question_search", joinColumns = [JoinColumn(name = "question_id")])
+    var articles: MutableList<NewsSearchResult> = mutableListOf()
+
     constructor() : super(QuestionGenFile::class.java)
 
     constructor(
@@ -51,7 +56,8 @@ class Question : GenFileParent<QuestionGenFile, Question> {
         author: Member,
         category: QuestionCategory,
         assetType: AssetType,
-        amount: Long
+        amount: Long,
+        articles: MutableList<NewsSearchResult>
     ) : super(QuestionGenFile::class.java) {
         this.title = title
         this.content = content
@@ -59,6 +65,7 @@ class Question : GenFileParent<QuestionGenFile, Question> {
         this.category = category
         this.assetType = assetType
         this.amount = amount
+        this.articles = articles
     }
     fun getRecommendCount(): Long = recommends.size.toLong() // 추천 수 반환
 

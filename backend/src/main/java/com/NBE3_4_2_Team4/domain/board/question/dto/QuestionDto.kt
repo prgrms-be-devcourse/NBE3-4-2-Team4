@@ -3,6 +3,7 @@ package com.NBE3_4_2_Team4.domain.board.question.dto
 import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType
 import com.NBE3_4_2_Team4.domain.board.answer.dto.AnswerDto
 import com.NBE3_4_2_Team4.domain.board.question.entity.Question
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult
 
 import java.time.LocalDateTime
 
@@ -20,7 +21,8 @@ data class QuestionDto(
     val closed: Boolean,
     val amount: Long,
     val assetType: AssetType,
-    val authorId: Long
+    val authorId: Long,
+    val articles: List<NewsSearchResult> = emptyList()
 ) {
     constructor(question: Question) : this(
         id = question.id,
@@ -36,7 +38,8 @@ data class QuestionDto(
         closed = question.closed,
         amount = question.amount,
         assetType = question.assetType,
-        authorId = question.author.id
+        authorId = question.author.id,
+        articles = question.articles
     )
 }
 

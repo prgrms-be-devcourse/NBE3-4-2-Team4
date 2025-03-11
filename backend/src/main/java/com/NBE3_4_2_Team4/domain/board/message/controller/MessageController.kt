@@ -4,7 +4,7 @@ import com.NBE3_4_2_Team4.domain.board.message.dto.MessageDto
 import com.NBE3_4_2_Team4.domain.board.message.dto.request.MessageWriteReqDto
 import com.NBE3_4_2_Team4.domain.board.message.service.MessageService
 import com.NBE3_4_2_Team4.global.rsData.RsData
-import com.NBE3_4_2_Team4.global.security.AuthManager
+import com.NBE3_4_2_Team4.standard.dto.PageDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
@@ -17,11 +17,25 @@ class MessageController(
 ) {
     @GetMapping("/send")
     @Operation(summary = "보낸 쪽지 조회", description = "보낸 쪽지 목록 조회")
-    fun getSentMessages(): List<MessageDto> = messageService.getSentMessages()
+    fun getSentMessages(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): PageDto<MessageDto> {
+        return PageDto(
+                messageService.getSentMessages(page, pageSize)
+        )
+    }
 
     @GetMapping("/receive")
     @Operation(summary = "받은 쪽지 조회", description = "받은 쪽지 목록 조회")
-    fun getReceivedMessages(): List<MessageDto> = messageService.getReceivedMessages()
+    fun getReceivedMessages(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): PageDto<MessageDto> {
+        return PageDto(
+            messageService.getReceivedMessages(page, pageSize)
+        )
+    }
 
     @GetMapping("/receive/unread")
     @Operation(summary = "읽지 않은 쪽지 조회", description = "받은 쪽지 중 읽지 않은 목록 조회")
