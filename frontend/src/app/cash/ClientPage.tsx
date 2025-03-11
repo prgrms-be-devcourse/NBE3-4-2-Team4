@@ -7,6 +7,7 @@ import { useState } from "react";
 import client from "@/lib/backend/client";
 import {CashTopupModal} from "@/app/cash/topup/CashTopupModal";
 import {RefundModal} from "@/app/cash/refund/RefundModal";
+import {useRouter} from "next/navigation";
 
 export default function ClientPage({
                                        user: initialUser,
@@ -20,9 +21,13 @@ export default function ClientPage({
     cookieString: string;
 }) {
 
+
     const [user, setUser] = useState(initialUser);
     const [isCashTopupModalOpen, setIsCashTopupModalOpen] = useState(false);
     const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+
+    const router = useRouter();
+
 
     // 유저 포인트 갱신 함수
     const refreshCash = async () => {
@@ -52,6 +57,11 @@ export default function ClientPage({
         }
     }
 
+    // 캐시 출금 페이지로 이동
+    const moveToWithdrawalPage = () => {
+        router.push("/cash/withdrawal");
+    };
+
     return (
         <div className="container mx-auto px-4">
             <div className="mt-20 mb-10 text-center">
@@ -64,7 +74,7 @@ export default function ClientPage({
             </div>
 
             <div className="flex flex-col gap-10 w-full">
-                {/* 환급 가능한 포인트 카드 */}
+                {/* 출금 가능한 포인트 카드 */}
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
@@ -95,6 +105,12 @@ export default function ClientPage({
                                     className="px-5 py-2"
                                 >
                                     환불하기
+                                </Button>
+                                <Button
+                                    onClick={moveToWithdrawalPage}
+                                    className="px-5 py-2"
+                                >
+                                    출금하기
                                 </Button>
                             </div>
                         </div>

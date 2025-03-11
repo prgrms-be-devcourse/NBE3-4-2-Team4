@@ -73,7 +73,7 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
         try {
             setLoading(true);
 
-            // 환급 계좌 중복 체크
+            // 출금 계좌 중복 체크
             const duplicateCheckResponse = await client.POST("/api/banks/accounts/duplicate", {
                 body: {
                     bank_code: newBank,
@@ -98,11 +98,11 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
             const responseData = response?.data?.data ?? null;
 
             if (!responseData) {
-                throw new Error("환급 계좌를 등록하는데 실패했습니다.")
+                throw new Error("출금 계좌를 등록하는데 실패했습니다.")
             }
 
             toast({
-                title: "환급 계좌가 성공적으로 등록 되었습니다!",
+                title: "출금 계좌가 성공적으로 등록 되었습니다!",
             });
 
             // 입력 form 초기화
@@ -159,9 +159,9 @@ export function BankManagementModal({isOpen, onClose, bankAccounts, refreshAccou
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="overflow-hidden">
                 <DialogHeader>
-                    <DialogTitle>환급 계좌 관리</DialogTitle>
+                    <DialogTitle>출금 계좌 관리</DialogTitle>
                     <DialogDescription>
-                        환급 계좌를 관리해보세요.
+                        출금 계좌를 관리해보세요.
                     </DialogDescription>
                 </DialogHeader>
 
