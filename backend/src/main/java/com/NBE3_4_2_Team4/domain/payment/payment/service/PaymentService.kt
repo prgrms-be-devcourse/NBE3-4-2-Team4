@@ -1,265 +1,258 @@
-package com.NBE3_4_2_Team4.domain.payment.payment.service;
+package com.NBE3_4_2_Team4.domain.payment.payment.service
 
-import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
-import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
-import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
-import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.CancelPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.ChargePayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.CanceledPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.GetPaymentInfo;
-import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.VerifiedPayment;
-import com.NBE3_4_2_Team4.domain.payment.payment.entity.Payment;
-import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus;
-import com.NBE3_4_2_Team4.domain.payment.payment.repository.PaymentRepository;
-import com.NBE3_4_2_Team4.domain.payment.paymentCancel.entity.PaymentCancel;
-import com.NBE3_4_2_Team4.domain.payment.paymentCancel.repository.PaymentCancelRepository;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.CancelHistory;
-import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import com.NBE3_4_2_Team4.standard.dto.PageDto;
-import com.NBE3_4_2_Team4.standard.util.Ut;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService
+import com.NBE3_4_2_Team4.domain.member.member.entity.Member
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.CancelPayment
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentRequestDto.ChargePayment
+import com.NBE3_4_2_Team4.domain.payment.payment.dto.PaymentResponseDto.*
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.Payment
+import com.NBE3_4_2_Team4.domain.payment.payment.entity.PaymentStatus
+import com.NBE3_4_2_Team4.domain.payment.payment.repository.PaymentRepository
+import com.NBE3_4_2_Team4.domain.payment.paymentCancel.entity.PaymentCancel
+import com.NBE3_4_2_Team4.domain.payment.paymentCancel.repository.PaymentCancelRepository
+import com.NBE3_4_2_Team4.global.api.iamport.v1.IamportService
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentRequestDto.CancelPaymentInfo
+import com.NBE3_4_2_Team4.global.api.iamport.v1.payment.IamportPaymentResponseDto.GetPayment
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember
+import com.NBE3_4_2_Team4.standard.dto.PageDto
+import com.NBE3_4_2_Team4.standard.util.Ut
+import mu.KotlinLogging
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-import static com.NBE3_4_2_Team4.global.security.AuthManager.getNonNullMember;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class PaymentService {
+class PaymentService(
 
-    private final IamportService iamportService;
-    private final PaymentRepository paymentRepository;
-    private final AssetServiceFactory assetServiceFactory;
-    private final AssetHistoryRepository assetHistoryRepository;
-    private final PaymentCancelRepository paymentCancelRepository;
+    private val iamportService: IamportService,
+    private val paymentRepository: PaymentRepository,
+    private val assetServiceFactory: AssetServiceFactory,
+    private val assetHistoryRepository: AssetHistoryRepository,
+    private val paymentCancelRepository: PaymentCancelRepository
+) {
+
+    private val logger = KotlinLogging.logger {}
 
     @Transactional
-    public VerifiedPayment chargePayment(ChargePayment chargePayment) {
+    fun chargePayment(
+        chargePayment: ChargePayment
+    ): VerifiedPayment {
 
         // 회원 확인
-        Member member = getNonNullMember();
+        val member = getNonNullMember()
 
         // Iamport 액세스 토큰 발급
-        String accessToken = iamportService.getAccessToken(member.getId())
-                .orElse(iamportService.generateAccessToken(member.getId())
-                        .orElseThrow(() -> new ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다."))
-                );
+        val accessToken = iamportService.getAccessToken(member.id)
+            ?: iamportService.generateAccessToken(member.id)
+            ?: throw ServiceException("500-1", "Iamport 액세스 토큰 발급을 실패했습니다.")
 
         // 결제이력 단건 조회
-        GetPayment getPayment = iamportService.getPaymentHistory(accessToken, chargePayment.impUid())
-                .orElseThrow(() -> new ServiceException("500-2", "[%s] 결제 이력을 조회하는 과정에서 문제가 발생했습니다."
-                        .formatted(chargePayment.impUid())));
+        val getPayment = iamportService.getPaymentHistory(accessToken, chargePayment.impUid)
+            ?: throw ServiceException(
+                "500-2",
+                "[${chargePayment.impUid}] 결제 이력을 조회하는 과정에서 문제가 발생했습니다."
+            )
 
         // 결제 검증
-        checkPaymentValid(getPayment, member, chargePayment);
+        checkPaymentValid(getPayment, member, chargePayment)
 
         // 캐시 내역 저장 + 캐시 적립
-        AssetService assetService = assetServiceFactory.getService(chargePayment.assetType());
-        Long assetHistoryId = assetService.accumulate(
-                member.getUsername(),
-                getPayment.amount(),
-                chargePayment.assetCategory());
+        val assetService: AssetService = assetServiceFactory.getService(chargePayment.assetType)
+        val assetHistoryId = assetService.accumulate(
+            member.username,
+            getPayment.amount,
+            chargePayment.assetCategory
+        )
 
-        AssetHistory assetHistory = assetHistoryRepository.findById(assetHistoryId)
-                .orElseThrow(() -> new ServiceException(
-                        "404-1",
-                        "[%d]번에 해당하는 캐시 내역을 찾을 수 없습니다.".formatted(assetHistoryId))
-                );
+        val assetHistory = assetHistoryRepository.findById(assetHistoryId)
+            .orElseThrow { ServiceException(
+                "404-1",
+                "[$assetHistoryId]번에 해당하는 캐시 내역을 찾을 수 없습니다."
+            ) }
 
         // 결제 내역 저장
-        Payment savedPayment = paymentRepository.save(Payment.builder()
-                .impUid(getPayment.impUid())
-                .merchantUid(getPayment.merchantUid())
-                .amount(getPayment.amount())
-                .status(PaymentStatus.PAID)
-                .assetHistory(assetHistory)
-                .build());
+        val savedPayment = paymentRepository.save(
+            Payment(
+                impUid = getPayment.impUid,
+                merchantUid = getPayment.merchantUid,
+                amount = getPayment.amount,
+                status = PaymentStatus.PAID,
+                assetHistory = assetHistory
+            )
+        )
 
-        log.info("Payment Id [{}] is saved.", savedPayment.getId());
+        logger.info { "Payment Id [${savedPayment.id}] is saved." }
 
-        return VerifiedPayment.builder()
-                    .buderName(member.getUsername())
-                    .amount(getPayment.amount())
-                    .status(getPayment.status())
-                .build();
+        return VerifiedPayment(
+            buyerName = member.username,
+            amount = getPayment.amount,
+            status = getPayment.status
+        )
     }
 
     @Transactional
-    public CanceledPayment cancelPayment(CancelPayment cancelPayment) {
+    fun cancelPayment(
+        cancelPayment: CancelPayment
+    ) : CanceledPayment {
 
         // 회원 확인
-        Member member = getNonNullMember();
+        val member = getNonNullMember()
 
         // 결제 내역 확인
-        Payment updatedPayment = paymentRepository.findById(cancelPayment.paymentId())
-                .orElseThrow(() -> new ServiceException(
-                        "404-1",
-                        "[%d]번에 해당하는 결제 내역이 존재하지 않습니다.".formatted(cancelPayment.paymentId()))
-                );
+        val updatedPayment = paymentRepository.findById(cancelPayment.paymentId)
+            .orElseThrow { ServiceException(
+                "404-1",
+                "[${cancelPayment.paymentId}]번에 해당하는 결제 내역이 존재하지 않습니다."
+            ) }
 
         // 결제 내역에 저장된 금액과 취소 요청 금액이 일치하지 않을 경우
-        if (cancelPayment.amount() != updatedPayment.getAmount()) {
-            throw new ServiceException(
-                    "400-1",
-                    "결제 내역의 금액과 취소 요청 금액이 일치하지 않습니다."
-            );
+        if (cancelPayment.amount != updatedPayment.amount) {
+            throw ServiceException(
+                "400-1",
+                "결제 내역의 금액과 취소 요청 금액이 일치하지 않습니다."
+            )
         }
 
         // Iamport 액세스 토큰 발급
-        String accessToken = iamportService.getAccessToken(member.getId())
-                .orElse(iamportService.generateAccessToken(member.getId())
-                        .orElseThrow(() -> new ServiceException(
-                                "500-1",
-                                "Iamport 액세스 토큰 발급을 실패했습니다."))
-                );
+        val accessToken = iamportService.getAccessToken(member.id)
+            ?: iamportService.generateAccessToken(member.id)
+            ?: throw ServiceException(
+                "500-1",
+                "Iamport 액세스 토큰 발급을 실패했습니다."
+            )
 
         // 결제 취소
-        GetPayment getPayment = iamportService.cancelPayment(
-                        accessToken,
-                        CancelPaymentInfo.builder()
-                                .impUid(updatedPayment.getImpUid())
-                                .merchantUid(updatedPayment.getMerchantUid())
-                                .amount(cancelPayment.amount())
-                                .reason(cancelPayment.reason())
-                                .build())
-                .orElseThrow(() -> new ServiceException(
-                        "500-2",
-                        "결제 취소 과정에서 문제가 발생했습니다.")
-                );
+        val getPayment = iamportService.cancelPayment(
+            accessToken,
+            CancelPaymentInfo(
+                impUid = updatedPayment.impUid,
+                merchantUid = updatedPayment.merchantUid,
+                amount = cancelPayment.amount,
+                reason = cancelPayment.reason
+            )
+        ) ?: throw ServiceException("500-2", "결제 취소 과정에서 문제가 발생했습니다.")
 
         // 취소 이력이 없을 경우
-        if (getPayment.cancelHistory().isEmpty()) {
-            throw new ServiceException(
-                    "404-2",
-                    "결제 취소 이력을 찾을 수 없습니다."
-            );
-        }
-
-        CancelHistory cancelHistory = getPayment.cancelHistory().getFirst();
+        val cancelHistory = getPayment.cancelHistory?.firstOrNull()
+            ?: throw ServiceException("404-2", "결제 취소 이력을 찾을 수 없습니다.")
 
         // 결제 상태 변경
-        if (updatedPayment.getStatus() == null) {
-            throw new ServiceException("400-1", "변경할 결제 상태가 존재하지 않습니다.");
-        }
+        logger.debug { "Payment Status [${updatedPayment.status}] is update target." }
+        updatedPayment.updatePaymentStatus(PaymentStatus.CANCELED)
 
-        log.debug("Payment Status [{}] is update target.", updatedPayment.getStatus());
-
-        updatedPayment.updatePaymentStatus(PaymentStatus.CANCELED);
-        Payment updated = paymentRepository.save(updatedPayment);
-
-        log.info("Payment Id [{}] is updated.", updated.getId());
-
+        val updated = paymentRepository.save(updatedPayment)
+        logger.info { "Payment Id [${updated.id}] is updated." }
 
         // 결제 취소 이력 생성
-        paymentCancelRepository.save(
-                PaymentCancel.builder()
-                            .cancelAmount(cancelHistory.amount())
-                            .cancelReason(cancelHistory.reason())
-                            .cancelDate(cancelHistory.convertCancelledAtFormat())
-                            .payment(updated)
-                        .build());
+        cancelHistory.reason?.let {
+            PaymentCancel(
+                cancelAmount = cancelHistory.amount,
+                cancelReason = it,
+                cancelDate = cancelHistory.convertCancelledAtFormat(),
+                payment = updated
+            )
+        }?.let {
+            paymentCancelRepository.save(
+                it
+            )
+        }
 
         // 캐시 반환 내역 저장 + 캐시 반환
-        AssetService assetService = assetServiceFactory.getService(cancelPayment.assetType());
+        val assetService: AssetService = assetServiceFactory.getService(cancelPayment.assetType)
         assetService.deduct(
-                member.getUsername(),
-                getPayment.amount(),
-                cancelPayment.assetCategory()
-        );
+            member.username,
+            getPayment.amount,
+            cancelPayment.assetCategory
+        )
 
-        return CanceledPayment.builder()
-                .cancelAmount(cancelHistory.amount())
-                .canceledAt(cancelHistory.cancelledAt())
-                .build();
+        return CanceledPayment(
+            cancelerName = member.username,
+            cancelAmount = cancelHistory.amount,
+            canceledAt = cancelHistory.cancelledAt,
+            status = getPayment.status
+        )
     }
 
     @Transactional(readOnly = true)
-    public PageDto<GetPaymentInfo> getPayments(
-            int page,
-            int pageSize,
-            PaymentStatus paymentStatus
-    ) {
+    fun getPayments(
+        page: Int,
+        pageSize: Int,
+        paymentStatus: PaymentStatus
+    ): PageDto<GetPaymentInfo> {
 
-        Member member = getNonNullMember();
-        Pageable pageable = Ut.pageable.makePageable(page, pageSize);
+        val member = getNonNullMember()
+        val pageable: Pageable = Ut.pageable.makePageable(page, pageSize)
 
-        Page<Payment> payments = paymentRepository.findByMemberIdAndStatusKeyword(
-                member.getId(),
-                paymentStatus,
-                pageable
-        );
+        val payments: Page<Payment> = paymentRepository.findByMemberIdAndStatusKeyword(
+            member.id,
+            paymentStatus,
+            pageable
+        )
 
-        log.info("[{}] Payments are found with paging by Status keyword [{}].",
-                payments.getContent().size(), paymentStatus);
+        logger.info { "[${payments.content.size}] Payments are found with paging by Status keyword [$paymentStatus]." }
 
-        return new PageDto<>(
-                payments.map(payment ->
-                        GetPaymentInfo.builder()
-                                .paymentId(payment.getId())
-                                .impUid(payment.getImpUid())
-                                .merchantUid(payment.getMerchantUid())
-                                .amount(payment.getAmount())
-                                .status(payment.getStatus())
-                                .createdAt(payment.getCreatedAt())
-                                .build()));
+        return PageDto(
+            payments.map {
+                GetPaymentInfo(
+                    paymentId = it.id!!,
+                    impUid = it.impUid,
+                    merchantUid = it.merchantUid,
+                    amount = it.amount,
+                    status = it.status,
+                    createdAt = it.createdAt
+                )
+            }
+        )
     }
 
-    private void checkPaymentValid(
-            GetPayment getPayment,
-            Member member,
-            ChargePayment chargePayment
+    private fun checkPaymentValid(
+        getPayment: GetPayment,
+        member: Member,
+        chargePayment: ChargePayment
     ) {
 
         // imp_uid 검증
-        if (!getPayment.impUid().equals(chargePayment.impUid())) {
-            throw new ServiceException(
-                    "400-1",
-                    "결제 고유 ID가 일치하지 않습니다. (요청 ID : %s, 결제 ID : %s)"
-                    .formatted(chargePayment.impUid(), getPayment.impUid()));
+        require(getPayment.impUid == chargePayment.impUid) {
+            throw ServiceException(
+                "400-1",
+                "결제 고유 ID가 일치하지 않습니다. (요청 ID : ${chargePayment.impUid}, 결제 ID : ${getPayment.impUid})"
+            )
         }
 
         // 결제자 이름 검증
-        if (!getPayment.buyerName().equals(member.getUsername())) {
-            throw new ServiceException(
-                    "400-2",
-                    "결제자 이름이 일치하지 않습니다. (요청 이름 : %s, 결제 이름 : %s)"
-                    .formatted(member.getUsername(), getPayment.buyerName()));
+        require(getPayment.buyerName == member.username) {
+            throw ServiceException(
+                "400-2",
+                "결제자 이름이 일치하지 않습니다. (요청 이름 : ${member.username}, 결제 이름 : ${getPayment.buyerName})"
+            )
         }
 
         // 결제자 이메일 검증 (존재할 때만 검증)
-        if (getPayment.buyerEmail() != null) {
+        getPayment.buyerEmail?.let { buyerEmail ->
+            val frontBuyerEmail = buyerEmail.substringBefore("@").dropLast(3)
+            val frontRequestEmail = member.emailAddress.substringBefore("@").dropLast(3)
 
-            // 결제 내역 이메일에는 @ 앞에 마스킹 처리되어있음 (ex. admin@test.com -> ad***@test.com)
-            String[] buyerEmailSplit = getPayment.buyerEmail().split("@");
-            String[] requestEmailSplit = member.getEmailAddress().split("@");
+            val domainBuyerEmail = buyerEmail.substringAfter("@")
+            val domainRequestEmail = member.emailAddress.substringAfter("@")
 
-            String frontBuyerEmail = buyerEmailSplit[0].substring(0, buyerEmailSplit[0].length() - 3);
-            String frontRequestEmail = requestEmailSplit[0].substring(0, buyerEmailSplit[0].length() - 3);
-
-            if (!frontBuyerEmail.equals(frontRequestEmail)
-                    || !buyerEmailSplit[1].equals(requestEmailSplit[1])) {
-                throw new ServiceException(
-                        "400-3",
-                        "결제자 이메일이 일치하지 않습니다. (요청 이메일 : %s, 결제 이메일 : %s)"
-                        .formatted(member.getEmailAddress(), getPayment.buyerEmail()));
+            require(frontBuyerEmail == frontRequestEmail && domainBuyerEmail == domainRequestEmail) {
+                throw ServiceException(
+                    "400-3",
+                    "결제자 이메일이 일치하지 않습니다. (요청 이메일 : ${member.emailAddress}, 결제 이메일 : $buyerEmail)"
+                )
             }
         }
 
         // 결제 금액 검증
-        if (getPayment.amount() != chargePayment.amount()) {
-            throw new ServiceException(
-                    "400-4",
-                    "결제 금액이 일치하지 않습니다. (요청 금액 : %s, 결제 금액 : %s)"
-                    .formatted(chargePayment.amount(), getPayment.amount()));
+        require(getPayment.amount == chargePayment.amount) {
+            throw ServiceException(
+                "400-4",
+                "결제 금액이 일치하지 않습니다. (요청 금액 : ${chargePayment.amount}, 결제 금액 : ${getPayment.amount})"
+            )
         }
     }
 }

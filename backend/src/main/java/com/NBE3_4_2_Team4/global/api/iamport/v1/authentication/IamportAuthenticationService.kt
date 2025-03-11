@@ -1,10 +1,8 @@
-package com.NBE3_4_2_Team4.global.api.iamport.v1.authentication;
+package com.NBE3_4_2_Team4.global.api.iamport.v1.authentication
 
-import java.util.Optional;
+interface IamportAuthenticationService {
 
-public interface IamportAuthenticationService {
+    fun generateAccessToken(memberId: Long): String?
 
-    Optional<String> generateAccessToken(Long memberId);
-
-    Optional<String> getAccessToken(Long memberId);
+    fun getAccessToken(memberId: Long): String?
 }

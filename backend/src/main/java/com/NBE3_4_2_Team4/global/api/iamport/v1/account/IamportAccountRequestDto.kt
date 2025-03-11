@@ -1,10 +1,9 @@
-package com.NBE3_4_2_Team4.global.api.iamport.v1.account;
+package com.NBE3_4_2_Team4.global.api.iamport.v1.account
 
-import lombok.Builder;
+class IamportAccountRequestDto {
 
-public class IamportAccountRequestDto {
-
-    @Builder
-    public record BankAccountValidator(String bankCode, String bankAccountNum) {
-    }
+    data class BankAccountValidator(
+        val bankCode: String,
+        val bankAccountNum: String
+    )
 }

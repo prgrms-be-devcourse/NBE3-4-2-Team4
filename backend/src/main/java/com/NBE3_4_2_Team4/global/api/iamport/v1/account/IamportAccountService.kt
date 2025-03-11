@@ -1,16 +1,21 @@
-package com.NBE3_4_2_Team4.global.api.iamport.v1.account;
+package com.NBE3_4_2_Team4.global.api.iamport.v1.account
 
-import java.util.List;
-import java.util.Optional;
+import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.BankAccountValidator
+import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountResponseDto.BankInfo
 
-import static com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.*;
-import static com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountResponseDto.*;
+interface IamportAccountService {
 
-public interface IamportAccountService {
+    fun validateBankAccount(
+        accessToken: String,
+        bankAccount: BankAccountValidator
+    ) : String?
 
-    Optional<String> validateBankAccount(String accessToken, BankAccountValidator bankAccount);
+    fun getBankCodes(
+        accessToken: String
+    ) : List<BankInfo>
 
-    List<BankInfo> getBankCodes(String accessToken);
-
-    Optional<BankInfo> findBankNameByBankCode(String accessToken, String bankCode);
+    fun findBankNameByBankCode(
+        accessToken: String,
+        bankCode: String
+    ) : BankInfo?
 }

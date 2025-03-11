@@ -1,156 +1,134 @@
-package com.NBE3_4_2_Team4.global.api.iamport.v1.account;
+package com.NBE3_4_2_Team4.global.api.iamport.v1.account
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountResponseDto.BankInfo
+import com.NBE3_4_2_Team4.global.api.iamport.v1.constants.IamportConstants.IAMPORT_FIND_BANK_NAME_URL
+import com.NBE3_4_2_Team4.global.api.iamport.v1.constants.IamportConstants.IAMPORT_GET_BANK_CODES_URL
+import com.NBE3_4_2_Team4.global.api.iamport.v1.constants.IamportConstants.IAMPORT_VALIDATE_BANK_ACCOUNT_URL
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import mu.KotlinLogging
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
 
-import java.util.*;
-
-import static com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountRequestDto.*;
-import static com.NBE3_4_2_Team4.global.api.iamport.v1.account.IamportAccountResponseDto.*;
-import static com.NBE3_4_2_Team4.global.api.iamport.v1.constants.IamportConstants.*;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class IamportAccountServiceImpl implements IamportAccountService {
+class IamportAccountServiceImpl(
 
-    private final ObjectMapper objectMapper;
-    private final RestTemplate restTemplate;
+    private val objectMapper: ObjectMapper,
+    private val restTemplate: RestTemplate
 
-    @Override
-    public Optional<String> validateBankAccount(String accessToken, BankAccountValidator bankAccount) {
+) : IamportAccountService {
 
-        try {
-            HttpHeaders headers = new HttpHeaders();
+    private val logger = KotlinLogging.logger {}
 
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + accessToken);
+    override fun validateBankAccount(
+        accessToken: String,
+        bankAccount: IamportAccountRequestDto.BankAccountValidator
+    ): String? {
 
-            String url = UriComponentsBuilder.fromUriString(IAMPORT_VALIDATE_BANK_ACCOUNT_URL)
-                    .queryParam("bank_code", bankAccount.bankCode())
-                    .queryParam("bank_num", bankAccount.bankAccountNum())
-                    .toUriString();
+        return try {
+            val headers = HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_JSON
+                set("Authorization", "Bearer $accessToken")
+            }
 
-            HttpEntity<Void> request = new HttpEntity<>(headers);
+            val url = UriComponentsBuilder.fromUriString(IAMPORT_VALIDATE_BANK_ACCOUNT_URL)
+                .queryParam("bank_code", bankAccount.bankCode)
+                .queryParam("bank_num", bankAccount.bankAccountNum)
+                .toUriString()
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    request,
-                    Map.class
-            );
+            val request = HttpEntity<Void>(headers)
+            val response: ResponseEntity<Map<String, Any>> = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                object : ParameterizedTypeReference<Map<String, Any>>() {}
+            )
 
-            return Optional.ofNullable(response.getBody())
-                    .filter(body -> body.containsKey("response"))
-                    .map(body -> (Map) body.get("response"))
-                    .filter(responseData -> responseData.containsKey("bank_holder"))
-                    .map(responseData -> (String) responseData.get("bank_holder"))
-                    .map(name -> {
-                        log.info("Bank Account is validated: [{}, {} -> {}]",
-                                bankAccount.bankCode(),
-                                bankAccount.bankAccountNum(),
-                                name);
-                        return name;
-                    });
+            (response.body?.get("response") as? Map<*, *>)?.get("bank_holder")?.toString()?.also { name ->
+                logger.info { "Bank Account validated: [${bankAccount.bankCode}, ${bankAccount.bankAccountNum} -> $name]" }
+            }
 
-        } catch (HttpClientErrorException e) {
-            log.error("Client Error: {}", e.getMessage());
-
-        } catch (HttpServerErrorException e) {
-            log.error("Server Error: {}", e.getMessage());
-
-        } catch (Exception e) {
-            log.error("Unexpected Error: {}", e.getMessage());
-
+        } catch (ex: RestClientResponseException) {
+            logger.error { "API Error: ${ex.message}" }
+            null
+        } catch (ex: Exception) {
+            logger.error { "Unexpected Error: ${ex.message}" }
+            null
         }
-
-        return Optional.empty();
     }
 
-    @Override
-    public List<BankInfo> getBankCodes(String accessToken) {
+    override fun getBankCodes(
+        accessToken: String
+    ): List<BankInfo> {
 
-        try {
-            HttpHeaders headers = new HttpHeaders();
+        return try {
+            val headers = HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_JSON
+                set("Authorization", "Bearer $accessToken")
+            }
 
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + accessToken);
+            val request = HttpEntity<Void>(headers)
+            val response: ResponseEntity<Map<String, Any>> = restTemplate.exchange(
+                IAMPORT_GET_BANK_CODES_URL,
+                HttpMethod.GET,
+                request,
+                object : ParameterizedTypeReference<Map<String, Any>>() {}
+            )
 
-            HttpEntity<Void> request = new HttpEntity<>(headers);
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    IAMPORT_GET_BANK_CODES_URL,
-                    HttpMethod.GET,
-                    request,
-                    Map.class
-            );
+            response.body?.get("response")?.let {
+                objectMapper.convertValue(it, object : TypeReference<List<BankInfo>>() {})
+            } ?: emptyList()
 
-            return Optional.ofNullable(response.getBody())
-                    .map(body ->
-                            objectMapper.convertValue(
-                                    body.get("response"),
-                                    new TypeReference<List<BankInfo>>() {}))
-                    .orElse(Collections.emptyList());
-
-        } catch (HttpClientErrorException e) {
-            log.error("Client Error: {}", e.getMessage());
-
-        } catch (HttpServerErrorException e) {
-            log.error("Server Error: {}", e.getMessage());
-
-        } catch (Exception e) {
-            log.error("Unexpected Error: {}", e.getMessage());
-
+        } catch (ex: RestClientResponseException) {
+            logger.error { "API Error: ${ex.message}" }
+            emptyList()
+        } catch (ex: Exception) {
+            logger.error { "Unexpected Error: ${ex.message}" }
+            emptyList()
         }
-
-        return Collections.emptyList();
     }
 
-    @Override
-    public Optional<BankInfo> findBankNameByBankCode(String accessToken, String bankCode) {
+    override fun findBankNameByBankCode(
+        accessToken: String,
+        bankCode: String
+    ): BankInfo? {
 
-        try {
-            HttpHeaders headers = new HttpHeaders();
+        return try {
+            val headers = HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_JSON
+                set("Authorization", "Bearer $accessToken")
+            }
 
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + accessToken);
+            val request = HttpEntity<Void>(headers)
+            val response: ResponseEntity<Map<String, Any>> = restTemplate.exchange(
+                IAMPORT_FIND_BANK_NAME_URL,
+                HttpMethod.GET,
+                request,
+                object : ParameterizedTypeReference<Map<String, Any>>() {},
+                bankCode
+            )
 
-            HttpEntity<Void> request = new HttpEntity<>(headers);
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    IAMPORT_FIND_BANK_NAME_URL,
-                    HttpMethod.GET,
-                    request,
-                    Map.class,
-                    bankCode
-            );
+            (response.body?.get("response") as? Map<*, *>)?.let { responseData ->
+                BankInfo(
+                    code = responseData["code"] as String,
+                    name = responseData["name"] as String
+                )
+            }
 
-            return Optional.ofNullable(response.getBody())
-                    .map(body -> (Map) body.get("response"))
-                    .map(responseData ->
-                            BankInfo.builder()
-                                    .code((String) responseData.get("code"))
-                                    .name((String) responseData.get("name"))
-                                    .build()
-                    );
-
-        } catch (HttpClientErrorException e) {
-            log.error("Client Error: {}", e.getMessage());
-
-        } catch (HttpServerErrorException e) {
-            log.error("Server Error: {}", e.getMessage());
-
-        } catch (Exception e) {
-            log.error("Unexpected Error: {}", e.getMessage());
-
+        } catch (ex: RestClientResponseException) {
+            logger.error { "API Error: ${ex.message}" }
+            null
+        } catch (ex: Exception) {
+            logger.error { "Unexpected Error: ${ex.message}" }
+            null
         }
-
-        return Optional.empty();
     }
 }
