@@ -190,7 +190,7 @@ export default function ClientPage({
       </div>
 
       {/* 연관 기사 */}
-      <div className="mt-8">
+      <div className="mt-4">
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -199,13 +199,13 @@ export default function ClientPage({
           </CardHeader>
           <CardContent>
             {question.articles?.map((article, index) => (
-              <div key={index} style={{ marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0' }}>
+              <div key={index} style={{ marginBottom: '6px' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: '0' }}>
                   <Link href={article.link!!} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'none' }}>
                     {decodeHtml(article.title!!.replace(/<[^>]+>/g, ''))}
                   </Link>
                 </h3>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                <p style={{ fontSize: '0.8rem', color: '#666' }}>
                   {decodeHtml(article.description!!.replace(/<[^>]+>/g, ''))}
                 </p>
               </div>
@@ -215,7 +215,7 @@ export default function ClientPage({
       </div>
 
       {/* 답변 리스트 */}
-      <div className="flex justify-between items-center mt-10 mb-2">
+      <div className="flex justify-between items-center mt-8 mb-2">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1">
           <Lightbulb width={20} height={20} />{" "}
           <em className="not-italic text-xl">{question.answers?.length}개</em>의

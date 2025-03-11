@@ -145,6 +145,10 @@ export default function ClientPage({ data, activeTab, setActiveTab }: ClientPage
 
     const success = await markMessagesAsRead(selectedMessages);
     if (success) {
+      selectedMessages.forEach((msgId) => {
+        const message = data.items?.find((msg) => msg.id === msgId);
+        message!!.checked = true;
+      });
       setSelectedMessages([]);
       toast({
         title: `${selectedMessages.length}개의 쪽지를 읽었습니다.`,
@@ -262,7 +266,12 @@ export default function ClientPage({ data, activeTab, setActiveTab }: ClientPage
                 />
               </TableCell>
               <TableCell className="w-[400px] font-medium text-center">
-                <Link href="" onClick={() => handleViewMessage(message)} className="text-blue-500">
+                <Link href="" 
+                onClick={() => {
+                  handleViewMessage(message)
+                  message.checked = true
+                }}
+                className="text-blue-500">
                   {message.title}
                 </Link>
               </TableCell>
