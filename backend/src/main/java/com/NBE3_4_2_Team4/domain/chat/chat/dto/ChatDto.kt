@@ -18,7 +18,7 @@ class ChatDto(
         id = chat.id,
         createdAt = chat.createdAt,
         chatRoomId = chat.chatRoom.id,
-        senderId = chat.sender.id,
+        senderId = chat.sender.id!!,
         senderName = chat.sender.nickname,
         content = chat.content,
         isRead = chat.isRead,

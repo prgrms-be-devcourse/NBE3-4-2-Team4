@@ -20,9 +20,9 @@ data class MessageDto(
     constructor(message: Message) : this(
         id = message.id,
         senderName = message.sender.nickname,
-        senderId = message.sender.id,
+        senderId = message.sender.id!!,
         receiverName = message.receiver.nickname,
-        receiverId = message.receiver.id,
+        receiverId = message.receiver.id!!,
         checked = message.checked,
         createdAt = message.createdAt,
         title = message.title,
