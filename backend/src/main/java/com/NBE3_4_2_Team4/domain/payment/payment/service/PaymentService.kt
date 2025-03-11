@@ -233,8 +233,8 @@ class PaymentService(
 
         // 결제자 이메일 검증 (존재할 때만 검증)
         getPayment.buyerEmail?.let { buyerEmail ->
-            val frontBuyerEmail = buyerEmail.substringBefore("@").dropLast(3)
-            val frontRequestEmail = member.emailAddress!!.substringBefore("@").dropLast(3)
+            val frontBuyerEmail = buyerEmail.substring(0, 2)
+            val frontRequestEmail = member.emailAddress!!.substring(0, 2)
 
             val domainBuyerEmail = buyerEmail.substringAfter("@")
             val domainRequestEmail = member.emailAddress!!.substringAfter("@")

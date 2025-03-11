@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
@@ -40,10 +41,10 @@ class IamportAuthenticationServiceImpl(
                 accept = listOf(MediaType.APPLICATION_JSON)
             }
 
-            val requestBody = mapOf(
-                "imp_key" to apiKey,
-                "imp_secret" to apiSecret
-            )
+            val requestBody = LinkedMultiValueMap<String, String>().apply {
+                add("imp_key", apiKey)
+                add("imp_secret", apiSecret)
+            }
 
             val request = HttpEntity(requestBody, headers)
 

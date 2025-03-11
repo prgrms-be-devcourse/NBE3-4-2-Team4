@@ -14,7 +14,8 @@ enum class AssetCategory(val displayName: String) {
     ADMIN("관리자"),
     ATTENDANCE("출석"),
     CASH_DEPOSIT("캐시충전"),
-    CASH_REFUND("캐시출금");
+    CASH_REFUND("캐시환불"),
+    CASH_WITHDRAWAL("캐시출금");
 
     override fun toString(): String {
         return this.displayName
