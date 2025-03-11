@@ -76,7 +76,7 @@ export default function WithdrawalPage() {
         </p>
         <ul>
           <li>회원 탈퇴 후에는 모든 데이터가 삭제됩니다.</li>
-          <li>보유 중인 포인트는 환급되지 않습니다.</li>
+          <li>보유 중인 포인트는 출금되지 않습니다.</li>
           <li>탈퇴 후에는 복구가 불가능합니다.</li>
         </ul>
       </div>

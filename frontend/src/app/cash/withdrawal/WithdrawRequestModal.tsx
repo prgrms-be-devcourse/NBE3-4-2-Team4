@@ -8,18 +8,19 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import client from "@/lib/backend/client";
+import {TriangleAlert} from "lucide-react";
 
 export function WithdrawRequestModal({
                                        isOpen,
                                        onClose,
-                                       currentPoint,
+                                       currentCash,
                                        bankAccounts,
                                        refreshAccounts,
                                        refreshPoint,
                                    }: {
     isOpen: boolean;
     onClose: () => void;
-    currentPoint: number;
+    currentCash: number;
     bankAccounts: {
         bankAccountId: number;
         bankName: string;
@@ -47,35 +48,35 @@ export function WithdrawRequestModal({
         return false;
     };
 
-    // 환불 처리 핸들러
+    // 출금 처리 핸들러
     const handleWithdrawRequest = async () => {
         const amount = Number(withdrawalAmount);
 
-        // 환급 계좌 선택 확인
+        // 출금 계좌 선택 확인
         if (!selectedAccount) {
             toast({
-                title: "환급 계좌 선택 필요",
-                description: "환급할 계좌를 선택해주세요.",
+                title: "출금 계좌 선택 필요",
+                description: "출금할 계좌를 선택해주세요.",
                 variant: "destructive",
             });
             return;
         }
 
-        // 최소 환급 금액 이상 입력 확인
-        if (isNaN(amount) || amount < 500) {
+        // 최소 출금 금액 이상 입력 확인
+        if (isNaN(amount) || amount < 5000) {
             toast({
-                title: "환급 신청 실패",
-                description: "최소 500P 이상 환급할 수 있습니다.",
+                title: "출금 신청 실패",
+                description: "최소 5000C 이상 출금할 수 있습니다.",
                 variant: "destructive",
             });
             return;
         }
 
-        // 보유 포인트보다 많은 환급 금액 입력 확인
-        if (amount > currentPoint) {
+        // 보유 캐시보다 많은 출금 금액 입력 확인
+        if (amount > currentCash) {
             toast({
-                title: "환급 신청 실패",
-                description: "보유 포인트보다 많은 금액을 입력할 수 없습니다.",
+                title: "출금 신청 실패",
+                description: "보유 캐시보다 많은 금액을 입력할 수 없습니다.",
                 variant: "destructive",
             });
             return;
@@ -84,42 +85,45 @@ export function WithdrawRequestModal({
         // 은행 점검 시간 확인
         if (isBankMaintenanceTime()) {
             toast({
-                title: "환급 신청 실패",
-                description: "은행 점검 시간 (23:30 ~ 00:30)에는 환급 신청이 불가능합니다.",
+                title: "출금 신청 실패",
+                description: "은행 점검 시간 (23:30 ~ 00:30)에는 출금 신청이 불가능합니다.",
                 variant: "destructive",
             });
             return;
         }
 
-        // 환급 요청
+        // 출금 요청
         try {
             setLoading(true);
 
-            const response = await client.PATCH("/api/asset/refund", {
+            const withdrawalResponse = await client.PATCH("/api/asset/refund", {
                 body: {
-                    amount,
-                    assetType: "포인트",
-                    assetCategory: "POINT_WITHDRAWAL"
+                    amount: amount,
+                    assetType: "CASH",
+                    assetCategory: "CASH_WITHDRAWAL"
                 },
             });
 
-            console.log(response);
+            console.log(withdrawalResponse);
 
-            if (!response) {
-                throw new Error("환급 요청 실패");
+            if (withdrawalResponse.response.ok) {
+
+                toast({
+                    title: "출금 신청이 정상적으로 처리되었습니다.",
+                });
+
+                refreshAccounts();
+                refreshPoint();
+                onClose();
+
+            } else {
+                throw new Error("출금 요청 실패");
             }
 
-            toast({
-                title: "환급 신청이 정상적으로 처리되었습니다.",
-            });
-
-            refreshAccounts();
-            refreshPoint();
-            onClose();
         } catch (error) {
-            console.error("환급 신청 중 오류 발생:", error);
+            console.error("출금 신청 중 오류 발생:", error);
             toast({
-                title: "환급 신청을 처리하는 도중 오류가 발생했습니다.",
+                title: "출금 신청을 처리하는 도중 오류가 발생했습니다.",
                 variant: "destructive",
             });
         } finally {
@@ -127,35 +131,35 @@ export function WithdrawRequestModal({
         }
     };
 
-    // 수수료 및 환급액 계산
+    // 수수료 및 출금액 계산
     const amount = parseInt(withdrawalAmount, 10);
-    const isValidAmount = !isNaN(amount) && amount >= 500 && currentPoint >= 500;
+    const isValidAmount = !isNaN(amount) && amount >= 5000 && currentCash >= 5000;
     const fee = 500;
-    const withdrawAfterFee = isValidAmount ? amount - fee : 0; // 최종 환급액
+    const withdrawAfterFee = isValidAmount ? amount - fee : 0; // 최종 출금액
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>환급 신청</DialogTitle>
-                    <DialogDescription>환급 계좌를 선택하고 환급할 포인트를 입력하세요.</DialogDescription>
+                    <DialogTitle>출금 신청</DialogTitle>
+                    <DialogDescription>출금 계좌를 선택하고 출금할 캐시를 입력하세요.</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    {/* 현재 포인트 표시 */}
+                    {/* 현재 캐시 표시 */}
                     <div>
-                        <Label>현재 보유 포인트</Label>
+                        <Label>현재 보유 캐시</Label>
                         <div className="p-2 border rounded-md text-gray-500">
-                            {currentPoint.toLocaleString()} P
+                            {currentCash.toLocaleString()} C
                         </div>
                     </div>
 
-                    {/* 환급 계좌 선택 */}
+                    {/* 출금 계좌 선택 */}
                     <div>
-                        <Label>환급 계좌 선택</Label>
+                        <Label>출금 계좌 선택</Label>
                         <Select onValueChange={setSelectedAccount} value={selectedAccount || ""} disabled={loading}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="환급 계좌를 선택하세요" />
+                                <SelectValue placeholder="출금 계좌를 선택하세요" />
                             </SelectTrigger>
                             <SelectContent>
                                 {bankAccounts.length > 0 ? (
@@ -173,19 +177,26 @@ export function WithdrawRequestModal({
                         </Select>
                     </div>
 
-                    {/* 환급할 포인트 입력 */}
+                    {/* 출금할 캐시 입력 */}
                     <div>
-                        <Label>환급할 포인트</Label>
+                        <Label>출금할 캐시</Label>
                         <Input
                             type="number"
                             value={withdrawalAmount}
                             onChange={(e) => setWithdrawalAmount(e.target.value)}
-                            placeholder="환급할 포인트 입력"
+                            placeholder="출금할 캐시 입력"
                             disabled={loading}
                         />
+
+                        {amount < 5000 && (
+                            <div className="flex items-center gap-2 text-red-500 text-sm mt-1">
+                                <TriangleAlert size={16} />
+                                <p>최소 5000캐시 이상부터 출금할 수 있습니다.</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* 수수료 및 최종 환급 금액 */}
+                    {/* 수수료 및 최종 출금 금액 */}
                     {isValidAmount && (
                         <div className="text-sm text-gray-500">
                             <p>수수료: {fee.toLocaleString()}원</p>
@@ -197,13 +208,13 @@ export function WithdrawRequestModal({
                         <Button
                             className="w-full"
                             onClick={handleWithdrawRequest}
-                            disabled={loading || currentPoint < 500 || !isValidAmount || bankAccounts.length === 0}
+                            disabled={loading || currentCash < 5000 || !isValidAmount || bankAccounts.length === 0}
                         >
                             {loading
-                                ? "환급 신청 중..."
+                                ? "출금 신청 중..."
                                 : isValidAmount
-                                    ? `${withdrawAfterFee.toLocaleString()}원 환급 신청`
-                                    : "환급 신청 불가"}
+                                    ? `${withdrawAfterFee.toLocaleString()}원 출금 신청`
+                                    : "출금 신청 불가"}
                         </Button>
                     </div>
                 </div>

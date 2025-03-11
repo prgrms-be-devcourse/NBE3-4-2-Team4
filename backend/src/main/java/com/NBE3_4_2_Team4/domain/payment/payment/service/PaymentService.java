@@ -238,12 +238,13 @@ public class PaymentService {
         // 결제자 이메일 검증 (존재할 때만 검증)
         if (getPayment.buyerEmail() != null) {
 
-            // 결제 내역 이메일에는 @ 앞에 마스킹 처리되어있음 (ex. admin@test.com -> ad***@test.com)
+            // 결제 내역 이메일에는 @ 앞에 이메일 아이디 첫 두자리 이후에 마스킹 처리되어있음
+            // (ex. admin@test.com -> ad***@test.com)
             String[] buyerEmailSplit = getPayment.buyerEmail().split("@");
             String[] requestEmailSplit = member.getEmailAddress().split("@");
 
-            String frontBuyerEmail = buyerEmailSplit[0].substring(0, buyerEmailSplit[0].length() - 3);
-            String frontRequestEmail = requestEmailSplit[0].substring(0, buyerEmailSplit[0].length() - 3);
+            String frontBuyerEmail = buyerEmailSplit[0].substring(0, 2);
+            String frontRequestEmail = requestEmailSplit[0].substring(0, 2);
 
             if (!frontBuyerEmail.equals(frontRequestEmail)
                     || !buyerEmailSplit[1].equals(requestEmailSplit[1])) {
