@@ -140,7 +140,7 @@ export interface paths {
         get?: never;
         /**
          * 상품 구매 확정
-         * @description 상품의 구매를 확정하고 상품을 구매한 유저의 포인트를 착감합니다.
+         * @description 상품의 구매를 확정하고 상품을 구매한 유저의 재화를 착감합니다.
          */
         put: operations["confirm"];
         post?: never;
@@ -431,31 +431,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/payments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 해당 유저의 전체 결제 내역 조회 with 필터
-         * @description 해당 유저의 전체 결제 내역을 필터링, 페이징 처리하여 조회합니다.
-         */
-        get: operations["getAllPaymentByStatusWithPaging"];
-        put?: never;
-        /**
-         * 해당 유저의 결제 내역 생성
-         * @description 해당 유저가 결제한 내역을 생성합니다.
-         */
-        post: operations["writePayment"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/payments/verify": {
+    "/api/payments/charge": {
         parameters: {
             query?: never;
             header?: never;
@@ -465,10 +441,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * 결제 승인 검증
-         * @description 요청 온 결제가 정상적으로 승인되었는지 검증합니다.
+         * 결제 승인 검증 + 결제 내역 생성 + 캐시 적립
+         * @description 요청 온 결제를 승인 검증하고 승인된 결제 내역을 생성 후 해당 유저에게 캐시를 적립합니다.
          */
-        post: operations["verifyPayment"];
+        post: operations["chargePayment"];
         delete?: never;
         options?: never;
         head?: never;
@@ -485,8 +461,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * 결제 취소
-         * @description 결제를 취소합니다.
+         * 결제 취소 + 결제 상태 변경 + 캐시 반환
+         * @description 요청 온 결제 취소를 하고 결제 상태를 변경한 후 해당 유저의 캐시를 반환합니다.
          */
         post: operations["cancelPayment"];
         delete?: never;
@@ -706,26 +682,6 @@ export interface paths {
          * @description 단건 상품을 수정합니다.
          */
         patch: operations["updateProduct"];
-        trace?: never;
-    };
-    "/api/payments/{payment_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * 해당 유저의 결제 상태 변경
-         * @description 해당 유저가 결제한 내역의 상태를 변경합니다.
-         */
-        patch: operations["updatePayment"];
         trace?: never;
     };
     "/api/members/nickname": {
@@ -1078,6 +1034,26 @@ export interface paths {
          * @description 전체 상품을 조회합니다.
          */
         get: operations["getAllProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 해당 유저의 전체 결제 내역 조회 with 필터
+         * @description 해당 유저의 전체 결제 내역을 필터링, 페이징 처리하여 조회합니다.
+         */
+        get: operations["getAllPaymentByStatusWithPaging"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1465,22 +1441,10 @@ export interface components {
             username: string;
             /** Format: int64 */
             amount: number;
-        };
-        GetItem: {
-            /** Format: int64 */
-            productId?: number;
-            productName?: string;
-            /** Format: int32 */
-            productPrice?: number;
-            productDescription?: string;
-            productImageUrl?: string;
-            productCategory?: string;
-            productSaleState?: string;
-        };
-        RsDataGetItem: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["GetItem"];
+            /** @enum {string} */
+            assetType: "캐시" | "포인트" | "전체";
+            /** @enum {string} */
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
         };
         AssetTransferReq: {
             username: string;
@@ -1584,6 +1548,22 @@ export interface components {
             productCategory: string;
             productSaleState: string;
         };
+        GetItem: {
+            /** Format: int64 */
+            productId?: number;
+            productName?: string;
+            /** Format: int32 */
+            productPrice?: number;
+            productDescription?: string;
+            productImageUrl?: string;
+            productCategory?: string;
+            productSaleState?: string;
+        };
+        RsDataGetItem: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["GetItem"];
+        };
         GenFileDtoProductGenFile: {
             /** Format: int64 */
             id: number;
@@ -1612,37 +1592,15 @@ export interface components {
             msg: string;
             data: components["schemas"]["GenFileDtoProductGenFile"][];
         };
-        WritePayment: {
-            /** Format: int64 */
-            assetHistoryId?: number;
+        ChargePayment: {
             impUid?: string;
             merchantUid?: string;
             /** Format: int64 */
             amount?: number;
             /** @enum {string} */
-            status?: "전체" | "결제완료" | "결제대기" | "결제취소";
-        };
-        GetPaymentInfo: {
-            /** Format: int64 */
-            paymentId?: number;
-            impUid?: string;
-            merchantUid?: string;
-            /** Format: int64 */
-            amount?: number;
+            assetType?: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            status?: "전체" | "결제완료" | "결제대기" | "결제취소";
-            /** Format: date-time */
-            createdAt?: string;
-        };
-        RsDataGetPaymentInfo: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["GetPaymentInfo"];
-        };
-        VerifyPayment: {
-            impUid?: string;
-            /** Format: int64 */
-            amount?: number;
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
         };
         RsDataVerifiedPayment: {
             resultCode: string;
@@ -1650,26 +1608,29 @@ export interface components {
             data: components["schemas"]["VerifiedPayment"];
         };
         VerifiedPayment: {
+            buderName?: string;
             /** Format: int64 */
             amount?: number;
-            buyerName?: string;
-            buyerEmail?: string;
-            impUid?: string;
-            merchantUid?: string;
             status?: string;
         };
         CancelPayment: {
-            impUid?: string;
-            merchantUid?: string;
+            /** Format: int64 */
+            paymentId?: number;
             /** Format: int64 */
             amount?: number;
             reason?: string;
+            /** @enum {string} */
+            assetType?: "캐시" | "포인트" | "전체";
+            /** @enum {string} */
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
         };
         CanceledPayment: {
+            cancelerName?: string;
             /** Format: int64 */
             cancelAmount?: number;
             /** Format: int64 */
             canceledAt?: number;
+            status?: string;
         };
         RsDataCanceledPayment: {
             resultCode: string;
@@ -1786,10 +1747,6 @@ export interface components {
             productCategory?: string;
             productSaleState?: string;
         };
-        UpdatePayment: {
-            /** @enum {string} */
-            status?: "전체" | "결제완료" | "결제대기" | "결제취소";
-        };
         NicknameUpdateRequestDto: {
             newNickname: string;
         };
@@ -1802,7 +1759,7 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시반환" | "포인트현금화";
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
         };
         RsDataLong: {
             resultCode: string;
@@ -1816,7 +1773,7 @@ export interface components {
             /** @enum {string} */
             assetType: "캐시" | "포인트" | "전체";
             /** @enum {string} */
-            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시반환" | "포인트현금화";
+            assetCategory: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
         };
         PageDtoAnswerDto: {
             /** Format: int32 */
@@ -1865,6 +1822,18 @@ export interface components {
             resultCode: string;
             msg: string;
             data: components["schemas"]["GetItem"][];
+        };
+        GetPaymentInfo: {
+            /** Format: int64 */
+            paymentId?: number;
+            impUid?: string;
+            merchantUid?: string;
+            /** Format: int64 */
+            amount?: number;
+            /** @enum {string} */
+            status?: "전체" | "결제완료" | "결제대기" | "결제취소";
+            /** Format: date-time */
+            createdAt?: string;
         };
         PageDtoGetPaymentInfo: {
             /** Format: int32 */
@@ -1947,7 +1916,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** @enum {string} */
-            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시반환" | "포인트현금화";
+            assetCategory?: "회원가입" | "송금" | "상품구매" | "질문등록" | "질문수정" | "답변채택" | "만료된질문" | "포인트반환" | "랭킹" | "관리자" | "출석" | "캐시충전" | "캐시환불" | "캐시출금";
             /** @enum {string} */
             assetType?: "캐시" | "포인트" | "전체";
             /** Format: date-time */
@@ -2417,7 +2386,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
                 };
             };
             /** @description Bad Request */
@@ -3206,40 +3175,7 @@ export interface operations {
             };
         };
     };
-    getAllPaymentByStatusWithPaging: {
-        parameters: {
-            query?: {
-                page?: number;
-                page_size?: number;
-                payment_status_keyword?: "전체" | "결제완료" | "결제대기" | "결제취소";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetPaymentInfo"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    writePayment: {
+    chargePayment: {
         parameters: {
             query?: never;
             header?: never;
@@ -3248,40 +3184,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["WritePayment"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetPaymentInfo"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    verifyPayment: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VerifyPayment"];
+                "application/json": components["schemas"]["ChargePayment"];
             };
         };
         responses: {
@@ -3891,41 +3794,6 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataGetItem"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
-    updatePayment: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                payment_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePayment"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json;charset=UTF-8": components["schemas"]["RsDataGetPaymentInfo"];
                 };
             };
             /** @description Bad Request */
@@ -4644,6 +4512,39 @@ export interface operations {
                 };
                 content: {
                     "application/json;charset=UTF-8": components["schemas"]["RsDataListGetItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getAllPaymentByStatusWithPaging: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                payment_status_keyword?: "전체" | "결제완료" | "결제대기" | "결제취소";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json;charset=UTF-8": components["schemas"]["RsDataPageDtoGetPaymentInfo"];
                 };
             };
             /** @description Bad Request */

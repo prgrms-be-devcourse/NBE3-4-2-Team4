@@ -56,8 +56,8 @@ export function BankAccountNicknameEditModal({ isOpen, onClose, account, refresh
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>환급 계좌 별칭 수정</DialogTitle>
-                    <DialogDescription>한눈에 보기 쉽게 환급 계좌의 별칭을 추가해보세요.</DialogDescription>
+                    <DialogTitle>출금 계좌 별칭 수정</DialogTitle>
+                    <DialogDescription>한눈에 보기 쉽게 출금 계좌의 별칭을 추가해보세요.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                     {/* 기존 별칭 표시 */}
