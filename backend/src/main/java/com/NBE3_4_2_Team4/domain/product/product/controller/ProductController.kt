@@ -1,9 +1,7 @@
 package com.NBE3_4_2_Team4.domain.product.product.controller
 
-import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.UpdateItem
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductRequestDto.WriteItem
-import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.GetItem
 import com.NBE3_4_2_Team4.domain.product.product.dto.ProductResponseDto.GetItemsByKeyword
 import com.NBE3_4_2_Team4.domain.product.product.service.ProductService
@@ -12,16 +10,10 @@ import com.NBE3_4_2_Team4.standard.dto.PageDto
 import com.NBE3_4_2_Team4.standard.search.ProductSearchKeywordType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api/products")
 @Tag(name = "포인트 상품 관리", description = "상품 API")
 class ProductController(
 

@@ -1,30 +1,26 @@
-package com.NBE3_4_2_Team4.domain.product.order.entity;
+package com.NBE3_4_2_Team4.domain.product.order.entity
 
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
+import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory
+import com.NBE3_4_2_Team4.domain.product.product.entity.Product
+import com.NBE3_4_2_Team4.global.jpa.entity.BaseEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToOne
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@EntityListeners(AuditingEntityListener.class)
-public class ProductOrder extends BaseEntity {
+@EntityListeners(AuditingEntityListener::class)
+class ProductOrder(
 
-    private LocalDateTime orderTime;    // 구매 시간
+    var orderTime: LocalDateTime = LocalDateTime.now(), // 구매 시간
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;            // 상품
+    var product: Product,                               // 상품
 
     @OneToOne
-    private AssetHistory assetHistory;  // 포인트 히스토리
-}
+    var assetHistory: AssetHistory                      // 포인트 히스토리
+
+) : BaseEntity()

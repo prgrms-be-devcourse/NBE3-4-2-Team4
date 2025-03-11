@@ -1,62 +1,60 @@
-package com.NBE3_4_2_Team4.domain.product.order.service;
+package com.NBE3_4_2_Team4.domain.product.order.service
 
-import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory;
-import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService;
-import com.NBE3_4_2_Team4.domain.product.order.dto.ProductOrderRequestDto.PurchaseDetails;
-import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder;
-import com.NBE3_4_2_Team4.domain.product.order.repository.ProductOrderRepository;
-import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetHistory;
-import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository;
-import com.NBE3_4_2_Team4.domain.product.product.entity.Product;
-import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository;
-import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.NBE3_4_2_Team4.domain.asset.factory.AssetServiceFactory
+import com.NBE3_4_2_Team4.domain.asset.main.repository.AssetHistoryRepository
+import com.NBE3_4_2_Team4.domain.asset.main.service.AssetService
+import com.NBE3_4_2_Team4.domain.product.order.dto.ProductOrderRequestDto.PurchaseDetails
+import com.NBE3_4_2_Team4.domain.product.order.entity.ProductOrder
+import com.NBE3_4_2_Team4.domain.product.order.repository.ProductOrderRepository
+import com.NBE3_4_2_Team4.domain.product.product.repository.ProductRepository
+import com.NBE3_4_2_Team4.global.exceptions.ServiceException
+import mu.KotlinLogging
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-import java.time.LocalDateTime;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class ProductOrderService {
+class ProductOrderService(
 
-    private final ProductOrderRepository productOrderRepository;
-    private final AssetHistoryRepository assetHistoryRepository;
-    private final ProductRepository productRepository;
-    private final AssetServiceFactory assetServiceFactory;
+    private val productOrderRepository: ProductOrderRepository,
+    private val assetHistoryRepository: AssetHistoryRepository,
+    private val productRepository: ProductRepository,
+    private val assetServiceFactory: AssetServiceFactory
+) {
+
+    private val logger = KotlinLogging.logger {}
 
     @Transactional
-    public Long createOrder(Long productId, PurchaseDetails purchaseDetails) {
+    fun createOrder(
+        productId: Long,
+        purchaseDetails: PurchaseDetails
+    ): Long {
 
         // 상품 조회
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ServiceException("404-1", "해당 상품이 존재하지 않습니다."));
+        val product = productRepository.findById(productId)
+            .orElseThrow { ServiceException("404-1", "해당 상품이 존재하지 않습니다.") }
 
         // 재화 착감
-        AssetService assetService = assetServiceFactory.getService(purchaseDetails.getAssetType());
-        Long assetHistoryId = assetService.deduct(
-                purchaseDetails.getUsername(),
-                purchaseDetails.getAmount(),
-                purchaseDetails.getAssetCategory()
-        );
+        val assetService: AssetService = assetServiceFactory.getService(purchaseDetails.assetType)
+        val assetHistoryId = assetService.deduct(
+            purchaseDetails.username,
+            purchaseDetails.amount,
+            purchaseDetails.assetCategory
+        )
 
         // 재화 내역 조회
-        AssetHistory assetHistory = assetHistoryRepository.findById(assetHistoryId)
-                .orElseThrow(() -> new ServiceException("404-2", "해당 재화 내역이 존재하지 않습니다."));
+        val assetHistory = assetHistoryRepository.findById(assetHistoryId)
+            .orElseThrow { ServiceException("404-2", "해당 재화 내역이 존재하지 않습니다.") }
 
         // 주문 생성
-        ProductOrder saved = productOrderRepository.save(
-                ProductOrder.builder()
-                        .orderTime(LocalDateTime.now())
-                        .product(product)
-                        .assetHistory(assetHistory)
-                        .build()
-        );
+        val savedOrder = productOrderRepository.save(
+            ProductOrder(
+                product = product,
+                assetHistory = assetHistory
+            )
+        )
 
-        log.info("Order Id [{}] is saved.", saved.getId());
+        logger.info { "Order Id [${savedOrder.id}] is saved." }
 
-        return saved.getId();
+        return savedOrder.id
     }
 }
