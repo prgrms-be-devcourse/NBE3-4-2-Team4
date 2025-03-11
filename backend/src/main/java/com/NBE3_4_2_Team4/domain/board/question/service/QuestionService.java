@@ -11,6 +11,8 @@ import com.NBE3_4_2_Team4.domain.board.question.entity.Question;
 import com.NBE3_4_2_Team4.domain.board.question.entity.QuestionCategory;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionCategoryRepository;
 import com.NBE3_4_2_Team4.domain.board.question.repository.QuestionRepository;
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult;
+import com.NBE3_4_2_Team4.domain.board.search.service.NewsSearchService;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.domain.member.member.repository.MemberRepository;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
@@ -19,8 +21,6 @@ import com.NBE3_4_2_Team4.standard.search.QuestionSearchKeywordType;
 import com.NBE3_4_2_Team4.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +36,7 @@ public class QuestionService {
     private final AssetServiceFactory assetServiceFactory;
     private final AnswerRepository answerRepository;
     private final MemberRepository memberRepository;
+    private final NewsSearchService newsSearchService;
 
     public long count() {
         return questionRepository.count();
@@ -46,6 +47,8 @@ public class QuestionService {
                              Member author, long amount, AssetType assetType) {
         QuestionCategory category = questionCategoryRepository.findById(categoryId).orElseThrow();
         AssetService assetService = assetServiceFactory.getService(assetType);
+
+        List<NewsSearchResult> articles = newsSearchService.getSearchResults(title, 2, 1);
         Question question = Question.builder()
                 .title(title)
                 .content(content)
@@ -54,6 +57,7 @@ public class QuestionService {
                 .assetType(assetType)
                 .amount(amount)
                 .rankReceived(false)
+                .articles(articles)
                 .build();
 
         //질문글 작성 시 포인트 차감
@@ -143,6 +147,8 @@ public class QuestionService {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new ServiceException("404-1", "게시글이 존재하지 않습니다.")
         );
+
+//        question.getArticles().size(); // lazy loading 강제 초기화
         return new QuestionDto(question);
     }
 

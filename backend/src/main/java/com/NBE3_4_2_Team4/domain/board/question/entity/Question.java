@@ -5,6 +5,7 @@ import com.NBE3_4_2_Team4.domain.asset.main.entity.AssetType;
 import com.NBE3_4_2_Team4.domain.board.answer.entity.Answer;
 import com.NBE3_4_2_Team4.domain.board.genFile.entity.QuestionGenFile;
 import com.NBE3_4_2_Team4.domain.board.recommend.entity.Recommend;
+import com.NBE3_4_2_Team4.domain.board.search.entity.NewsSearchResult;
 import com.NBE3_4_2_Team4.domain.member.member.entity.Member;
 import com.NBE3_4_2_Team4.global.exceptions.ServiceException;
 import com.NBE3_4_2_Team4.global.rsData.RsData;
@@ -53,11 +54,15 @@ public class Question extends GenFileParent<QuestionGenFile> {
     @Setter
     private boolean rankReceived; // 랭킹 포인트 지급 여부
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "question_search", joinColumns = @JoinColumn(name = "question_id"))
+    private List<NewsSearchResult> articles;
+
     public Question() {
         super(QuestionGenFile.class);
     }
 
-    public Question(Member author, String title, String content, QuestionCategory category, List<Answer> answers, List<Recommend> recommends, Answer selectedAnswer, boolean closed, long amount, AssetType assetType, boolean rankReceived) {
+    public Question(Member author, String title, String content, QuestionCategory category, List<Answer> answers, List<Recommend> recommends, Answer selectedAnswer, boolean closed, long amount, AssetType assetType, boolean rankReceived, List<NewsSearchResult> articles) {
         super(QuestionGenFile.class);
         this.author = author;
         this.title = title;
@@ -70,6 +75,7 @@ public class Question extends GenFileParent<QuestionGenFile> {
         this.amount = amount;
         this.assetType = assetType;
         this.rankReceived = rankReceived;
+        this.articles = articles;
     }
 
     public long getRecommendCount() { // 추천 수 반환
