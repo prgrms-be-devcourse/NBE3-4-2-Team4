@@ -201,28 +201,6 @@ class CustomJwtFilterTest {
             .andExpect(MockMvcResultMatchers.content().json(expectedJson))
     }
 
-//    @Test
-//    @DisplayName("필터 걸려있는 url - api/point/products/accumulate 에 대한 post 테스트 - 헤더에 관리자의 JWT 있는 경우 (인증, 인가 성공)")
-//    @Throws(
-//        Exception::class
-//    )
-//    fun testCustomJwtFilter8() {
-//        val jwtToken = jwtManager!!.generateAccessToken(admin!!)
-//        val accessToken = Cookie("accessToken", jwtToken)
-//
-//        val pointTransferReq = PointTransferReq("test@test.com", 1L)
-//        val body = objectMapper.writeValueAsString(pointTransferReq)
-//
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.put("/api/admin/points/accumulate")
-//                .header("Authorization", String.format("Bearer %s", jwtToken))
-//                .cookie(accessToken)
-//                .with(SecurityMockMvcRequestPostProcessors.csrf())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(body)
-//        )
-//            .andExpect(MockMvcResultMatchers.status().isOk())
-//    }
 
     @Test
     @DisplayName("로그아웃 성공 테스트 - 헤더에 사용자의 JWT 있는 경우")
