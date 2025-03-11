@@ -16,31 +16,41 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import { formatDate } from "@/utils/dateUtils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+<<<<<<< HEAD
 import NameButton from "@/lib/business/components/NameButton";
 import { Clock } from "lucide-react";
+=======
+import Pagination2 from "@/lib/business/components/Pagination2";
+>>>>>>> main
 
+type PageDtoMessageDto = components["schemas"]["PageDtoMessageDto"];
 type MessageDto = components["schemas"]["MessageDto"];
 
 interface ClientPageProps {
-  receive: MessageDto[];
-  send: MessageDto[];
+  data: PageDtoMessageDto;
+  activeTab: 'received' | 'sent';
+  setActiveTab: React.Dispatch<React.SetStateAction<'received' | 'sent'>>;
 }
 
-export default function ClientPage({ receive, send }: ClientPageProps) {
+export default function ClientPage({ data, activeTab, setActiveTab }: ClientPageProps) {
   const router = useRouter();
   const currentPath = usePathname();
   const { toast } = useToast();
+<<<<<<< HEAD
   const [activeTab, setActiveTab] = useState("received");
+=======
+>>>>>>> main
   const [viewMessage, setViewMessage] = useState<MessageDto | null>(null);
   const [selectedMessages, setSelectedMessages] = useState<number[]>([]);
 
-  // 현재 탭에서 표시할 메시지 배열 가져오기
-  const messages = activeTab === "received" ? receive : send;
-
   // 전체 선택 체크박스 상태
+<<<<<<< HEAD
   const allChecked =
     messages.length > 0 &&
     messages.every((msg) => selectedMessages.includes(msg.id!!));
+=======
+  const allChecked = data.items!!.length > 0 && data.items!!.every((msg) => selectedMessages.includes(msg.id!!));
+>>>>>>> main
 
   // 개별 체크박스 상태 변경 핸들러
   const handleCheckboxChange = (id: number) => {
@@ -56,7 +66,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
     if (allChecked) {
       setSelectedMessages([]); // 전체 해제
     } else {
-      setSelectedMessages(messages.map((msg) => msg.id!!)); // 전체 선택
+      setSelectedMessages(data.items!!.map((msg) => msg.id!!)); // 전체 선택
     }
   };
 
@@ -165,6 +175,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
   };
 
   useEffect(() => {
+    router.replace(`/message`, { scroll: false }); // page 파라미터를 제거
     setSelectedMessages([]); // 탭이 변경될 때 선택된 메시지 초기화
   }, [activeTab]);
 
@@ -294,6 +305,7 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
           </TableRow>
         </TableHeader>
 
+<<<<<<< HEAD
         {/* 받은 쪽지 목록 */}
         {activeTab === "received" ? (
           <TableBody>
@@ -369,7 +381,40 @@ export default function ClientPage({ receive, send }: ClientPageProps) {
             ))}
           </TableBody>
         )}
+=======
+        {/* 쪽지 목록 */}
+        <TableBody>
+          {data.items?.map((message) => (
+            <TableRow key={message.id} className="px-4 py-1">
+              <TableCell className="text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedMessages.includes(message.id!!)}
+                  onChange={() => handleCheckboxChange(message.id!!)}
+                />
+              </TableCell>
+              <TableCell className="w-[400px] font-medium text-center">
+                <Link href="" onClick={() => handleViewMessage(message)} className="text-blue-500">
+                  {message.title}
+                </Link>
+              </TableCell>
+              <TableCell className="w-[150px] text-center">
+                {message.senderName}
+              </TableCell>
+              <TableCell className="w-[200px] text-center">
+                {formatDate(message.createdAt!!)}
+              </TableCell>
+              <TableCell className="w-[150px] text-center">
+                {message.checked ? "읽음" : "읽지않음"}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+>>>>>>> main
       </Table>
+
+      {/* 페이지 이동 버튼 */}
+      <Pagination2 totalPages={data.totalPages ?? 0} />
     </div>
   );
 }

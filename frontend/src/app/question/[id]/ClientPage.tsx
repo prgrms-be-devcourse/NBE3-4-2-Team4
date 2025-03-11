@@ -88,6 +88,13 @@ export default function ClientPage({
     router.push("/message/write");
   };
 
+  // HTML 엔티티를 실제 문자로 변환하는 함수
+  function decodeHtml(html: string): string {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
   return (
     <div className="container mx-auto px-4">
       <div className="mt-20 mb-10 text-center">
@@ -114,10 +121,15 @@ export default function ClientPage({
               </Badge>
               <span>{question.title}</span>
               {question.name != nickname && id && (
+<<<<<<< HEAD
                 <Button
                   className="ml-auto bg-gray-400 hover:bg-gray-500"
                   onClick={() => writeMessage(question.name)}
                 >
+=======
+                <Button className="ml-auto bg-gray-400 hover:bg-gray-500"
+                  onClick={() => writeMessage(question.name)}>
+>>>>>>> main
                   <Link href="/message/write">쪽지 쓰기</Link>
                 </Button>
               )}
@@ -194,6 +206,31 @@ export default function ClientPage({
               )}
             </div>
           </CardFooter>
+        </Card>
+      </div>
+
+      {/* 연관 기사 */}
+      <div className="mt-8">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              연관 기사
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {question.articles?.map((article, index) => (
+              <div key={index} style={{ marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0' }}>
+                  <Link href={article.link!!} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'none' }}>
+                    {decodeHtml(article.title!!.replace(/<[^>]+>/g, ''))}
+                  </Link>
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                  {decodeHtml(article.description!!.replace(/<[^>]+>/g, ''))}
+                </p>
+              </div>
+            ))}
+          </CardContent>
         </Card>
       </div>
 
