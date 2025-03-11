@@ -117,7 +117,7 @@ class MemberService (
         if (memberRepository.existsByUsername(tempUser.username)) {
             throw ServiceException("409-1", String.format("already exists with username %s", tempUser.username))
         }
-        val member = Member(
+        return memberRepository.saveAndFlush(Member(
             id = null,
             role = Member.Role.USER,
             oAuth2Provider = Member.OAuth2Provider.getOAuth2ProviderByName(tempUser.getProviderTypeCode()),
@@ -126,13 +126,7 @@ class MemberService (
             nickname = signupRequestDto.nickname,
             emailAddress = signupRequestDto.email,
             realName = tempUser.getRealName()
-        )
-//        log.error("member : id {}, role {}, provider {}, username {}, password {}, nickname {}, email {}, realname {}", member.id, member.role, member.oAuth2Provider, member.username, member.password,
-//            member.nickname, member.emailAddress, member.realName)
-        return memberRepository.saveAndFlush(member)
-//        return memberRepository.saveAndFlush(
-//            member
-//        )
+        ))
     }
 
 
