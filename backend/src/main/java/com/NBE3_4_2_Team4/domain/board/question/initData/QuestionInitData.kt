@@ -80,8 +80,8 @@ class QuestionInitData(
             questionService.write(q.title, q.content, q.categoryId, author, q.amount, q.assetType)
         }
 
-        recommendService.recommend(1L, testUser)
-        recommendService.recommend(12L, admin)
+        recommendService.recommend(2L, testUser)
+        recommendService.recommend(11L, admin)
     }
 
     private fun createQuestion(title: String, content: String, userId: Long, amounts: Long, assetType: AssetType): QuestionWriteReqDto {

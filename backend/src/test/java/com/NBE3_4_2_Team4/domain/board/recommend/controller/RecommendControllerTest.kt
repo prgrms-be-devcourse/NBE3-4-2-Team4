@@ -24,11 +24,11 @@ class RecommendControllerTest {
     private lateinit var mvc: MockMvc
 
     @Test
-    @DisplayName("3번 질문 추천")
+    @DisplayName("4번 질문 추천")
     @WithUserDetails("test@test.com")
     fun t1() {
         val resultActions = mvc.perform(
-                put("/api/questions/3/recommend")
+                put("/api/questions/4/recommend")
                         .contentType(MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo { print() }
 
@@ -40,11 +40,11 @@ class RecommendControllerTest {
     }
 
     @Test
-    @DisplayName("1번 질문 추천 취소")
+    @DisplayName("2번 질문 추천 취소")
     @WithUserDetails("test@test.com")
     fun t2() {
         val resultActions = mvc.perform(
-                put("/api/questions/1/recommend")
+                put("/api/questions/2/recommend")
                         .contentType(MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo { print() }
 
@@ -60,7 +60,7 @@ class RecommendControllerTest {
     @WithUserDetails("admin@test.com")
     fun t3() {
         val resultActions = mvc.perform(
-                put("/api/questions/1/recommend")
+                put("/api/questions/2/recommend")
                         .contentType(MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
         ).andDo { print() }
 

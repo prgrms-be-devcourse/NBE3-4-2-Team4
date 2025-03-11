@@ -49,7 +49,7 @@ class MessageControllerTest {
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("getSentMessages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[*].sender_name").value(everyItem(`is`("테스트 유저"))))
 
         for (i in messages.indices) {
@@ -157,7 +157,7 @@ class MessageControllerTest {
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-2"))
+                .andExpect(jsonPath("$.result_code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("${ids.size}개의 쪽지를 삭제하였습니다."))
     }
 
@@ -176,7 +176,7 @@ class MessageControllerTest {
         resultActions.andExpect(handler().handlerType(MessageController::class.java))
                 .andExpect(handler().methodName("check"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result_code").value("200-3"))
+                .andExpect(jsonPath("$.result_code").value("200-2"))
                 .andExpect(jsonPath("$.msg").value("${ids.size}개의 쪽지를 읽었습니다."))
     }
 }

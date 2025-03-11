@@ -9,7 +9,9 @@ import java.time.LocalDateTime
 data class MessageDto(
     val id: Long,
     val senderName: String,
+    val senderId: Long,
     val receiverName: String,
+    val receiverId: Long,
     val checked: Boolean,
     val createdAt: LocalDateTime,
     val title: String,
@@ -18,7 +20,9 @@ data class MessageDto(
     constructor(message: Message) : this(
         id = message.id,
         senderName = message.sender.nickname,
+        senderId = message.sender.id,
         receiverName = message.receiver.nickname,
+        receiverId = message.receiver.id,
         checked = message.checked,
         createdAt = message.createdAt,
         title = message.title,
