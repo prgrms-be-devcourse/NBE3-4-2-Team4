@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
@@ -230,6 +231,7 @@ class CustomJwtFilterTest {
         Exception::class
     )
     fun testCustomJwtFilter10() {
+        SecurityContextHolder.clearContext()
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/logout")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
