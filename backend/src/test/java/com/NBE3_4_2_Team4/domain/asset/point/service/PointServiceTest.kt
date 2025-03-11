@@ -50,7 +50,7 @@ class PointServiceTest {
     @BeforeEach
     fun setup() {
         member1 = Member(
-            point = Point(),
+            point = Point(300L),
             cash = Cash(300L),
             role = Member.Role.USER,
             oAuth2Provider = Member.OAuth2Provider.NONE,
@@ -60,7 +60,7 @@ class PointServiceTest {
         )
 
         member2 = Member(
-            point = Point(),
+            point = Point(0L),
             cash = Cash(0L),
             role = Member.Role.USER,
             oAuth2Provider = Member.OAuth2Provider.NONE,
@@ -84,6 +84,8 @@ class PointServiceTest {
     @Test
     @DisplayName("transfer test")
     fun t1() {
+        Assertions.assertEquals(300L, member1.point.amount)
+
         pointService.transfer(member1.username, member2.username, 150L, AssetCategory.TRANSFER)
 
         val updatedMember1 = memberRepository.findById(

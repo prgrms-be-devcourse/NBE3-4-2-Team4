@@ -33,7 +33,7 @@ class PointConcurrencyTest {
     @BeforeEach
     fun setup() {
         member1 = Member(
-            point = Point(),
+            point = Point(300L),
             cash = Cash(300L),
             role = Member.Role.USER,
             oAuth2Provider = Member.OAuth2Provider.NONE,
@@ -43,7 +43,7 @@ class PointConcurrencyTest {
         )
 
         member2 = Member(
-            point = Point(),
+            point = Point(0L),
             cash = Cash(0L),
             role = Member.Role.USER,
             oAuth2Provider = Member.OAuth2Provider.NONE,
